@@ -92,7 +92,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <header>
     <div>
       <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 17:30 (ประเมินสต็อก 5 ตาราง + แถวรวมทุกสีท้ายตาราง) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 17:50 (ประเมินสต็อก 4 ตาราง สี×เบอร์ รายเดือน/สัปดาห์/วัน) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
@@ -159,42 +159,19 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <div id="view-e" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="panel">
       <div class="head2"><h2>ประเมินสต็อกคงเหลือ</h2><input type="password" id="e-key" placeholder="รหัสบันทึก" style="max-width:170px" autocomplete="off" aria-label="รหัสบันทึก"></div>
-      <div class="row" style="align-items:center;gap:10px 14px">
-        <span class="lbl" style="margin:0">ดูผลแบบ</span>
-        <label class="chip on"><input type="radio" name="e-view" value="m" checked>ณ สิ้นเดือน</label>
-        <label class="chip"><input type="radio" name="e-view" value="w">รายสัปดาห์</label>
-        <label class="chip"><input type="radio" name="e-view" value="d">รายวัน</label>
-        <button class="btn" id="exl" style="margin-left:auto">ดาวน์โหลด Excel</button>
-      </div>
       <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
         <div><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div>
         <div><span class="lbl">คิดถึงวันที่</span><input type="date" id="e-end"></div>
       </div>
       <div class="note" id="e-status"></div>
     </div>
-    <div id="e-warn" class="msg warn" hidden></div>
-    <div class="kpis" id="e-kpis"></div>
-    <div class="panel" id="e-res-m">
-      <h2 id="e-mt">สต็อกคงเหลือ ณ สิ้นเดือน</h2>
-      <div class="note">อ่านจากบนลงล่าง: สต็อกจริง + ผลิตได้ = ยอดคงเหลือก่อนขาย − โควต้าขาย = คงเหลือสิ้นเดือน (หน่วย: คู่ · ค่าลบสีส้ม = ของขาด)</div>
-      <div><div class="t5" id="e-h1"></div><div class="scroll" id="e-t1"></div></div>
-      <div><div class="t5" id="e-h2"></div><div class="scroll" id="e-t2"></div></div>
-      <div><div class="t5" id="e-h3"></div><div class="scroll" id="e-t3"></div></div>
-      <div><div class="t5" id="e-h4"></div><div class="scroll" id="e-t4"></div></div>
-      <div><div class="t5" id="e-h5"></div><div class="scroll" id="e-t5"></div></div>
-      <div class="note" id="e-foot"></div>
-    </div>
-    <div class="panel" id="e-res-t" hidden>
-      <h2 id="e-tt"></h2>
-      <div class="scroll" id="e-ser"></div><div class="note" id="e-sernote"></div>
-    </div>
-    <details class="dbox" id="e-d1"><summary>นำเข้าสต็อกจริงจาก รง.</summary><div class="dbody">
+    <details class="dbox" id="e-d1" open><summary>นำเข้าสต็อกจริงจาก รง.</summary><div class="dbody">
       <div class="note">เลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
       <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
       <div id="e-fprev" class="note"></div>
       <div id="e-msg" class="msg" hidden></div>
     </div></details>
-    <details class="dbox" id="e-d2"><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
+    <details class="dbox" id="e-d2" open><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
       <div class="note">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (กัน key ผิด) หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
       <div><span class="lbl">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (ทั้งตารางสี × เบอร์ รวมหัวตารางได้)</span>
         <textarea id="e-paste" rows="4" placeholder="คลุมตารางโควต้าใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V (หรือวางลงช่องตัวเลขในตารางด้านล่างได้เลย)" style="width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px"></textarea>
@@ -207,6 +184,25 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
         <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
       </div>
     </div></details>
+    <div id="e-warn" class="msg warn" hidden></div>
+    <div class="kpis" id="e-kpis"></div>
+    <div class="panel" id="e-res-m">
+      <div class="row" style="align-items:center;gap:10px 14px">
+        <span class="lbl" style="margin:0">ดูผลแบบ</span>
+        <label class="chip on"><input type="radio" name="e-view" value="m" checked>รายเดือน (ณ สิ้นเดือน)</label>
+        <label class="chip"><input type="radio" name="e-view" value="w">รายสัปดาห์</label>
+        <label class="chip"><input type="radio" name="e-view" value="d">รายวัน</label>
+        <select id="e-per" hidden style="max-width:260px" aria-label="เลือกช่วง"></select>
+        <button class="btn" id="exl" style="margin-left:auto">ดาวน์โหลด Excel</button>
+      </div>
+      <h2 id="e-mt"></h2>
+      <div class="note" id="e-rnote"></div>
+      <div><div class="t5" id="e-h1"></div><div class="scroll" id="e-t1"></div></div>
+      <div><div class="t5" id="e-h2"></div><div class="scroll" id="e-t2"></div></div>
+      <div><div class="t5" id="e-h3"></div><div class="scroll" id="e-t3"></div></div>
+      <div><div class="t5" id="e-h4"></div><div class="scroll" id="e-t4"></div></div>
+      <div class="note" id="e-foot"></div>
+    </div>
     <details class="dbox"><summary>ตั้งค่าการคำนวณ (ไม่ต้องแก้ก็ใช้ได้)</summary><div class="dbody">
       <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
         <div><span class="lbl">ดีเลย์แผ่นยาง→เข้าคลัง (วัน)</span><input type="number" id="e-lag" value="0" min="0" step="1"></div>
@@ -655,17 +651,7 @@ function series(c,cols,mode){
   const w=[];out.forEach(r=>{const t=new Date(r.d+"T12:00:00"),mon=addD(r.d,-((t.getDay()+6)%7));let g=w[w.length-1];if(!g||g.mon!==mon){g={mon,from:r.d,to:r.d,inn:0,q:0,bal:0,cum:0};w.push(g)}g.to=r.d;g.inn+=r.inn;g.q+=r.q;g.bal=r.bal;g.cum=r.cum});
   return w.map((g,i)=>({label:"สัปดาห์ที่ "+(i+1)+" · "+(+g.from.slice(8))+(g.from.slice(5,7)!==g.to.slice(5,7)?" "+MON[+g.from.slice(5,7)-1]:"")+"–"+(+g.to.slice(8))+" "+MON[+g.to.slice(5,7)-1],inn:g.inn,q:g.q,bal:g.bal,cum:g.cum,sub:""}));
 }
-let EV="m";
-function renderSer(c){
-  const rows=series(c,SC,EV),per=SC.map(x=>series(c,[x],EV)),tt=a=>a.reduce((x,y)=>x+y,0),neg=v=>v<0?"neg":"";
-  $("e-tt").textContent=(EV==="d"?"สต็อกคงเหลือรายวัน":"สต็อกคงเหลือรายสัปดาห์ (ปลายสัปดาห์)")+" · ถึง "+thD(c.ed);
-  let h='<table><thead><tr><th>'+(EV==="d"?"วัน":"สัปดาห์")+'</th><th>+ ผลิตเข้า</th><th>− ขายตามโควต้า</th><th>= คงเหลือรวม</th>'+SC.map(x=>"<th>"+x+"</th>").join("")+"</tr></thead><tbody>";
-  h+='<tr style="background:var(--surface2)"><td><b>สต็อกตั้งต้น ('+thD(c.sd)+')</b></td><td></td><td></td><td><b>'+fmt(SC.reduce((a,x)=>a+tt(c.res[x].start),0))+"</b></td>"+SC.map(x=>"<td>"+fmt(tt(c.res[x].start))+"</td>").join("")+"</tr>";
-  rows.forEach((r,i)=>{h+="<tr><td>"+r.label+"</td><td>"+(r.inn?fmt(r.inn):'<span class="zero">–</span>')+"</td><td>"+fmt(r.q)+'</td><td class="'+neg(r.bal)+'"><b>'+fmt(r.bal)+"</b></td>"+per.map(p=>'<td class="'+neg(p[i].bal)+'"'+(p[i].bal<0?' style="font-weight:600"':"")+">"+fmt(p[i].bal)+"</td>").join("")+"</tr>"});
-  h+="</tbody><tfoot><tr><td>รวม</td><td>"+fmt(rows.reduce((a,r)=>a+r.inn,0))+"</td><td>"+fmt(rows.reduce((a,r)=>a+r.q,0))+"</td><td>"+fmt(rows.length?rows[rows.length-1].bal:0)+"</td>"+SC.map((x,j)=>"<td>"+fmt(per[j].length?per[j][per[j].length-1].bal:0)+"</td>").join("")+"</tr></tfoot></table>";
-  $("e-ser").innerHTML=h;
-  $("e-sernote").textContent="ผลิตเข้า = แผ่นยางที่ รง. แจ้ง × "+c.f+" คู่"+(c.lag?" เลื่อน "+c.lag+" วัน":"")+" · โควต้าขายกระจายเท่ากันทุกวันตามปฏิทิน · คอลัมน์สี = สต็อกคงเหลือของแต่ละสี · แดง = ติดลบ (ของไม่พอขาย)";
-}
+let EV="m",PI=0;
 const QMAP={"น้ำเงิน":"น้ำเงิน","เขียว":"เขียว","แดง":"แดง","เหลือง":"เหลือง","ขาว":"ขาว","ดำ":"ดำ","เทา":"เทา","ดำ/ขาว":"ดำ/ขาว","ดำหน้าขาว":"ดำ/ขาว","ดำ(หน้าขาว)":"ดำ/ขาว"};
 function parseQuota(text){
   const o={vals:{},date:"",warn:[],tot:null};
@@ -718,7 +704,7 @@ function initE(){
   if(qdv&&qds.includes(qdv))$("e-qd").value=qdv;
   else if(qds.length&&!window._qf){$("e-qd").value=qds[qds.length-1];fillGrid(qds[qds.length-1]);window._qf=1}
 }
-document.querySelectorAll('input[name="e-view"]').forEach(r=>r.onchange=()=>{EV=r.value;document.querySelectorAll('input[name="e-view"]').forEach(x=>x.parentNode.classList.toggle("on",x.checked));renderE()});
+document.querySelectorAll('input[name="e-view"]').forEach(r=>r.onchange=()=>{EV=r.value;PI=0;document.querySelectorAll('input[name="e-view"]').forEach(x=>x.parentNode.classList.toggle("on",x.checked));renderE()});
 $("e-qd").onchange=()=>{if($("e-qd").value){fillGrid($("e-qd").value);$("e-qdate").value=$("e-qd").value;renderE()}};
 $("e-sd").onchange=()=>{$("e-end").value=$("e-sd").value?monEnd($("e-sd").value):"";renderE()};
 function calcE(){
@@ -754,31 +740,53 @@ function calcE(){
   const tq=SC.reduce((a,c)=>a+T(res[c].quota),0);
   return{sd,ed,lag,f,pct,nd,last,d1,d2,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0};
 }
+function periodsOf(c,mode){
+  const days=[];for(let d=addD(c.sd,1);d<=c.ed;d=addD(d,1))days.push(d);
+  const n=days.length||1,tot={},dc=(d,x)=>((c.dayCol[d]||{})[x]||0);
+  SC.forEach(x=>{tot[x]=days.reduce((a,d)=>a+dc(d,x),0)});
+  let g=[];
+  if(mode==="m")g=[days];else if(mode==="d")g=days.map(d=>[d]);
+  else days.forEach(d=>{const t=new Date(d+"T12:00:00"),mon=addD(d,-((t.getDay()+6)%7)),l=g[g.length-1];if(l&&l.mon===mon)l.push(d);else{const a=[d];a.mon=mon;g.push(a)}});
+  const bal={};SC.forEach(x=>bal[x]=c.res[x].start.slice());
+  return g.map((gr,k)=>{const o={from:gr[0],to:gr[gr.length-1],start:{},inn:{},quota:{},end:{}};
+    SC.forEach(x=>{const r=c.res[x],sh=mode==="m"?1:(tot[x]?gr.reduce((a,d)=>a+dc(d,x),0)/tot[x]:0),qs=mode==="m"?1:gr.length/n;
+      o.start[x]=bal[x].slice();o.inn[x]=r.inn.map(v=>v*sh);o.quota[x]=r.quota.map(v=>v*qs);
+      o.end[x]=mode==="m"?r.end.slice():o.start[x].map((v,i)=>v+o.inn[x][i]-o.quota[x][i]);bal[x]=o.end[x]});
+    const rg=thD(o.from)+(o.to!==o.from?" – "+thD(o.to):"");
+    o.rg=rg;o.label=mode==="m"?"ทั้งช่วง "+rg:mode==="d"?dLab(o.from)+" ("+thD(o.from)+")":"สัปดาห์ที่ "+(k+1)+" · "+rg;
+    o.sdate=k===0?c.sd:addD(o.from,-1);return o});
+}
 function renderE(){
   if($("view-e").hidden)return;
   const c=calcE(),W=$("e-warn");
-  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-ser","e-status"].forEach(i=>$(i).innerHTML="");return}
+  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-t1","e-t2","e-t3","e-t4","e-foot","e-status"].forEach(i=>$(i).innerHTML="");return}
   const T=a=>a.reduce((x,y)=>x+y,0),sum=k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0),w=[];
   if(!c.hasQ)w.push("ยังไม่ได้กรอกโควต้าฝ่ายขาย — ตอนนี้ยอดสิ้นเดือน = สต็อก + ยอดที่จะเข้าเท่านั้น");
   if(!c.nd)w.push("ไม่มีข้อมูลแผ่นยางในช่วง "+thD(c.d1)+" ถึง "+thD(c.d2));
   else if(c.last<c.d2)w.push("ข้อมูลแผ่นยางมีถึง "+thD(c.last)+" แต่ต้องการถึง "+thD(c.d2)+" — ยอดที่จะเข้าอาจต่ำกว่าจริง (รอ รง. ส่งไฟล์ต่อ)");
   const qd=$("e-qd").value;if(qd&&qd!==c.sd)w.push("โควต้าที่โหลดอยู่เป็นของวันที่ "+thD(qd)+" ส่วนสต็อกเป็นของวันที่ "+thD(c.sd)+" — ระบบถือว่าโควต้าคือยอดขายที่เหลือตั้งแต่วันถัดจากสต็อกถึงวันที่คิด");
   W.hidden=!w.length;W.innerHTML=w.join("<br>");
-  $("e-res-m").hidden=EV!=="m";$("e-res-t").hidden=EV==="m";
-  $("e-mt").textContent="สต็อกคงเหลือ ณ สิ้นเดือน ("+thD(c.ed)+")";
   $("e-status").textContent="สต็อกจริง ณ "+thD(c.sd)+" รวม "+fmt(SC.reduce((a,x)=>a+T(c.res[x].start),0))+" คู่ · โควต้าขายคงเหลือ "+(c.hasQ?fmt(c.tq)+" คู่"+($("e-qd").value?" (ณ "+thD($("e-qd").value)+")":""):"ยังไม่ได้กรอก (เปิดหัวข้อ 'โควต้าฝ่ายขาย' ด้านล่าง)");
   const E=sum("end"),neg=SC.reduce((a,x)=>a+c.res[x].end.filter(v=>v<0).length,0);
   $("e-kpis").innerHTML='<div class="kpi"><div class="k">สต็อกตั้งต้น ('+thD(c.sd)+')</div><div class="v">'+fmt(sum("start"))+'</div></div><div class="kpi"><div class="k">+ ยอดที่จะเข้า ('+c.nd+' วันจ่ายแผ่น)</div><div class="v">'+fmt(sum("inn"))+'</div></div><div class="kpi"><div class="k">− โควต้าขายคงเหลือ</div><div class="v">'+fmt(c.tq)+'</div></div><div class="kpi main"><div class="k">= สต็อกสิ้นเดือน ('+thD(c.ed)+')</div><div class="v">'+fmt(E)+'</div></div><div class="kpi"><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(neg?"var(--warn)":"inherit")+'">'+neg+"</div></div>";
-  const mat=(k,flag)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
-    SC.forEach(x=>{const v=c.res[x][k];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&y<0?"neg":(Math.round(y)?"":"zero"))+'"'+(flag&&y<0?' style="font-weight:600"':"")+">"+(Math.round(y)?fmt(y):"-")+"</td>").join("")+'<td class="'+(flag&&T(v)<0?"neg":"")+'"><b>'+fmt(T(v))+"</b></td></tr>"});
-    return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>'<td class="'+(flag&&y<0?"neg":"")+'">'+fmt(y)+"</td>").join("")+"<td>"+fmt(T(col))+"</td></tr></tfoot></table>"};
-  const arr1=addD(c.sd,1),H=["① สต็อกจริง ณ "+thD(c.sd)+(c.kind==="net"?" (สุทธิหลังหักยอดซื้อ)":""),"② + สต็อกที่คาดว่าจะผลิตได้ "+thD(arr1)+" – "+thD(c.ed),"③ = ยอดสต็อกคงเหลือ ณ สิ้นเดือน (ก่อนหักโควต้า)","④ − ยอดโควต้าที่ประเมินว่าจะขายได้"+(c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":""),"⑤ = สต็อกคงเหลือ ณ วันสิ้นเดือน "+thD(c.ed)];
-  ["start","inn","mid","quota","end"].forEach((k,i)=>{$("e-h"+(i+1)).textContent=H[i];$("e-t"+(i+1)).innerHTML=mat(k,k==="end")});
-  $("e-h5").style.color="var(--accent)";
+  const P=periodsOf(c,EV),sel=$("e-per");
+  if(PI>=P.length)PI=0;
+  sel.hidden=EV==="m"||!P.length;if(EV!=="m"){sel.innerHTML=P.map((o,i)=>'<option value="'+i+'">'+o.label+"</option>").join("");sel.value=PI}
+  const o=P[PI]||P[0];
+  const mat=(m,flag)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
+    SC.forEach(x=>{const v=m[x];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&Math.round(y)<0?"neg":(Math.round(y)?"":"zero"))+'"'+(flag&&Math.round(y)<0?' style="font-weight:600"':"")+">"+(Math.round(y)?fmt(y):"-")+"</td>").join("")+'<td class="'+(flag&&Math.round(T(v))<0?"neg":"")+'"><b>'+fmt(T(v))+"</b></td></tr>"});
+    return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>'<td class="'+(flag&&Math.round(y)<0?"neg":"")+'">'+fmt(y)+"</td>").join("")+"<td>"+fmt(T(col))+"</td></tr></tfoot></table>"};
+  const qp=c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":"",st=EV==="m"?thD(c.sd):thD(o.sdate);
+  const H=["1) สต็อกคงเหลือ ณ "+st+(EV==="m"&&c.kind==="net"?" (สุทธิหลังหักยอดซื้อ)":""),"2) + สต็อกที่ผลิตได้ จากแผ่นยางที่ รง. ส่งมา "+o.rg,"3) − โควต้าคงเหลือที่ฝ่ายขายยังไม่ได้ขาย (ประเมินว่าจะขายได้) "+o.rg+qp,"4) = สต็อกคาดว่าจะคงเหลือ ณ "+thD(o.to)+(EV==="m"?" (สิ้นเดือน)":"")];
+  $("e-mt").textContent=EV==="m"?"รายเดือน · ถึงสิ้นเดือน "+thD(c.ed):(EV==="w"?"รายสัปดาห์ · ":"รายวัน · ")+o.label;
+  $("e-rnote").textContent="หน่วย: คู่ · ค่าลบสีส้ม = ของขาด"+(EV==="m"?"":" · เลือกช่วงจากช่องด้านบน (ตารางต่อเนื่องกัน: ยอดคงเหลือสิ้นช่วงก่อนหน้า = สต็อกตั้งต้นของช่วงนี้)");
+  [o.start,o.inn,o.quota,o.end].forEach((m,i)=>{$("e-h"+(i+1)).textContent=H[i];$("e-t"+(i+1)).innerHTML=mat(m,i===3)});
+  $("e-h4").style.color="var(--accent)";
   $("e-foot").innerHTML="แผ่นที่นับ: วันจ่าย "+thD(c.d1)+" – "+thD(c.d2)+(c.lag?" (ดีเลย์ "+c.lag+" วัน)":"")+" · ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติ จากแผ่นดำ (ที่เหลือเป็นสีพิเศษ พื้นดำ): "+c.bsrc+" · สีพิเศษอื่น (Xmas, พื้นแดง หูเหลือง ฯลฯ) ไม่มีสต็อกในไฟล์ จึงไม่รวมในตารางนี้";
-  window._ec=c;if(EV!=="m")renderSer(c);
+  window._ec=c;
 }
-document.querySelectorAll("#view-e input,#view-e select").forEach(el=>{if(!["e-file","e-fdate","e-key","e-by","e-qdate","e-qd","e-sd"].includes(el.id))el.addEventListener("input",renderE)});
+$("e-per").onchange=()=>{PI=+$("e-per").value;renderE()};
+document.querySelectorAll("#view-e input,#view-e select").forEach(el=>{if(!["e-per","e-file","e-fdate","e-key","e-by","e-qdate","e-qd","e-sd"].includes(el.id))el.addEventListener("input",renderE)});
 $("exl").onclick=async()=>{
   const b=$("exl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),c=calcE();
   if(c.err||typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้";back();return}
@@ -792,26 +800,18 @@ $("exl").onclick=async()=>{
   note("ประเมินสต็อกสิ้นเดือน รุ่น 200 (หน่วย: คู่)",{size:15,bold:true,color:"000000",h:24});
   note("สต็อก "+thD(c.sd)+" ("+(c.kind==="net"?"สุทธิหลังหักยอดซื้อ":"คงเหลือเต็ม")+") + แผ่นยางจ่ายประกอบ "+thD(c.d1)+"–"+thD(c.d2)+" × "+c.f+" คู่ − โควต้าขายคงเหลือ"+(c.pct!==1?" × "+Math.round(c.pct*100)+"%":"")+" → สต็อก ณ "+thD(c.ed),{bold:true,color:"1A56DB"});
   ws.addRow([]);
-  [["① สต็อกจริง ณ "+thD(c.sd),"start"],["② + สต็อกที่คาดว่าจะผลิตได้ "+thD(addD(c.sd,1))+" – "+thD(c.ed),"inn"],["③ = ยอดสต็อกคงเหลือ ณ สิ้นเดือน (ก่อนหักโควต้า)","mid"],["④ − ยอดโควต้าที่ประเมินว่าจะขายได้","quota"],["⑤ = สต็อกคงเหลือ ณ วันสิ้นเดือน "+thD(c.ed)+" (ค่าลบ = ของขาด)","end",1]].forEach(a=>{
-    ws.addRow([]);note(a[0],{bold:true,color:"1A56DB",size:11});head(["สี"].concat(SIZES,["รวม"]));
-    SC.forEach(x=>{const v=c.res[x][a[1]].map(Math.round);body(x,v.concat([T(v)]),a[2]?row=>{v.forEach((y,i)=>{if(y<0){const q=row.getCell(i+2);q.fill=fill("FFC7CE");q.font={bold:true,color:{argb:"FF9C0006"}}}})}:null)});
-    tot(SIZES.map((z,i)=>SC.reduce((s,x)=>s+Math.round(c.res[x][a[1]][i]),0)).concat([SC.reduce((s,x)=>s+T(c.res[x][a[1]].map(Math.round)),0)]));
+  const mk=(o,pre)=>[[pre+"1) สต็อกคงเหลือ ณ "+(o.sdate?thD(o.sdate):thD(c.sd)),"start"],[pre+"2) + สต็อกที่ผลิตได้ จากแผ่นยาง รง. "+o.rg,"inn"],[pre+"3) − โควต้าคงเหลือที่ฝ่ายขายยังไม่ได้ขาย (ประเมินว่าจะขายได้) "+o.rg,"quota"],[pre+"4) = สต็อกคาดว่าจะคงเหลือ ณ "+thD(o.to)+" (ค่าลบ = ของขาด)","end",1]];
+  periodsOf(c,EV).forEach((o,k)=>{
+    if(EV!=="m"){ws.addRow([]);const t=note("■ "+o.label,{bold:true,color:"FFFFFF",size:12,h:22});ws.getRow(ws.rowCount).getCell(1).fill=fill("0F766E")}
+    mk(o,"").forEach(a=>{
+      ws.addRow([]);note(a[0],{bold:true,color:"1A56DB",size:11});head(["สี"].concat(SIZES,["รวม"]));
+      SC.forEach(x=>{const v=o[a[1]][x].map(Math.round);body(x,v.concat([T(v)]),a[2]?row=>{v.forEach((y,i)=>{if(y<0){const q=row.getCell(i+2);q.fill=fill("FFC7CE");q.font={bold:true,color:{argb:"FF9C0006"}}}})}:null)});
+      tot(SIZES.map((z,i)=>SC.reduce((s2,x)=>s2+Math.round(o[a[1]][x][i]),0)).concat([SC.reduce((s2,x)=>s2+T(o[a[1]][x].map(Math.round)),0)]));
+    });
   });
   ws.addRow([]);
   note("ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติจากแผ่นดำ: "+c.bsrc+". สีพิเศษอื่นไม่มีสต็อกในไฟล์ จึงไม่รวม");
-  [["รายวัน","d"],["รายสัปดาห์","w"]].forEach(m=>{
-    const w2=wb.addWorksheet(m[0]);w2.columns=[{width:24}].concat(Array(11).fill({width:13}));
-    const t2=w2.addRow(["ผลิตเข้า และสต็อกคงเหลือ"+m[0]+" (หน่วย: คู่)"]);t2.getCell(1).font={bold:true,size:14};
-    const n2=w2.addRow(["ผลิตเข้า = แผ่นยางที่ รง. แจ้ง × "+c.f+" คู่ · โควต้ากระจายเท่ากันทุกวัน · คอลัมน์สีคือสต็อกคงเหลือของแต่ละสี"]);n2.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}};
-    const hd=w2.addRow([m[0]==="รายวัน"?"วัน":"สัปดาห์","ผลิตเข้า","สะสมผลิตเข้า","ขายตามโควต้า","คงเหลือรวม"].concat(SC.map(x=>SCN[x]||x)));
-    hd.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center",vertical:"middle",wrapText:true};x.border=B});
-    const all=series(c,SC,m[1]),per=SC.map(x=>series(c,[x],m[1]));
-    const st=w2.addRow(["สต็อกตั้งต้น "+thD(c.sd),"","","",SC.reduce((a,x)=>a+T(c.res[x].start),0)].concat(SC.map(x=>T(c.res[x].start))));st.eachCell(x=>{x.font={bold:true};x.fill=fill("DCE6FA");x.border=B;x.numFmt="#,##0"});
-    all.forEach((r,i)=>{const row=w2.addRow([r.label,Math.round(r.inn),Math.round(r.cum),Math.round(r.q),Math.round(r.bal)].concat(per.map(p=>Math.round(p[i].bal))));
-      row.eachCell((x,j)=>{x.border=B;if(j>1){x.numFmt="#,##0;[Red]-#,##0;-";if(j>=5&&x.value<0){x.fill=fill("FFC7CE");x.font={bold:true,color:{argb:"FF9C0006"}}}}})});
-  });
-  {const keep=EV==="m"?"สต็อกสิ้นเดือน":EV==="w"?"รายสัปดาห์":"รายวัน";
-   ["สต็อกสิ้นเดือน","รายวัน","รายสัปดาห์"].forEach(n=>{if(n!==keep){const w3=wb.getWorksheet(n);if(w3)wb.removeWorksheet(w3.id)}})}
+  ws.name=({m:"สต็อกสิ้นเดือน",w:"รายสัปดาห์",d:"รายวัน"})[EV];
   try{await saveBook(wb,({m:"สต็อกสิ้นเดือน",w:"สต็อกรายสัปดาห์",d:"สต็อกรายวัน"})[EV]+"_"+c.ed+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
 load();
