@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FG เข้าโกดังพี่ชุมพร</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap">
+<style>
+/* Concept: warehouse ledger. Calm grey-blue paper, deep teal for the one active thing, real rubber colours only as swatches. */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --surface2:#f6f8f9; --line:#d9e0e4; --ink:#14212b; --muted:#5d6e7a;
+  --accent:#0b6b6b; --accent-ink:#ffffff; --accent-soft:#d8eeee; --warn:#a14b00; --warn-soft:#fbe9d6;
+  --bar:#7fb7b7;
+  --f-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif; --f-head:"Prompt","IBM Plex Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
+  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
+  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px}
+h1{font:600 24px/1.2 var(--f-head);margin:0}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+.tabs button{font:500 14px var(--f-body);border:0;background:none;color:var(--muted);padding:7px 14px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible,input:focus-visible,.chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.field label,.lbl{font:600 12px var(--f-body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:6px}
+.dates{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type=date],input[type=number]{width:100%;font:15px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:7px 9px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.mini{font:500 12.5px var(--f-body);border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer}
+.mini:hover{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface2);border-radius:8px;padding:5px 9px;font-size:14px;cursor:pointer;user-select:none}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chip.on{border-color:var(--accent);background:var(--accent-soft)}
+.dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(128,128,128,.55);flex:none}
+.grp{font-size:12px;color:var(--muted);margin:2px 0 6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font:600 26px/1.2 var(--f-head);font-variant-numeric:tabular-nums}
+.kpi.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.kpi.main .k{color:inherit;opacity:.85}
+h2{font:600 16px var(--f-head);margin:0}
+.head2{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--surface2);position:sticky;top:0}
+tfoot td{font-weight:600;background:var(--surface2)}
+td.zero{color:var(--muted);opacity:.55}
+td.hit{background:var(--accent-soft);font-weight:600}
+.barcell{width:34%;min-width:120px;text-align:left}
+.bar{height:10px;background:var(--bar);border-radius:3px;min-width:1px}
+.note{font-size:13px;color:var(--muted)}
+.empty{padding:28px 12px;text-align:center;color:var(--muted)}
+.btn{font:500 14px var(--f-body);border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn.ghost{background:none;color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{font-size:13.5px;padding:8px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--line)}
+.msg.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.msg.ok{background:var(--accent-soft);color:var(--ink);border-color:transparent}
+.entry input[type=number]{width:84px;text-align:right;padding:5px 7px}
+.entry td,.entry th{padding:4px 6px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>FG เข้าโกดังพี่ชุมพร</h1>
+      <div class="sub">รองเท้าฟองน้ำรุ่น 200 สำเร็จรูป · หน่วย: คู่</div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-q" aria-selected="true">ค้นหา</button>
+      <button role="tab" id="tab-e" aria-selected="false">เพิ่ม / แก้ไขรายวัน</button>
+    </div>
+  </header>
+
+  <div id="view-q" class="layout">
+    <aside class="panel">
+      <div class="field">
+        <span class="lbl">ช่วงวันที่</span>
+        <div class="dates">
+          <input type="date" id="from" aria-label="ตั้งแต่วันที่">
+          <input type="date" id="to" aria-label="ถึงวันที่">
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="mini" id="r-all">ทั้งหมด</button>
+          <button class="mini" id="r-7">7 วันล่าสุด</button>
+          <button class="mini" id="r-1">วันล่าสุด</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">สี</span>
+        <div class="row" style="margin-bottom:8px">
+          <button class="mini" id="c-all">ทุกสี</button>
+          <button class="mini" id="c-main">สีหลัก</button>
+          <button class="mini" id="c-none">ล้าง</button>
+        </div>
+        <div class="grp">สีหลัก</div>
+        <div class="chips" id="chips-main"></div>
+        <div class="grp" style="margin-top:10px">สีผสม / พิเศษ</div>
+        <div class="chips" id="chips-mix"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">เบอร์</span>
+        <div class="row" style="margin-bottom:8px">
+          <button class="mini" id="s-all">ทุกเบอร์</button>
+          <button class="mini" id="s-none">ล้าง</button>
+        </div>
+        <div class="chips" id="chips-size"></div>
+      </div>
+    </aside>
+
+    <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div class="kpis" id="kpis"></div>
+      <section class="panel">
+        <div class="head2"><h2>รวมตามสีและเบอร์</h2>
+          <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="hide0" checked> ซ่อนแถวที่เป็น 0</label></div>
+        <div class="scroll" id="matrix"></div>
+      </section>
+      <section class="panel">
+        <div class="head2"><h2>รายวัน</h2><button class="mini" id="copy">คัดลอกตาราง (วางใน Excel)</button></div>
+        <div class="scroll" id="daily"></div>
+        <div class="note" id="status"></div>
+      </section>
+    </main>
+  </div>
+
+  <section id="view-e" class="panel" hidden>
+    <div class="head2"><h2>เพิ่มหรือแก้ไขข้อมูลรายวัน</h2></div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end">
+      <div class="field" style="width:170px"><label for="e-date">วันที่</label><input type="date" id="e-date"></div>
+      <div class="field" style="width:170px"><label for="e-key">รหัสบันทึก</label><input type="password" id="e-key" autocomplete="off"></div>
+      <div class="field" style="width:170px"><label for="e-printed">ยอดรวมที่พิมพ์ในรายงาน</label><input type="number" id="e-printed" min="0"></div>
+    </div>
+    <div class="scroll entry" id="e-grid"></div>
+    <div id="e-check" class="msg">กรอกตัวเลขตามใบรายงาน ช่องว่างถือเป็น 0</div>
+    <div class="row"><button class="btn" id="e-save">บันทึกวันนี้</button><button class="btn ghost" id="e-clear">ล้างช่อง</button></div>
+    <div id="e-msg" class="note"></div>
+  </section>
+</div>
+
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4aryCA0j4UvW7NFGcCG2aslnaDXThjKuUxi8xnRBhtQ6VLQg/exec";
+const SIZES=["8.5","9","9.5","10","10.5","11"];
+const MAIN=["น้ำเงิน","เขียว","แดง","ดำ","เหลือง","ขาว","เทา"];
+const MIX=["ดำ/ขาว","เหลือง/แดง","เหลือง/ดำ","เขียว/แดง","แดง/เขียว","น้ำเงิน/น้ำเงิน","แดง/แดง"];
+const ALL=MAIN.concat(MIX);
+const HEX={"น้ำเงิน":"#1f4fd8","เขียว":"#1e9e4a","แดง":"#d62828","ดำ":"#1b1b1b","เหลือง":"#f2c200","ขาว":"#f6f6f6","เทา":"#8a8f98"};
+const MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const WD=["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
+const $=id=>document.getElementById(id);
+const fmt=n=>n?n.toLocaleString("en-US"):"–";
+const thDate=iso=>{const d=new Date(iso+"T00:00:00");return WD[d.getDay()]+" "+d.getDate()+" "+MON[d.getMonth()]+" "+String((d.getFullYear()+543)%100)};
+const thLong=iso=>{const d=new Date(iso+"T00:00:00");return d.getDate()+" "+MON[d.getMonth()]+" "+(d.getFullYear()+543)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let docs={};            // iso date -> {rows:{colour:[6]}, printedTotal}
+let selC=new Set(ALL), selS=new Set(SIZES);
+let db=null, loaded=false;
+
+function dotStyle(c){
+  if(HEX[c]) return "background:"+HEX[c];
+  const p=c.split("/"); return "background:linear-gradient(90deg,"+HEX[p[0]]+" 50%,"+HEX[p[1]]+" 50%)";
+}
+function buildChips(){
+  const mk=(host,list,set,labelFn,dot)=>{
+    $(host).innerHTML=list.map(v=>'<label class="chip'+(set.has(v)?' on':'')+'"><input type="checkbox" data-v="'+esc(v)+'"'+(set.has(v)?' checked':'')+'>'+(dot?'<span class="dot" style="'+dotStyle(v)+'"></span>':'')+esc(labelFn(v))+'</label>').join("");
+  };
+  mk("chips-main",MAIN,selC,v=>v,true); mk("chips-mix",MIX,selC,v=>v,true); mk("chips-size",SIZES,selS,v=>v,false);
+}
+document.addEventListener("change",e=>{
+  const t=e.target; if(!t.matches||!t.matches('.chip input')) return;
+  const v=t.dataset.v, host=t.closest(".chips").id;
+  const set=host==="chips-size"?selS:selC;
+  t.checked?set.add(v):set.delete(v);
+  t.closest(".chip").classList.toggle("on",t.checked); render();
+});
+function setC(list){selC=new Set(list);buildChips();render()}
+$("c-all").onclick=()=>setC(ALL); $("c-main").onclick=()=>setC(MAIN); $("c-none").onclick=()=>setC([]);
+$("s-all").onclick=()=>{selS=new Set(SIZES);buildChips();render()}; $("s-none").onclick=()=>{selS=new Set();buildChips();render()};
+$("hide0").onchange=render; $("from").onchange=render; $("to").onchange=render;
+const dates=()=>Object.keys(docs).sort();
+$("r-all").onclick=()=>{const d=dates(); if(d.length){$("from").value=d[0];$("to").value=d[d.length-1];render()}};
+$("r-7").onclick=()=>{const d=dates(); if(d.length){$("to").value=d[d.length-1];$("from").value=d[Math.max(0,d.length-7)];render()}};
+$("r-1").onclick=()=>{const d=dates(); if(d.length){$("to").value=$("from").value=d[d.length-1];render()}};
+
+function inRange(){
+  const f=$("from").value, t=$("to").value;
+  return dates().filter(d=>(!f||d>=f)&&(!t||d<=t));
+}
+function render(){
+  const ds=inRange();
+  const cs=ALL.filter(c=>selC.has(c)), si=SIZES.map((s,i)=>selS.has(s)?i:-1).filter(i=>i>=0);
+  // totals
+  const mat={}; cs.forEach(c=>mat[c]=SIZES.map(()=>0));
+  const dayTot={};
+  ds.forEach(d=>{const r=docs[d].rows||{}; dayTot[d]=SIZES.map(()=>0);
+    cs.forEach(c=>{const v=r[c]; if(!v) return; v.forEach((x,i)=>{mat[c][i]+=x||0; dayTot[d][i]+=x||0})})});
+  const colSum=SIZES.map((_,i)=>cs.reduce((a,c)=>a+mat[c][i],0));
+  const grand=si.reduce((a,i)=>a+colSum[i],0);
+  const perDay=ds.map(d=>si.reduce((a,i)=>a+dayTot[d][i],0));
+  // KPIs
+  const mx=perDay.length?Math.max(...perDay):0, mxd=perDay.length?ds[perDay.indexOf(mx)]:null;
+  $("kpis").innerHTML=
+   '<div class="kpi main"><div class="k">รวมที่เลือก</div><div class="v">'+grand.toLocaleString("en-US")+'</div></div>'+
+   '<div class="kpi"><div class="k">จำนวนวันที่มีข้อมูล</div><div class="v">'+ds.length+'</div></div>'+
+   '<div class="kpi"><div class="k">เฉลี่ยต่อวัน</div><div class="v">'+(ds.length?Math.round(grand/ds.length).toLocaleString("en-US"):"–")+'</div></div>'+
+   '<div class="kpi"><div class="k">สูงสุดใน 1 วัน</div><div class="v">'+(mxd?mx.toLocaleString("en-US"):"–")+'</div><div class="k">'+(mxd?thLong(mxd):"")+'</div></div>';
+  // matrix
+  const hide=$("hide0").checked;
+  const rows=cs.filter(c=>!hide||si.some(i=>mat[c][i]>0));
+  if(!loaded){ $("matrix").innerHTML='<div class="empty">กำลังโหลดข้อมูล…</div>'; $("daily").innerHTML=""; return }
+  if(!ds.length||!si.length||!rows.length){
+    const why=!Object.keys(docs).length?"ยังไม่มีข้อมูลในระบบ ไปที่แท็บ เพิ่ม / แก้ไขรายวัน":!ds.length?"ไม่มีข้อมูลในช่วงวันที่นี้":!si.length?"เลือกเบอร์อย่างน้อย 1 เบอร์":"ไม่มียอดในสีและเบอร์ที่เลือก";
+    $("matrix").innerHTML='<div class="empty">'+why+'</div>';
+  } else {
+    let h='<table><thead><tr><th>สี</th>'+si.map(i=>'<th>'+SIZES[i]+'</th>').join("")+'<th>รวม</th></tr></thead><tbody>';
+    rows.forEach(c=>{const t=si.reduce((a,i)=>a+mat[c][i],0);
+      h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(c)+'</td>'+
+        si.map(i=>'<td class="'+(mat[c][i]?'':'zero')+'">'+fmt(mat[c][i])+'</td>').join("")+'<td><b>'+fmt(t)+'</b></td></tr>'});
+    h+='</tbody><tfoot><tr><td>รวม</td>'+si.map(i=>'<td>'+fmt(rows.reduce((a,c)=>a+mat[c][i],0))+'</td>').join("")+'<td>'+fmt(rows.reduce((a,c)=>a+si.reduce((b,i)=>b+mat[c][i],0),0))+'</td></tr></tfoot></table>';
+    $("matrix").innerHTML=h;
+  }
+  // daily
+  if(ds.length&&si.length){
+    let h='<table><thead><tr><th>วันที่</th>'+si.map(i=>'<th>'+SIZES[i]+'</th>').join("")+'<th>รวม</th><th class="barcell"></th></tr></thead><tbody>';
+    ds.forEach((d,k)=>{h+='<tr><td>'+thDate(d)+'</td>'+si.map(i=>'<td class="'+(dayTot[d][i]?'':'zero')+'">'+fmt(dayTot[d][i])+'</td>').join("")+'<td><b>'+fmt(perDay[k])+'</b></td><td class="barcell"><div class="bar" style="width:'+(mx?Math.round(perDay[k]/mx*100):0)+'%"></div></td></tr>'});
+    h+='</tbody><tfoot><tr><td>รวม</td>'+si.map(i=>'<td>'+fmt(si.includes(i)?colSum[i]:0)+'</td>').join("")+'<td>'+fmt(grand)+'</td><td></td></tr></tfoot></table>';
+    $("daily").innerHTML=h;
+  } else $("daily").innerHTML='<div class="empty">—</div>';
+  const all=dates();
+  $("status").textContent=all.length?("ข้อมูลในระบบ "+all.length+" วัน ตั้งแต่ "+thLong(all[0])+" ถึง "+thLong(all[all.length-1])+" · วันที่โรงงานหยุดจะไม่มีข้อมูล"):"";
+  window.__tsv=(function(){const L=[["วันที่"].concat(si.map(i=>SIZES[i]),["รวม"]).join("\t")];ds.forEach((d,k)=>L.push([thLong(d)].concat(si.map(i=>dayTot[d][i]),[perDay[k]]).join("\t")));L.push(["รวม"].concat(si.map(i=>colSum[i]),[grand]).join("\t"));return L.join("\n")})();
+}
+$("copy").onclick=async()=>{const b=$("copy");try{await navigator.clipboard.writeText(window.__tsv||"");b.textContent="คัดลอกแล้ว"}catch(e){b.textContent="คัดลอกไม่ได้ ลองลากเลือกตารางเอง"}setTimeout(()=>b.textContent="คัดลอกตาราง (วางใน Excel)",2200)};
+
+/* ---------- entry tab ---------- */
+function buildGrid(){
+  let h='<table><thead><tr><th>สี</th>'+SIZES.map(s=>'<th>'+s+'</th>').join("")+'<th>รวม</th></tr></thead><tbody>';
+  ALL.forEach((c,r)=>{h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(c)+'</td>'+
+    SIZES.map((s,i)=>'<td><input type="number" min="0" step="1" id="g-'+r+'-'+i+'" aria-label="'+esc(c)+' เบอร์ '+s+'"></td>').join("")+'<td id="gt-'+r+'">–</td></tr>'});
+  h+='</tbody><tfoot><tr><td>รวม</td>'+SIZES.map((s,i)=>'<td id="gc-'+i+'">–</td>').join("")+'<td id="gg">–</td></tr></tfoot></table>';
+  $("e-grid").innerHTML=h;
+  $("e-grid").addEventListener("input",calc);
+}
+function readGrid(){return ALL.map((c,r)=>SIZES.map((s,i)=>Math.max(0,Math.round(Number($("g-"+r+"-"+i).value)||0))))}
+function calc(){
+  const g=readGrid(); let all=0;
+  g.forEach((row,r)=>{const t=row.reduce((a,b)=>a+b,0);all+=t;$("gt-"+r).textContent=fmt(t)});
+  SIZES.forEach((s,i)=>$("gc-"+i).textContent=fmt(g.reduce((a,row)=>a+row[i],0)));
+  $("gg").textContent=fmt(all);
+  const p=$("e-printed").value===""?null:Number($("e-printed").value), c=$("e-check");
+  if(p===null){c.className="msg";c.textContent="กรอกยอดรวมที่พิมพ์ในรายงานเพื่อตรวจความถูกต้อง · ตอนนี้รวม "+all.toLocaleString("en-US")}
+  else if(p===all){c.className="msg ok";c.textContent="ตรงกับยอดรวมในรายงาน ("+all.toLocaleString("en-US")+")"}
+  else{c.className="msg warn";c.textContent="ไม่ตรง: ในรายงาน "+p.toLocaleString("en-US")+" แต่รวมได้ "+all.toLocaleString("en-US")+" (ต่าง "+(all-p).toLocaleString("en-US")+")"}
+}
+function fillGrid(iso){
+  const d=docs[iso]; ALL.forEach((c,r)=>SIZES.forEach((s,i)=>{const v=d&&d.rows&&d.rows[c]?d.rows[c][i]:0;$("g-"+r+"-"+i).value=v?v:""}));
+  $("e-printed").value=d&&d.printedTotal!=null?d.printedTotal:""; calc();
+  $("e-msg").textContent=d?"วันนี้มีข้อมูลอยู่แล้ว กำลังแก้ไข":"วันใหม่ ยังไม่มีข้อมูล";
+}
+$("e-date").onchange=()=>{if($("e-date").value)fillGrid($("e-date").value)};
+$("e-printed").oninput=calc;
+$("e-clear").onclick=()=>{ALL.forEach((c,r)=>SIZES.forEach((s,i)=>$("g-"+r+"-"+i).value=""));$("e-printed").value="";calc()};
+$("e-save").onclick=async()=>{
+  const iso=$("e-date").value, m=$("e-msg");
+  if(!iso){m.textContent="เลือกวันที่ก่อน";return}
+  const key=$("e-key").value.trim(); if(!key){m.textContent="ใส่รหัสบันทึกก่อน";return}
+  const g=readGrid(), rows={}; ALL.forEach((c,r)=>{if(g[r].some(x=>x))rows[c]=g[r]});
+  const tot=g.flat().reduce((a,b)=>a+b,0), p=$("e-printed").value===""?null:Number($("e-printed").value);
+  if(p!==null&&p!==tot&&!confirm_ok()){return}
+  try{localStorage.setItem("fgkey",key)}catch(e){}
+  $("e-save").disabled=true;
+  try{
+    const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key,date:iso,rows,printedTotal:p})});
+    const j=await r.json(); if(!j.ok) throw new Error(j.error||"error");
+    m.textContent="บันทึก "+thLong(iso)+" แล้ว รวม "+tot.toLocaleString("en-US")+" คู่"; await load();
+  }catch(e){m.textContent="บันทึกไม่สำเร็จ: "+(e&&e.message||"error")}
+  $("e-save").disabled=false;
+};
+let warned=null;
+function confirm_ok(){ // no dialogs in the viewer: first click warns, second click on same date saves
+  const k=$("e-date").value+"|"+readGrid().flat().join(",")+"|"+$("e-printed").value;
+  if(warned===k) {warned=null;return true}
+  warned=k;$("e-msg").textContent="ยอดรวมไม่ตรงกับรายงาน กด บันทึก อีกครั้งถ้าต้องการบันทึกทั้งที่ไม่ตรง";return false;
+}
+function tab(q){ $("view-q").hidden=!q; $("view-e").hidden=q; $("tab-q").setAttribute("aria-selected",q); $("tab-e").setAttribute("aria-selected",!q);
+  try{localStorage.setItem("fgtab",q?"q":"e")}catch(e){} }
+$("tab-q").onclick=()=>tab(true); $("tab-e").onclick=()=>tab(false);
+
+buildChips(); buildGrid(); calc(); render();
+let first=true;
+async function load(){
+  try{
+    const r=await fetch(API_URL); const j=await r.json(); const m={};
+    (j.rows||[]).forEach(x=>{const d=String(x[0]).slice(0,10); if(!m[d]) m[d]={rows:{},printedTotal:null}; m[d].rows[x[1]]=x.slice(2,8).map(v=>Number(v)||0)});
+    docs=m; loaded=true;
+    const ds=dates();
+    if(first&&ds.length){first=false;$("from").value=ds[0];$("to").value=ds[ds.length-1];$("e-date").value=ds[ds.length-1];fillGrid(ds[ds.length-1])}
+    render();
+  }catch(e){loaded=true;$("matrix").innerHTML='<div class="empty">อ่านข้อมูลไม่ได้ ตรวจ API_URL และการ Deploy</div>'}
+}
+try{$("e-key").value=localStorage.getItem("fgkey")||""}catch(e){}
+load();
+</script>
+
+</html>
