@@ -92,7 +92,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <header>
     <div>
       <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 19:05 (ชื่อตาราง 1–5 ตามที่กำหนด · แผ่นยางนับตั้งแต่วันที่ของสต็อก) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 19:20 (ช่องรวมต่อสีย้ายไปท้ายตารางโควต้า) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
@@ -619,8 +619,8 @@ $("e-fsave").onclick=async()=>{
   catch(err){eMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("e-fsave").disabled=false}
 };
 function buildGrid(){
-  let h='<table><thead><tr><th>สี</th><th>รวมต่อสี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>เป้าสต็อกสิ้นเดือน</th></tr></thead><tbody>";
-  SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+'</td><td><input type="number" min="0" id="q-t-'+i+'" style="width:96px"></td>'+SIZES.map((z,j)=>'<td><input type="number" min="0" id="q-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="number" min="0" id="q-g-'+i+'" style="width:96px"></td></tr>'});
+  let h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวมต่อสี</th><th>เป้าสต็อกสิ้นเดือน</th></tr></thead><tbody>";
+  SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+'</td>'+SIZES.map((z,j)=>'<td><input type="number" min="0" id="q-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="number" min="0" id="q-t-'+i+'" style="width:96px"></td><td><input type="number" min="0" id="q-g-'+i+'" style="width:96px"></td></tr>'});
   $("e-grid").innerHTML=h+"</tbody></table>";
 }
 const gv=id=>nn($(id).value);
