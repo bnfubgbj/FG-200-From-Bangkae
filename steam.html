@@ -162,10 +162,10 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
     </div>
     <div class="panel">
       <h2>2) โควต้าฝ่ายขายที่ยังคาดว่าจะขายได้ (คงเหลือถึงสิ้นเดือน)</h2>
-      <div class="note">น้องวางตารางจาก Excel ได้เลย (กัน key ผิด) หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
-      <div><span class="lbl">วางตารางจาก Excel (copy ทั้งตารางสี × เบอร์ได้เลย จะรวมหัวตารางด้วยก็ได้)</span>
+      <div class="note">น้องเลือกไฟล์ Excel หรือวางตารางจาก Excel ได้เลย (กัน key ผิด) หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
+      <div><span class="lbl">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (ทั้งตารางสี × เบอร์ รวมหัวตารางได้)</span>
         <textarea id="e-paste" rows="4" placeholder="คลุมตารางโควต้าใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V (หรือวางลงช่องตัวเลขในตารางด้านล่างได้เลย)" style="width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px"></textarea>
-        <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="e-pbtn" type="button">นำไปใส่ตาราง</button><span id="e-pmsg" class="note"></span></div></div>
+        <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="e-pbtn" type="button">นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="e-qfile" accept=".xlsx" style="display:none"></label><span id="e-pmsg" class="note"></span></div></div>
       <div class="scroll" id="e-grid"></div>
       <div class="row" style="align-items:center">
         <div style="min-width:170px"><span class="lbl">โควต้า ณ วันที่</span><input type="date" id="e-qdate"></div>
@@ -678,6 +678,16 @@ function applyQuota(text){
   $("e-pmsg").textContent="ใส่ตารางแล้ว "+got.length+" สี รวม "+fmt(sum)+" คู่"+(r.date?" · วันที่ "+thD(r.date):"")+(miss.length?" · ไม่พบ: "+miss.join(", "):"")+(r.warn.length?" · ⚠ "+r.warn.join(" | "):"")+(bad?"":" · ตรวจกับแถวรวมแล้วตรงกัน");
   renderE();
 }
+async function readQuotaFile(file){
+  try{
+    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let best=null;
+    wb.worksheets.forEach(ws=>{const lines=[];ws.eachRow({includeEmpty:false},row=>{const a=[];for(let c=1;c<=Math.max(row.cellCount,12);c++){const v=cv(row.getCell(c));a.push(v==null?"":(v instanceof Date?"":String(v)))}lines.push(a.join("\t"))});
+      const t=lines.join("\n"),n=Object.keys(parseQuota(t).vals).length;if(n&&(!best||n>best.n))best={t,n,name:ws.name}});
+    if(!best){$("e-pmsg").style.color="var(--warn)";$("e-pmsg").textContent="ไม่พบตารางโควต้า (ชื่อสี + ตัวเลข 6 ช่อง) ในไฟล์นี้";return}
+    $("e-paste").value=best.t;applyQuota(best.t);$("e-pmsg").textContent="จากไฟล์ "+file.name+" (ชีต "+best.name+") · "+$("e-pmsg").textContent;
+  }catch(err){$("e-pmsg").style.color="var(--warn)";$("e-pmsg").textContent="อ่านไฟล์ไม่ได้: "+err+" (รองรับเฉพาะ .xlsx — ถ้าเป็น .xls ให้ Save As .xlsx ก่อน)"}
+}
+$("e-qfile").onchange=e=>{const f=e.target.files[0];if(f)readQuotaFile(f);e.target.value=""};
 $("e-pbtn").onclick=()=>applyQuota($("e-paste").value);
 $("e-paste").addEventListener("paste",()=>setTimeout(()=>applyQuota($("e-paste").value),0));
 $("e-grid").addEventListener("paste",e=>{const t=(e.clipboardData||window.clipboardData).getData("text");if(/[\t\n]/.test(t.trim())){e.preventDefault();$("e-paste").value=t;applyQuota(t)}});
