@@ -87,7 +87,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <header>
     <div>
       <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
@@ -113,6 +113,8 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
         <span class="lbl">สี</span>
         <div class="row" style="margin-bottom:6px"><button class="mini" id="c-all">ทุกสี</button><button class="mini" id="c-none">ล้าง</button></div>
         <div class="chips" id="colors"></div>
+        <div class="grp" style="margin-top:10px">สีตามแผนผลิตที่โรงงานไม่แยกแผ่น (ใช้แผ่นร่วม จึงไม่มียอดแยก)</div>
+        <div class="chips" id="colors-na"></div>
       </div>
       <div class="field">
         <span class="lbl">เบอร์</span>
@@ -511,6 +513,9 @@ $("i-save").onclick=async()=>{
   msg.className="msg "+(bad.length?"warn":"ok");msg.textContent=(ok?"บันทึกสำเร็จ "+ok+" ไฟล์. ":"")+bad.join(" | ");
   if(ok){IMP=[];$("i-file").value="";drawImport();await load()}else $("i-save").disabled=false;
 };
+const NACHIPS=[["ดำหน้าขาว (หูดำ หน้าขาว)","#ffffff","ใช้แผ่นขาวร่วมกับสีขาว"],["พื้นแดง หูเหลือง (โควิด)","#e04b4b","โรงงานไม่มีแถวแผ่นแยก"],["พิเศษ พื้นดำ หูน้ำเงิน","#3b6ae0","ใช้แผ่นดำล้วนร่วมกัน"],["พิเศษ พื้นดำ หูเขียว","#1e7e34","ใช้แผ่นดำล้วนร่วมกัน"],["พิเศษ พื้นดำ หูแดง","#c62828","ใช้แผ่นดำล้วนร่วมกัน"],["พิเศษ พื้นดำ หูเหลือง (พระ)","#e6b800","ใช้แผ่นดำล้วนร่วมกัน"],["พิเศษ พื้นดำ หูขาว","#ffffff","ใช้แผ่นดำล้วนร่วมกัน"],["พิเศษ พื้นดำ หูเทา","#8a8a8a","ใช้แผ่นดำล้วนร่วมกัน"],["พิเศษ พื้นดำ หูเหลือง (โควิด)","#f2c200","มีแถว 'โควิด หูเหลือง' ด้านบนแล้ว (นับรวมกับแผ่นดำ)"]];
+function drawNA(){$("colors-na").innerHTML=NACHIPS.map(x=>'<span class="chip" style="opacity:.6;cursor:help" title="'+x[2]+'"><span class="dot" style="background:'+x[1]+'"></span>'+x[0]+"</span>").join("")+'<div class="note" style="width:100%">ดูตัวเลขของสีเหล่านี้ตามแผนได้ที่แท็บ "เทียบแผนผลิต"</div>'}
+drawNA();
 /* ===== ประเมินสต็อกสิ้นเดือน ===== */
 const SC=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา","ดำ/ขาว"], SCN={"ดำ/ขาว":"ดำหน้าขาว (ดำ/ขาว)"}, Z6=()=>[0,0,0,0,0,0];
 let STK=[], EIMP=null;
