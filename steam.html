@@ -92,7 +92,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <header>
     <div>
       <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 18:05 (ช่องนำเข้าสต็อก/โควต้าอยู่บนสุด) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 18:45 (5 ตาราง มีตารางพักก่อนหักโควต้า) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
@@ -203,6 +203,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
       <div><div class="t5" id="e-h2"></div><div class="scroll" id="e-t2"></div></div>
       <div><div class="t5" id="e-h3"></div><div class="scroll" id="e-t3"></div></div>
       <div><div class="t5" id="e-h4"></div><div class="scroll" id="e-t4"></div></div>
+      <div><div class="t5" id="e-h5"></div><div class="scroll" id="e-t5"></div></div>
       <div class="note" id="e-foot"></div>
     </div>
     <details class="dbox"><summary>ตั้งค่าการคำนวณ (ไม่ต้องแก้ก็ใช้ได้)</summary><div class="dbody">
@@ -646,7 +647,7 @@ $("e-qsave").onclick=async()=>{
 const WD=["อา","จ","อ","พ","พฤ","ศ","ส"];
 const dLab=s=>{const t=new Date(s+"T12:00:00");return WD[t.getDay()]+" "+(+s.slice(8))+" "+MON[+s.slice(5,7)-1]};
 function series(c,cols,mode){
-  const T=a=>a.reduce((x,y)=>x+y,0),days=[];for(let d=addD(c.sd,1);d<=c.ed;d=addD(d,1))days.push(d);
+  const T=a=>a.reduce((x,y)=>x+y,0),days=[];for(let d=c.sd;d<=c.ed;d=addD(d,1))days.push(d);
   const n=days.length||1,q=cols.reduce((a,x)=>a+T(c.res[x].quota),0)/n;let bal=cols.reduce((a,x)=>a+T(c.res[x].start),0),cum=0;
   const out=days.map(d=>{const inn=cols.reduce((a,x)=>a+((c.dayCol[d]||{})[x]||0),0);bal+=inn-q;cum+=inn;return{d,inn,q,bal,cum}});
   if(mode==="d")return out.map(r=>({label:dLab(r.d),inn:r.inn,q:r.q,bal:r.bal,cum:r.cum,sub:""}));
@@ -711,10 +712,10 @@ $("e-qd").onchange=()=>{if($("e-qd").value){fillGrid($("e-qd").value);$("e-qdate
 $("e-sd").onchange=()=>{$("e-end").value=$("e-sd").value?monEnd($("e-sd").value):"";renderE()};
 function calcE(){
   const sd=$("e-sd").value,ed=$("e-end").value;if(!sd||!ed)return{err:"ยังไม่มีสต็อก — นำเข้าไฟล์สต็อกจาก รง. ก่อน"};
-  if(ed<=sd)return{err:"วันที่ 'คิดถึง' ต้องหลังวันที่ของสต็อก"};
+  if(ed<sd)return{err:"วันที่ 'คิดถึง' ต้องไม่ก่อนวันที่ของสต็อก"};
   const lag=Math.max(0,Math.round(+$("e-lag").value||0)),f=F(),pct=Math.max(0,+$("e-pct").value||0)/100,kind=$("e-net").checked?"net":"stock";
   const st=stkGet(kind,sd);if(!Object.keys(st).length)return{err:"ไม่มีข้อมูลสต็อกประเภทนี้ของวันที่ "+thD(sd)};
-  const d1=addD(sd,1-lag),d2=addD(ed,-lag),P0=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา"],sup={};P0.forEach(p=>sup[p]=Z6());
+  const d1=addD(sd,-lag),d2=addD(ed,-lag),P0=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา"],sup={};P0.forEach(p=>sup[p]=Z6());
   let nd=0,last="";const dayPool={};
   dates().forEach(d=>{if(d<d1||d>d2)return;nd++;last=d;const a=addD(d,lag),dp=dayPool[a]=dayPool[a]||{};Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!sup[p])return;const t=dp[p]=dp[p]||Z6();DATA[d][k].forEach((x,i)=>{sup[p][i]+=x*f;t[i]+=x*f})})});
   const m=ed.slice(0,7),revs=PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>b-a):[],Pm=revs.length?PL[m][revs[0]].colors:null;
@@ -743,16 +744,17 @@ function calcE(){
   return{sd,ed,lag,f,pct,nd,last,d1,d2,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0};
 }
 function periodsOf(c,mode){
-  const days=[];for(let d=addD(c.sd,1);d<=c.ed;d=addD(d,1))days.push(d);
+  const days=[];for(let d=c.sd;d<=c.ed;d=addD(d,1))days.push(d);
   const n=days.length||1,tot={},dc=(d,x)=>((c.dayCol[d]||{})[x]||0);
   SC.forEach(x=>{tot[x]=days.reduce((a,d)=>a+dc(d,x),0)});
   let g=[];
   if(mode==="m")g=[days];else if(mode==="d")g=days.map(d=>[d]);
   else days.forEach(d=>{const t=new Date(d+"T12:00:00"),mon=addD(d,-((t.getDay()+6)%7)),l=g[g.length-1];if(l&&l.mon===mon)l.push(d);else{const a=[d];a.mon=mon;g.push(a)}});
   const bal={};SC.forEach(x=>bal[x]=c.res[x].start.slice());
-  return g.map((gr,k)=>{const o={from:gr[0],to:gr[gr.length-1],start:{},inn:{},quota:{},end:{}};
+  return g.map((gr,k)=>{const o={from:gr[0],to:gr[gr.length-1],start:{},inn:{},mid:{},quota:{},end:{}};
     SC.forEach(x=>{const r=c.res[x],sh=mode==="m"?1:(tot[x]?gr.reduce((a,d)=>a+dc(d,x),0)/tot[x]:0),qs=mode==="m"?1:gr.length/n;
       o.start[x]=bal[x].slice();o.inn[x]=r.inn.map(v=>v*sh);o.quota[x]=r.quota.map(v=>v*qs);
+      o.mid[x]=o.start[x].map((v,i)=>v+o.inn[x][i]);
       o.end[x]=mode==="m"?r.end.slice():o.start[x].map((v,i)=>v+o.inn[x][i]-o.quota[x][i]);bal[x]=o.end[x]});
     const rg=thD(o.from)+(o.to!==o.from?" – "+thD(o.to):"");
     o.rg=rg;o.label=mode==="m"?"ทั้งช่วง "+rg:mode==="d"?dLab(o.from)+" ("+thD(o.from)+")":"สัปดาห์ที่ "+(k+1)+" · "+rg;
@@ -761,12 +763,12 @@ function periodsOf(c,mode){
 function renderE(){
   if($("view-e").hidden)return;
   const c=calcE(),W=$("e-warn");
-  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-t1","e-t2","e-t3","e-t4","e-foot","e-status"].forEach(i=>$(i).innerHTML="");return}
+  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-status"].forEach(i=>$(i).innerHTML="");return}
   const T=a=>a.reduce((x,y)=>x+y,0),sum=k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0),w=[];
   if(!c.hasQ)w.push("ยังไม่ได้กรอกโควต้าฝ่ายขาย — ตอนนี้ยอดสิ้นเดือน = สต็อก + ยอดที่จะเข้าเท่านั้น");
   if(!c.nd)w.push("ไม่มีข้อมูลแผ่นยางในช่วง "+thD(c.d1)+" ถึง "+thD(c.d2));
   else if(c.last<c.d2)w.push("ข้อมูลแผ่นยางมีถึง "+thD(c.last)+" แต่ต้องการถึง "+thD(c.d2)+" — ยอดที่จะเข้าอาจต่ำกว่าจริง (รอ รง. ส่งไฟล์ต่อ)");
-  const qd=$("e-qd").value;if(qd&&qd!==c.sd)w.push("โควต้าที่โหลดอยู่เป็นของวันที่ "+thD(qd)+" ส่วนสต็อกเป็นของวันที่ "+thD(c.sd)+" — ระบบถือว่าโควต้าคือยอดขายที่เหลือตั้งแต่วันถัดจากสต็อกถึงวันที่คิด");
+  const qd=$("e-qd").value;if(qd&&qd!==c.sd)w.push("โควต้าที่โหลดอยู่เป็นของวันที่ "+thD(qd)+" ส่วนสต็อกเป็นของวันที่ "+thD(c.sd)+" — ระบบถือว่าโควต้าคือยอดขายที่เหลือตั้งแต่วันที่ของสต็อก (ต้นวัน) ถึงวันที่คิด");
   W.hidden=!w.length;W.innerHTML=w.join("<br>");
   $("e-status").textContent="สต็อกจริง ณ "+thD(c.sd)+" รวม "+fmt(SC.reduce((a,x)=>a+T(c.res[x].start),0))+" คู่ · โควต้าขายคงเหลือ "+(c.hasQ?fmt(c.tq)+" คู่"+($("e-qd").value?" (ณ "+thD($("e-qd").value)+")":""):"ยังไม่ได้กรอก (เปิดหัวข้อ 'โควต้าฝ่ายขาย' ด้านล่าง)");
   const E=sum("end"),neg=SC.reduce((a,x)=>a+c.res[x].end.filter(v=>v<0).length,0);
@@ -779,11 +781,11 @@ function renderE(){
     SC.forEach(x=>{const v=m[x];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&Math.round(y)<0?"neg":(Math.round(y)?"":"zero"))+'"'+(flag&&Math.round(y)<0?' style="font-weight:600"':"")+">"+(Math.round(y)?fmt(y):"-")+"</td>").join("")+'<td class="'+(flag&&Math.round(T(v))<0?"neg":"")+'"><b>'+fmt(T(v))+"</b></td></tr>"});
     return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>'<td class="'+(flag&&Math.round(y)<0?"neg":"")+'">'+fmt(y)+"</td>").join("")+"<td>"+fmt(T(col))+"</td></tr></tfoot></table>"};
   const qp=c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":"",st=EV==="m"?thD(c.sd):thD(o.sdate);
-  const H=["1) สต็อกคงเหลือ ณ "+st+(EV==="m"&&c.kind==="net"?" (สุทธิหลังหักยอดซื้อ)":""),"2) + สต็อกที่ผลิตได้ จากแผ่นยางที่ รง. ส่งมา "+o.rg,"3) − โควต้าคงเหลือที่ฝ่ายขายยังไม่ได้ขาย (ประเมินว่าจะขายได้) "+o.rg+qp,"4) = สต็อกคาดว่าจะคงเหลือ ณ "+thD(o.to)+(EV==="m"?" (สิ้นเดือน)":"")];
+  const H=["1) สต็อกคงเหลือ ณ "+(EV==="m"||PI===0?"ต้นวันที่ "+thD(c.sd):"สิ้นวันที่ "+st)+(PI===0&&c.kind==="net"?" (สุทธิหลังหักยอดซื้อ)":""),"2) + สต็อกที่ผลิตได้ จากแผ่นยางที่ รง. ส่งมา "+o.rg,"3) = สต็อกรวมพักไว้ก่อนหักโควต้า: สต็อก "+(EV==="m"||PI===0?"ต้นวันที่ "+thD(c.sd):"สิ้นวันที่ "+st)+" + ผลิตได้ถึง "+thD(o.to),"4) − โควต้าคงเหลือที่ฝ่ายขายยังไม่ได้ขาย (ประเมินว่าจะขายได้) "+o.rg+qp,"5) = สต็อกคาดว่าจะคงเหลือ ณ "+thD(o.to)+(EV==="m"?" (สิ้นเดือน)":"")];
   $("e-mt").textContent=EV==="m"?"รายเดือน · ถึงสิ้นเดือน "+thD(c.ed):(EV==="w"?"รายสัปดาห์ · ":"รายวัน · ")+o.label;
   $("e-rnote").textContent="หน่วย: คู่ · ค่าลบสีส้ม = ของขาด"+(EV==="m"?"":" · เลือกช่วงจากช่องด้านบน (ตารางต่อเนื่องกัน: ยอดคงเหลือสิ้นช่วงก่อนหน้า = สต็อกตั้งต้นของช่วงนี้)");
-  [o.start,o.inn,o.quota,o.end].forEach((m,i)=>{$("e-h"+(i+1)).textContent=H[i];$("e-t"+(i+1)).innerHTML=mat(m,i===3)});
-  $("e-h4").style.color="var(--accent)";
+  [o.start,o.inn,o.mid,o.quota,o.end].forEach((m,i)=>{$("e-h"+(i+1)).textContent=H[i];$("e-t"+(i+1)).innerHTML=mat(m,i===4)});
+  $("e-h5").style.color="var(--accent)";
   $("e-foot").innerHTML="แผ่นที่นับ: วันจ่าย "+thD(c.d1)+" – "+thD(c.d2)+(c.lag?" (ดีเลย์ "+c.lag+" วัน)":"")+" · ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติ จากแผ่นดำ (ที่เหลือเป็นสีพิเศษ พื้นดำ): "+c.bsrc+" · สีพิเศษอื่น (Xmas, พื้นแดง หูเหลือง ฯลฯ) ไม่มีสต็อกในไฟล์ จึงไม่รวมในตารางนี้";
   window._ec=c;
 }
@@ -802,7 +804,7 @@ $("exl").onclick=async()=>{
   note("ประเมินสต็อกสิ้นเดือน รุ่น 200 (หน่วย: คู่)",{size:15,bold:true,color:"000000",h:24});
   note("สต็อก "+thD(c.sd)+" ("+(c.kind==="net"?"สุทธิหลังหักยอดซื้อ":"คงเหลือเต็ม")+") + แผ่นยางจ่ายประกอบ "+thD(c.d1)+"–"+thD(c.d2)+" × "+c.f+" คู่ − โควต้าขายคงเหลือ"+(c.pct!==1?" × "+Math.round(c.pct*100)+"%":"")+" → สต็อก ณ "+thD(c.ed),{bold:true,color:"1A56DB"});
   ws.addRow([]);
-  const mk=(o,pre)=>[[pre+"1) สต็อกคงเหลือ ณ "+(o.sdate?thD(o.sdate):thD(c.sd)),"start"],[pre+"2) + สต็อกที่ผลิตได้ จากแผ่นยาง รง. "+o.rg,"inn"],[pre+"3) − โควต้าคงเหลือที่ฝ่ายขายยังไม่ได้ขาย (ประเมินว่าจะขายได้) "+o.rg,"quota"],[pre+"4) = สต็อกคาดว่าจะคงเหลือ ณ "+thD(o.to)+" (ค่าลบ = ของขาด)","end",1]];
+  const mk=(o,pre)=>[[pre+"1) สต็อกคงเหลือ ณ "+(o.sdate===c.sd?"ต้นวันที่ "+thD(c.sd):"สิ้นวันที่ "+thD(o.sdate)),"start"],[pre+"2) + สต็อกที่ผลิตได้ จากแผ่นยาง รง. "+o.rg,"inn"],[pre+"3) = สต็อกรวมพักไว้ก่อนหักโควต้า (สต็อก + ผลิตได้ถึง "+thD(o.to)+")","mid"],[pre+"4) − โควต้าคงเหลือที่ฝ่ายขายยังไม่ได้ขาย (ประเมินว่าจะขายได้) "+o.rg,"quota"],[pre+"5) = สต็อกคาดว่าจะคงเหลือ ณ "+thD(o.to)+" (ค่าลบ = ของขาด)","end",1]];
   periodsOf(c,EV).forEach((o,k)=>{
     if(EV!=="m"){ws.addRow([]);const t=note("■ "+o.label,{bold:true,color:"FFFFFF",size:12,h:22});ws.getRow(ws.rowCount).getCell(1).fill=fill("0F766E")}
     mk(o,"").forEach(a=>{
