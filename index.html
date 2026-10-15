@@ -86,6 +86,7 @@ td.hit{background:var(--accent-soft);font-weight:600}
       <button role="tab" id="tab-q" aria-selected="true">ค้นหา</button>
       <button role="tab" id="tab-e" aria-selected="false">เพิ่ม / แก้ไขรายวัน</button>
       <button role="tab" id="tab-p" aria-selected="false">แผนผลิต</button>
+      <button role="tab" id="tab-i" aria-selected="false">นำเข้า Excel</button>
     </div>
   </header>
 
@@ -155,7 +156,17 @@ td.hit{background:var(--accent-soft);font-weight:600}
     <div class="row"><button class="btn" id="e-save">บันทึกวันนี้</button><button class="btn ghost" id="e-clear">ล้างช่อง</button></div>
     <div id="e-msg" class="note"></div>
   </section>
-<section id="view-p" class="panel" hidden>
+<section id="view-i" class="panel" hidden>
+    <div class="head2"><h2>นำเข้าจาก Excel</h2></div>
+    <div class="note">กรอกแม่แบบ Excel (1 แผ่น = ยอดเข้าโกดัง 1 วัน และมีแผ่นสำหรับแผนผลิต) แล้วเลือกไฟล์ที่นี่ แอปจะตรวจยอดรวมกับยอดที่พิมพ์ในรายงานก่อนบันทึก</div>
+    <div class="row"><button class="btn ghost" id="i-tpl">ดาวน์โหลดแม่แบบ Excel</button>
+      <label class="btn" style="cursor:pointer">เลือกไฟล์ Excel<input type="file" id="i-file" accept=".xlsx" hidden></label></div>
+    <div class="scroll" id="i-prev"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end"><div class="field" style="width:170px"><label for="i-key">รหัสบันทึก</label><input type="password" id="i-key" autocomplete="off"></div><button class="btn" id="i-save" disabled>บันทึกที่เลือก</button></div>
+    <div id="i-msg" class="note"></div>
+  </section>
+
+  <section id="view-p" class="panel" hidden>
     <div class="head2"><h2>แผนผลิต (กรอกเอง เก็บใน Google Sheet)</h2></div>
     <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end">
       <div class="field" style="width:170px"><label for="p-month">เดือนที่ผลิต</label><input type="month" id="p-month"></div>
@@ -180,9 +191,9 @@ const TPLS=[["เขียว/แดง","พื้นแดง หูเขี�
 const MAIN=TPL8.map(r=>r[0]), MIX=TPLS.map(r=>r[0]), ALL=MAIN.concat(MIX);
 const LAB={}; TPL8.concat(TPLS).forEach(r=>LAB[r[0]]=r[1]);
 const lab=c=>LAB[c]||c;
-// แผนผลิตรายเดือน (คู่) จากไฟล์ Plan Production: ต.ค. 2569 = Detail 200_10-2026, พ.ย. 2569 = Detail 200_11-2026
-// คีย์สี = หู/พื้น เหมือนในชีต เพิ่มเดือนใหม่ได้ที่นี่
-const PLAN_BUILTIN={"2026-10":{"น้ำเงิน":[4932,56464,89840,101244,101254,64853],"เขียว":[36,10687,21661,21697,17855,8808],"แดง":[48,7911,21800,26662,19156,11257],"เหลือง":[0,558,0,23472,27106,11290],"ขาว":[0,8691,18212,24845,31190,17537],"ดำ":[0,1996,2963,11878,8296,4784],"เทา":[0,1469,12470,31257,32692,4639],"ดำ/ขาว":[0,0,0,0,0,0],"เขียว/แดง":[0,2160,3120,7440,5400,3000],"แดง/เขียว":[0,2400,3600,7440,5400,2040],"เหลือง/แดง":[0,4200,6600,5400,2040,0],"น้ำเงิน/ดำ":[0,0,0,0,0,0],"เขียว/ดำ":[0,0,0,0,0,0],"แดง/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ(พระ)":[0,0,0,0,0,0],"ขาว/ดำ":[0,0,0,0,0,0],"เทา/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ":[0,0,0,0,0,0],"น้ำเงิน/น้ำเงิน":[0,360,3000,4800,3840,2400],"แดง/แดง":[0,0,1800,2160,2280,2400],"โกโก้ล้วน":[0,0,3000,5400,4800,2400]},"2026-11":{"น้ำเงิน":[0,6074,39512,125400,147300,93960],"เขียว":[0,11640,23400,30600,27600,10200],"แดง":[0,12000,21600,38400,36000,12600],"เหลือง":[0,0,0,0,0,0],"ขาว":[3000,13200,21000,38400,33600,22200],"ดำ":[0,0,0,40800,37500,29400],"เทา":[0,0,0,0,0,0],"ดำ/ขาว":[0,600,6600,22680,18600,8000],"เขียว/แดง":[0,0,0,0,0,0],"แดง/เขียว":[0,0,0,0,0,0],"เหลือง/แดง":[0,0,0,1200,3360,2040],"น้ำเงิน/ดำ":[0,0,0,0,0,0],"เขียว/ดำ":[0,0,0,0,0,0],"แดง/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ(พระ)":[0,0,0,0,0,0],"ขาว/ดำ":[0,0,0,0,0,0],"เทา/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ":[0,1200,3000,4800,4800,1800],"น้ำเงิน/น้ำเงิน":[0,0,0,0,0,0],"แดง/แดง":[0,0,0,0,0,0],"โกโก้ล้วน":[0,0,0,0,0,0]}};
+// แผนตั้งต้น (คู่) ที่ฝังในแอป: เดือน -> ฉบับ -> {colors,date,note}  แผนที่บันทึกใน Google Sheet จะมาก่อนเสมอ
+// คีย์สี = หู/พื้น เหมือนในชีต
+const PLAN_BUILTIN={"2026-10":{"2":{"colors":{"น้ำเงิน":[0,27000,48000,125400,147300,93960],"เขียว":[0,11640,23400,30600,27600,10200],"แดง":[0,12000,21600,38400,36000,12600],"ขาว":[3000,13200,21000,38400,33600,22200],"ดำ":[0,0,0,40800,37500,29400],"ดำ/ขาว":[0,600,6600,22680,18600,9000],"เหลือง/แดง":[0,0,0,1200,3360,2040],"เหลือง/ดำ":[0,1200,3000,4800,4800,1800]},"date":"2026-09-26","note":"แก้ไข2 (ส่งโรงงาน 26/9/69) รวม 984,480"}}};
 const HEX={"น้ำเงิน":"#1f4fd8","เขียว":"#1e9e4a","แดง":"#d62828","ดำ":"#1b1b1b","เหลือง":"#f2c200","ขาว":"#f6f6f6","เทา":"#8a8f98"};
 const DOTS={"โกโก้ล้วน":"#6b4226"};
 const MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
@@ -204,7 +215,7 @@ function buildPlans(rows){
     P[m]=P[m]||{}; P[m][rev]=P[m][rev]||{colors:{},date:"",note:""};
     P[m][rev].colors[c]=[3,4,5,6,7,8].map(i=>Number(r[i])||0);
     if(r[9]) P[m][rev].date=normD(r[9]); if(r[10]) P[m][rev].note=String(r[10]);});
-  Object.keys(PLAN_BUILTIN).forEach(m=>{P[m]=P[m]||{}; if(!P[m][0]) P[m][0]={colors:PLAN_BUILTIN[m],date:"",note:"จากไฟล์ Plan Production"}});
+  Object.keys(PLAN_BUILTIN).forEach(m=>{P[m]=P[m]||{}; Object.keys(PLAN_BUILTIN[m]).forEach(r=>{if(!P[m][r]) P[m][r]=PLAN_BUILTIN[m][r]})});
   return P;
 }
 let PLANS=buildPlans([]);
@@ -445,9 +456,9 @@ function confirm_ok(){ // no dialogs in the viewer: first click warns, second cl
   if(warned===k) {warned=null;return true}
   warned=k;$("e-msg").textContent="ยอดรวมไม่ตรงกับรายงาน กด บันทึก อีกครั้งถ้าต้องการบันทึกทั้งที่ไม่ตรง";return false;
 }
-function tab(n){ ["q","e","p"].forEach(k=>{$("view-"+k).hidden=(k!==n);$("tab-"+k).setAttribute("aria-selected",k===n)});
+function tab(n){ ["q","e","p","i"].forEach(k=>{$("view-"+k).hidden=(k!==n);$("tab-"+k).setAttribute("aria-selected",k===n)});
   try{localStorage.setItem("fgtab",n)}catch(e){} }
-$("tab-q").onclick=()=>tab("q"); $("tab-e").onclick=()=>tab("e"); $("tab-p").onclick=()=>tab("p");
+$("tab-q").onclick=()=>tab("q"); $("tab-e").onclick=()=>tab("e"); $("tab-p").onclick=()=>tab("p"); $("tab-i").onclick=()=>tab("i");
 
 /* ---------- plan tab ---------- */
 const pid=(r,i)=>"p-"+r+"-"+i;
@@ -502,6 +513,132 @@ $("p-save").onclick=async()=>{
   $("p-save").disabled=false;
 };
 
+
+/* ---------- Excel template + import ---------- */
+function tplBody(ws,input){
+  ws.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
+  const thin={style:"thin",color:{argb:"FFD0D0D0"}}, bd={top:thin,left:thin,bottom:thin,right:thin};
+  const fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+c}});
+  const hdr=r=>{["สี"].concat(SIZES,["รวม"]).forEach((v,j)=>{const c=ws.getRow(r).getCell(j+1);c.value=v;c.font={bold:true,color:{argb:"FFFFFFFF"}};c.alignment={horizontal:"center"};c.fill=fill(j===7?"0D3B9E":"1A56DB");c.border=bd})};
+  const sec=(r,t)=>{const c=ws.getCell("A"+r);c.value=t;c.font={bold:true,size:12,color:{argb:"FF1A56DB"}}};
+  const body=(r0,list)=>list.forEach((d,k)=>{const r=r0+k,row=ws.getRow(r),c0=row.getCell(1);
+    c0.value=d[1];c0.font={bold:true,color:{argb:"FF"+d[3]}};c0.fill=fill(d[2]);c0.border=bd;
+    SIZES.forEach((s,i)=>{const c=row.getCell(i+2);c.numFmt="#,##0";c.fill=fill(input);c.border=bd});
+    const tc=row.getCell(8);tc.value={formula:"SUM(B"+r+":G"+r+")"};tc.numFmt="#,##0";tc.font={bold:true};tc.fill=fill("EEF2FF");tc.border=bd});
+  sec(4,"8 สีหลัก");hdr(5);body(6,TPL8);sec(15,"สีพิเศษ (Export เท่านั้น)");hdr(16);body(17,TPLS);
+  const tr=ws.getRow(31);tr.getCell(1).value="รวมทั้งหมด";
+  for(let j=2;j<=8;j++){const L=String.fromCharCode(64+j),c=tr.getCell(j);c.value={formula:"SUM("+L+"6:"+L+"13)+SUM("+L+"17:"+L+"29)"};c.numFmt="#,##0"}
+  tr.eachCell(c=>{c.font={bold:true};c.fill=fill("DCE6FA");c.border=bd});
+}
+function mkTemplate(){
+  const wb=new ExcelJS.Workbook(), fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+c}}), inp="FFF8D6", blue={bold:true,color:{argb:"FF1A56DB"}};
+  const g=wb.addWorksheet("วิธีใช้"); g.columns=[{width:110}];
+  ["แม่แบบกรอกข้อมูล FG รุ่น 200 (หน่วย: คู่)","",
+   "1) ยอดเข้าโกดังรายวัน: ใช้แผ่น 'วัน 1' ... 'วัน 10' แผ่นละ 1 วัน (อยากได้เพิ่ม คลิกขวาที่แท็บ > Move or Copy > Create a copy)",
+   "   - ช่องวันที่ (B2): พิมพ์ เช่น 13/10/2026 (ใช้ปี ค.ศ. หรือ พ.ศ. ก็ได้)",
+   "   - ช่องยอดรวมที่พิมพ์ในรายงาน (B3): พิมพ์ตัวเลขรวมที่พิมพ์ท้ายใบรายงานของพี่ชุมพร",
+   "   - ช่องสีเหลืองคือช่องกรอก ใส่ตัวเลขจากใบรายงานตรงๆ ไม่ต้องบวกเอง ช่องที่ไม่มีให้เว้นว่าง",
+   "   - ช่อง D3 จะบอกทันทีว่ายอดรวมที่กรอกตรงกับยอดที่พิมพ์หรือไม่",
+   "2) แผนผลิต: ใช้แผ่น 'แผนผลิต' ใส่เดือน (B2) ฉบับ (B3: 0 = แผนเริ่มต้น, 1 = revise ครั้งที่ 1, ...) วันที่แจ้งโรงงาน (D2) หมายเหตุ (D3)",
+   "   (ถ้าจะทำหลายฉบับ ให้ทำสำเนาแผ่นนี้ แผ่นละ 1 ฉบับ)",
+   "3) กรอกเสร็จ บันทึกไฟล์ แล้วเข้าแอป > แท็บ 'นำเข้า Excel' > เลือกไฟล์ > ตรวจรายการ > กด 'บันทึกที่เลือก'",
+   "แผ่นที่ว่าง (ไม่ได้กรอกอะไร) แอปจะข้ามให้อัตโนมัติ"].forEach((t,i)=>{const c=g.getCell("A"+(i+1));c.value=t;if(i===0)c.font={bold:true,size:14}});
+  for(let n=1;n<=10;n++){
+    const ws=wb.addWorksheet("วัน "+n); tplBody(ws,inp);
+    ws.getCell("A1").value="FG200 รายวัน: ยอดเข้าโกดังพี่ชุมพร (คู่)"; ws.getCell("A1").font={bold:true,size:14};
+    ws.getCell("A2").value="วันที่ (เช่น 13/10/2026)"; ws.getCell("A2").font=blue; ws.getCell("B2").fill=fill(inp); ws.getCell("B2").numFmt="dd/mm/yyyy";
+    ws.getCell("A3").value="ยอดรวมที่พิมพ์ในรายงาน"; ws.getCell("A3").font=blue; ws.getCell("B3").fill=fill(inp); ws.getCell("B3").numFmt="#,##0";
+    ws.getCell("C3").value="ตรวจสอบ"; ws.getCell("C3").font=blue;
+    ws.getCell("D3").value={formula:'IF(B3="","(ยังไม่ได้ใส่ยอดพิมพ์)",IF(H31=B3,"ตรงกับยอดพิมพ์","ไม่ตรง: ต่าง "&(H31-B3)&" คู่"))'}; ws.getCell("D3").font={bold:true};
+  }
+  const p=wb.addWorksheet("แผนผลิต"); tplBody(p,inp);
+  p.getCell("A1").value="FG200 แผนผลิต (คู่)"; p.getCell("A1").font={bold:true,size:14};
+  p.getCell("A2").value="เดือนที่ผลิต (เช่น 10/2026)"; p.getCell("A2").font=blue; p.getCell("B2").fill=fill(inp); p.getCell("B2").numFmt="mm/yyyy";
+  p.getCell("A3").value="ฉบับ (0 = แผนเริ่มต้น, 1, 2, ...)"; p.getCell("A3").font=blue; p.getCell("B3").fill=fill(inp);
+  p.getCell("C2").value="วันที่แจ้งโรงงาน"; p.getCell("C2").font=blue; p.getCell("D2").fill=fill(inp); p.getCell("D2").numFmt="dd/mm/yyyy";
+  p.getCell("C3").value="หมายเหตุ"; p.getCell("C3").font=blue; p.getCell("D3").fill=fill(inp);
+  return wb;
+}
+async function saveBook(wb,name){const buf=await wb.xlsx.writeBuffer();const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+$("i-tpl").onclick=async()=>{if(typeof ExcelJS==="undefined"){$("i-msg").textContent="โหลดตัวสร้าง Excel ไม่ได้";return}await saveBook(mkTemplate(),"FG200_แม่แบบกรอกข้อมูล.xlsx")};
+
+const cv=c=>{let v=c.value;if(v&&typeof v==="object"&&!(v instanceof Date)){if("result" in v)v=v.result;else if(v.richText)v=v.richText.map(t=>t.text).join("");else if("text" in v)v=v.text}return v};
+const p2=n=>String(n).padStart(2,"0");
+function parseDateV(v){ // -> yyyy-mm-dd | null
+  if(v==null||v==="")return null; let y,m,d;
+  if(v instanceof Date){y=v.getUTCFullYear();m=v.getUTCMonth()+1;d=v.getUTCDate()}
+  else if(typeof v==="number"){const t=new Date(Date.UTC(1899,11,30)+v*864e5);y=t.getUTCFullYear();m=t.getUTCMonth()+1;d=t.getUTCDate()}
+  else{const s=String(v).trim();let r=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(r){y=+r[1];m=+r[2];d=+r[3]}else{r=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/);if(!r)return null;d=+r[1];m=+r[2];y=+r[3]}}
+  if(y>2400)y-=543; if(m<1||m>12||d<1||d>31||y<2000)return null; return y+"-"+p2(m)+"-"+p2(d);
+}
+function parseMonthV(v){
+  if(v==null||v==="")return null;
+  if(v instanceof Date||typeof v==="number"){const t=parseDateV(v);return t?t.slice(0,7):null}
+  const s=String(v).trim();let r=s.match(/^(\d{4})-(\d{1,2})$/);if(r){let y=+r[1];if(y>2400)y-=543;return y+"-"+p2(+r[2])}
+  r=s.match(/^(\d{1,2})[\/\-](\d{4})$/);if(r){let y=+r[2];if(y>2400)y-=543;return y+"-"+p2(+r[1])}
+  const t=parseDateV(s);return t?t.slice(0,7):null;
+}
+function readRows(ws){
+  const rows={}; let any=false;
+  TPL8.forEach((d,k)=>{const v=SIZES.map((s,i)=>Math.max(0,Math.round(Number(cv(ws.getCell(6+k,i+2)))||0)));if(v.some(x=>x)){rows[d[0]]=v;any=true}});
+  TPLS.forEach((d,k)=>{const v=SIZES.map((s,i)=>Math.max(0,Math.round(Number(cv(ws.getCell(17+k,i+2)))||0)));if(v.some(x=>x)){rows[d[0]]=v;any=true}});
+  return {rows,any,total:Object.values(rows).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0)};
+}
+let IMP=[];
+async function readImport(file){
+  const wb=new ExcelJS.Workbook(); await wb.xlsx.load(await file.arrayBuffer()); IMP=[];
+  wb.eachSheet(ws=>{
+    const t=String(cv(ws.getCell("A1"))||"");
+    if(t.indexOf("FG200 รายวัน")===0){
+      const rd=readRows(ws), rawD=cv(ws.getCell("B2")); if(!rd.any&&(rawD==null||rawD===""))return;
+      const date=parseDateV(rawD), pv=cv(ws.getCell("B3")), printed=(pv===null||pv===undefined||pv==="")?null:Number(pv);
+      let st="ok",msg="";
+      if(!date){st="err";msg="ไม่มีวันที่ หรืออ่านวันที่ไม่ได้ (ช่อง B2)"}
+      else if(!rd.any){st="err";msg="ไม่มียอดที่กรอก"}
+      else if(printed===null||isNaN(printed)){st="warn";msg="ไม่ได้ใส่ยอดพิมพ์ จึงไม่ได้ตรวจ"}
+      else if(printed!==rd.total){st="err";msg="ไม่ตรงยอดพิมพ์ "+printed.toLocaleString("en-US")+" (ต่าง "+(rd.total-printed).toLocaleString("en-US")+")"}
+      if(date&&docs[date]&&st!=="err")msg=(msg?msg+" · ":"")+"มีข้อมูลวันนี้แล้ว จะเขียนทับ";
+      IMP.push({kind:"day",sheet:ws.name,date,rows:rd.rows,total:rd.total,printed,st,msg,on:st!=="err"&&!!date});
+    } else if(t.indexOf("FG200 แผนผลิต")===0){
+      const rd=readRows(ws), rawM=cv(ws.getCell("B2")); if(!rd.any&&(rawM==null||rawM===""))return;
+      const month=parseMonthV(rawM), rv=cv(ws.getCell("B3")), rev=(rv===null||rv===undefined||rv==="")?NaN:Number(rv);
+      const dv=cv(ws.getCell("D2")), nv=cv(ws.getCell("D3"));
+      let st="ok",msg="";
+      if(!month){st="err";msg="อ่านเดือนไม่ได้ (ช่อง B2)"}
+      else if(!(rev>=0)||Math.floor(rev)!==rev){st="err";msg="ใส่เลขฉบับ (ช่อง B3) เป็น 0,1,2,..."}
+      else if(!rd.any){st="err";msg="ไม่มียอดที่กรอก"}
+      if(st!=="err"&&PLANS[month]&&PLANS[month][rev])msg=(msg?msg+" · ":"")+"มีแผนฉบับนี้แล้ว จะเขียนทับ";
+      IMP.push({kind:"plan",sheet:ws.name,month,rev,date:parseDateV(dv)||"",note:nv==null?"":String(nv),rows:rd.rows,total:rd.total,st,msg,on:st!=="err"});
+    }
+  });
+  drawImport();
+}
+function drawImport(){
+  if(!IMP.length){$("i-prev").innerHTML='<div class="empty">ไม่พบแผ่นที่กรอกข้อมูลในไฟล์นี้ (ต้องเป็นแผ่นจากแม่แบบของแอป)</div>';$("i-save").disabled=true;return}
+  let h='<table><thead><tr><th>บันทึก</th><th>แผ่น</th><th>รายการ</th><th>รวม (คู่)</th><th style="text-align:left">ผลตรวจ</th></tr></thead><tbody>';
+  IMP.forEach((x,i)=>{const lbl=x.kind==="day"?(x.date?thLong(x.date):"?"):("แผน "+(x.month?mLabel(x.month):"?")+" "+(isNaN(x.rev)?"":revName(x.rev)));
+    h+='<tr><td><input type="checkbox" data-i="'+i+'"'+(x.on?" checked":"")+(x.st==="err"&&!x.force?"":"")+'></td><td>'+esc(x.sheet)+'</td><td>'+esc(lbl)+'</td><td>'+fmt(x.total)+'</td><td style="text-align:left;white-space:normal;color:'+(x.st==="err"?"var(--warn)":"inherit")+'">'+(x.st==="ok"&&!x.msg?(x.kind==="day"?"ตรงยอดพิมพ์":"พร้อมบันทึก"):esc(x.msg||(x.st==="ok"?"พร้อมบันทึก":"")))+'</td></tr>'});
+  $("i-prev").innerHTML=h+'</tbody></table>'; $("i-save").disabled=false;
+}
+$("i-prev").addEventListener("change",e=>{const i=e.target.dataset&&e.target.dataset.i;if(i!=null)IMP[+i].on=e.target.checked});
+$("i-file").onchange=async e=>{const f=e.target.files[0];if(!f)return;$("i-msg").textContent="กำลังอ่านไฟล์…";
+  try{if(typeof ExcelJS==="undefined")throw new Error("โหลดตัวอ่าน Excel ไม่ได้");await readImport(f);$("i-msg").textContent="ตรวจรายการแล้วกด บันทึกที่เลือก (รายการที่ยอดไม่ตรงจะไม่ถูกติ๊กไว้ให้)"}
+  catch(err){$("i-msg").textContent="อ่านไฟล์ไม่ได้: "+(err&&err.message||"error")}e.target.value=""};
+$("i-save").onclick=async()=>{
+  const key=$("i-key").value.trim(),m=$("i-msg"); const todo=IMP.filter(x=>x.on&&x.date!==null&&(x.kind==="plan"?x.month:x.date));
+  if(!key){m.textContent="ใส่รหัสบันทึกก่อน";return} if(!todo.length){m.textContent="ยังไม่ได้เลือกรายการ";return}
+  try{localStorage.setItem("fgkey",key)}catch(e){}
+  $("i-save").disabled=true; let ok=0,bad=[];
+  for(const x of todo){
+    try{const body=x.kind==="day"?{key,date:x.date,rows:x.rows,printedTotal:x.printed}:{type:"plan",key,month:x.month,rev:x.rev,date:x.date,note:x.note,rows:x.rows};
+      const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});const j=await r.json();if(!j.ok)throw new Error(j.error||"error");ok++;x.on=false;x.msg="บันทึกแล้ว";x.st="ok"}
+    catch(e){bad.push(x.sheet+": "+(e&&e.message||"error"))}
+  }
+  await load(); drawImport();
+  m.textContent="บันทึกสำเร็จ "+ok+" รายการ"+(bad.length?" · ไม่สำเร็จ "+bad.length+" ("+bad.join("; ")+")":"");
+  $("i-save").disabled=false;
+};
+
 buildChips(); buildGrid(); buildPGrid(); calc(); render();
 let first=true;
 async function load(){
@@ -514,7 +651,7 @@ async function load(){
     render();
   }catch(e){loaded=true;$("matrix").innerHTML='<div class="empty">อ่านข้อมูลไม่ได้ ตรวจ API_URL และการ Deploy</div>'}
 }
-try{$("e-key").value=localStorage.getItem("fgkey")||"";$("p-key").value=$("e-key").value}catch(e){}
+try{$("e-key").value=localStorage.getItem("fgkey")||"";$("p-key").value=$("e-key").value;$("i-key").value=$("e-key").value}catch(e){}
 load();
 </script>
 
