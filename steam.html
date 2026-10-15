@@ -342,7 +342,7 @@ $("factor").addEventListener("input",()=>{if(!$("view-p").hidden)renderP()});
 $("pxl").onclick=async()=>{
   const b=$("pxl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),c=planCalc();
   if(!c||typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้";back();return}
-  const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("เทียบแผน"),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
+  const wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
   {const w0=wb.addWorksheet("แผนผลิต"),pv=planView(c),T=a=>a.reduce((x,y)=>x+y,0),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd};
    w0.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:15}]);
    w0.addRow(["ขอเรียนสัดส่วนสีและเบอร์รองเท้าฟองน้ำ 200 เดือน"+thM(c.m)+" ตามยอดจองของลูกค้า ("+revName(c.rev)+")"]).font={bold:true,size:13};
@@ -351,7 +351,7 @@ $("pxl").onclick=async()=>{
    pv.rows.forEach(r=>{const n=w0.rowCount+1,row=w0.addRow([r.label].concat(r.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(r.v)}]));row.eachCell((x,j)=>{x.border=B;if(j>1)x.numFmt="#,##0;-#,##0;-";if(j>1&&j<8&&r.st[j-2]==="dn")x.fill=fill("F8D7C4");if(j>1&&j<8&&r.st[j-2]==="up")x.fill=fill("FFF200")})});
    const r2=w0.rowCount,tr=w0.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?pv.tot[j-2]:T(pv.tot)}))));tr.eachCell((x,j)=>{x.font={bold:true};x.border=B;if(j>1)x.numFmt="#,##0"});
    if(c.P.note)w0.addRow(["หมายเหตุแผน: "+c.P.note]).font={italic:true,color:{argb:"FF666666"}};}
-  ws.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
+  const ws=wb.addWorksheet("เทียบแผน");ws.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
   ws.addRow(["เทียบแผนผลิตกับแผ่นยางที่จ่ายไปประกอบ รุ่น 200 (หน่วย: คู่)"]).font={bold:true,size:14};
   ws.addRow(["แผน "+thM(c.m)+" "+revName(c.rev)+" | แผ่นยางจ่ายประกอบ "+c.ds.length+" วัน | คิด "+c.f+" คู่ต่อแผ่น"]).font={bold:true,color:{argb:"FF1A56DB"}};
   const rows=POOLS.filter(p=>c.plan[p].some(x=>x)||c.sup[p].some(x=>x));
