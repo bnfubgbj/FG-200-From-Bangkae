@@ -2,6 +2,7 @@
 <html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>FG เข้าโกดังพี่ชุมพร</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <style>
 /* Concept: warehouse ledger. Calm grey-blue paper, deep teal for the one active thing, real rubber colours only as swatches. */
 :root{
@@ -57,6 +58,8 @@ th:first-child,td:first-child{text-align:left}
 thead th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--surface2);position:sticky;top:0}
 tfoot td{font-weight:600;background:var(--surface2)}
 td.zero{color:var(--muted);opacity:.55}
+td.neg{color:var(--warn)}
+td.pos{color:var(--accent)}
 td.hit{background:var(--accent-soft);font-weight:600}
 .barcell{width:34%;min-width:120px;text-align:left}
 .bar{height:10px;background:var(--bar);border-radius:3px;min-width:1px}
@@ -123,8 +126,11 @@ td.hit{background:var(--accent-soft);font-weight:600}
     <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
       <div class="kpis" id="kpis"></div>
       <section class="panel">
-        <div class="head2"><h2>รวมตามสีและเบอร์</h2>
-          <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="hide0" checked> ซ่อนแถวที่เป็น 0</label></div>
+        <div class="head2"><h2>รวมตามสีและเบอร์</h2><button class="btn" id="xl">ดาวน์โหลด Excel</button>
+          <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="hide0"> ซ่อนแถวที่เป็น 0</label></div>
+        <div class="tabs" id="views" style="align-self:flex-start;flex-wrap:wrap">
+          <button data-v="act" aria-selected="true">ผลิตจริง</button><button data-v="plan" aria-selected="false">แผนผลิต</button><button data-v="diff" aria-selected="false">จริง − แผน</button><button data-v="pct" aria-selected="false">% ของแผน</button></div>
+        <div class="note" id="plannote"></div>
         <div class="scroll" id="matrix"></div>
       </section>
       <section class="panel">
@@ -152,10 +158,17 @@ td.hit{background:var(--accent-soft);font-weight:600}
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4aryCA0j4UvW7NFGcCG2aslnaDXThjKuUxi8xnRBhtQ6VLQg/exec";
 const SIZES=["8.5","9","9.5","10","10.5","11"];
-const MAIN=["น้ำเงิน","เขียว","แดง","ดำ","เหลือง","ขาว","เทา"];
-const MIX=["ดำ/ขาว","เหลือง/แดง","เหลือง/ดำ","เขียว/แดง","แดง/เขียว","น้ำเงิน/น้ำเงิน","แดง/แดง"];
-const ALL=MAIN.concat(MIX);
+// รูปแบบตามตารางแผนผลิต: [คีย์ในชีต (หู/พื้น), ชื่อแสดง, สีพื้นแถว Excel, สีตัวอักษร]
+const TPL8=[["น้ำเงิน","สีน้ำเงิน","D6E4F5","1F4FD8"],["เขียว","สีเขียว","DDEEDD","1E7E34"],["แดง","สีแดง","F8D7DA","C62828"],["เหลือง","สีเหลือง","FFF2CC","B7791F"],["ขาว","สีขาว","F5F5F5","333333"],["ดำ","สีดำ","D9D9D9","000000"],["เทา","สีเทา","E8E8E8","666666"],["ดำ/ขาว","สีดำหน้าขาว","D9D9D9","000000"]];
+const TPLS=[["เขียว/แดง","พื้นแดง หูเขียว","F8D7DA","333333"],["แดง/เขียว","พื้นเขียว หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง","F8D7DA","333333"],["น้ำเงิน/ดำ","พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
+const MAIN=TPL8.map(r=>r[0]), MIX=TPLS.map(r=>r[0]), ALL=MAIN.concat(MIX);
+const LAB={}; TPL8.concat(TPLS).forEach(r=>LAB[r[0]]=r[1]);
+const lab=c=>LAB[c]||c;
+// แผนผลิตรายเดือน (คู่) จากไฟล์ Plan Production: ต.ค. 2569 = Detail 200_10-2026, พ.ย. 2569 = Detail 200_11-2026
+// คีย์สี = หู/พื้น เหมือนในชีต เพิ่มเดือนใหม่ได้ที่นี่
+const PLAN={"2026-10":{"น้ำเงิน":[4932,56464,89840,101244,101254,64853],"เขียว":[36,10687,21661,21697,17855,8808],"แดง":[48,7911,21800,26662,19156,11257],"เหลือง":[0,558,0,23472,27106,11290],"ขาว":[0,8691,18212,24845,31190,17537],"ดำ":[0,1996,2963,11878,8296,4784],"เทา":[0,1469,12470,31257,32692,4639],"ดำ/ขาว":[0,0,0,0,0,0],"เขียว/แดง":[0,2160,3120,7440,5400,3000],"แดง/เขียว":[0,2400,3600,7440,5400,2040],"เหลือง/แดง":[0,4200,6600,5400,2040,0],"น้ำเงิน/ดำ":[0,0,0,0,0,0],"เขียว/ดำ":[0,0,0,0,0,0],"แดง/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ(พระ)":[0,0,0,0,0,0],"ขาว/ดำ":[0,0,0,0,0,0],"เทา/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ":[0,0,0,0,0,0],"น้ำเงิน/น้ำเงิน":[0,360,3000,4800,3840,2400],"แดง/แดง":[0,0,1800,2160,2280,2400],"โกโก้ล้วน":[0,0,3000,5400,4800,2400]},"2026-11":{"น้ำเงิน":[0,6074,39512,125400,147300,93960],"เขียว":[0,11640,23400,30600,27600,10200],"แดง":[0,12000,21600,38400,36000,12600],"เหลือง":[0,0,0,0,0,0],"ขาว":[3000,13200,21000,38400,33600,22200],"ดำ":[0,0,0,40800,37500,29400],"เทา":[0,0,0,0,0,0],"ดำ/ขาว":[0,600,6600,22680,18600,8000],"เขียว/แดง":[0,0,0,0,0,0],"แดง/เขียว":[0,0,0,0,0,0],"เหลือง/แดง":[0,0,0,1200,3360,2040],"น้ำเงิน/ดำ":[0,0,0,0,0,0],"เขียว/ดำ":[0,0,0,0,0,0],"แดง/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ(พระ)":[0,0,0,0,0,0],"ขาว/ดำ":[0,0,0,0,0,0],"เทา/ดำ":[0,0,0,0,0,0],"เหลือง/ดำ":[0,1200,3000,4800,4800,1800],"น้ำเงิน/น้ำเงิน":[0,0,0,0,0,0],"แดง/แดง":[0,0,0,0,0,0],"โกโก้ล้วน":[0,0,0,0,0,0]}};
 const HEX={"น้ำเงิน":"#1f4fd8","เขียว":"#1e9e4a","แดง":"#d62828","ดำ":"#1b1b1b","เหลือง":"#f2c200","ขาว":"#f6f6f6","เทา":"#8a8f98"};
+const DOTS={"โกโก้ล้วน":"#6b4226"};
 const MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
 const WD=["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
 const $=id=>document.getElementById(id);
@@ -164,19 +177,28 @@ const thDate=iso=>{const d=new Date(iso+"T00:00:00");return WD[d.getDay()]+" "+d
 const thLong=iso=>{const d=new Date(iso+"T00:00:00");return d.getDate()+" "+MON[d.getMonth()]+" "+(d.getFullYear()+543)};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+let view="act";
+function planMonths(f,t){const out=[];if(!f||!t)return out;let [y,m]=f.slice(0,7).split("-").map(Number);const [y2,m2]=t.slice(0,7).split("-").map(Number);
+  while(y<y2||(y===y2&&m<=m2)){out.push(y+"-"+String(m).padStart(2,"0"));m++;if(m>12){m=1;y++}}return out}
+const mLabel=k=>{const p=k.split("-");return MON[+p[1]-1]+" "+(+p[0]+543)};
+function planMatrix(f,t){const pm={},have=[],miss=[];ALL.forEach(c=>pm[c]=SIZES.map(()=>0));
+  planMonths(f,t).forEach(k=>{const p=PLAN[k];if(!p){miss.push(k);return}have.push(k);ALL.forEach(c=>{const v=p[c];if(v)v.forEach((x,i)=>pm[c][i]+=x)})});
+  return {pm,have,miss}}
 let docs={};            // iso date -> {rows:{colour:[6]}, printedTotal}
 let selC=new Set(ALL), selS=new Set(SIZES);
 let db=null, loaded=false;
 
 function dotStyle(c){
+  if(DOTS[c]) return "background:"+DOTS[c];
   if(HEX[c]) return "background:"+HEX[c];
-  const p=c.split("/"); return "background:linear-gradient(90deg,"+HEX[p[0]]+" 50%,"+HEX[p[1]]+" 50%)";
+  const p=c.split("/"), g=x=>HEX[(x||"").replace("(พระ)","")]||"#999";
+  return "background:linear-gradient(90deg,"+g(p[0])+" 50%,"+g(p[1]||p[0])+" 50%)";
 }
 function buildChips(){
   const mk=(host,list,set,labelFn,dot)=>{
     $(host).innerHTML=list.map(v=>'<label class="chip'+(set.has(v)?' on':'')+'"><input type="checkbox" data-v="'+esc(v)+'"'+(set.has(v)?' checked':'')+'>'+(dot?'<span class="dot" style="'+dotStyle(v)+'"></span>':'')+esc(labelFn(v))+'</label>').join("");
   };
-  mk("chips-main",MAIN,selC,v=>v,true); mk("chips-mix",MIX,selC,v=>v,true); mk("chips-size",SIZES,selS,v=>v,false);
+  mk("chips-main",MAIN,selC,lab,true); mk("chips-mix",MIX,selC,lab,true); mk("chips-size",SIZES,selS,v=>v,false);
 }
 document.addEventListener("change",e=>{
   const t=e.target; if(!t.matches||!t.matches('.chip input')) return;
@@ -188,6 +210,7 @@ document.addEventListener("change",e=>{
 function setC(list){selC=new Set(list);buildChips();render()}
 $("c-all").onclick=()=>setC(ALL); $("c-main").onclick=()=>setC(MAIN); $("c-none").onclick=()=>setC([]);
 $("s-all").onclick=()=>{selS=new Set(SIZES);buildChips();render()}; $("s-none").onclick=()=>{selS=new Set();buildChips();render()};
+document.getElementById("views").addEventListener("click",e=>{const b=e.target.closest("button");if(b){view=b.dataset.v;render()}});
 $("hide0").onchange=render; $("from").onchange=render; $("to").onchange=render;
 const dates=()=>Object.keys(docs).sort();
 $("r-all").onclick=()=>{const d=dates(); if(d.length){$("from").value=d[0];$("to").value=d[d.length-1];render()}};
@@ -209,26 +232,40 @@ function render(){
   const colSum=SIZES.map((_,i)=>cs.reduce((a,c)=>a+mat[c][i],0));
   const grand=si.reduce((a,i)=>a+colSum[i],0);
   const perDay=ds.map(d=>si.reduce((a,i)=>a+dayTot[d][i],0));
+  const fI=$("from").value||ds[0]||"", tI=$("to").value||ds[ds.length-1]||"";
+  const PM=planMatrix(fI,tI), pm=PM.pm;
+  const planTot=cs.reduce((a,c)=>a+si.reduce((b,i)=>b+pm[c][i],0),0);
+  const planKpis=PM.have.length?('<div class="kpi"><div class="k">แผนผลิต ('+PM.have.map(mLabel).join(", ")+' ทั้งเดือน)</div><div class="v">'+planTot.toLocaleString("en-US")+'</div></div><div class="kpi"><div class="k">ผลิตจริง เทียบแผน</div><div class="v">'+(planTot?Math.round(grand/planTot*100)+"%":"–")+'</div></div>'):"";
   // KPIs
   const mx=perDay.length?Math.max(...perDay):0, mxd=perDay.length?ds[perDay.indexOf(mx)]:null;
   $("kpis").innerHTML=
    '<div class="kpi main"><div class="k">รวมที่เลือก</div><div class="v">'+grand.toLocaleString("en-US")+'</div></div>'+
    '<div class="kpi"><div class="k">จำนวนวันที่มีข้อมูล</div><div class="v">'+ds.length+'</div></div>'+
    '<div class="kpi"><div class="k">เฉลี่ยต่อวัน</div><div class="v">'+(ds.length?Math.round(grand/ds.length).toLocaleString("en-US"):"–")+'</div></div>'+
-   '<div class="kpi"><div class="k">สูงสุดใน 1 วัน</div><div class="v">'+(mxd?mx.toLocaleString("en-US"):"–")+'</div><div class="k">'+(mxd?thLong(mxd):"")+'</div></div>';
+   '<div class="kpi"><div class="k">สูงสุดใน 1 วัน</div><div class="v">'+(mxd?mx.toLocaleString("en-US"):"–")+'</div><div class="k">'+(mxd?thLong(mxd):"")+'</div></div>'+planKpis;
   // matrix
   const hide=$("hide0").checked;
-  const rows=cs.filter(c=>!hide||si.some(i=>mat[c][i]>0));
+  document.querySelectorAll("#views button").forEach(x=>x.setAttribute("aria-selected",x.dataset.v===view));
+  $("plannote").textContent=view==="act"?"":(PM.have.length?("แผนที่ใช้: "+PM.have.map(mLabel).join(", ")+" (ทั้งเดือน) · ผลิตจริงนับเฉพาะวันที่ในช่วงที่เลือก"+(PM.miss.length?" · ยังไม่มีแผน "+PM.miss.map(mLabel).join(", "):"")):"");
   if(!loaded){ $("matrix").innerHTML='<div class="empty">กำลังโหลดข้อมูล…</div>'; $("daily").innerHTML=""; return }
-  if(!ds.length||!si.length||!rows.length){
-    const why=!Object.keys(docs).length?"ยังไม่มีข้อมูลในระบบ ไปที่แท็บ เพิ่ม / แก้ไขรายวัน":!ds.length?"ไม่มีข้อมูลในช่วงวันที่นี้":!si.length?"เลือกเบอร์อย่างน้อย 1 เบอร์":"ไม่มียอดในสีและเบอร์ที่เลือก";
+  const rows=cs.filter(c=>!hide||si.some(i=>mat[c][i]>0||(view!=="act"&&pm[c][i]>0)));
+  const V=(c,i)=>view==="act"?mat[c][i]:view==="plan"?pm[c][i]:view==="diff"?mat[c][i]-pm[c][i]:null;
+  const cellTxt=(a,p,k)=>k==="pct"?(p?Math.round(a/p*100)+"%":"–"):k==="diff"?(a>0?"+"+a.toLocaleString("en-US"):a<0?a.toLocaleString("en-US"):"–"):fmt(a);
+  const cellCls=(a,p,k)=>k==="diff"?(a<0?"neg":a>0?"pos":"zero"):((k==="pct"?(p?a:0):a)?"":"zero");
+  const cellOf=(c,i)=>{const a=mat[c][i],p=pm[c][i],v=view==="pct"?a:V(c,i);return [cellTxt(view==="pct"?a:v,p,view),cellCls(view==="pct"?a:v,p,view)]};
+  if(!ds.length||!si.length||!rows.length||(view!=="act"&&!PM.have.length)){
+    const why=!Object.keys(docs).length?"ยังไม่มีข้อมูลในระบบ ไปที่แท็บ เพิ่ม / แก้ไขรายวัน":!ds.length?"ไม่มีข้อมูลในช่วงวันที่นี้":!si.length?"เลือกเบอร์อย่างน้อย 1 เบอร์":(view!=="act"&&!PM.have.length)?"ยังไม่มีแผนผลิตของช่วงเวลานี้ในแอป":"ไม่มียอดในสีและเบอร์ที่เลือก";
     $("matrix").innerHTML='<div class="empty">'+why+'</div>';
   } else {
+    const rowT=c=>{const a=si.reduce((q,i)=>q+mat[c][i],0),p=si.reduce((q,i)=>q+pm[c][i],0);return [cellTxt(view==="act"?a:view==="plan"?p:view==="diff"?a-p:a,p,view),cellCls(view==="act"?a:view==="plan"?p:view==="diff"?a-p:a,p,view)]};
     let h='<table><thead><tr><th>สี</th>'+si.map(i=>'<th>'+SIZES[i]+'</th>').join("")+'<th>รวม</th></tr></thead><tbody>';
-    rows.forEach(c=>{const t=si.reduce((a,i)=>a+mat[c][i],0);
-      h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(c)+'</td>'+
-        si.map(i=>'<td class="'+(mat[c][i]?'':'zero')+'">'+fmt(mat[c][i])+'</td>').join("")+'<td><b>'+fmt(t)+'</b></td></tr>'});
-    h+='</tbody><tfoot><tr><td>รวม</td>'+si.map(i=>'<td>'+fmt(rows.reduce((a,c)=>a+mat[c][i],0))+'</td>').join("")+'<td>'+fmt(rows.reduce((a,c)=>a+si.reduce((b,i)=>b+mat[c][i],0),0))+'</td></tr></tfoot></table>';
+    rows.forEach(c=>{const t=rowT(c);
+      h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(lab(c))+'</td>'+
+        si.map(i=>{const q=cellOf(c,i);return '<td class="'+q[1]+'">'+q[0]+'</td>'}).join("")+'<td class="'+t[1]+'"><b>'+t[0]+'</b></td></tr>'});
+    const colA=i=>rows.reduce((a,c)=>a+mat[c][i],0), colP=i=>rows.reduce((a,c)=>a+pm[c][i],0);
+    const tot=(a,p)=>view==="act"?fmt(a):view==="plan"?fmt(p):view==="diff"?cellTxt(a-p,p,"diff"):cellTxt(a,p,"pct");
+    const gA=si.reduce((a,i)=>a+colA(i),0), gP=si.reduce((a,i)=>a+colP(i),0);
+    h+='</tbody><tfoot><tr><td>รวม</td>'+si.map(i=>'<td>'+tot(colA(i),colP(i))+'</td>').join("")+'<td>'+tot(gA,gP)+'</td></tr></tfoot></table>';
     $("matrix").innerHTML=h;
   }
   // daily
@@ -240,15 +277,90 @@ function render(){
   } else $("daily").innerHTML='<div class="empty">—</div>';
   const all=dates();
   $("status").textContent=all.length?("ข้อมูลในระบบ "+all.length+" วัน ตั้งแต่ "+thLong(all[0])+" ถึง "+thLong(all[all.length-1])+" · วันที่โรงงานหยุดจะไม่มีข้อมูล"):"";
+  window.__x={ds,rows,si,mat,dayTot,perDay,colSum,grand,pm,PM,fI,tI};
   window.__tsv=(function(){const L=[["วันที่"].concat(si.map(i=>SIZES[i]),["รวม"]).join("\t")];ds.forEach((d,k)=>L.push([thLong(d)].concat(si.map(i=>dayTot[d][i]),[perDay[k]]).join("\t")));L.push(["รวม"].concat(si.map(i=>colSum[i]),[grand]).join("\t"));return L.join("\n")})();
 }
 $("copy").onclick=async()=>{const b=$("copy");try{await navigator.clipboard.writeText(window.__tsv||"");b.textContent="คัดลอกแล้ว"}catch(e){b.textContent="คัดลอกไม่ได้ ลองลากเลือกตารางเอง"}setTimeout(()=>b.textContent="คัดลอกตาราง (วางใน Excel)",2200)};
 
+/* ---------- export ---------- */
+$("xl").onclick=async()=>{
+  const x=window.__x, b=$("xl"), back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500);
+  if(typeof ExcelJS==="undefined"){b.textContent="โหลดตัวสร้าง Excel ไม่ได้";back();return}
+  if(!x||!x.ds.length){b.textContent="ไม่มีข้อมูลให้ดาวน์โหลด";back();return}
+  b.disabled=true;
+  try{
+    const f=x.fI||x.ds[0], t=x.tI||x.ds[x.ds.length-1], pm=x.pm, hasPlan=x.PM.have.length>0;
+    const allC=ALL.every(c=>selC.has(c)), allS=SIZES.every(s=>selS.has(s));
+    const cTxt=allC?"ทุกสี":ALL.filter(c=>selC.has(c)).map(lab).join(", ")||"(ไม่ได้เลือก)";
+    const sTxt=allS?"ทุกเบอร์":SIZES.filter(s=>selS.has(s)).join(", ")||"(ไม่ได้เลือก)";
+    const planTxt=hasPlan?("แผนผลิต: "+x.PM.have.map(mLabel).join(", ")+" (ทั้งเดือน)"):"ไม่มีแผนของช่วงเวลานี้";
+    const wb=new ExcelJS.Workbook();
+    const thin={style:"thin",color:{argb:"FFD0D0D0"}}, bd={top:thin,left:thin,bottom:thin,right:thin};
+    const fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+c}});
+    const sel=c=>selC.has(c);
+    const A=(c,i)=>(sel(c)&&x.si.includes(i))?x.mat[c][i]:0;
+    const P=(c,i)=>(sel(c)&&x.si.includes(i))?pm[c][i]:0;
+    const sum=(fn,c)=>SIZES.reduce((q,s,i)=>q+fn(c,i),0);
+    // kind: act | plan | diff | pct
+    const mk=(name,title,kind)=>{
+      const ws=wb.addWorksheet(name); ws.columns=[{width:30}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
+      const fmtN=kind==="pct"?"0%":kind==="diff"?"+#,##0;-#,##0;0":"#,##0";
+      const cell=(c,i)=>kind==="act"?A(c,i):kind==="plan"?P(c,i):kind==="diff"?A(c,i)-P(c,i):(P(c,i)?A(c,i)/P(c,i):null);
+      const tot=c=>{const a=sum(A,c),p=sum(P,c);return kind==="act"?a:kind==="plan"?p:kind==="diff"?a-p:(p?a/p:null)};
+      ws.getCell("A1").value=title; ws.getCell("A1").font={bold:true,size:14};
+      ws.getCell("A2").value="สีที่เลือก: "+cTxt+"   |   เบอร์ที่เลือก: "+sTxt; ws.getCell("A2").font={bold:true,size:11,color:{argb:"FF1A56DB"}};
+      ws.getCell("A3").value="ผลิตจริงช่วงเวลา: "+thLong(f)+" ถึง "+thLong(t)+"  (มีข้อมูล "+x.ds.length+" วัน)"+(kind==="act"?"":"   |   "+planTxt); ws.getCell("A3").font={bold:true,size:11,color:{argb:"FF1A56DB"}};
+      const hdr=r=>{const row=ws.getRow(r); ["สี"].concat(SIZES,["รวม"]).forEach((v,j)=>{const c=row.getCell(j+1);c.value=v;c.font={bold:true,color:{argb:"FFFFFFFF"}};c.alignment={horizontal:"center"};c.fill=fill(j===7?"0D3B9E":"1A56DB");c.border=bd})};
+      const sec=(r,txt)=>{const c=ws.getCell("A"+r);c.value=txt;c.font={bold:true,size:12,color:{argb:"FF1A56DB"}}};
+      const body=(r0,list)=>list.forEach((d,k)=>{
+        const r=r0+k,row=ws.getRow(r),c0=row.getCell(1);
+        c0.value=d[1];c0.font={bold:true,color:{argb:"FF"+d[3]}};c0.fill=fill(d[2]);c0.border=bd;
+        SIZES.forEach((s,i)=>{const c=row.getCell(i+2),v=cell(d[0],i);c.value=v;c.numFmt=fmtN;c.fill=fill(d[2]);c.border=bd;c.alignment={horizontal:"right"}});
+        const tc=row.getCell(8);
+        tc.value=(kind==="act"||kind==="plan")?{formula:"SUM(B"+r+":G"+r+")",result:tot(d[0])}:tot(d[0]);
+        tc.numFmt=fmtN;tc.font={bold:true,color:{argb:"FF"+d[3]}};tc.fill=fill("EEF2FF");tc.border=bd;tc.alignment={horizontal:"right"};
+        if(kind==="diff"||kind==="pct")[...Array(7)].forEach((_,j)=>{const c=row.getCell(j+2),v=c.value;if(typeof v==="number"&&(kind==="diff"?v<0:v<1&&v>0&&false))c.font={color:{argb:"FFB45309"},bold:j===6}});
+      });
+      sec(4,"8 สีหลัก"); hdr(5); body(6,TPL8);
+      sec(15,"สีพิเศษ (Export เท่านั้น)"); hdr(16); body(17,TPLS);
+      const all=TPL8.concat(TPLS), tr=ws.getRow(31); tr.getCell(1).value="รวมทั้งหมด";
+      for(let j=2;j<=8;j++){const L=String.fromCharCode(64+j),c=tr.getCell(j);
+        const ca=all.reduce((q,d)=>q+(j<8?A(d[0],j-2):sum(A,d[0])),0), cp=all.reduce((q,d)=>q+(j<8?P(d[0],j-2):sum(P,d[0])),0);
+        if(kind==="act"||kind==="plan") c.value={formula:"SUM("+L+"6:"+L+"13)+SUM("+L+"17:"+L+"29)",result:kind==="act"?ca:cp};
+        else c.value=kind==="diff"?ca-cp:(cp?ca/cp:null);
+        c.numFmt=fmtN}
+      tr.eachCell(c=>{c.font={bold:true};c.fill=fill("DCE6FA");c.border=bd});
+      return ws;
+    };
+    mk("รายงาน","รายงานรองเท้าฟองน้ำรุ่น 200 เข้าโกดังพี่ชุมพร: ผลิตจริง (หน่วย: คู่)","act");
+    if(hasPlan){
+      mk("แผนผลิต","รายงานรองเท้าฟองน้ำรุ่น 200: แผนผลิต (หน่วย: คู่)","plan");
+      mk("จริง-แผน","รายงานรองเท้าฟองน้ำรุ่น 200: ผลิตจริง − แผน (คู่) ค่าลบ = ยังผลิตไม่ถึงแผน","diff");
+      mk("% ของแผน","รายงานรองเท้าฟองน้ำรุ่น 200: ผลิตจริง เทียบแผน (%)","pct");
+    }
+    // รายวัน
+    const w2=wb.addWorksheet("รายวัน"); w2.columns=[{width:16}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
+    w2.addRow(["วันที่"].concat(SIZES,["รวม"])).font={bold:true};
+    x.ds.forEach(d=>{const r=w2.rowCount+1; w2.addRow([d].concat(SIZES.map((s,i)=>x.si.includes(i)?x.dayTot[d][i]:0),[{formula:"SUM(B"+r+":G"+r+")"}]))});
+    const n=w2.rowCount; w2.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+"2:"+String.fromCharCode(64+j)+n+")"})))).font={bold:true};
+    w2.eachRow(r=>r.eachCell((c,j)=>{if(j>1)c.numFmt="#,##0"}));
+    const w3=wb.addWorksheet("รายวัน-สี-เบอร์"); w3.columns=[{width:14},{width:30}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
+    w3.addRow(["วันที่","สี"].concat(SIZES,["รวม"])).font={bold:true};
+    x.ds.forEach(d=>ALL.filter(sel).forEach(c=>{const v=(docs[d].rows||{})[c]; if(!v) return; const vals=SIZES.map((s,i)=>x.si.includes(i)?(v[i]||0):0), s=vals.reduce((q,z)=>q+z,0); if(s){const r=w3.rowCount+1; w3.addRow([d,lab(c)].concat(vals,[{formula:"SUM(C"+r+":H"+r+")",result:s}]))}}));
+    w3.eachRow(r=>r.eachCell((c,j)=>{if(j>2)c.numFmt="#,##0"}));
+    const buf=await wb.xlsx.writeBuffer();
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+    a.download="FG200_"+f+"_ถึง_"+t+".xlsx"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    b.textContent="ดาวน์โหลดแล้ว";
+  }catch(e){b.textContent="สร้างไฟล์ไม่สำเร็จ";console.error(e)}
+  b.disabled=false; back();
+};
+
 /* ---------- entry tab ---------- */
 function buildGrid(){
   let h='<table><thead><tr><th>สี</th>'+SIZES.map(s=>'<th>'+s+'</th>').join("")+'<th>รวม</th></tr></thead><tbody>';
-  ALL.forEach((c,r)=>{h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(c)+'</td>'+
-    SIZES.map((s,i)=>'<td><input type="number" min="0" step="1" id="g-'+r+'-'+i+'" aria-label="'+esc(c)+' เบอร์ '+s+'"></td>').join("")+'<td id="gt-'+r+'">–</td></tr>'});
+  ALL.forEach((c,r)=>{h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(lab(c))+'</td>'+
+    SIZES.map((s,i)=>'<td><input type="number" min="0" step="1" id="g-'+r+'-'+i+'" aria-label="'+esc(lab(c))+' เบอร์ '+s+'"></td>').join("")+'<td id="gt-'+r+'">–</td></tr>'});
   h+='</tbody><tfoot><tr><td>รวม</td>'+SIZES.map((s,i)=>'<td id="gc-'+i+'">–</td>').join("")+'<td id="gg">–</td></tr></tfoot></table>';
   $("e-grid").innerHTML=h;
   $("e-grid").addEventListener("input",calc);
