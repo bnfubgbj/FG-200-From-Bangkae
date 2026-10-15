@@ -92,7 +92,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <header>
     <div>
       <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 19:20 (ช่องรวมต่อสีย้ายไปท้ายตารางโควต้า) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 19:35 (ช่องโควต้ามีลูกน้ำ · รวมต่อสีอยู่ท้ายตาราง) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
@@ -620,15 +620,18 @@ $("e-fsave").onclick=async()=>{
 };
 function buildGrid(){
   let h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวมต่อสี</th><th>เป้าสต็อกสิ้นเดือน</th></tr></thead><tbody>";
-  SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+'</td>'+SIZES.map((z,j)=>'<td><input type="number" min="0" id="q-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="number" min="0" id="q-t-'+i+'" style="width:96px"></td><td><input type="number" min="0" id="q-g-'+i+'" style="width:96px"></td></tr>'});
+  SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+'</td>'+SIZES.map((z,j)=>'<td><input type="text" inputmode="numeric" autocomplete="off" id="q-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="text" inputmode="numeric" autocomplete="off" id="q-t-'+i+'" style="width:96px"></td><td><input type="text" inputmode="numeric" autocomplete="off" id="q-g-'+i+'" style="width:96px"></td></tr>'});
   $("e-grid").innerHTML=h+"</tbody></table>";
 }
-const gv=id=>nn($(id).value);
+const fc=v=>v===""||v==null?"":Number(v).toLocaleString("en-US");
+const setQ=(id,v)=>{$(id).value=v==null||v===""?"":fc(v)};
+const gv=id=>nn(($(id).value||"").replace(/,/g,"").trim());
+$("e-grid").addEventListener("input",e=>{const t=e.target;if(!t||!/^q-/.test(t.id))return;const d=t.value.replace(/[^0-9]/g,"");const f=d?Number(d).toLocaleString("en-US"):"";if(f!==t.value)t.value=f});
 function qIn(){const q={};SC.forEach((c,i)=>{q[c]={total:gv("q-t-"+i)||0,sizes:SIZES.map((z,j)=>gv("q-s-"+i+"-"+j)),target:gv("q-g-"+i)||0}});return q}
 function fillGrid(d){
   const Q=stkGet("quota",d),G=stkGet("target",d);
   SC.forEach((c,i)=>{const a=Q[c]||[null,null,null,null,null,null,null],g=G[c]||[];
-    $("q-t-"+i).value=a[6]==null?"":a[6];SIZES.forEach((z,j)=>$("q-s-"+i+"-"+j).value=a[j]==null?"":a[j]);$("q-g-"+i).value=g[6]==null?"":g[6]});
+    setQ("q-t-"+i,a[6]);SIZES.forEach((z,j)=>setQ("q-s-"+i+"-"+j,a[j]));setQ("q-g-"+i,g[6])});
 }
 $("e-qsave").onclick=async()=>{
   const key=$("e-key").value.trim(),d=$("e-qdate").value,q=qIn();if(!d){eMsg("เลือกวันที่ของโควต้า","warn");return}
@@ -674,7 +677,7 @@ function parseQuota(text){
 function applyQuota(text){
   const r=parseQuota(text),got=Object.keys(r.vals);
   if(!got.length){$("e-pmsg").style.color="var(--warn)";$("e-pmsg").textContent="อ่านตารางไม่ได้ — ต้องมีชื่อสี (น้ำเงิน เขียว แดง …) ตามด้วยตัวเลข 6 ช่อง (เบอร์ 8.5–11)";return}
-  SC.forEach((c,i)=>{const v=r.vals[c];if(!v)return;SIZES.forEach((z,j)=>$("q-s-"+i+"-"+j).value=v[j]||"");$("q-t-"+i).value=v.reduce((a,b)=>a+b,0)});
+  SC.forEach((c,i)=>{const v=r.vals[c];if(!v)return;SIZES.forEach((z,j)=>setQ("q-s-"+i+"-"+j,v[j]||""));setQ("q-t-"+i,v.reduce((a,b)=>a+b,0))});
   const sum=got.reduce((a,c)=>a+r.vals[c].reduce((x,y)=>x+y,0),0),miss=SC.filter(c=>!r.vals[c]);
   if(r.tot&&r.tot.length>=6){SIZES.forEach((z,j)=>{const cs=got.reduce((a,c)=>a+r.vals[c][j],0);if(Math.abs(cs-r.tot[j])>10)r.warn.push("เบอร์ "+z+": รวมที่อ่านได้ "+fmt(cs)+" ไม่ตรงแถว 'รวม' "+fmt(r.tot[j]))})}
   if(r.date)$("e-qdate").value=r.date;
