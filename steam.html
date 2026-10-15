@@ -137,6 +137,7 @@ td.hit{background:var(--accent-soft);font-weight:600}
       <div id="p-note" class="note"></div>
     </div>
     <div class="kpis" id="p-kpis"></div>
+    <div class="panel"><h2>แผนผลิตแยกตามสีและเบอร์ (หน่วย: คู่)</h2><div class="scroll" id="p-plan"></div></div>
     <div class="panel"><h2>สรุปตามกลุ่มแผ่นยาง (หน่วย: คู่)</h2><div class="scroll" id="p-sum"></div><div class="note" id="p-foot"></div></div>
     <div class="panel"><h2>ส่วนต่างรายเบอร์ (ได้จากแผ่น − แผน) ค่าลบ = แผ่นยางยังไม่พอ</h2><div class="scroll" id="p-diff"></div></div>
   </div>
@@ -290,6 +291,14 @@ function planCalc(){
   ds.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!p)return;DATA[d][k].forEach((x,i)=>sup[p][i]+=x*f)}));
   return {m,rev,P,plan,sup,ds,f};
 }
+const PROWS=[["น้ำเงิน","สีน้ำเงิน","#1f4fd8"],["เขียว","สีเขียว","#1e7e34"],["แดง","สีแดง","#c62828"],["เหลือง","สีเหลือง","#e6b800"],["ขาว","สีขาว","#ffffff"],["ดำ","สีดำ","#111111"],["เทา","สีเทา","#8a8a8a"],["ดำ/ขาว","สีดำหน้าขาว","#555555"],["เขียว/แดง","พื้นแดง หูเขียว","#2e9e4f"],["แดง/เขียว","พื้นเขียว หูแดง","#d84a4a"],["เหลือง/แดง","พื้นแดง หูเหลือง","#e6b800"],["น้ำเงิน/ดำ","พื้นดำ หูน้ำเงิน","#1f4fd8"],["เขียว/ดำ","พื้นดำ หูเขียว","#1e7e34"],["แดง/ดำ","พื้นดำ หูแดง","#c62828"],["เหลือง/ดำ(พระ)","พื้นดำ หูเหลือง(พระ)","#e6b800"],["เหลือง/ดำ","พื้นดำ หูเหลือง(โควิด)","#f2c200"],["ขาว/ดำ","พื้นดำ หูขาว","#ffffff"],["เทา/ดำ","พื้นดำ หูเทา","#8a8a8a"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","#3b6ae0"],["แดง/แดง","แดงล้วน","#e04b4b"],["โกโก้ล้วน","น้ำตาลล้วน","#8b5a3c"]];
+function drawPlanTable(c){
+  const cols=c.P.colors, used=PROWS.filter(r=>cols[r[0]]&&cols[r[0]].some(x=>x)), extra=Object.keys(cols).filter(k=>!PROWS.some(r=>r[0]===k)&&cols[k].some(x=>x)).map(k=>[k,k,"#999"]);
+  const list=used.concat(extra); let col=Array(6).fill(0);
+  let h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+  list.forEach(r=>{const v=cols[r[0]];h+='<tr><td><span class="dot" style="background:'+r[2]+';display:inline-block;margin-right:8px"></span>'+r[1]+"</td>"+v.map((x,i)=>{col[i]+=x;return '<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"–")+"</td>"}).join("")+"<td><b>"+fmt(v.reduce((a,b)=>a+b,0))+"</b></td></tr>"});
+  $("p-plan").innerHTML=list.length?h+"</tbody><tfoot><tr><td>รวม</td>"+col.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(col.reduce((a,b)=>a+b,0))+"</td></tr></tfoot></table>":'<div class="empty">ไม่มีข้อมูลแผน</div>';
+}
 function renderP(){
   const months=Object.keys(PL).sort(), sm=$("p-month"), sr=$("p-rev");
   if(!months.length){$("p-note").textContent="ยังไม่มีแผนผลิต";return}
@@ -300,6 +309,7 @@ function renderP(){
   const T=a=>a.reduce((x,y)=>x+y,0), tp=POOLS.reduce((q,p)=>q+T(c.plan[p]),0), ts=POOLS.reduce((q,p)=>q+T(c.sup[p]),0);
   $("p-note").innerHTML="แผน: "+revName(c.rev)+(c.P.date?" (แจ้ง "+thD(c.P.date)+")":"")+(c.P.note?" · "+c.P.note:"")+"<br>แผ่นยางที่จ่ายประกอบใน "+thM(c.m)+": "+(c.ds.length?c.ds.length+" วัน (ถึง "+thD(c.ds[c.ds.length-1])+")":"ยังไม่มีข้อมูล")+" · คิด "+c.f+" คู่ต่อแผ่น";
   $("p-kpis").innerHTML='<div class="kpi"><div class="k">แผนผลิต (คู่)</div><div class="v">'+fmt(tp)+'</div></div><div class="kpi main"><div class="k">ได้จากแผ่นที่จ่ายประกอบ (คู่)</div><div class="v">'+fmt(ts)+'</div></div><div class="kpi"><div class="k">ส่วนต่าง</div><div class="v">'+(ts-tp>=0?"+":"")+fmt(ts-tp)+'</div></div><div class="kpi"><div class="k">เทียบแผน</div><div class="v">'+(tp?Math.round(ts/tp*100):0)+'%</div></div>';
+  drawPlanTable(c);
   const rows=POOLS.filter(p=>T(c.plan[p])||T(c.sup[p]));
   let h='<table><thead><tr><th>กลุ่มแผ่นยาง</th><th>แผน</th><th>ได้จากแผ่น</th><th>ส่วนต่าง</th><th>%</th></tr></thead><tbody>';
   rows.forEach(p=>{const a=T(c.plan[p]),b=T(c.sup[p]);h+="<tr><td>"+POOLN[p]+"</td><td>"+fmt(a)+"</td><td>"+fmt(b)+'</td><td class="'+(b-a<0?"neg":"pos")+'">'+(b-a>=0?"+":"")+fmt(b-a)+"</td><td>"+(a?Math.round(b/a*100)+"%":"–")+"</td></tr>"});
