@@ -92,7 +92,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <header>
     <div>
       <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 17:50 (ประเมินสต็อก 4 ตาราง สี×เบอร์ รายเดือน/สัปดาห์/วัน) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 18:05 (ช่องนำเข้าสต็อก/โควต้าอยู่บนสุด) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
@@ -159,11 +159,6 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <div id="view-e" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="panel">
       <div class="head2"><h2>ประเมินสต็อกคงเหลือ</h2><input type="password" id="e-key" placeholder="รหัสบันทึก" style="max-width:170px" autocomplete="off" aria-label="รหัสบันทึก"></div>
-      <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
-        <div><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div>
-        <div><span class="lbl">คิดถึงวันที่</span><input type="date" id="e-end"></div>
-      </div>
-      <div class="note" id="e-status"></div>
     </div>
     <details class="dbox" id="e-d1" open><summary>นำเข้าสต็อกจริงจาก รง.</summary><div class="dbody">
       <div class="note">เลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
@@ -184,6 +179,13 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
         <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
       </div>
     </div></details>
+    <div class="panel">
+      <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
+        <div><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div>
+        <div><span class="lbl">คิดถึงวันที่</span><input type="date" id="e-end"></div>
+      </div>
+      <div class="note" id="e-status"></div>
+    </div>
     <div id="e-warn" class="msg warn" hidden></div>
     <div class="kpis" id="e-kpis"></div>
     <div class="panel" id="e-res-m">
