@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>คาดการณ์จากยอดนึ่งยาง</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+/* Concept: warehouse ledger. Calm grey-blue paper, deep teal for the one active thing, real rubber colours only as swatches. */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --surface2:#f6f8f9; --line:#d9e0e4; --ink:#14212b; --muted:#5d6e7a;
+  --accent:#0b6b6b; --accent-ink:#ffffff; --accent-soft:#d8eeee; --warn:#a14b00; --warn-soft:#fbe9d6;
+  --bar:#7fb7b7;
+  --f-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif; --f-head:"Prompt","IBM Plex Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
+  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
+  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; color-scheme:dark}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px}
+h1{font:600 24px/1.2 var(--f-head);margin:0}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+.tabs button{font:500 14px var(--f-body);border:0;background:none;color:var(--muted);padding:7px 14px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible,input:focus-visible,.chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.field label,.lbl{font:600 12px var(--f-body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:6px}
+.dates{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type=date],input[type=number],input[type=month],input[type=text],input[type=password],select{width:100%;font:15px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:7px 9px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.mini{font:500 12.5px var(--f-body);border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer}
+.mini:hover{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface2);border-radius:8px;padding:5px 9px;font-size:14px;cursor:pointer;user-select:none}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chip.on{border-color:var(--accent);background:var(--accent-soft)}
+.dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(128,128,128,.55);flex:none}
+.grp{font-size:12px;color:var(--muted);margin:2px 0 6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font:600 26px/1.2 var(--f-head);font-variant-numeric:tabular-nums}
+.kpi.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.kpi.main .k{color:inherit;opacity:.85}
+h2{font:600 16px var(--f-head);margin:0}
+.head2{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--surface2);position:sticky;top:0}
+tfoot td{font-weight:600;background:var(--surface2)}
+td.zero{color:var(--muted);opacity:.55}
+td.neg{color:var(--warn)}
+td.pos{color:var(--accent)}
+td.hit{background:var(--accent-soft);font-weight:600}
+.barcell{width:34%;min-width:120px;text-align:left}
+.bar{height:10px;background:var(--bar);border-radius:3px;min-width:1px}
+.note{font-size:13px;color:var(--muted)}
+.empty{padding:28px 12px;text-align:center;color:var(--muted)}
+.btn{font:500 14px var(--f-body);border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn.ghost{background:none;color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{font-size:13.5px;padding:8px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--line)}
+.msg.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.msg.ok{background:var(--accent-soft);color:var(--ink);border-color:transparent}
+.entry input[type=number]{width:84px;text-align:right;padding:5px 7px}
+.entry td,.entry th{padding:4px 6px}
+.field .chip{display:inline-flex;text-transform:none;font:400 14px var(--f-body);letter-spacing:0;margin:0;color:var(--ink)}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>คาดการณ์จากยอดนึ่งยาง</h1>
+      <div class="sub">แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
+      <button role="tab" id="tab-i" aria-selected="false">นำเข้าไฟล์นึ่งยาง</button>
+    </div>
+  </header>
+
+  <div id="view-q" class="layout">
+    <aside class="panel">
+      <div class="field">
+        <span class="lbl">ช่วงวันที่จ่ายไปประกอบ</span>
+        <div class="dates"><input type="date" id="from" aria-label="ตั้งแต่วันที่"><input type="date" id="to" aria-label="ถึงวันที่"></div>
+        <div class="row" style="margin-top:8px" id="quick"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">จำนวนคู่ต่อยาง 1 แผ่น</span>
+        <input type="number" id="factor" value="2" min="0.1" step="0.01">
+        <div class="note" style="margin-top:4px">ใส่ต่ำกว่า 2 ถ้าอยากหักของเสีย เช่น 1.95</div>
+      </div>
+      <div class="field">
+        <span class="lbl">สี</span>
+        <div class="row" style="margin-bottom:6px"><button class="mini" id="c-all">ทุกสี</button><button class="mini" id="c-none">ล้าง</button></div>
+        <div class="chips" id="colors"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">เบอร์</span>
+        <div class="row" style="margin-bottom:6px"><button class="mini" id="s-all">ทุกเบอร์</button><button class="mini" id="s-none">ล้าง</button></div>
+        <div class="chips" id="sizes"></div>
+      </div>
+    </aside>
+    <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div id="status" class="msg" hidden></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="panel">
+        <div class="head2"><h2>รวมตามสีและเบอร์</h2>
+          <div class="row"><div class="tabs" id="unit"><button data-u="pair" aria-selected="true">คู่ (คาดการณ์)</button><button data-u="sheet" aria-selected="false">แผ่นยาง</button></div>
+          <button class="btn" id="xl">ดาวน์โหลด Excel</button></div></div>
+        <div id="gaps" class="note"></div>
+        <div class="scroll" id="matrix"></div>
+      </div>
+      <div class="panel">
+        <h2>รายวัน</h2>
+        <div class="scroll" id="daily"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="view-i" hidden class="panel">
+    <h2>นำเข้าไฟล์นึ่งยางจากฝ่ายวางแผน</h2>
+    <div class="note">เลือกไฟล์ Excel "ยอดนึ่งรองเท้าฟองน้ำ ประจำวัน" ได้ทีละหลายไฟล์ (1 ไฟล์ = 1 วัน ใช้ไฟล์ตามเดิมได้เลย ไม่ต้องแก้) แอปอ่านวันที่จ่ายไปประกอบจากช่อง C2 และตรวจยอดรวมให้</div>
+    <div class="row"><input type="file" id="i-file" accept=".xlsx" multiple></div>
+    <div id="i-prev" class="scroll"></div>
+    <div class="row" style="align-items:center"><input type="password" id="i-key" placeholder="รหัสบันทึก" style="max-width:200px" autocomplete="off"><button class="btn" id="i-save" disabled>บันทึกที่เลือก</button></div>
+    <div id="i-msg" class="msg" hidden></div>
+  </div>
+</div>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4aryCA0j4UvW7NFGcCG2aslnaDXThjKuUxi8xnRBhtQ6VLQg/exec";
+const $=id=>document.getElementById(id), SIZES=["8.5","9","9.5","10","10.5","11"], MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const COLORS=[["น้ำเงิน","#1f4fd8"],["เขียว","#1e7e34"],["แดง","#c62828"],["เหลือง","#e6b800"],["ขาว","#ffffff"],["ดำล้วน","#111111"],["เทา","#8a8a8a"],["Xmax หูเขียว","#2e9e4f"],["Xmax หูแดง","#d84a4a"],["โควิด หูเหลือง","#f2c200"],["น้ำเงินล้วน","#3b6ae0"],["แดงล้วน","#e04b4b"],["โกโก้ล้วน","#8b5a3c"]];
+const CKEYS=COLORS.map(c=>c[0]), HEX=Object.fromEntries(COLORS);
+const p2=n=>String(n).padStart(2,"0"), fmt=n=>Math.round(n).toLocaleString("en-US");
+const ymd=s=>s.replace(/-/g,"/"); const thD=s=>{const[y,m,d]=s.split("-");return +d+" "+MON[+m-1]+" "+(+y+543)};
+const thM=s=>{const[y,m]=s.split("-");return MON[+m-1]+" "+(+y+543)};
+const normD=v=>{if(v==null)return"";if(typeof v==="string"&&/^\d{4}-\d{2}-\d{2}/.test(v))return v.slice(0,10);const t=new Date(v);return isNaN(t)?"":t.getFullYear()+"-"+p2(t.getMonth()+1)+"-"+p2(t.getDate())};
+let DATA={}, selC=new Set(CKEYS), selS=new Set(SIZES), unit="pair", cur=null;   // DATA[date]={color:[6],_s:steamnote}
+function load(){
+  $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
+  return fetch(API_URL).then(r=>r.json()).then(j=>{
+    DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
+    $("status").hidden=true;init();render();
+  }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
+}
+const dates=()=>Object.keys(DATA).sort();
+function init(){
+  const ds=dates(); if(!ds.length){$("status").hidden=false;$("status").className="msg warn";$("status").textContent="ยังไม่มีข้อมูล ไปที่แท็บ 'นำเข้าไฟล์นึ่งยาง'";return}
+  if(!$("from").value){$("from").value=ds[0];$("to").value=ds[ds.length-1]}
+  const months=[...new Set(ds.map(d=>d.slice(0,7)))];
+  $("quick").innerHTML="";
+  months.forEach(m=>{const b=document.createElement("button");b.className="mini";b.textContent="ทั้งเดือน "+thM(m);b.onclick=()=>{const l=new Date(+m.slice(0,4),+m.slice(5),0).getDate();$("from").value=m+"-01";$("to").value=m+"-"+p2(l);render()};$("quick").appendChild(b)});
+  const b=document.createElement("button");b.className="mini";b.textContent="ทั้งหมด";b.onclick=()=>{$("from").value=ds[0];$("to").value=ds[ds.length-1];render()};$("quick").appendChild(b);
+  const used=new Set();ds.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k!=="_s")used.add(k)}));
+  const all=[...CKEYS,...[...used].filter(k=>!CKEYS.includes(k))];
+  $("colors").innerHTML="";all.forEach(k=>{if(!selC.has(k)&&!window._ci)selC.add(k);const l=document.createElement("label");l.className="chip";l.dataset.k=k;l.innerHTML='<input type="checkbox"><span class="dot" style="background:'+(HEX[k]||"#999")+'"></span>'+k;l.querySelector("input").onchange=e=>{e.target.checked?selC.add(k):selC.delete(k);render()};$("colors").appendChild(l)});window._ci=1;
+  $("sizes").innerHTML="";SIZES.forEach(s=>{const l=document.createElement("label");l.className="chip";l.dataset.k=s;l.innerHTML='<input type="checkbox">'+s;l.querySelector("input").onchange=e=>{e.target.checked?selS.add(s):selS.delete(s);render()};$("sizes").appendChild(l)});
+}
+function sync(){document.querySelectorAll("#colors .chip").forEach(l=>{const on=selC.has(l.dataset.k);l.classList.toggle("on",on);l.querySelector("input").checked=on});document.querySelectorAll("#sizes .chip").forEach(l=>{const on=selS.has(l.dataset.k);l.classList.toggle("on",on);l.querySelector("input").checked=on})}
+const F=()=>Math.max(0.1,Number($("factor").value)||2);
+function calc(){
+  const f=$("from").value,t=$("to").value, mat={}, daily=[], inR=dates().filter(d=>d>=f&&d<=t);
+  inR.forEach(d=>{let s=0;Object.keys(DATA[d]).forEach(k=>{if(k==="_s"||!selC.has(k))return;const v=DATA[d][k];(mat[k]=mat[k]||[0,0,0,0,0,0]);v.forEach((x,i)=>{if(selS.has(SIZES[i])){mat[k][i]+=x;s+=x}})});daily.push([d,s,DATA[d]._s])});
+  // missing days between first and last data day inside the range
+  const gaps=[];if(inR.length>1){let c=new Date(inR[0]+"T00:00:00");const e=new Date(inR[inR.length-1]+"T00:00:00");while(c<e){c=new Date(c.getTime()+864e5);const s=c.getFullYear()+"-"+p2(c.getMonth()+1)+"-"+p2(c.getDate());if(s<inR[inR.length-1]&&!DATA[s])gaps.push(s)}}
+  return {f,t,mat,daily,inR,gaps};
+}
+function render(){
+  if(!dates().length)return; sync(); const c=cur=calc(), k=unit==="pair"?F():1, U=unit==="pair"?"คู่":"แผ่น";
+  const tot=c.daily.reduce((a,x)=>a+x[1],0), n=c.daily.filter(x=>x[1]>0).length, mx=c.daily.reduce((a,x)=>x[1]>a[1]?x:a,["",0]);
+  $("kpis").innerHTML=
+   '<div class="kpi main"><div class="k">คาดการณ์ (คู่)</div><div class="v">'+fmt(tot*F())+'</div></div>'+
+   '<div class="kpi"><div class="k">ยางที่จ่ายประกอบ (แผ่น)</div><div class="v">'+fmt(tot)+'</div></div>'+
+   '<div class="kpi"><div class="k">จำนวนวันที่มีข้อมูล</div><div class="v">'+n+'</div></div>'+
+   '<div class="kpi"><div class="k">เฉลี่ยต่อวัน (คู่)</div><div class="v">'+fmt(n?tot*F()/n:0)+'</div></div>'+
+   '<div class="kpi"><div class="k">สูงสุดใน 1 วัน (คู่)</div><div class="v">'+fmt(mx[1]*F())+'</div><div class="k">'+(mx[0]?thD(mx[0]):"")+'</div></div>';
+  $("gaps").innerHTML=(c.inR.length?"ข้อมูลช่วงนี้: "+thD(c.inR[0])+" ถึง "+thD(c.inR[c.inR.length-1])+". ":"ไม่มีข้อมูลในช่วงที่เลือก. ")+(c.gaps.length?'<b style="color:var(--warn)">วันที่ไม่มีไฟล์ (ยังไม่รวมในยอด): '+c.gaps.map(d=>+d.slice(8)+" "+MON[+d.slice(5,7)-1]).join(", ")+"</b>":"");
+  const rows=Object.keys(c.mat).sort((a,b)=>CKEYS.indexOf(a)-CKEYS.indexOf(b)).filter(k2=>c.mat[k2].some(x=>x));
+  let h='<table><thead><tr><th>สี ('+U+')</th>'+SIZES.map(s=>"<th>"+s+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>", col=Array(6).fill(0);
+  rows.forEach(r=>{const v=c.mat[r];h+='<tr><td><span class="dot" style="background:'+(HEX[r]||"#999")+';display:inline-block;margin-right:8px"></span>'+r+"</td>"+v.map((x,i)=>{col[i]+=x;return '<td class="'+(x?"":"zero")+'">'+(x?fmt(x*k):"–")+"</td>"}).join("")+"<td><b>"+fmt(v.reduce((a,b)=>a+b,0)*k)+"</b></td></tr>"});
+  h+="</tbody><tfoot><tr><td>รวม</td>"+col.map(x=>"<td>"+fmt(x*k)+"</td>").join("")+"<td>"+fmt(col.reduce((a,b)=>a+b,0)*k)+"</td></tr></tfoot></table>";
+  $("matrix").innerHTML=rows.length?h:'<div class="empty">ไม่มีข้อมูลตามเงื่อนไขที่เลือก</div>';
+  const m=Math.max(1,...c.daily.map(x=>x[1]));
+  $("daily").innerHTML=c.daily.length?'<table><thead><tr><th>วันที่จ่ายไปประกอบ</th><th>วันที่นึ่ง</th><th>แผ่น</th><th>คู่ (คาดการณ์)</th><th class="barcell"></th></tr></thead><tbody>'+c.daily.map(x=>"<tr><td>"+thD(x[0])+"</td><td>"+(x[2]||"–")+"</td><td>"+fmt(x[1])+"</td><td><b>"+fmt(x[1]*F())+'</b></td><td class="barcell"><div class="bar" style="width:'+(x[1]/m*100)+'%"></div></td></tr>').join("")+"</tbody></table>":'<div class="empty">ไม่มีข้อมูล</div>';
+}
+["from","to","factor"].forEach(i=>$(i).oninput=render);
+$("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
+$("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
+document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
+function show(v){$("view-q").hidden=v!=="q";$("view-i").hidden=v!=="i";$("tab-q").setAttribute("aria-selected",v==="q");$("tab-i").setAttribute("aria-selected",v==="i")}
+$("tab-q").onclick=()=>show("q");$("tab-i").onclick=()=>show("i");
+try{$("i-key").value=localStorage.getItem("fgkey")||""}catch(e){}
+/* ---------- Excel export ---------- */
+async function saveBook(wb,name){const buf=await wb.xlsx.writeBuffer();const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+$("xl").onclick=async()=>{
+  if(typeof ExcelJS==="undefined"){alert("โหลดตัวสร้าง Excel ไม่ได้");return}
+  const c=cur||calc(), f=F(), wb=new ExcelJS.Workbook(), ws=wb.addWorksheet("คาดการณ์"), fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
+  ws.addRow(["คาดการณ์รองเท้าฟองน้ำรุ่น 200 จากยอดนึ่งยาง (หน่วย: คู่)"]).font={bold:true,size:14};
+  ws.addRow(["ช่วงวันที่จ่ายไปประกอบ: "+thD(c.f)+" ถึง "+thD(c.t)+" (มีข้อมูล "+c.inR.length+" วัน) | คิด "+f+" คู่ต่อแผ่น"]).font={color:{argb:"FF1A56DB"}};
+  ws.addRow(["สีที่เลือก: "+(selC.size===document.querySelectorAll("#colors .chip").length?"ทุกสี":[...selC].join(", "))+" | เบอร์: "+(selS.size===6?"ทุกเบอร์":[...selS].join(", "))]).font={color:{argb:"FF1A56DB"}};
+  if(c.gaps.length)ws.addRow(["วันที่ไม่มีไฟล์ (ไม่รวมในยอด): "+c.gaps.map(d=>+d.slice(8)+"/"+(+d.slice(5,7))).join(", ")]).font={color:{argb:"FFC62828"}};
+  ws.addRow([]);const hr=ws.addRow(["สี",...SIZES,"รวม"]);hr.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1F4FD8");x.alignment={horizontal:"center"}});
+  const col=Array(6).fill(0);
+  CKEYS.concat(Object.keys(c.mat).filter(k=>!CKEYS.includes(k))).forEach(r=>{const v=c.mat[r]||[0,0,0,0,0,0];const row=ws.addRow([r,...v.map((x,i)=>{col[i]+=x;return Math.round(x*f)}),Math.round(v.reduce((a,b)=>a+b,0)*f)]);row.getCell(8).font={bold:true}});
+  const tr=ws.addRow(["รวมทั้งหมด",...col.map(x=>Math.round(x*f)),Math.round(col.reduce((a,b)=>a+b,0)*f)]);tr.eachCell(x=>{x.font={bold:true};x.fill=fill("D6E4F5")});
+  ws.columns.forEach((x,i)=>{x.width=i?11:20});ws.eachRow(r=>r.eachCell((x,i)=>{if(i>1&&typeof x.value==="number")x.numFmt="#,##0"}));
+  const w2=wb.addWorksheet("รายวัน");w2.addRow(["วันที่จ่ายไปประกอบ","วันที่นึ่ง","แผ่น","คู่ (คาดการณ์)"]).font={bold:true};
+  c.daily.forEach(x=>w2.addRow([x[0],x[2],x[1],Math.round(x[1]*f)]));w2.columns.forEach(x=>x.width=20);
+  await saveBook(wb,"คาดการณ์จากยอดนึ่ง_"+c.f+"_ถึง_"+c.t+".xlsx");
+};
+/* ---------- import ---------- */
+const cv=c=>{let v=c.value;if(v&&typeof v==="object"&&!(v instanceof Date)){if("result" in v)v=v.result;else if(v.richText)v=v.richText.map(t=>t.text).join("");else if("text" in v)v=v.text}return v};
+function parseDateV(v){
+  if(v==null||v==="")return null;let y,m,d;
+  if(v instanceof Date){y=v.getUTCFullYear();m=v.getUTCMonth()+1;d=v.getUTCDate()}
+  else if(typeof v==="number"){const t=new Date(Date.UTC(1899,11,30)+v*864e5);y=t.getUTCFullYear();m=t.getUTCMonth()+1;d=t.getUTCDate()}
+  else{const s=String(v).trim();let r=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(r){y=+r[1];m=+r[2];d=+r[3]}else{r=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/);if(!r)return null;d=+r[1];m=+r[2];y=+r[3]}}
+  if(y>2400)y-=543;if(m<1||m>12||d<1||d>31||y<2000)return null;return y+"-"+p2(m)+"-"+p2(d);
+}
+const norm=s=>String(s).replace(/\s+/g," ").trim();
+let IMP=[];
+async function readFile(file){
+  const out={name:file.name,date:null,steam:"",rows:{},total:0,printed:null,err:""};
+  try{
+    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());const ws=wb.worksheets[0];
+    out.date=parseDateV(cv(ws.getCell("C2")))||parseDateV(cv(ws.getCell("B2")));
+    const k1=cv(ws.getCell("K1"));out.steam=k1==null?"":(k1 instanceof Date?(k1.getUTCDate()+"/"+(k1.getUTCMonth()+1)):norm(k1));
+    let printedCols=null;
+    for(let r=6;r<=40;r++){
+      const lab=norm(cv(ws.getCell(r,1))||"");if(!lab)continue;
+      const v=SIZES.map((s,i)=>Math.max(0,Math.round(Number(cv(ws.getCell(r,i+2)))||0)));
+      if(lab==="รวม"){printedCols=v;out.printed=Number(cv(ws.getCell(r,8)))||v.reduce((a,b)=>a+b,0);break}
+      if(v.some(x=>x))out.rows[lab]=v;
+    }
+    out.total=Object.values(out.rows).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0);
+    if(!out.date)out.err="อ่านวันที่ (ช่อง C2) ไม่ได้";
+    if(printedCols){out.colOk=SIZES.every((s,i)=>printedCols[i]===Object.values(out.rows).reduce((a,v)=>a+v[i],0))}
+  }catch(e){out.err="เปิดไฟล์ไม่ได้: "+e.message}
+  return out;
+}
+function drawImport(){
+  if(!IMP.length){$("i-prev").innerHTML="";$("i-save").disabled=true;return}
+  let h='<table><thead><tr><th></th><th>ไฟล์</th><th>วันที่จ่ายประกอบ</th><th>วันที่นึ่ง</th><th>รวม (แผ่น)</th><th>ตรวจสอบ</th></tr></thead><tbody>';
+  IMP.forEach((x,i)=>{
+    let st,cls="";
+    if(x.err){st=x.err;cls="neg"}
+    else if(x.printed!=null&&(x.printed!==x.total||x.colOk===false)){st="ไม่ตรงยอดรวมในไฟล์ ("+fmt(x.printed)+" vs "+fmt(x.total)+")";cls="neg"}
+    else if(!x.total){st="ไม่มีตัวเลข";cls="neg"}
+    else{st="ตรงยอดรวมในไฟล์";cls="pos"}
+    if(!x.err&&DATA[x.date])st+=" · มีข้อมูลวันนี้แล้ว จะเขียนทับ";
+    x.ok=!x.err&&x.total>0&&!(x.printed!=null&&(x.printed!==x.total||x.colOk===false));
+    if(x.sel===undefined)x.sel=x.ok;
+    h+='<tr><td><input type="checkbox" data-i="'+i+'" '+(x.sel?"checked":"")+(x.err||!x.total?" disabled":"")+'></td><td style="text-align:left">'+x.name+"</td><td>"+(x.date?thD(x.date):"–")+"</td><td>"+(x.steam||"–")+"</td><td>"+fmt(x.total)+'</td><td class="'+cls+'" style="white-space:normal;text-align:left">'+st+"</td></tr>";
+  });
+  $("i-prev").innerHTML=h+"</tbody></table>";
+  $("i-prev").querySelectorAll("input").forEach(b=>b.onchange=()=>{IMP[+b.dataset.i].sel=b.checked;$("i-save").disabled=!IMP.some(x=>x.sel)});
+  $("i-save").disabled=!IMP.some(x=>x.sel);
+}
+$("i-file").onchange=async e=>{
+  if(typeof ExcelJS==="undefined"){$("i-msg").hidden=false;$("i-msg").className="msg warn";$("i-msg").textContent="โหลดตัวอ่าน Excel ไม่ได้";return}
+  $("i-msg").hidden=true;IMP=[];for(const f of e.target.files)IMP.push(await readFile(f));
+  IMP.sort((a,b)=>(a.date||"").localeCompare(b.date||""));drawImport();
+};
+$("i-save").onclick=async()=>{
+  const key=$("i-key").value.trim(),msg=$("i-msg");msg.hidden=false;
+  if(!key){msg.className="msg warn";msg.textContent="ใส่รหัสบันทึกก่อน";return}
+  try{localStorage.setItem("fgkey",key)}catch(e){}
+  $("i-save").disabled=true;let ok=0,bad=[];
+  for(const x of IMP.filter(x=>x.sel)){
+    try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"steam",key,date:x.date,steamdate:x.steam?"นึ่ง "+x.steam:"",rows:x.rows})}).then(r=>r.json());
+      if(r.ok)ok++;else bad.push(x.name+": "+r.error)}catch(err){bad.push(x.name+": "+err)}
+  }
+  msg.className="msg "+(bad.length?"warn":"ok");msg.textContent=(ok?"บันทึกสำเร็จ "+ok+" ไฟล์. ":"")+bad.join(" | ");
+  if(ok){IMP=[];$("i-file").value="";drawImport();await load()}else $("i-save").disabled=false;
+};
+load();
+</script>
