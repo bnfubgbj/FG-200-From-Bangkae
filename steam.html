@@ -21,6 +21,7 @@
 .dbox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:0}
 .dbox>summary{cursor:pointer;font:600 15px var(--f-head);color:var(--ink)}
 .dbox[open]>summary{margin-bottom:14px}
+.t5{font:600 15px var(--f-head);margin-bottom:8px}
 .dbody{display:flex;flex-direction:column;gap:14px;min-width:0}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
@@ -61,7 +62,7 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
 thead th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--surface2);position:sticky;top:0}
-tfoot td{font-weight:600;background:var(--surface2)}
+tfoot td{font-weight:700;background:var(--surface2);border-top:2px solid var(--accent)}
 td.zero{color:var(--muted);opacity:.55}
 td.neg{color:var(--warn)}
 td.pos{color:var(--accent)}
@@ -91,7 +92,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
   <header>
     <div>
       <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 16:50 (หน้าประเมินแบบเลือกดู สิ้นเดือน/สัปดาห์/วัน) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 17:30 (ประเมินสต็อก 5 ตาราง + แถวรวมทุกสีท้ายตาราง) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
@@ -175,10 +176,13 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
     <div class="kpis" id="e-kpis"></div>
     <div class="panel" id="e-res-m">
       <h2 id="e-mt">สต็อกคงเหลือ ณ สิ้นเดือน</h2>
-      <div class="scroll" id="e-sum"></div>
-      <div style="font-weight:600">รายเบอร์ (ค่าลบ = ของขาด)</div>
-      <div class="scroll" id="e-end-m"></div>
-      <details class="dbox"><summary>ดูรายละเอียดการคำนวณ</summary><div class="dbody"><div class="scroll" id="e-det"></div><div class="note" id="e-foot"></div></div></details>
+      <div class="note">อ่านจากบนลงล่าง: สต็อกจริง + ผลิตได้ = ยอดคงเหลือก่อนขาย − โควต้าขาย = คงเหลือสิ้นเดือน (หน่วย: คู่ · ค่าลบสีส้ม = ของขาด)</div>
+      <div><div class="t5" id="e-h1"></div><div class="scroll" id="e-t1"></div></div>
+      <div><div class="t5" id="e-h2"></div><div class="scroll" id="e-t2"></div></div>
+      <div><div class="t5" id="e-h3"></div><div class="scroll" id="e-t3"></div></div>
+      <div><div class="t5" id="e-h4"></div><div class="scroll" id="e-t4"></div></div>
+      <div><div class="t5" id="e-h5"></div><div class="scroll" id="e-t5"></div></div>
+      <div class="note" id="e-foot"></div>
     </div>
     <div class="panel" id="e-res-t" hidden>
       <h2 id="e-tt"></h2>
@@ -746,14 +750,14 @@ function calcE(){
   const q=qIn(),res={};
   SC.forEach(c=>{const s=q[c].sizes,has=s.some(x=>x!=null&&x>0),b=st[c]||Z6(),B=T(b);
     const qv=(has?SIZES.map((z,i)=>s[i]||0):SIZES.map((z,i)=>B>0?q[c].total*b[i]/B:q[c].total/6)).map(x=>x*pct);
-    const start=b.slice(0,6),o={start,inn:inn[c],quota:qv,target:q[c].target};o.end=start.map((x,i)=>x+o.inn[i]-qv[i]);res[c]=o});
+    const start=b.slice(0,6),o={start,inn:inn[c],quota:qv,target:q[c].target};o.mid=start.map((x,i)=>x+o.inn[i]);o.end=start.map((x,i)=>x+o.inn[i]-qv[i]);res[c]=o});
   const tq=SC.reduce((a,c)=>a+T(res[c].quota),0);
   return{sd,ed,lag,f,pct,nd,last,d1,d2,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0};
 }
 function renderE(){
   if($("view-e").hidden)return;
   const c=calcE(),W=$("e-warn");
-  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-sum","e-end-m","e-det","e-foot","e-ser","e-status"].forEach(i=>$(i).innerHTML="");return}
+  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-ser","e-status"].forEach(i=>$(i).innerHTML="");return}
   const T=a=>a.reduce((x,y)=>x+y,0),sum=k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0),w=[];
   if(!c.hasQ)w.push("ยังไม่ได้กรอกโควต้าฝ่ายขาย — ตอนนี้ยอดสิ้นเดือน = สต็อก + ยอดที่จะเข้าเท่านั้น");
   if(!c.nd)w.push("ไม่มีข้อมูลแผ่นยางในช่วง "+thD(c.d1)+" ถึง "+thD(c.d2));
@@ -765,15 +769,12 @@ function renderE(){
   $("e-status").textContent="สต็อกจริง ณ "+thD(c.sd)+" รวม "+fmt(SC.reduce((a,x)=>a+T(c.res[x].start),0))+" คู่ · โควต้าขายคงเหลือ "+(c.hasQ?fmt(c.tq)+" คู่"+($("e-qd").value?" (ณ "+thD($("e-qd").value)+")":""):"ยังไม่ได้กรอก (เปิดหัวข้อ 'โควต้าฝ่ายขาย' ด้านล่าง)");
   const E=sum("end"),neg=SC.reduce((a,x)=>a+c.res[x].end.filter(v=>v<0).length,0);
   $("e-kpis").innerHTML='<div class="kpi"><div class="k">สต็อกตั้งต้น ('+thD(c.sd)+')</div><div class="v">'+fmt(sum("start"))+'</div></div><div class="kpi"><div class="k">+ ยอดที่จะเข้า ('+c.nd+' วันจ่ายแผ่น)</div><div class="v">'+fmt(sum("inn"))+'</div></div><div class="kpi"><div class="k">− โควต้าขายคงเหลือ</div><div class="v">'+fmt(c.tq)+'</div></div><div class="kpi main"><div class="k">= สต็อกสิ้นเดือน ('+thD(c.ed)+')</div><div class="v">'+fmt(E)+'</div></div><div class="kpi"><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(neg?"var(--warn)":"inherit")+'">'+neg+"</div></div>";
-  let h='<table><thead><tr><th>สี</th><th>สต็อกตั้งต้น</th><th>+ ยอดเข้า</th><th>− โควต้า</th><th>= สิ้นเดือน</th><th>เป้า</th><th>ควรผลิตเพิ่ม</th></tr></thead><tbody>';
-  let tt=0,tn=0;
-  SC.forEach(x=>{const r=c.res[x],e=T(r.end),need=r.target>0?Math.max(0,r.target-e):0;tn+=need;h+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td><td>"+fmt(T(r.start))+"</td><td>"+fmt(T(r.inn))+"</td><td>"+fmt(T(r.quota))+'</td><td class="'+(e<0?"neg":"")+'"><b>'+fmt(e)+"</b></td><td>"+(r.target>0?fmt(r.target):'<span class="zero">-</span>')+"</td><td>"+(need?"<b>"+fmt(need)+"</b>":'<span class="zero">-</span>')+"</td></tr>"});
-  $("e-sum").innerHTML=h+'</tbody><tfoot><tr><td>รวม</td><td>'+fmt(sum("start"))+"</td><td>"+fmt(sum("inn"))+"</td><td>"+fmt(sum("quota"))+"</td><td>"+fmt(E)+"</td><td></td><td>"+(tn?fmt(tn):"")+"</td></tr></tfoot></table>";
-  const mat=(k,flag)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
-    SC.forEach(x=>{const v=c.res[x][k];t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&y<0?"neg":(Math.round(y)?"":"zero"))+'"'+(flag&&y<0?' style="font-weight:600"':"")+">"+(Math.round(y)?fmt(y):"-")+"</td>").join("")+"<td><b>"+fmt(T(v))+"</b></td></tr>"});
-    return t+"</tbody></table>"};
-  $("e-end-m").innerHTML=mat("end",true);
-  $("e-det").innerHTML=[["สต็อกตั้งต้น","start"],["+ ยอดที่จะเข้า (แผ่นยาง × "+c.f+" คู่)","inn"],["− โควต้าขายคงเหลือ"+(c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":""),"quota"]].map(a=>'<div style="font-weight:600;margin:10px 0 6px">'+a[0]+"</div>"+mat(a[1],false)).join("");
+  const mat=(k,flag)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
+    SC.forEach(x=>{const v=c.res[x][k];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&y<0?"neg":(Math.round(y)?"":"zero"))+'"'+(flag&&y<0?' style="font-weight:600"':"")+">"+(Math.round(y)?fmt(y):"-")+"</td>").join("")+'<td class="'+(flag&&T(v)<0?"neg":"")+'"><b>'+fmt(T(v))+"</b></td></tr>"});
+    return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>'<td class="'+(flag&&y<0?"neg":"")+'">'+fmt(y)+"</td>").join("")+"<td>"+fmt(T(col))+"</td></tr></tfoot></table>"};
+  const arr1=addD(c.sd,1),H=["① สต็อกจริง ณ "+thD(c.sd)+(c.kind==="net"?" (สุทธิหลังหักยอดซื้อ)":""),"② + สต็อกที่คาดว่าจะผลิตได้ "+thD(arr1)+" – "+thD(c.ed),"③ = ยอดสต็อกคงเหลือ ณ สิ้นเดือน (ก่อนหักโควต้า)","④ − ยอดโควต้าที่ประเมินว่าจะขายได้"+(c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":""),"⑤ = สต็อกคงเหลือ ณ วันสิ้นเดือน "+thD(c.ed)];
+  ["start","inn","mid","quota","end"].forEach((k,i)=>{$("e-h"+(i+1)).textContent=H[i];$("e-t"+(i+1)).innerHTML=mat(k,k==="end")});
+  $("e-h5").style.color="var(--accent)";
   $("e-foot").innerHTML="แผ่นที่นับ: วันจ่าย "+thD(c.d1)+" – "+thD(c.d2)+(c.lag?" (ดีเลย์ "+c.lag+" วัน)":"")+" · ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติ จากแผ่นดำ (ที่เหลือเป็นสีพิเศษ พื้นดำ): "+c.bsrc+" · สีพิเศษอื่น (Xmas, พื้นแดง หูเหลือง ฯลฯ) ไม่มีสต็อกในไฟล์ จึงไม่รวมในตารางนี้";
   window._ec=c;if(EV!=="m")renderSer(c);
 }
@@ -791,11 +792,7 @@ $("exl").onclick=async()=>{
   note("ประเมินสต็อกสิ้นเดือน รุ่น 200 (หน่วย: คู่)",{size:15,bold:true,color:"000000",h:24});
   note("สต็อก "+thD(c.sd)+" ("+(c.kind==="net"?"สุทธิหลังหักยอดซื้อ":"คงเหลือเต็ม")+") + แผ่นยางจ่ายประกอบ "+thD(c.d1)+"–"+thD(c.d2)+" × "+c.f+" คู่ − โควต้าขายคงเหลือ"+(c.pct!==1?" × "+Math.round(c.pct*100)+"%":"")+" → สต็อก ณ "+thD(c.ed),{bold:true,color:"1A56DB"});
   ws.addRow([]);
-  head(["สี","สต็อกตั้งต้น","+ ยอดเข้า","− โควต้า","= สิ้นเดือน","เป้า","ควรผลิตเพิ่ม"]);
-  let tn=0;SC.forEach(x=>{const r=c.res[x],e=T(r.end),need=r.target>0?Math.max(0,r.target-e):0;tn+=need;
-    body(x,[T(r.start),T(r.inn),T(r.quota),e,r.target||"",need||""],row=>{if(e<0){const q=row.getCell(5);q.fill=fill("FFC7CE");q.font={bold:true,color:{argb:"FF9C0006"}}}})});
-  tot(["start","inn","quota","end"].map(k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0)).concat(["",tn||""]));
-  [["สต็อกสิ้นเดือนรายเบอร์ (ค่าลบ = ของขาด)","end",1],["สต็อกตั้งต้น","start"],["+ ยอดที่จะเข้า","inn"],["− โควต้าขายคงเหลือ","quota"]].forEach(a=>{
+  [["① สต็อกจริง ณ "+thD(c.sd),"start"],["② + สต็อกที่คาดว่าจะผลิตได้ "+thD(addD(c.sd,1))+" – "+thD(c.ed),"inn"],["③ = ยอดสต็อกคงเหลือ ณ สิ้นเดือน (ก่อนหักโควต้า)","mid"],["④ − ยอดโควต้าที่ประเมินว่าจะขายได้","quota"],["⑤ = สต็อกคงเหลือ ณ วันสิ้นเดือน "+thD(c.ed)+" (ค่าลบ = ของขาด)","end",1]].forEach(a=>{
     ws.addRow([]);note(a[0],{bold:true,color:"1A56DB",size:11});head(["สี"].concat(SIZES,["รวม"]));
     SC.forEach(x=>{const v=c.res[x][a[1]].map(Math.round);body(x,v.concat([T(v)]),a[2]?row=>{v.forEach((y,i)=>{if(y<0){const q=row.getCell(i+2);q.fill=fill("FFC7CE");q.font={bold:true,color:{argb:"FF9C0006"}}}})}:null)});
     tot(SIZES.map((z,i)=>SC.reduce((s,x)=>s+Math.round(c.res[x][a[1]][i]),0)).concat([SC.reduce((s,x)=>s+T(c.res[x][a[1]].map(Math.round)),0)]));
