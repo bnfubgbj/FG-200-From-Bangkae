@@ -144,6 +144,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
     </div>
     <div class="kpis" id="p-kpis"></div>
     <div class="panel"><h2>แผนผลิต (หน่วย: คู่)</h2><div class="scroll" id="p-plan"></div></div>
+    <div class="panel"><h2>ได้จากแผ่นที่จ่ายประกอบ (หน่วย: คู่)</h2><div class="scroll" id="p-sup"></div></div>
     <div class="panel"><h2>สรุปตามกลุ่มแผ่นยาง (หน่วย: คู่)</h2><div class="scroll" id="p-sum"></div><div class="note" id="p-foot"></div></div>
     <div class="panel"><h2>ส่วนต่างรายเบอร์ (ได้จากแผ่น − แผน) ค่าลบ = แผ่นยางยังไม่พอ</h2><div class="scroll" id="p-diff"></div></div>
   </div>
@@ -306,6 +307,20 @@ function planView(c){ // -> {rows:[{label,v,st}], tot, prevRev}
   const tot=[0,0,0,0,0,0];rows.forEach(r=>r.v.forEach((x,i)=>tot[i]+=x));
   return {rows,tot,prevRev:pr};
 }
+const SUPMAP={"น้ำเงิน":"น้ำเงิน","เขียว":"เขียว","แดง":"แดง","เหลือง":"เหลือง","ขาว":"ขาว","ดำล้วน":"ดำ","เทา":"เทา","Xmax หูเขียว":"เขียว/แดง","Xmax หูแดง":"แดง/เขียว","โควิด หูเหลือง":"เหลือง/ดำ","น้ำเงินล้วน":"น้ำเงิน/น้ำเงิน","แดงล้วน":"แดง/แดง","โกโก้ล้วน":"โกโก้ล้วน"};
+function supView(c){ // แถวเดียวกับแบบฟอร์มแผน ตามที่โรงงานแยกแผ่นจริง
+  const by={};c.ds.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const pk=SUPMAP[k]||k;(by[pk]=by[pk]||[0,0,0,0,0,0]);DATA[d][k].forEach((x,i)=>by[pk][i]+=x*c.f)}));
+  const rows=PTPL.map(r=>({label:r[1],na:!Object.values(SUPMAP).includes(r[0]),v:(by[r[0]]||[0,0,0,0,0,0]).map(Math.round)}));
+  const tot=[0,0,0,0,0,0];rows.forEach(r=>r.v.forEach((x,i)=>tot[i]+=x));return {rows,tot};
+}
+function drawSupTable(c){
+  const sv=supView(c),T=a=>a.reduce((x,y)=>x+y,0);
+  let h='<div style="font-weight:600;margin-bottom:8px">ได้จากแผ่นที่จ่ายไปประกอบ'+thM(c.m)+' (แยกตามที่โรงงานแยกแผ่นจริง)</div><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
+  sv.rows.forEach(r=>{h+="<tr><td>"+r.label+"</td>"+r.v.map(x=>'<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(r.v)?fmt(T(r.v)):"-")+"</b></td></tr>"});
+  h+="</tbody><tfoot><tr><td>รวม</td>"+sv.tot.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(T(sv.tot))+"</td></tr></tfoot></table>";
+  h+='<div class="note" style="margin-top:8px">แถวที่เป็น "-" คือโรงงานไม่ได้แยกแผ่นไว้: สีดำหน้าขาว รวมอยู่ในแถว ขาว · พื้นดำหูพิเศษ (ยกเว้นโควิด) รวมอยู่ในแถว ดำล้วน · พื้นแดง หูเหลือง รวมอยู่ในแถว แดง ดังนั้นการเทียบรายแถวตรงๆ จะคลาดเคลื่อน ให้ดูตารางสรุปกลุ่มด้านล่างประกอบ</div>';
+  $("p-sup").innerHTML=h;
+}
 function drawPlanTable(c){
   const pv=planView(c), T=a=>a.reduce((x,y)=>x+y,0), g=T(pv.tot);
   let h='<div style="font-weight:600;margin-bottom:8px">ขอเรียนสัดส่วนสีและเบอร์รองเท้าฟองน้ำ 200 เดือน'+thM(c.m)+' ตามยอดจองของลูกค้า ('+revName(c.rev)+')</div>';
@@ -327,7 +342,7 @@ function renderP(){
   const T=a=>a.reduce((x,y)=>x+y,0), tp=POOLS.reduce((q,p)=>q+T(c.plan[p]),0), ts=POOLS.reduce((q,p)=>q+T(c.sup[p]),0);
   $("p-note").innerHTML="แผน: "+revName(c.rev)+(c.P.date?" (แจ้ง "+thD(c.P.date)+")":"")+(c.P.note?" · "+c.P.note:"")+"<br>แผ่นยางที่จ่ายประกอบใน "+thM(c.m)+": "+(c.ds.length?c.ds.length+" วัน (ถึง "+thD(c.ds[c.ds.length-1])+")":"ยังไม่มีข้อมูล")+" · คิด "+c.f+" คู่ต่อแผ่น";
   $("p-kpis").innerHTML='<div class="kpi"><div class="k">แผนผลิต (คู่)</div><div class="v">'+fmt(tp)+'</div></div><div class="kpi main"><div class="k">ได้จากแผ่นที่จ่ายประกอบ (คู่)</div><div class="v">'+fmt(ts)+'</div></div><div class="kpi"><div class="k">ส่วนต่าง</div><div class="v">'+(ts-tp>=0?"+":"")+fmt(ts-tp)+'</div></div><div class="kpi"><div class="k">เทียบแผน</div><div class="v">'+(tp?Math.round(ts/tp*100):0)+'%</div></div>';
-  drawPlanTable(c);
+  drawPlanTable(c);drawSupTable(c);
   const rows=POOLS.filter(p=>T(c.plan[p])||T(c.sup[p]));
   let h='<table><thead><tr><th>กลุ่มแผ่นยาง</th><th>แผน</th><th>ได้จากแผ่น</th><th>ส่วนต่าง</th><th>%</th></tr></thead><tbody>';
   rows.forEach(p=>{const a=T(c.plan[p]),b=T(c.sup[p]);h+="<tr><td>"+POOLN[p]+"</td><td>"+fmt(a)+"</td><td>"+fmt(b)+'</td><td class="'+(b-a<0?"neg":"pos")+'">'+(b-a>=0?"+":"")+fmt(b-a)+"</td><td>"+(a?Math.round(b/a*100)+"%":"–")+"</td></tr>"});
@@ -358,7 +373,14 @@ $("pxl").onclick=async()=>{
   const blk=(t,fn)=>{ws.addRow([]);ws.addRow([t]).font={bold:true,size:12,color:{argb:"FF1A56DB"}};const h=ws.addRow(["กลุ่มแผ่นยาง"].concat(SIZES,["รวม"]));h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center"}});const r0=ws.rowCount+1;
     rows.forEach(p=>{const r=ws.rowCount+1;ws.addRow([POOLN[p]].concat(SIZES.map((z,i)=>Math.round(fn(p,i))),[{formula:"SUM(B"+r+":G"+r+")"}]))});
     const n=ws.rowCount,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r0+":"+String.fromCharCode(64+j)+n+")"}))));tr.eachCell(x=>{x.font={bold:true};x.fill=fill("DCE6FA")});};
-  blk("แผนผลิต",(p,i)=>c.plan[p][i]);blk("ได้จากแผ่นที่จ่ายประกอบ",(p,i)=>c.sup[p][i]);blk("ส่วนต่าง (ได้จากแผ่น − แผน) ค่าลบ = แผ่นยางยังไม่พอ",(p,i)=>c.sup[p][i]-c.plan[p][i]);
+  {const pv=planView(c),sv=supView(c),T=a=>a.reduce((x,y)=>x+y,0),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd};
+  const blk21=(t,rowsL,tot)=>{ws.addRow([]);ws.addRow([t]).font={bold:true,size:12,color:{argb:"FF1A56DB"}};const h=ws.addRow(["รองเท้ารุ่น 200 (หน่วย: คู่)"].concat(SIZES,["รวม 8.5-11"]));h.eachCell(x=>{x.font={bold:true};x.alignment={horizontal:"center"};x.border=B});const r1=ws.rowCount+1;
+    rowsL.forEach(r=>{const n=ws.rowCount+1,row=ws.addRow([r.label].concat(r.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(r.v)}]));row.eachCell((x,j)=>{x.border=B;if(j>1)x.numFmt="#,##0;-#,##0;-"})});
+    const r2=ws.rowCount,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tot[j-2]:T(tot)}))));tr.eachCell((x,j)=>{x.font={bold:true};x.border=B;if(j>1)x.numFmt="#,##0"})};
+  blk21("แผนผลิต (ตามแบบฟอร์มแผน)",pv.rows,pv.tot);
+  blk21("ได้จากแผ่นที่จ่ายประกอบ (แยกตามที่โรงงานแยกแผ่นจริง; แถวที่เป็น - คือโรงงานไม่ได้แยกแผ่นไว้)",sv.rows,sv.tot);
+  ws.addRow(["หมายเหตุ: สีดำหน้าขาวรวมอยู่ในแถว ขาว · พื้นดำหูพิเศษ (ยกเว้นโควิด) รวมในแถว ดำล้วน · พื้นแดง หูเหลือง รวมในแถว แดง จึงเทียบรายแถวตรงๆ ไม่ได้ ใช้ตารางรวมกลุ่มด้านล่างเทียบแทน"]).font={italic:true,color:{argb:"FF666666"}};}
+  blk("รวมกลุ่มตามสีพื้น: แผนผลิต",(p,i)=>c.plan[p][i]);blk("รวมกลุ่มตามสีพื้น: ได้จากแผ่นที่จ่ายประกอบ",(p,i)=>c.sup[p][i]);blk("รวมกลุ่มตามสีพื้น: ส่วนต่าง (ได้จากแผ่น − แผน) ค่าลบ = แผ่นยางยังไม่พอ",(p,i)=>c.sup[p][i]-c.plan[p][i]);
   ws.eachRow(r=>r.eachCell((x,j)=>{if(j>1)x.numFmt="#,##0;[Red]-#,##0"}));
   await saveBook(wb,"เทียบแผน_"+c.m+"_rev"+c.rev+".xlsx");b.textContent="ดาวน์โหลดแล้ว";back();
 };
