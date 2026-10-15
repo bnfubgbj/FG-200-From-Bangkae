@@ -76,6 +76,12 @@ td.hit{background:var(--accent-soft);font-weight:600}
 .entry td,.entry th{padding:4px 6px}
 .field .chip{display:inline-flex;text-transform:none;font:400 14px var(--f-body);letter-spacing:0;margin:0;color:var(--ink)}
 #view-p[hidden]{display:none!important}
+.sw{display:inline-block;width:14px;height:14px;border:1px solid var(--line);vertical-align:-2px}
+.sw.dn,td.dn{background:#f8d7c4;color:#1a1a1a}
+.sw.up,td.up{background:#fff200;color:#1a1a1a}
+table.tpl td,table.tpl th{border:1px solid var(--line)}
+table.tpl td:first-child{text-align:left}
+tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
 </style>
 <div class="wrap">
   <header>
@@ -137,7 +143,7 @@ td.hit{background:var(--accent-soft);font-weight:600}
       <div id="p-note" class="note"></div>
     </div>
     <div class="kpis" id="p-kpis"></div>
-    <div class="panel"><h2>แผนผลิตแยกตามสีและเบอร์ (หน่วย: คู่)</h2><div class="scroll" id="p-plan"></div></div>
+    <div class="panel"><h2>แผนผลิต (หน่วย: คู่)</h2><div class="scroll" id="p-plan"></div></div>
     <div class="panel"><h2>สรุปตามกลุ่มแผ่นยาง (หน่วย: คู่)</h2><div class="scroll" id="p-sum"></div><div class="note" id="p-foot"></div></div>
     <div class="panel"><h2>ส่วนต่างรายเบอร์ (ได้จากแผ่น − แผน) ค่าลบ = แผ่นยางยังไม่พอ</h2><div class="scroll" id="p-diff"></div></div>
   </div>
@@ -291,13 +297,25 @@ function planCalc(){
   ds.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!p)return;DATA[d][k].forEach((x,i)=>sup[p][i]+=x*f)}));
   return {m,rev,P,plan,sup,ds,f};
 }
-const PROWS=[["น้ำเงิน","สีน้ำเงิน","#1f4fd8"],["เขียว","สีเขียว","#1e7e34"],["แดง","สีแดง","#c62828"],["เหลือง","สีเหลือง","#e6b800"],["ขาว","สีขาว","#ffffff"],["ดำ","สีดำ","#111111"],["เทา","สีเทา","#8a8a8a"],["ดำ/ขาว","สีดำหน้าขาว","#555555"],["เขียว/แดง","พื้นแดง หูเขียว","#2e9e4f"],["แดง/เขียว","พื้นเขียว หูแดง","#d84a4a"],["เหลือง/แดง","พื้นแดง หูเหลือง","#e6b800"],["น้ำเงิน/ดำ","พื้นดำ หูน้ำเงิน","#1f4fd8"],["เขียว/ดำ","พื้นดำ หูเขียว","#1e7e34"],["แดง/ดำ","พื้นดำ หูแดง","#c62828"],["เหลือง/ดำ(พระ)","พื้นดำ หูเหลือง(พระ)","#e6b800"],["เหลือง/ดำ","พื้นดำ หูเหลือง(โควิด)","#f2c200"],["ขาว/ดำ","พื้นดำ หูขาว","#ffffff"],["เทา/ดำ","พื้นดำ หูเทา","#8a8a8a"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","#3b6ae0"],["แดง/แดง","แดงล้วน","#e04b4b"],["โกโก้ล้วน","น้ำตาลล้วน","#8b5a3c"]];
+const PTPL=[["น้ำเงิน","น้ำเงิน"],["เขียว","เขียว"],["แดง","แดง"],["เหลือง","เหลือง"],["ขาว","ขาว"],["ดำ","ดำล้วน"],["เทา","เทา"],["ดำ/ขาว","ดำ( หูดำ หน้าขาว)"],["เขียว/แดง","Xmas หูเขียว"],["แดง/เขียว","Xmas หูแดง"],["เหลือง/แดง","พื้นแดง หูเหลือง (โควิด)"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน"],["แดง/แดง","แดงล้วน"],["โกโก้ล้วน","โกโก้ล้วน"]];
+function planView(c){ // -> {rows:[{label,v,st}], tot, prevRev}
+  const prevs=Object.keys(PL[c.m]).map(Number).filter(r=>r<Number(c.rev)).sort((a,b)=>a-b), pr=prevs.length?prevs[prevs.length-1]:null, pc=pr!=null?PL[c.m][pr].colors:null;
+  const known=PTPL.map(r=>r[0]), extra=Object.keys(c.P.colors).filter(k=>!known.includes(k)&&c.P.colors[k].some(x=>x)).map(k=>[k,k]);
+  const rows=PTPL.concat(extra).map(r=>{const v=c.P.colors[r[0]]||[0,0,0,0,0,0], o=pc?(pc[r[0]]||[0,0,0,0,0,0]):null;
+    return {label:r[1],v,st:v.map((x,i)=>o?(x<o[i]?"dn":x>o[i]?"up":""):"")}});
+  const tot=[0,0,0,0,0,0];rows.forEach(r=>r.v.forEach((x,i)=>tot[i]+=x));
+  return {rows,tot,prevRev:pr};
+}
 function drawPlanTable(c){
-  const cols=c.P.colors, used=PROWS.filter(r=>cols[r[0]]&&cols[r[0]].some(x=>x)), extra=Object.keys(cols).filter(k=>!PROWS.some(r=>r[0]===k)&&cols[k].some(x=>x)).map(k=>[k,k,"#999"]);
-  const list=used.concat(extra); let col=Array(6).fill(0);
-  let h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
-  list.forEach(r=>{const v=cols[r[0]];h+='<tr><td><span class="dot" style="background:'+r[2]+';display:inline-block;margin-right:8px"></span>'+r[1]+"</td>"+v.map((x,i)=>{col[i]+=x;return '<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"–")+"</td>"}).join("")+"<td><b>"+fmt(v.reduce((a,b)=>a+b,0))+"</b></td></tr>"});
-  $("p-plan").innerHTML=list.length?h+"</tbody><tfoot><tr><td>รวม</td>"+col.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(col.reduce((a,b)=>a+b,0))+"</td></tr></tfoot></table>":'<div class="empty">ไม่มีข้อมูลแผน</div>';
+  const pv=planView(c), T=a=>a.reduce((x,y)=>x+y,0), g=T(pv.tot);
+  let h='<div style="font-weight:600;margin-bottom:8px">ขอเรียนสัดส่วนสีและเบอร์รองเท้าฟองน้ำ 200 เดือน'+thM(c.m)+' ตามยอดจองของลูกค้า ('+revName(c.rev)+')</div>';
+  if(pv.prevRev!=null)h+='<div class="note" style="margin-bottom:8px"><span class="sw dn"></span> ปรับลดผลิตจากแผน ('+revName(pv.prevRev)+') &nbsp; <span class="sw up"></span> ปรับเพิ่มผลิตจากแผน ('+revName(pv.prevRev)+')</div>';
+  h+='<table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
+  pv.rows.forEach(r=>{h+="<tr><td>"+r.label+"</td>"+r.v.map((x,i)=>'<td class="'+r.st[i]+(x?"":" zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(r.v)?fmt(T(r.v)):"-")+"</b></td></tr>"});
+  h+="</tbody><tfoot><tr><td>รวม</td>"+pv.tot.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(g)+"</td></tr>";
+  h+='<tr class="soft"><td>สัดส่วนต่อเบอร์</td>'+pv.tot.map(x=>"<td>"+(g?Math.round(x/g*100):0)+"%</td>").join("")+"<td>100%</td></tr></tfoot></table>";
+  if(c.P.note)h+='<div class="note" style="margin-top:8px">หมายเหตุแผน: '+c.P.note+"</div>";
+  $("p-plan").innerHTML=h;
 }
 function renderP(){
   const months=Object.keys(PL).sort(), sm=$("p-month"), sr=$("p-rev");
@@ -325,6 +343,14 @@ $("pxl").onclick=async()=>{
   const b=$("pxl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),c=planCalc();
   if(!c||typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้";back();return}
   const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("เทียบแผน"),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
+  {const w0=wb.addWorksheet("แผนผลิต"),pv=planView(c),T=a=>a.reduce((x,y)=>x+y,0),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd};
+   w0.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:15}]);
+   w0.addRow(["ขอเรียนสัดส่วนสีและเบอร์รองเท้าฟองน้ำ 200 เดือน"+thM(c.m)+" ตามยอดจองของลูกค้า ("+revName(c.rev)+")"]).font={bold:true,size:13};
+   if(pv.prevRev!=null){w0.addRow(["ปรับลดผลิตจากแผน ("+revName(pv.prevRev)+")"]).getCell(1).fill=fill("F8D7C4");w0.addRow(["ปรับเพิ่มผลิตจากแผน ("+revName(pv.prevRev)+")"]).getCell(1).fill=fill("FFF200")}
+   w0.addRow([]);const hr=w0.addRow(["รองเท้ารุ่น 200 (หน่วย: คู่)"].concat(SIZES,["รวม 8.5-11"]));hr.eachCell(x=>{x.font={bold:true};x.alignment={horizontal:"center"};x.border=B});const r1=w0.rowCount+1;
+   pv.rows.forEach(r=>{const n=w0.rowCount+1,row=w0.addRow([r.label].concat(r.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(r.v)}]));row.eachCell((x,j)=>{x.border=B;if(j>1)x.numFmt="#,##0;-#,##0;-";if(j>1&&j<8&&r.st[j-2]==="dn")x.fill=fill("F8D7C4");if(j>1&&j<8&&r.st[j-2]==="up")x.fill=fill("FFF200")})});
+   const r2=w0.rowCount,tr=w0.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?pv.tot[j-2]:T(pv.tot)}))));tr.eachCell((x,j)=>{x.font={bold:true};x.border=B;if(j>1)x.numFmt="#,##0"});
+   if(c.P.note)w0.addRow(["หมายเหตุแผน: "+c.P.note]).font={italic:true,color:{argb:"FF666666"}};}
   ws.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
   ws.addRow(["เทียบแผนผลิตกับแผ่นยางที่จ่ายไปประกอบ รุ่น 200 (หน่วย: คู่)"]).font={bold:true,size:14};
   ws.addRow(["แผน "+thM(c.m)+" "+revName(c.rev)+" | แผ่นยางจ่ายประกอบ "+c.ds.length+" วัน | คิด "+c.f+" คู่ต่อแผ่น"]).font={bold:true,color:{argb:"FF1A56DB"}};
