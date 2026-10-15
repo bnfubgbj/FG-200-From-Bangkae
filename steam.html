@@ -92,6 +92,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
       <button role="tab" id="tab-p" aria-selected="false">เทียบแผนผลิต</button>
+      <button role="tab" id="tab-e" aria-selected="false">ประเมินสต็อกสิ้นเดือน</button>
       <button role="tab" id="tab-i" aria-selected="false">นำเข้าไฟล์นึ่งยาง</button>
     </div>
   </header>
@@ -149,6 +150,49 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
     <div class="panel"><h2>ส่วนต่างรายเบอร์ (ได้จากแผ่น − แผน) ค่าลบ = แผ่นยางยังไม่พอ</h2><div class="scroll" id="p-diff"></div></div>
   </div>
 
+  <div id="view-e" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="panel">
+      <div class="head2"><h2>1) สต็อกจริงที่ รง. แจ้ง (รุ่น 200 · หน่วย: คู่)</h2>
+        <input type="password" id="e-key" placeholder="รหัสบันทึก" style="max-width:180px" autocomplete="off"></div>
+      <div class="note">เลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
+      <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
+      <div id="e-fprev" class="note"></div>
+      <div id="e-msg" class="msg" hidden></div>
+    </div>
+    <div class="panel">
+      <h2>2) โควต้าฝ่ายขายที่ยังคาดว่าจะขายได้ (คงเหลือถึงสิ้นเดือน)</h2>
+      <div class="note">น้องใส่ได้ 2 แบบ: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
+      <div class="scroll" id="e-grid"></div>
+      <div class="row" style="align-items:center">
+        <div style="min-width:170px"><span class="lbl">โควต้า ณ วันที่</span><input type="date" id="e-qdate"></div>
+        <div style="min-width:150px"><span class="lbl">ผู้กรอก</span><input type="text" id="e-by" placeholder="ชื่อน้อง" maxlength="40"></div>
+        <div style="min-width:190px"><span class="lbl">ดูที่บันทึกไว้</span><select id="e-qd"></select></div>
+        <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>3) ตั้งค่าการคำนวณ</h2>
+      <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+        <div><span class="lbl">ใช้สต็อก ณ วันที่</span><select id="e-sd"></select></div>
+        <div><span class="lbl">คิดถึงวันที่</span><input type="date" id="e-end"></div>
+        <div><span class="lbl">ดีเลย์แผ่นยาง→เข้าคลัง (วัน)</span><input type="number" id="e-lag" value="0" min="0" step="1"></div>
+        <div><span class="lbl">โควต้าที่ขายได้จริง (%)</span><input type="number" id="e-pct" value="100" min="0" step="5"></div>
+        <div><span class="lbl">ดำหน้าขาว จากแผ่นขาว (%)</span><input type="number" id="e-wpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
+        <div><span class="lbl">ดำปกติ จากแผ่นดำ (%)</span><input type="number" id="e-bpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
+      </div>
+      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-net" checked style="width:auto"> ใช้ "คงเหลือสุทธิที่สั่งได้จริง" (หักยอดซื้อแล้ว) เป็นสต็อกตั้งต้น · จำนวนคู่ต่อแผ่นใช้ค่าจากแท็บ "ดูยอดคาดการณ์"</label>
+    </div>
+    <div id="e-warn" class="msg warn" hidden></div>
+    <div class="kpis" id="e-kpis"></div>
+    <div class="panel">
+      <div class="head2"><h2>สต็อกสิ้นเดือน (คาดการณ์)</h2><button class="btn" id="exl">ดาวน์โหลด Excel</button></div>
+      <div class="scroll" id="e-sum"></div>
+    </div>
+    <div class="panel"><h2>สต็อกสิ้นเดือนรายเบอร์ (ค่าลบ = ของขาด)</h2><div class="scroll" id="e-end-m"></div></div>
+    <div class="panel"><h2>รายละเอียดที่ใช้คำนวณ</h2>
+      <div class="scroll" id="e-det"></div><div class="note" id="e-foot"></div></div>
+  </div>
+
   <div id="view-i" hidden class="panel">
     <h2>นำเข้าไฟล์นึ่งยางจากฝ่ายวางแผน</h2>
     <div class="note">เลือกไฟล์ Excel "ยอดนึ่งรองเท้าฟองน้ำ ประจำวัน" ได้ทีละหลายไฟล์ (1 ไฟล์ = 1 วัน ใช้ไฟล์ตามเดิมได้เลย ไม่ต้องแก้) แอปอ่านวันที่จ่ายไปประกอบจากช่อง C2 และตรวจยอดรวมให้</div>
@@ -171,8 +215,8 @@ let PLANROWS=[], PL={}, DATA={}, selC=new Set(CKEYS), selS=new Set(SIZES), unit=
 function load(){
   $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
   return fetch(API_URL).then(r=>r.json()).then(j=>{
-    PLANROWS=j.plan||[];DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
-    $("status").hidden=true;buildPlans();init();render();
+    PLANROWS=j.plan||[];STK=j.stock||[];DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
+    $("status").hidden=true;buildPlans();init();render();if(EINIT){initE();renderE()}
   }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
 }
 const dates=()=>Object.keys(DATA).sort();
@@ -219,8 +263,8 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-function show(v){$("view-p").hidden=v!=="p";$("tab-p").setAttribute("aria-selected",v==="p");$("view-q").hidden=v!=="q";$("view-i").hidden=v!=="i";$("tab-q").setAttribute("aria-selected",v==="q");$("tab-i").setAttribute("aria-selected",v==="i")}
-$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");renderP()};$("tab-i").onclick=()=>show("i");
+function show(v){["q","p","e","i"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
+$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");renderP()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-i").onclick=()=>show("i");
 try{$("i-key").value=localStorage.getItem("fgkey")||""}catch(e){}
 /* ---------- Excel export ---------- */
 async function saveBook(wb,name){const buf=await wb.xlsx.writeBuffer();const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
@@ -302,24 +346,28 @@ function planCalc(){
   return {m,rev,P,plan,sup,ds,f};
 }
 const PTPL=[["น้ำเงิน","น้ำเงิน"],["เขียว","เขียว"],["แดง","แดง"],["เหลือง","เหลือง"],["ขาว","ขาว"],["ดำ","ดำล้วน"],["เทา","เทา"],["ดำ/ขาว","ดำ( หูดำ หน้าขาว)"],["เขียว/แดง","Xmas หูเขียว"],["แดง/เขียว","Xmas หูแดง"],["เหลือง/แดง","พื้นแดง หูเหลือง (โควิด)"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน"],["แดง/แดง","แดงล้วน"],["โกโก้ล้วน","โกโก้ล้วน"]];
+const PCOL={"น้ำเงิน":["D6E4F5","1F4FD8"],"เขียว":["DDEEDD","1E7E34"],"แดง":["F8D7DA","C62828"],"เหลือง":["FFF2CC","B7791F"],"ขาว":["F5F5F5","333333"],"ดำ":["D9D9D9","000000"],"เทา":["E8E8E8","666666"],"ดำ/ขาว":["D9D9D9","000000"],"เขียว/แดง":["F8D7DA","1E7E34"],"แดง/เขียว":["DDEEDD","C62828"],"เหลือง/แดง":["F8D7DA","B7791F"],"เหลือง/ดำ":["FFF9C4","333333"],"น้ำเงิน/น้ำเงิน":["D6E4F5","1F4FD8"],"แดง/แดง":["F8D7DA","C62828"],"โกโก้ล้วน":["F0E4DA","6B4226"]};
+const colOf=k=>PCOL[k]||(k.indexOf("/ดำ")>0?["D9D9D9","333333"]:["FFFFFF","333333"]);
+const POOLKEY={"น้ำเงิน":"น้ำเงิน","เขียว":"เขียว","แดง":"แดง","เหลือง":"เหลือง","ขาว":"ขาว","ดำ":"ดำ","เทา":"เทา","Xmas เขียว":"เขียว/แดง","Xmas แดง":"แดง/เขียว","พื้นแดง เหลือง":"เหลือง/แดง","น้ำเงินล้วน":"น้ำเงิน/น้ำเงิน","แดงล้วน":"แดง/แดง","โกโก้":"โกโก้ล้วน"};
+const tint=k=>' style="background:#'+colOf(k)[0]+'55"';
 function planView(c){ // -> {rows:[{label,v,st}], tot, prevRev}
   const prevs=Object.keys(PL[c.m]).map(Number).filter(r=>r<Number(c.rev)).sort((a,b)=>a-b), pr=prevs.length?prevs[prevs.length-1]:null, pc=pr!=null?PL[c.m][pr].colors:null;
   const known=PTPL.map(r=>r[0]), extra=Object.keys(c.P.colors).filter(k=>!known.includes(k)&&c.P.colors[k].some(x=>x)).map(k=>[k,k]);
   const rows=PTPL.concat(extra).map(r=>{const v=c.P.colors[r[0]]||[0,0,0,0,0,0], o=pc?(pc[r[0]]||[0,0,0,0,0,0]):null;
-    return {label:r[1],v,st:v.map((x,i)=>o?(x<o[i]?"dn":x>o[i]?"up":""):"")}});
+    return {k:r[0],label:r[1],v,st:v.map((x,i)=>o?(x<o[i]?"dn":x>o[i]?"up":""):"")}});
   const tot=[0,0,0,0,0,0];rows.forEach(r=>r.v.forEach((x,i)=>tot[i]+=x));
   return {rows,tot,prevRev:pr};
 }
 const SUPMAP={"น้ำเงิน":"น้ำเงิน","เขียว":"เขียว","แดง":"แดง","เหลือง":"เหลือง","ขาว":"ขาว","ดำล้วน":"ดำ","เทา":"เทา","Xmax หูเขียว":"เขียว/แดง","Xmax หูแดง":"แดง/เขียว","โควิด หูเหลือง":"เหลือง/ดำ","น้ำเงินล้วน":"น้ำเงิน/น้ำเงิน","แดงล้วน":"แดง/แดง","โกโก้ล้วน":"โกโก้ล้วน"};
 function supView(c){ // แถวเดียวกับแบบฟอร์มแผน ตามที่โรงงานแยกแผ่นจริง
   const by={};c.ds.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const pk=SUPMAP[k]||k;(by[pk]=by[pk]||[0,0,0,0,0,0]);DATA[d][k].forEach((x,i)=>by[pk][i]+=x*c.f)}));
-  const rows=PTPL.map(r=>({label:r[1],na:!Object.values(SUPMAP).includes(r[0]),v:(by[r[0]]||[0,0,0,0,0,0]).map(Math.round)}));
+  const rows=PTPL.map(r=>({k:r[0],label:r[1],na:!Object.values(SUPMAP).includes(r[0]),v:(by[r[0]]||[0,0,0,0,0,0]).map(Math.round)}));
   const tot=[0,0,0,0,0,0];rows.forEach(r=>r.v.forEach((x,i)=>tot[i]+=x));return {rows,tot};
 }
 function drawSupTable(c){
   const sv=supView(c),T=a=>a.reduce((x,y)=>x+y,0);
   let h='<div style="font-weight:600;margin-bottom:8px">ได้จากแผ่นที่จ่ายไปประกอบ'+thM(c.m)+' (แยกตามที่โรงงานแยกแผ่นจริง)</div><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
-  sv.rows.forEach(r=>{h+="<tr><td>"+r.label+"</td>"+r.v.map(x=>'<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(r.v)?fmt(T(r.v)):"-")+"</b></td></tr>"});
+  sv.rows.forEach(r=>{h+="<tr"+tint(r.k)+"><td>"+r.label+"</td>"+r.v.map(x=>'<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(r.v)?fmt(T(r.v)):"-")+"</b></td></tr>"});
   h+="</tbody><tfoot><tr><td>รวม</td>"+sv.tot.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(T(sv.tot))+"</td></tr></tfoot></table>";
   h+='<div class="note" style="margin-top:8px">แถวที่เป็น "-" คือโรงงานไม่ได้แยกแผ่นไว้: สีดำหน้าขาว รวมอยู่ในแถว ขาว · พื้นดำหูพิเศษ (ยกเว้นโควิด) รวมอยู่ในแถว ดำล้วน · พื้นแดง หูเหลือง ไม่มีแถวแยกในไฟล์โรงงาน (ถ้ามี จะอยู่ในแถว แดง) ดังนั้นการเทียบรายแถวตรงๆ ของ ขาว/ดำ จะคลาดเคลื่อน ให้ดูตารางสรุปกลุ่มด้านบนประกอบ</div>';
   $("p-sup").innerHTML=h;
@@ -329,7 +377,7 @@ function drawPlanTable(c){
   let h='<div style="font-weight:600;margin-bottom:8px">ขอเรียนสัดส่วนสีและเบอร์รองเท้าฟองน้ำ 200 เดือน'+thM(c.m)+' ตามยอดจองของลูกค้า ('+revName(c.rev)+')</div>';
   if(pv.prevRev!=null)h+='<div class="note" style="margin-bottom:8px"><span class="sw dn"></span> ปรับลดผลิตจากแผน ('+revName(pv.prevRev)+') &nbsp; <span class="sw up"></span> ปรับเพิ่มผลิตจากแผน ('+revName(pv.prevRev)+')</div>';
   h+='<table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
-  pv.rows.forEach(r=>{h+="<tr><td>"+r.label+"</td>"+r.v.map((x,i)=>'<td class="'+r.st[i]+(x?"":" zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(r.v)?fmt(T(r.v)):"-")+"</b></td></tr>"});
+  pv.rows.forEach(r=>{h+="<tr"+tint(r.k)+"><td>"+r.label+"</td>"+r.v.map((x,i)=>'<td class="'+r.st[i]+(x?"":" zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(r.v)?fmt(T(r.v)):"-")+"</b></td></tr>"});
   h+="</tbody><tfoot><tr><td>รวม</td>"+pv.tot.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(g)+"</td></tr>";
   h+='<tr class="soft"><td>สัดส่วนต่อเบอร์</td>'+pv.tot.map(x=>"<td>"+(g?Math.round(x/g*100):0)+"%</td>").join("")+"<td>100%</td></tr></tfoot></table>";
   if(c.P.note)h+='<div class="note" style="margin-top:8px">หมายเหตุแผน: '+c.P.note+"</div>";
@@ -348,11 +396,11 @@ function renderP(){
   drawPlanTable(c);drawSupTable(c);
   const rows=POOLS.filter(p=>T(c.plan[p])||T(c.sup[p]));
   let h='<table><thead><tr><th>กลุ่มแผ่นยาง</th><th>แผน</th><th>ได้จากแผ่น</th><th>ส่วนต่าง</th><th>%</th></tr></thead><tbody>';
-  rows.forEach(p=>{const a=T(c.plan[p]),b=T(c.sup[p]);if(NAPOOL.includes(p)){h+="<tr><td>"+POOLN[p]+"</td><td>"+fmt(a)+'</td><td colspan="3" class="zero" style="text-align:left">โรงงานไม่มีแถวแผ่นแยกให้ (ไม่นำมาเทียบ)</td></tr>';return}h+="<tr><td>"+POOLN[p]+"</td><td>"+fmt(a)+"</td><td>"+fmt(b)+'</td><td class="'+(b-a<0?"neg":"pos")+'">'+(b-a>=0?"+":"")+fmt(b-a)+"</td><td>"+(a?Math.round(b/a*100)+"%":"–")+"</td></tr>"});
+  rows.forEach(p=>{const a=T(c.plan[p]),b=T(c.sup[p]);if(NAPOOL.includes(p)){h+="<tr"+tint(POOLKEY[p])+"><td>"+POOLN[p]+"</td><td>"+fmt(a)+'</td><td colspan="3" class="zero" style="text-align:left">โรงงานไม่มีแถวแผ่นแยกให้ (ไม่นำมาเทียบ)</td></tr>';return}h+="<tr"+tint(POOLKEY[p])+"><td>"+POOLN[p]+"</td><td>"+fmt(a)+"</td><td>"+fmt(b)+'</td><td class="'+(b-a<0?"neg":"pos")+'">'+(b-a>=0?"+":"")+fmt(b-a)+"</td><td>"+(a?Math.round(b/a*100)+"%":"–")+"</td></tr>"});
   $("p-sum").innerHTML=h+"</tbody><tfoot><tr><td>รวม (ไม่รวมแถวที่ไม่มีแผ่นแยก)</td><td>"+fmt(tpc)+"</td><td>"+fmt(ts)+"</td><td>"+(ts-tpc>=0?"+":"")+fmt(ts-tpc)+"</td><td>"+(tpc?Math.round(ts/tpc*100)+"%":"–")+"</td></tr></tfoot></table>";
   $("p-foot").textContent="รวมกลุ่มเฉพาะที่ใช้แผ่นยางชุดเดียวกัน: ขาว + ดำหน้าขาว (แผ่นขาว) และ ดำ + พื้นดำหูพิเศษ (แผ่นดำ) ส่วนสีอื่นแยกรายแถว · เหมาะเทียบภาพรวม เพราะแผนเดือนนี้บางส่วนใช้แผ่นที่จ่ายก่อนวันที่ 1 และแผ่นปลายเดือนจะกลายเป็นรองเท้าเดือนถัดไป"+(c.ds.length&&c.ds[c.ds.length-1]<c.m+"-28"?" · ข้อมูลยังไม่ครบเดือน ตัวเลขจะเพิ่มเมื่อนำเข้าไฟล์ใหม่":"");
   let g='<table><thead><tr><th>กลุ่ม</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
-  rows.filter(p=>!NAPOOL.includes(p)).forEach(p=>{g+="<tr><td>"+POOLN[p]+"</td>"+SIZES.map((z,i)=>{const d=c.sup[p][i]-c.plan[p][i];return '<td class="'+(d<0?"neg":d>0?"pos":"zero")+'">'+(d?(d>0?"+":"")+fmt(d):"–")+"</td>"}).join("")+'<td><b>'+(T(c.sup[p])-T(c.plan[p])>=0?"+":"")+fmt(T(c.sup[p])-T(c.plan[p]))+"</b></td></tr>"});
+  rows.filter(p=>!NAPOOL.includes(p)).forEach(p=>{g+="<tr"+tint(POOLKEY[p])+"><td>"+POOLN[p]+"</td>"+SIZES.map((z,i)=>{const d=c.sup[p][i]-c.plan[p][i];return '<td class="'+(d<0?"neg":d>0?"pos":"zero")+'">'+(d?(d>0?"+":"")+fmt(d):"–")+"</td>"}).join("")+'<td><b>'+(T(c.sup[p])-T(c.plan[p])>=0?"+":"")+fmt(T(c.sup[p])-T(c.plan[p]))+"</b></td></tr>"});
   $("p-diff").innerHTML=g+"</tbody></table>";
 }
 $("p-month").onchange=()=>{$("p-rev").innerHTML="";renderP()};$("p-rev").onchange=renderP;
@@ -361,30 +409,41 @@ $("pxl").onclick=async()=>{
   const b=$("pxl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),c=planCalc();
   if(!c||typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้";back();return}
   const wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
-  {const w0=wb.addWorksheet("แผนผลิต"),pv=planView(c),T=a=>a.reduce((x,y)=>x+y,0),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd};
-   w0.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:15}]);
-   w0.addRow(["ขอเรียนสัดส่วนสีและเบอร์รองเท้าฟองน้ำ 200 เดือน"+thM(c.m)+" ตามยอดจองของลูกค้า ("+revName(c.rev)+")"]).font={bold:true,size:13};
-   if(pv.prevRev!=null){w0.addRow(["ปรับลดผลิตจากแผน ("+revName(pv.prevRev)+")"]).getCell(1).fill=fill("F8D7C4");w0.addRow(["ปรับเพิ่มผลิตจากแผน ("+revName(pv.prevRev)+")"]).getCell(1).fill=fill("FFF200")}
-   w0.addRow([]);const hr=w0.addRow(["รองเท้ารุ่น 200 (หน่วย: คู่)"].concat(SIZES,["รวม 8.5-11"]));hr.eachCell(x=>{x.font={bold:true};x.alignment={horizontal:"center"};x.border=B});const r1=w0.rowCount+1;
-   pv.rows.forEach(r=>{const n=w0.rowCount+1,row=w0.addRow([r.label].concat(r.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(r.v)}]));row.eachCell((x,j)=>{x.border=B;if(j>1)x.numFmt="#,##0;-#,##0;-";if(j>1&&j<8&&r.st[j-2]==="dn")x.fill=fill("F8D7C4");if(j>1&&j<8&&r.st[j-2]==="up")x.fill=fill("FFF200")})});
-   const r2=w0.rowCount,tr=w0.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?pv.tot[j-2]:T(pv.tot)}))));tr.eachCell((x,j)=>{x.font={bold:true};x.border=B;if(j>1)x.numFmt="#,##0"});
-   if(c.P.note)w0.addRow(["หมายเหตุแผน: "+c.P.note]).font={italic:true,color:{argb:"FF666666"}};}
-  const ws=wb.addWorksheet("เทียบแผน");ws.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
-  ws.addRow(["เทียบแผนผลิตกับแผ่นยางที่จ่ายไปประกอบ รุ่น 200 (หน่วย: คู่)"]).font={bold:true,size:14};
-  ws.addRow(["แผน "+thM(c.m)+" "+revName(c.rev)+" | แผ่นยางจ่ายประกอบ "+c.ds.length+" วัน | คิด "+c.f+" คู่ต่อแผ่น"]).font={bold:true,color:{argb:"FF1A56DB"}};
+  const T=a=>a.reduce((x,y)=>x+y,0),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd};
+  const cols=ws=>{ws.columns=[{width:40}].concat(SIZES.map(()=>({width:11})),[{width:15}])};
+  const note=(ws,t,o)=>{o=o||{};const r=ws.addRow([t]);ws.mergeCells(r.number,1,r.number,8);const x=r.getCell(1);x.alignment={wrapText:true,vertical:"middle"};x.font={size:o.size||10,bold:!!o.bold,italic:!!o.italic,color:{argb:"FF"+(o.color||"666666")}};if(o.fill)x.fill=fill(o.fill);r.height=Math.max(16,Math.ceil(t.length/(o.size>11?55:90))*(o.size>11?20:15));return r};
+  const head=(ws,first)=>{const h=ws.addRow([first].concat(SIZES,["รวม 8.5-11"]));h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center"};x.border=B});return h};
+  // บล็อกแถวตามแบบฟอร์มแผน: rowsL=[{k,label,v,st?}] , label สี = สีรองเท้า
+  const block=(ws,title,rowsL,tot,first)=>{
+    if(title){ws.addRow([]);note(ws,title,{size:12,bold:true,color:"1A56DB"})}
+    head(ws,first||"รองเท้ารุ่น 200 (หน่วย: คู่)");const r1=ws.rowCount+1;
+    rowsL.forEach(r=>{const n=ws.rowCount+1,cl=colOf(r.k),row=ws.addRow([r.label].concat(r.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(r.v)}]));
+      row.eachCell((x,j)=>{x.border=B;x.fill=fill(cl[0]);if(j>1)x.numFmt="#,##0;-#,##0;-";if(j===1)x.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===8){x.font={bold:true,color:{argb:"FF"+cl[1]}};x.fill=fill("EEF2FF")}
+        if(r.st&&j>1&&j<8){if(r.st[j-2]==="dn")x.fill=fill("F8D7C4");if(r.st[j-2]==="up")x.fill=fill("FFF200")}})});
+    const r2=ws.rowCount,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tot[j-2]:T(tot)}))));
+    tr.eachCell((x,j)=>{x.font={bold:true};x.border=B;x.fill=fill("DCE6FA");if(j>1)x.numFmt="#,##0"});
+  };
+  const pv=planView(c),sv=supView(c);
+  // แผ่น 1: แผนผลิตตามแบบฟอร์ม
+  {const w0=wb.addWorksheet("แผนผลิต");cols(w0);
+   note(w0,"ขอเรียนสัดส่วนสีและเบอร์รองเท้าฟองน้ำ 200 เดือน"+thM(c.m)+" ตามยอดจองของลูกค้า ("+revName(c.rev)+")",{size:13,bold:true,color:"000000"});
+   if(pv.prevRev!=null){note(w0,"ปรับลดผลิตจากแผน ("+revName(pv.prevRev)+")",{fill:"F8D7C4",color:"000000"});note(w0,"ปรับเพิ่มผลิตจากแผน ("+revName(pv.prevRev)+")",{fill:"FFF200",color:"000000"})}
+   w0.addRow([]);block(w0,"",pv.rows,pv.tot);
+   if(c.P.note)note(w0,"หมายเหตุแผน: "+c.P.note,{italic:true})}
+  // แผ่น 2: เทียบแผน
+  const ws=wb.addWorksheet("เทียบแผน");cols(ws);
+  note(ws,"เทียบแผนผลิตกับแผ่นยางที่จ่ายไปประกอบ รุ่น 200 (หน่วย: คู่)",{size:14,bold:true,color:"000000"});
+  note(ws,"แผน "+thM(c.m)+" "+revName(c.rev)+" | แผ่นยางจ่ายประกอบ "+c.ds.length+" วัน | คิด "+c.f+" คู่ต่อแผ่น",{size:11,bold:true,color:"1A56DB"});
+  block(ws,"แผนผลิต (ตามแบบฟอร์มแผน)",pv.rows,pv.tot);
+  block(ws,"ได้จากแผ่นที่จ่ายประกอบ (ตามที่โรงงานแยกแผ่น)",sv.rows,sv.tot);
+  ["แถวที่เป็น - = โรงงานไม่ได้แยกแผ่นแถวนี้","ดำหน้าขาว รวมอยู่ในแถว ขาว","พื้นดำหูพิเศษ (ยกเว้นโควิด) รวมในแถว ดำล้วน","พื้นแดง หูเหลือง ไม่มีแถวแยกในไฟล์โรงงาน","จึงเทียบรายแถวไม่ได้ ให้ดูตารางสรุปกลุ่มด้านล่าง"].forEach(t=>note(ws,"หมายเหตุ: "+t,{italic:true}));
   const rows=POOLS.filter(p=>c.plan[p].some(x=>x)||c.sup[p].some(x=>x));
-  const blk=(t,fn)=>{ws.addRow([]);ws.addRow([t]).font={bold:true,size:12,color:{argb:"FF1A56DB"}};const h=ws.addRow(["กลุ่มแผ่นยาง"].concat(SIZES,["รวม"]));h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center"}});const r0=ws.rowCount+1;
-    rows.forEach(p=>{const r=ws.rowCount+1;ws.addRow([POOLN[p]].concat(SIZES.map((z,i)=>Math.round(fn(p,i))),[{formula:"SUM(B"+r+":G"+r+")"}]))});
-    const n=ws.rowCount,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r0+":"+String.fromCharCode(64+j)+n+")"}))));tr.eachCell(x=>{x.font={bold:true};x.fill=fill("DCE6FA")});};
-  {const pv=planView(c),sv=supView(c),T=a=>a.reduce((x,y)=>x+y,0),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd};
-  const blk21=(t,rowsL,tot)=>{ws.addRow([]);ws.addRow([t]).font={bold:true,size:12,color:{argb:"FF1A56DB"}};const h=ws.addRow(["รองเท้ารุ่น 200 (หน่วย: คู่)"].concat(SIZES,["รวม 8.5-11"]));h.eachCell(x=>{x.font={bold:true};x.alignment={horizontal:"center"};x.border=B});const r1=ws.rowCount+1;
-    rowsL.forEach(r=>{const n=ws.rowCount+1,row=ws.addRow([r.label].concat(r.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(r.v)}]));row.eachCell((x,j)=>{x.border=B;if(j>1)x.numFmt="#,##0;-#,##0;-"})});
-    const r2=ws.rowCount,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tot[j-2]:T(tot)}))));tr.eachCell((x,j)=>{x.font={bold:true};x.border=B;if(j>1)x.numFmt="#,##0"})};
-  blk21("แผนผลิต (ตามแบบฟอร์มแผน)",pv.rows,pv.tot);
-  blk21("ได้จากแผ่นที่จ่ายประกอบ (แยกตามที่โรงงานแยกแผ่นจริง; แถวที่เป็น - คือโรงงานไม่ได้แยกแผ่นไว้)",sv.rows,sv.tot);
-  ws.addRow(["หมายเหตุ: สีดำหน้าขาวรวมอยู่ในแถว ขาว · พื้นดำหูพิเศษ (ยกเว้นโควิด) รวมในแถว ดำล้วน · พื้นแดง หูเหลือง ไม่มีแถวแยกในไฟล์โรงงาน จึงเทียบรายแถวตรงๆ ไม่ได้ ใช้ตารางสรุปกลุ่มด้านล่างเทียบแทน (รวมเฉพาะ ขาว+ดำหน้าขาว และ ดำ+พื้นดำหูพิเศษ)"]).font={italic:true,color:{argb:"FF666666"}};}
-  blk("สรุปเทียบกลุ่ม: แผนผลิต (ไม่รวมพื้นแดง หูเหลือง ที่โรงงานไม่มีแถวแยก)",(p,i)=>NAPOOL.includes(p)?0:c.plan[p][i]);blk("สรุปเทียบกลุ่ม: ได้จากแผ่นที่จ่ายประกอบ",(p,i)=>c.sup[p][i]);blk("สรุปเทียบกลุ่ม: ส่วนต่าง (ได้จากแผ่น − แผน) ค่าลบ = แผ่นยางยังไม่พอ",(p,i)=>NAPOOL.includes(p)?0:c.sup[p][i]-c.plan[p][i]);
-  ws.eachRow(r=>r.eachCell((x,j)=>{if(j>1)x.numFmt="#,##0;[Red]-#,##0"}));
+  const pool=(t,fn)=>{const L=rows.map(p=>({k:POOLKEY[p],label:POOLN[p],v:SIZES.map((z,i)=>Math.round(fn(p,i)))}));const tot=SIZES.map((z,i)=>L.reduce((q,r)=>q+r.v[i],0));block(ws,t,L,tot,"กลุ่มแผ่นยาง")};
+  pool("สรุปกลุ่ม: แผนผลิต",(p,i)=>NAPOOL.includes(p)?0:c.plan[p][i]);
+  pool("สรุปกลุ่ม: ได้จากแผ่นที่จ่ายประกอบ",(p,i)=>c.sup[p][i]);
+  pool("สรุปกลุ่ม: ส่วนต่าง (ลบ = แผ่นยางยังไม่พอ)",(p,i)=>NAPOOL.includes(p)?0:c.sup[p][i]-c.plan[p][i]);
+  note(ws,"สรุปกลุ่มไม่รวม พื้นแดง หูเหลือง เพราะโรงงานไม่มีแถวแยก",{italic:true});
+  ws.eachRow(r=>r.eachCell((x,j)=>{if(j>1&&x.numFmt==="#,##0")x.numFmt="#,##0;[Red]-#,##0;-"}));
   await saveBook(wb,"เทียบแผน_"+c.m+"_rev"+c.rev+".xlsx");b.textContent="ดาวน์โหลดแล้ว";back();
 };
 /* ---------- import ---------- */
@@ -451,6 +510,173 @@ $("i-save").onclick=async()=>{
   }
   msg.className="msg "+(bad.length?"warn":"ok");msg.textContent=(ok?"บันทึกสำเร็จ "+ok+" ไฟล์. ":"")+bad.join(" | ");
   if(ok){IMP=[];$("i-file").value="";drawImport();await load()}else $("i-save").disabled=false;
+};
+/* ===== ประเมินสต็อกสิ้นเดือน ===== */
+const SC=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา","ดำ/ขาว"], SCN={"ดำ/ขาว":"ดำหน้าขาว (ดำ/ขาว)"}, Z6=()=>[0,0,0,0,0,0];
+let STK=[], EIMP=null;
+const nn=x=>x===""||x==null||isNaN(Number(x))?null:Number(x);
+function stkGet(kind,date){const o={};STK.forEach(r=>{if(r[1]===kind&&normD(r[0])===date)o[r[2]]=r.slice(3,9).map(nn).concat([nn(r[9])])});return o}
+function stkDates(kinds){return [...new Set(STK.filter(r=>kinds.includes(r[1])).map(r=>normD(r[0])))].sort()}
+const addD=(s,n)=>{const t=new Date(s+"T12:00:00");t.setDate(t.getDate()+n);return t.getFullYear()+"-"+p2(t.getMonth()+1)+"-"+p2(t.getDate())};
+const monEnd=s=>{const y=+s.slice(0,4),m=+s.slice(5,7);return y+"-"+p2(m)+"-"+p2(new Date(y,m,0).getDate())};
+const todayS=()=>{const t=new Date();return t.getFullYear()+"-"+p2(t.getMonth()+1)+"-"+p2(t.getDate())};
+function thDate(t){
+  const m=String(t||"").match(/(\d{1,2})\s*(ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.)\s*(\d{2,4})/);if(!m)return"";
+  let y=+m[3];if(y<100)y+=2500;if(y>2400)y-=543;return y+"-"+p2(MON.indexOf(m[2])+1)+"-"+p2(+m[1]);
+}
+async function readStock(file){
+  const out={name:file.name,date:"",tabs:{},err:""};
+  try{
+    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());const ws=wb.worksheets[0];
+    const lab=r=>norm(cv(ws.getCell(r,1))||"");
+    const find=(re,from)=>{for(let r=from||1;r<=Math.min(ws.rowCount,260);r++)if(re.test(lab(r)))return r;return 0};
+    const grab=r0=>{const o={};if(!r0||!/^สี/.test(lab(r0+1)))return o;for(let r=r0+2;r<r0+14;r++){const l=lab(r);if(!l)break;o[l]=SIZES.map((s,i)=>Math.round(Number(cv(ws.getCell(r,i+2)))||0))}return o};
+    const a=find(/^ฟองน้ำ\s*รุ่น\s*200.*คงเหลือ/);if(!a){out.err="ไม่พบตาราง 'ฟองน้ำ รุ่น 200 (คงเหลือ …)' ในไฟล์";return out}
+    out.date=thDate(lab(a));
+    out.tabs.stock=grab(a);out.tabs.booked=grab(find(/^ฟองน้ำ\s*รุ่น\s*200\s*ยอดซื้อ/,a));out.tabs.net=grab(find(/^คงเหลือสุทธิ/,a));
+    if(!Object.keys(out.tabs.net).length)out.err="ไม่พบตาราง 'คงเหลือสุทธิ'";
+  }catch(e){out.err="อ่านไฟล์ไม่ได้: "+e}
+  return out;
+}
+const sumT=o=>Object.values(o||{}).reduce((q,v)=>q+v.reduce((x,y)=>x+y,0),0);
+function eMsg(t,cls){const m=$("e-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
+$("e-file").onchange=async e=>{
+  const f=e.target.files[0];EIMP=null;$("e-fsave").disabled=true;$("e-fprev").textContent="";if(!f)return;
+  const r=await readStock(f);
+  if(r.err){$("e-fprev").textContent=r.err;return}
+  EIMP=r;$("e-fdate").value=r.date;$("e-fsave").disabled=false;
+  const a=sumT(r.tabs.stock),b=sumT(r.tabs.booked),n=sumT(r.tabs.net);
+  $("e-fprev").innerHTML="อ่านได้: คงเหลือ <b>"+fmt(a)+"</b> − ยอดซื้อ <b>"+fmt(b)+"</b> = สุทธิ <b>"+fmt(n)+"</b> คู่"+(Math.abs(a-b-n)>1?' <span style="color:var(--warn)">(ตัวเลขในไฟล์ไม่ตรงสูตร ตรวจอีกครั้ง)</span>':"")+" · วันที่ในหัวตาราง "+(r.date?thD(r.date):"อ่านไม่ได้ — กรอกวันที่เอง");
+};
+$("e-fsave").onclick=async()=>{
+  const key=$("e-key").value.trim(),d=$("e-fdate").value;if(!EIMP||!d){eMsg("เลือกไฟล์และวันที่ก่อน","warn");return}
+  if(!key){eMsg("ใส่รหัสบันทึกก่อน","warn");return}
+  try{localStorage.setItem("fgkey",key)}catch(e){}
+  const rows=[];["stock","booked","net"].forEach(k=>Object.keys(EIMP.tabs[k]).forEach(c=>rows.push([k,c].concat(EIMP.tabs[k][c],[""]))));
+  $("e-fsave").disabled=true;
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by:"",rows})}).then(r=>r.json());
+    if(r.ok){eMsg("บันทึกสต็อกวันที่ "+thD(d)+" แล้ว ("+r.rows+" แถว)","ok");EIMP=null;$("e-file").value="";$("e-fprev").textContent="";await load();$("e-sd").value=d;renderE()}
+    else{eMsg(r.error||"บันทึกไม่สำเร็จ","warn");$("e-fsave").disabled=false}}
+  catch(err){eMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("e-fsave").disabled=false}
+};
+function buildGrid(){
+  let h='<table><thead><tr><th>สี</th><th>รวมต่อสี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>เป้าสต็อกสิ้นเดือน</th></tr></thead><tbody>";
+  SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+'</td><td><input type="number" min="0" id="q-t-'+i+'" style="width:96px"></td>'+SIZES.map((z,j)=>'<td><input type="number" min="0" id="q-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="number" min="0" id="q-g-'+i+'" style="width:96px"></td></tr>'});
+  $("e-grid").innerHTML=h+"</tbody></table>";
+}
+const gv=id=>nn($(id).value);
+function qIn(){const q={};SC.forEach((c,i)=>{q[c]={total:gv("q-t-"+i)||0,sizes:SIZES.map((z,j)=>gv("q-s-"+i+"-"+j)),target:gv("q-g-"+i)||0}});return q}
+function fillGrid(d){
+  const Q=stkGet("quota",d),G=stkGet("target",d);
+  SC.forEach((c,i)=>{const a=Q[c]||[null,null,null,null,null,null,null],g=G[c]||[];
+    $("q-t-"+i).value=a[6]==null?"":a[6];SIZES.forEach((z,j)=>$("q-s-"+i+"-"+j).value=a[j]==null?"":a[j]);$("q-g-"+i).value=g[6]==null?"":g[6]});
+}
+$("e-qsave").onclick=async()=>{
+  const key=$("e-key").value.trim(),d=$("e-qdate").value,q=qIn();if(!d){eMsg("เลือกวันที่ของโควต้า","warn");return}
+  if(!key){eMsg("ใส่รหัสบันทึกก่อน","warn");return}
+  try{localStorage.setItem("fgkey",key)}catch(e){}
+  const rows=[];SC.forEach(c=>{const s=q[c].sizes,has=q[c].total>0||s.some(x=>x!=null);
+    if(has)rows.push(["quota",c].concat(s.map(x=>x==null?"":x),[q[c].total||""]));
+    if(q[c].target>0)rows.push(["target",c,"","","","","","",q[c].target])});
+  if(!rows.length){eMsg("ยังไม่ได้กรอกโควต้า","warn");return}
+  $("e-qsave").disabled=true;
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by:$("e-by").value.trim(),rows})}).then(r=>r.json());
+    eMsg(r.ok?"บันทึกโควต้า ณ "+thD(d)+" แล้ว":(r.error||"บันทึกไม่สำเร็จ"),r.ok?"ok":"warn");if(r.ok){await load();$("e-qd").value=d}}
+  catch(err){eMsg("บันทึกไม่สำเร็จ: "+err,"warn")}
+  $("e-qsave").disabled=false;
+};
+let EINIT=false;
+function initE(){
+  if(!EINIT){buildGrid();EINIT=true;try{$("e-key").value=localStorage.getItem("fgkey")||""}catch(e){}$("e-qdate").value=todayS()}
+  const sdv=$("e-sd").value,qdv=$("e-qd").value;
+  const sds=stkDates(["net","stock"]);$("e-sd").innerHTML=sds.length?sds.slice().reverse().map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join(""):'<option value="">ยังไม่มีสต็อก</option>';
+  if(sdv&&sds.includes(sdv))$("e-sd").value=sdv;
+  if(!$("e-end").value||!sdv)$("e-end").value=$("e-sd").value?monEnd($("e-sd").value):"";
+  const qds=stkDates(["quota"]);$("e-qd").innerHTML='<option value="">—</option>'+qds.slice().reverse().map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join("");
+  if(qdv&&qds.includes(qdv))$("e-qd").value=qdv;
+  else if(qds.length&&!window._qf){$("e-qd").value=qds[qds.length-1];fillGrid(qds[qds.length-1]);window._qf=1}
+}
+$("e-qd").onchange=()=>{if($("e-qd").value){fillGrid($("e-qd").value);$("e-qdate").value=$("e-qd").value;renderE()}};
+$("e-sd").onchange=()=>{$("e-end").value=$("e-sd").value?monEnd($("e-sd").value):"";renderE()};
+function calcE(){
+  const sd=$("e-sd").value,ed=$("e-end").value;if(!sd||!ed)return{err:"ยังไม่มีสต็อก — นำเข้าไฟล์สต็อกจาก รง. ก่อน"};
+  if(ed<=sd)return{err:"วันที่ 'คิดถึง' ต้องหลังวันที่ของสต็อก"};
+  const lag=Math.max(0,Math.round(+$("e-lag").value||0)),f=F(),pct=Math.max(0,+$("e-pct").value||0)/100,kind=$("e-net").checked?"net":"stock";
+  const st=stkGet(kind,sd);if(!Object.keys(st).length)return{err:"ไม่มีข้อมูลสต็อกประเภทนี้ของวันที่ "+thD(sd)};
+  const d1=addD(sd,1-lag),d2=addD(ed,-lag),P0=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา"],sup={};P0.forEach(p=>sup[p]=Z6());
+  let nd=0,last="";
+  dates().forEach(d=>{if(d<d1||d>d2)return;nd++;last=d;Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!sup[p])return;DATA[d][k].forEach((x,i)=>sup[p][i]+=x*f)})});
+  const m=ed.slice(0,7),revs=PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>b-a):[],Pm=revs.length?PL[m][revs[0]].colors:null;
+  const pk=k=>Pm&&Pm[k]?Pm[k]:Z6(),T=a=>a.reduce((x,y)=>x+y,0);
+  const shr=(num,den,fb)=>SIZES.map((z,i)=>den[i]>0?num[i]/den[i]:(T(den)>0?T(num)/T(den):fb));
+  const wo=nn($("e-wpct").value),bo=nn($("e-bpct").value);let wReg,bReg,wsrc,bsrc;
+  const sw=st["ขาว"]||Z6(),sx=st["ดำ/ขาว"]||Z6();
+  if(wo!=null){wReg=SIZES.map(()=>1-wo/100);wsrc="ตามที่กำหนด"}
+  else if(Pm){wReg=shr(pk("ขาว"),pk("ขาว").map((x,i)=>x+pk("ดำ/ขาว")[i]),1);wsrc="ตามแผนผลิต "+thM(m)}
+  else{wReg=shr(sw,sw.map((x,i)=>x+sx[i]),1);wsrc="ตามสัดส่วนสต็อก (ไม่มีแผนเดือนนี้)"}
+  const pkD=Pm?Object.keys(Pm).filter(k=>planPool(k)==="ดำ").reduce((a,k)=>a.map((x,i)=>x+Pm[k][i]),Z6()):Z6();
+  if(bo!=null){bReg=SIZES.map(()=>bo/100);bsrc="ตามที่กำหนด"}
+  else if(Pm){bReg=shr(pk("ดำ"),pkD,1);bsrc="ตามแผนผลิต "+thM(m)}
+  else{bReg=SIZES.map(()=>1);bsrc="ใช้ทั้งหมด (ไม่มีแผนเดือนนี้)"}
+  const inn={"น้ำเงิน":sup["น้ำเงิน"],"เขียว":sup["เขียว"],"แดง":sup["แดง"],"เหลือง":sup["เหลือง"],"เทา":sup["เทา"],
+    "ขาว":sup["ขาว"].map((x,i)=>x*wReg[i]),"ดำ/ขาว":sup["ขาว"].map((x,i)=>x*(1-wReg[i])),"ดำ":sup["ดำ"].map((x,i)=>x*bReg[i])};
+  const q=qIn(),res={};
+  SC.forEach(c=>{const s=q[c].sizes,has=s.some(x=>x!=null&&x>0),b=st[c]||Z6(),B=T(b);
+    const qv=(has?SIZES.map((z,i)=>s[i]||0):SIZES.map((z,i)=>B>0?q[c].total*b[i]/B:q[c].total/6)).map(x=>x*pct);
+    const start=b.slice(0,6),o={start,inn:inn[c],quota:qv,target:q[c].target};o.end=start.map((x,i)=>x+o.inn[i]-qv[i]);res[c]=o});
+  const tq=SC.reduce((a,c)=>a+T(res[c].quota),0);
+  return{sd,ed,lag,f,pct,nd,last,d1,d2,res,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0};
+}
+function renderE(){
+  if($("view-e").hidden)return;
+  const c=calcE(),W=$("e-warn");
+  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-sum","e-end-m","e-det","e-foot"].forEach(i=>$(i).innerHTML="");return}
+  const T=a=>a.reduce((x,y)=>x+y,0),sum=k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0),w=[];
+  if(!c.hasQ)w.push("ยังไม่ได้กรอกโควต้าฝ่ายขาย — ตอนนี้ยอดสิ้นเดือน = สต็อก + ยอดที่จะเข้าเท่านั้น");
+  if(!c.nd)w.push("ไม่มีข้อมูลแผ่นยางในช่วง "+thD(c.d1)+" ถึง "+thD(c.d2));
+  else if(c.last<c.d2)w.push("ข้อมูลแผ่นยางมีถึง "+thD(c.last)+" แต่ต้องการถึง "+thD(c.d2)+" — ยอดที่จะเข้าอาจต่ำกว่าจริง (รอ รง. ส่งไฟล์ต่อ)");
+  const qd=$("e-qd").value;if(qd&&qd!==c.sd)w.push("โควต้าที่โหลดอยู่เป็นของวันที่ "+thD(qd)+" ส่วนสต็อกเป็นของวันที่ "+thD(c.sd)+" — ระบบถือว่าโควต้าคือยอดขายที่เหลือตั้งแต่วันถัดจากสต็อกถึงวันที่คิด");
+  W.hidden=!w.length;W.innerHTML=w.join("<br>");
+  const E=sum("end"),neg=SC.reduce((a,x)=>a+c.res[x].end.filter(v=>v<0).length,0);
+  $("e-kpis").innerHTML='<div class="kpi"><div class="k">สต็อกตั้งต้น ('+thD(c.sd)+')</div><div class="v">'+fmt(sum("start"))+'</div></div><div class="kpi"><div class="k">+ ยอดที่จะเข้า ('+c.nd+' วันจ่ายแผ่น)</div><div class="v">'+fmt(sum("inn"))+'</div></div><div class="kpi"><div class="k">− โควต้าขายคงเหลือ</div><div class="v">'+fmt(c.tq)+'</div></div><div class="kpi main"><div class="k">= สต็อกสิ้นเดือน ('+thD(c.ed)+')</div><div class="v">'+fmt(E)+'</div></div><div class="kpi"><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(neg?"var(--warn)":"inherit")+'">'+neg+"</div></div>";
+  let h='<table><thead><tr><th>สี</th><th>สต็อกตั้งต้น</th><th>+ ยอดเข้า</th><th>− โควต้า</th><th>= สิ้นเดือน</th><th>เป้า</th><th>ควรผลิตเพิ่ม</th></tr></thead><tbody>';
+  let tt=0,tn=0;
+  SC.forEach(x=>{const r=c.res[x],e=T(r.end),need=r.target>0?Math.max(0,r.target-e):0;tn+=need;h+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td><td>"+fmt(T(r.start))+"</td><td>"+fmt(T(r.inn))+"</td><td>"+fmt(T(r.quota))+'</td><td class="'+(e<0?"neg":"")+'"><b>'+fmt(e)+"</b></td><td>"+(r.target>0?fmt(r.target):'<span class="zero">-</span>')+"</td><td>"+(need?"<b>"+fmt(need)+"</b>":'<span class="zero">-</span>')+"</td></tr>"});
+  $("e-sum").innerHTML=h+'</tbody><tfoot><tr><td>รวม</td><td>'+fmt(sum("start"))+"</td><td>"+fmt(sum("inn"))+"</td><td>"+fmt(sum("quota"))+"</td><td>"+fmt(E)+"</td><td></td><td>"+(tn?fmt(tn):"")+"</td></tr></tfoot></table>";
+  const mat=(k,flag)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+    SC.forEach(x=>{const v=c.res[x][k];t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&y<0?"neg":(Math.round(y)?"":"zero"))+'"'+(flag&&y<0?' style="font-weight:600"':"")+">"+(Math.round(y)?fmt(y):"-")+"</td>").join("")+"<td><b>"+fmt(T(v))+"</b></td></tr>"});
+    return t+"</tbody></table>"};
+  $("e-end-m").innerHTML=mat("end",true);
+  $("e-det").innerHTML=[["สต็อกตั้งต้น","start"],["+ ยอดที่จะเข้า (แผ่นยาง × "+c.f+" คู่)","inn"],["− โควต้าขายคงเหลือ"+(c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":""),"quota"]].map(a=>'<div style="font-weight:600;margin:10px 0 6px">'+a[0]+"</div>"+mat(a[1],false)).join("");
+  $("e-foot").innerHTML="แผ่นที่นับ: วันจ่าย "+thD(c.d1)+" – "+thD(c.d2)+(c.lag?" (ดีเลย์ "+c.lag+" วัน)":"")+" · ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติ จากแผ่นดำ (ที่เหลือเป็นสีพิเศษ พื้นดำ): "+c.bsrc+" · สีพิเศษอื่น (Xmas, พื้นแดง หูเหลือง ฯลฯ) ไม่มีสต็อกในไฟล์ จึงไม่รวมในตารางนี้";
+  window._ec=c;
+}
+document.querySelectorAll("#view-e input,#view-e select").forEach(el=>{if(!["e-file","e-fdate","e-key","e-by","e-qdate","e-qd","e-sd"].includes(el.id))el.addEventListener("input",renderE)});
+$("exl").onclick=async()=>{
+  const b=$("exl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),c=calcE();
+  if(c.err||typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้";back();return}
+  const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("สต็อกสิ้นเดือน"),T=a=>a.reduce((x,y)=>x+y,0);
+  const fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd};
+  ws.columns=[{width:26}].concat(Array(7).fill({width:13}));
+  const note=(t,o)=>{o=o||{};const r=ws.addRow([t]);ws.mergeCells(r.number,1,r.number,8);const x=r.getCell(1);x.alignment={wrapText:true,vertical:"middle"};x.font={size:o.size||10,bold:!!o.bold,color:{argb:"FF"+(o.color||"555555")}};r.height=o.h||(Math.ceil(t.length/95)*15||15)};
+  const head=a=>{const h=ws.addRow(a);h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center",vertical:"middle",wrapText:true};x.border=B});return h};
+  const body=(x,vals,hl)=>{const r=ws.addRow([SCN[x]||x].concat(vals));const cl=PCOL[x]||["FFFFFF","000000"];r.eachCell((cell,i)=>{cell.fill=fill(cl[0]);cell.border=B;if(i>1)cell.numFmt="#,##0;[Red]-#,##0;-";else cell.font={bold:true,color:{argb:"FF"+cl[1]}}});if(hl)hl(r);return r};
+  const tot=(vals)=>{const r=ws.addRow(["รวม"].concat(vals));r.eachCell((cell,i)=>{cell.fill=fill("DCE6FA");cell.font={bold:true};cell.border=B;if(i>1)cell.numFmt="#,##0;[Red]-#,##0;-"})};
+  note("ประเมินสต็อกสิ้นเดือน รุ่น 200 (หน่วย: คู่)",{size:15,bold:true,color:"000000",h:24});
+  note("สต็อก "+thD(c.sd)+" ("+(c.kind==="net"?"สุทธิหลังหักยอดซื้อ":"คงเหลือเต็ม")+") + แผ่นยางจ่ายประกอบ "+thD(c.d1)+"–"+thD(c.d2)+" × "+c.f+" คู่ − โควต้าขายคงเหลือ"+(c.pct!==1?" × "+Math.round(c.pct*100)+"%":"")+" → สต็อก ณ "+thD(c.ed),{bold:true,color:"1A56DB"});
+  ws.addRow([]);
+  head(["สี","สต็อกตั้งต้น","+ ยอดเข้า","− โควต้า","= สิ้นเดือน","เป้า","ควรผลิตเพิ่ม"]);
+  let tn=0;SC.forEach(x=>{const r=c.res[x],e=T(r.end),need=r.target>0?Math.max(0,r.target-e):0;tn+=need;
+    body(x,[T(r.start),T(r.inn),T(r.quota),e,r.target||"",need||""],row=>{if(e<0){const q=row.getCell(5);q.fill=fill("FFC7CE");q.font={bold:true,color:{argb:"FF9C0006"}}}})});
+  tot(["start","inn","quota","end"].map(k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0)).concat(["",tn||""]));
+  [["สต็อกสิ้นเดือนรายเบอร์ (ค่าลบ = ของขาด)","end",1],["สต็อกตั้งต้น","start"],["+ ยอดที่จะเข้า","inn"],["− โควต้าขายคงเหลือ","quota"]].forEach(a=>{
+    ws.addRow([]);note(a[0],{bold:true,color:"1A56DB",size:11});head(["สี"].concat(SIZES,["รวม"]));
+    SC.forEach(x=>{const v=c.res[x][a[1]].map(Math.round);body(x,v.concat([T(v)]),a[2]?row=>{v.forEach((y,i)=>{if(y<0){const q=row.getCell(i+2);q.fill=fill("FFC7CE");q.font={bold:true,color:{argb:"FF9C0006"}}}})}:null)});
+    tot(SIZES.map((z,i)=>SC.reduce((s,x)=>s+Math.round(c.res[x][a[1]][i]),0)).concat([SC.reduce((s,x)=>s+T(c.res[x][a[1]].map(Math.round)),0)]));
+  });
+  ws.addRow([]);
+  note("ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติจากแผ่นดำ: "+c.bsrc+". สีพิเศษอื่นไม่มีสต็อกในไฟล์ จึงไม่รวม");
+  try{await saveBook(wb,"ประเมินสต็อกสิ้นเดือน_"+c.ed+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
 load();
 </script>
