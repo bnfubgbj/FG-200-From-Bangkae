@@ -200,7 +200,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 20)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 21)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -363,7 +363,9 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <div class="panel" id="es1">
       <h2>1) สต็อก ณ วันนี้ (จากไฟล์พี่ชุมพร)</h2>
       <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div></div>
+      <div class="note">ไฟล์สต็อกพี่ชุมพรเปลี่ยนทุกวัน: เลือกไฟล์ใหม่ → ตรวจวันที่ → กดบันทึกสต็อก (วันใหม่ไม่ทับวันเก่า ส่วนวันเดิมจะถูกเขียนทับ)</div>
       <div id="e-s1imp"></div>
+      <div class="note" id="e-stale"></div>
       <div class="note" id="e-status"></div>
       <div class="kpis" id="e-k1"></div>
       <details class="dbox"><summary>ดูตารางสี × เบอร์</summary><div class="dbody"><div class="t5" id="e-h1"></div><div class="scroll" id="e-t1"></div></div></details>
@@ -1346,7 +1348,7 @@ $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>se
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 const PT={q:"แผ่นยางประกอบ",p:"เทียบแผนผลิต",m:"ติดตามผลิตจริง",e:"ประเมินสต็อกสิ้นเดือน",r:"รับเข้าโกดังพี่ชุมพร"};
-function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อก (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
+function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
 $("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
 $("tab-r").onclick=()=>{show("r");window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
@@ -2107,8 +2109,9 @@ let EINIT=false;
 function initE(){
   if(!EINIT){buildGrid();buildBGrid();EINIT=true;try{$("e-key").value=localStorage.getItem("fgkey")||""}catch(e){}$("e-qdate").value=todayS()}
   const sdv=$("e-sd").value,qdv=$("e-qd").value;
-  const sds=stkDates(["net","stock"]);$("e-sd").innerHTML=sds.length?sds.slice().reverse().map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join(""):'<option value="">ยังไม่มีสต็อก</option>';
+  const sds=stkDates(["net","stock"]);$("e-sd").innerHTML=sds.length?sds.slice().reverse().map((d,i)=>'<option value="'+d+'">'+thD(d)+(i===0?" (ล่าสุด)":"")+"</option>").join(""):'<option value="">ยังไม่มีสต็อก</option>';
   if(sdv&&sds.includes(sdv))$("e-sd").value=sdv;
+  {const st=$("e-stale");if(st){const l=sds[sds.length-1];if(!l)st.textContent="";else{const n=Math.round((new Date(todayS()+"T00:00:00")-new Date(l+"T00:00:00"))/864e5);st.innerHTML=n>0?'<span style="color:var(--warn)">สต็อกล่าสุดในระบบเป็นของ '+thD(l)+" (ผ่านมา "+n+" วัน) — ถ้ามีไฟล์ใหม่ของวันนี้ เติมด้านบน</span>":"สต็อกล่าสุดเป็นของวันนี้แล้ว"}}}
   if(!$("e-end").value||!sdv)$("e-end").value=$("e-sd").value?monEnd($("e-sd").value):"";
   if(!sds.length&&!window._o1){$("e-d1").open=true;window._o1=1}
   const qds=stkDates(["quota"]);$("e-qd").innerHTML='<option value="">—</option>'+qds.slice().reverse().map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join("");
