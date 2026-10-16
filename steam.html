@@ -87,18 +87,49 @@ td.hit{background:var(--accent-soft);font-weight:600}
 table.tpl td,table.tpl th{border:1px solid var(--line)}
 table.tpl td:first-child{text-align:left}
 tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
+
+/* ---- app shell: left menu ---- */
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);gap:20px;max-width:1560px;margin:0 auto;align-items:start}
+.app .wrap{max-width:none;margin:0;min-width:0}
+.side{position:sticky;top:16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 10px 30px -18px rgba(20,33,43,.25)}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 6px 14px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.brand b{display:block;font:600 15px/1.2 var(--f-head)}.brand small{color:var(--muted);font-size:12px}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#2a9d9d);color:var(--accent-ink);display:grid;place-items:center;font:600 13px var(--f-head);flex:none}
+.sgroup{font-size:11px;letter-spacing:.08em;color:var(--muted);padding:6px 8px 2px}
+.smenu{display:flex;flex-direction:column;gap:4px}
+.smenu button{display:flex;align-items:center;gap:11px;text-align:left;width:100%;font:500 14.5px var(--f-body);border:0;background:none;color:var(--ink);padding:11px 12px;border-radius:11px;cursor:pointer}
+.smenu button svg{flex:none;opacity:.8}
+.smenu button:hover{background:var(--surface2)}
+.smenu button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 16px -8px var(--accent)}
+.smenu button[aria-selected="true"] svg{opacity:1}
+.app .panel,.app .dbox,.app .kpi{border-radius:14px;box-shadow:0 1px 2px rgba(20,33,43,.04),0 10px 26px -18px rgba(20,33,43,.22)}
+.app .kpi{padding:14px 16px}
+body{background:linear-gradient(160deg,var(--bg) 0%,var(--bg) 60%,color-mix(in srgb,var(--accent) 6%,var(--bg)) 100%) fixed}
+@media (max-width:1180px){.layout{grid-template-columns:1fr}}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr);gap:12px}
+  .side{position:static;flex-direction:row;align-items:center;padding:8px;border-radius:14px;overflow-x:auto}
+  .brand,.sgroup{display:none}
+  .smenu{flex-direction:row;gap:6px}
+  .smenu button{white-space:nowrap;width:auto;padding:9px 12px}
+}
 </style>
+<div class="app">
+<nav class="side" id="side" aria-label="เมนู">
+  <div class="brand"><span class="logo">200</span><div><b>ฟองน้ำ รุ่น 200</b><small>ระบบคาดการณ์การผลิต</small></div></div>
+  <div class="sgroup">เมนูหลัก</div>
+  <div class="smenu" role="tablist">
+    <button role="tab" id="tab-q" aria-selected="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><rect x="5" y="11" width="3.2" height="7" rx="1"/><rect x="10.4" y="6" width="3.2" height="12" rx="1"/><rect x="15.8" y="9" width="3.2" height="9" rx="1"/></svg><span>ดูยอดคาดการณ์</span></button>
+    <button role="tab" id="tab-p" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16"/><path d="M17 10l3 2-3 2"/></svg><span>เทียบแผนผลิต</span></button>
+    <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
+    <button role="tab" id="tab-i" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span>นำเข้าไฟล์นึ่งยาง</span></button>
+  </div>
+</nav>
 <div class="wrap">
   <header>
     <div>
-      <h1>คาดการณ์จากยอดนึ่งยาง</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 19:35 (ช่องโควต้ามีลูกน้ำ · รวมต่อสีอยู่ท้ายตาราง) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
-    </div>
-    <div class="tabs" role="tablist">
-      <button role="tab" id="tab-q" aria-selected="true">ดูยอดคาดการณ์</button>
-      <button role="tab" id="tab-p" aria-selected="false">เทียบแผนผลิต</button>
-      <button role="tab" id="tab-e" aria-selected="false">ประเมินสต็อกสิ้นเดือน</button>
-      <button role="tab" id="tab-i" aria-selected="false">นำเข้าไฟล์นึ่งยาง</button>
+      <h1 id="ptitle">ดูยอดคาดการณ์</h1>
+      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 09:40 (เมนูด้านซ้าย + หน้าตาแบบแดชบอร์ด) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
   </header>
 
@@ -179,6 +210,18 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
         <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
       </div>
     </div></details>
+    <details class="dbox" id="e-d3" open><summary>โควต้าตั้งต้นประจำเดือน (ที่แจ้งฝ่ายขายต้นเดือน) — ฐานช่วยคำนวณ</summary><div class="dbody">
+      <div class="note">ใส่ต้นเดือนครั้งเดียว: เลือกไฟล์แบ่งโควต้าของฝ่ายขาย (ระบบอ่านตาราง "รวมทั้งหมด" ในชีต "แจ้งโควตา") หรือวางตารางสี × เบอร์ หรือพิมพ์เอง ระบบใช้เทียบกับ "โควต้าคงเหลือ" เพื่อดูว่าใช้ไปกี่ % ขายเฉลี่ยวันละเท่าไร และโควต้าจะหมดวันไหน</div>
+      <textarea id="b-paste" rows="3" placeholder="คลุมตารางโควต้าตั้งต้นใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V"></textarea>
+      <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="b-pbtn" type="button">นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="b-file" accept=".xlsx" style="display:none"></label><span id="b-pmsg" class="note"></span></div>
+      <div class="scroll" id="b-grid"></div>
+      <div class="row" style="align-items:center">
+        <div style="min-width:170px"><span class="lbl">เดือนของโควต้าตั้งต้น</span><input type="month" id="b-month"></div>
+        <div style="min-width:190px"><span class="lbl">ดูที่บันทึกไว้</span><select id="b-sel"></select></div>
+        <button class="btn" id="b-save" style="align-self:flex-end">บันทึกโควต้าตั้งต้น</button>
+      </div>
+      <div id="b-msg" class="msg" hidden></div>
+    </div></details>
     <div class="panel">
       <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
         <div><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div>
@@ -188,6 +231,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
     </div>
     <div id="e-warn" class="msg warn" hidden></div>
     <div class="kpis" id="e-kpis"></div>
+    <div class="panel" id="e-monp" hidden><h2>ติดตามการใช้โควต้าฝ่ายขาย</h2><div class="note" id="e-monn"></div><div class="scroll" id="e-mont"></div></div>
     <div class="panel" id="e-res-m">
       <div class="row" style="align-items:center;gap:10px 14px">
         <span class="lbl" style="margin:0">ดูผลแบบ</span>
@@ -213,6 +257,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
         <div><span class="lbl">ดำหน้าขาว จากแผ่นขาว (%)</span><input type="number" id="e-wpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
         <div><span class="lbl">ดำปกติ จากแผ่นดำ (%)</span><input type="number" id="e-bpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
       </div>
+      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-pace" style="width:auto"> คิดยอดขายที่เหลือตามอัตราขายจริงรายสี (จากโควต้าตั้งต้น − โควต้าคงเหลือ) แทนการสมมติว่าขายหมดโควต้า — ต้องมีโควต้าตั้งต้นของเดือนนี้</label>
       <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-net" checked style="width:auto"> ใช้ "คงเหลือสุทธิที่สั่งได้จริง" (หักยอดซื้อแล้ว) เป็นสต็อกตั้งต้น · จำนวนคู่ต่อแผ่นใช้ค่าจากแท็บ "ดูยอดคาดการณ์"</label>
     </div></details>
   </div>
@@ -225,6 +270,7 @@ tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
     <div class="row" style="align-items:center"><input type="password" id="i-key" placeholder="รหัสบันทึก" style="max-width:200px" autocomplete="off"><button class="btn" id="i-save" disabled>บันทึกที่เลือก</button></div>
     <div id="i-msg" class="msg" hidden></div>
   </div>
+</div>
 </div>
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4aryCA0j4UvW7NFGcCG2aslnaDXThjKuUxi8xnRBhtQ6VLQg/exec";
@@ -295,7 +341,8 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-function show(v){["q","p","e","i"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
+const PT={q:"ดูยอดคาดการณ์",p:"เทียบแผนผลิต",e:"ประเมินสต็อกสิ้นเดือน",i:"นำเข้าไฟล์นึ่งยาง"};
+function show(v){$("ptitle").textContent=PT[v];["q","p","e","i"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
 $("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");renderP()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-i").onclick=()=>show("i");
 try{$("i-key").value=localStorage.getItem("fgkey")||""}catch(e){}
 /* ---------- Excel export ---------- */
@@ -698,15 +745,101 @@ $("e-qfile").onchange=e=>{const f=e.target.files[0];if(f)readQuotaFile(f);e.targ
 $("e-pbtn").onclick=()=>applyQuota($("e-paste").value);
 $("e-paste").addEventListener("paste",()=>setTimeout(()=>applyQuota($("e-paste").value),0));
 $("e-grid").addEventListener("paste",e=>{const t=(e.clipboardData||window.clipboardData).getData("text");if(/[\t\n]/.test(t.trim())){e.preventDefault();$("e-paste").value=t;applyQuota(t)}});
+
+const dayDiff=(a,b)=>Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/864e5);
+function buildBGrid(){
+  let h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวมต่อสี</th></tr></thead><tbody>";
+  SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+"</td>"+SIZES.map((z,j)=>'<td><input type="text" inputmode="numeric" autocomplete="off" id="b-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="text" inputmode="numeric" autocomplete="off" id="b-t-'+i+'" style="width:96px"></td></tr>'});
+  $("b-grid").innerHTML=h+"</tbody></table>";
+}
+function bIn(){const q={};SC.forEach((c,i)=>{q[c]={total:gv("b-t-"+i)||0,sizes:SIZES.map((z,j)=>gv("b-s-"+i+"-"+j))}});return q}
+const vTot=(sizes,total)=>sizes.some(x=>x!=null)?sizes.reduce((a,b)=>a+(b||0),0):(total||0);
+function fillBase(m){
+  const B=stkGet("qbase",m+"-01");
+  SC.forEach((c,i)=>{const a=B[c]||[null,null,null,null,null,null,null];setQ("b-t-"+i,a[6]);SIZES.forEach((z,j)=>setQ("b-s-"+i+"-"+j,a[j]))});
+}
+function applyBase(text,date){
+  const r=parseQuota(text),got=Object.keys(r.vals),m=$("b-pmsg");
+  if(!got.length){m.style.color="var(--warn)";m.textContent="อ่านตารางไม่ได้ — ต้องมีชื่อสีตามด้วยตัวเลข 6 ช่อง (เบอร์ 8.5–11)";return}
+  SC.forEach((c,i)=>{const v=r.vals[c];if(!v)return;SIZES.forEach((z,j)=>setQ("b-s-"+i+"-"+j,v[j]||""));setQ("b-t-"+i,v.reduce((a,b)=>a+b,0))});
+  const sum=got.reduce((a,c)=>a+r.vals[c].reduce((x,y)=>x+y,0),0),miss=SC.filter(c=>!r.vals[c]);
+  const d=date||r.date;if(d)$("b-month").value=d.slice(0,7);
+  m.style.color=(r.warn.length||miss.length)?"var(--warn)":"var(--accent)";
+  m.textContent="ใส่ตารางแล้ว "+got.length+" สี รวม "+fmt(sum)+" คู่"+($("b-month").value?" · เดือน "+thM($("b-month").value):"")+(miss.length?" · ไม่พบ: "+miss.join(", "):"")+(r.warn.length?" · ⚠ "+r.warn.join(" | "):"")+" · ตรวจตัวเลขแล้วกด 'บันทึกโควต้าตั้งต้น'";
+  $("b-paste").value="";renderE();
+}
+async function readBaseFile(file){
+  const m=$("b-pmsg");
+  try{
+    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let text=null,date=null,name="";
+    for(const ws of wb.worksheets){
+      let hit=null;ws.eachRow({includeEmpty:false},(row,rn)=>{row.eachCell({includeEmpty:false},(cell,cn)=>{const v=cv(cell);if(!hit&&typeof v==="string"&&/^\s*(รวมทั้งหมด|รวมทุกทีม)\s*$/.test(v))hit=[rn,cn]})});
+      if(!hit)continue;
+      const lines=[];for(let r=hit[0]+1;r<=hit[0]+14;r++){const lab=String(cv(ws.getCell(r,hit[1]))||"").trim();if(!QMAP[lab.replace(/\s+/g,"")])continue;const a=[lab];for(let k=1;k<=7;k++){const v=cv(ws.getCell(r,hit[1]+k));a.push(v==null||v instanceof Date?"":String(v))}lines.push(a.join("\t"))}
+      if(lines.length>=4){text=lines.join("\n");name=ws.name;
+        for(let r=1;r<=4&&!date;r++)for(let c=1;c<=30&&!date;c++){const v=ws.getCell(r,c).value;if(v instanceof Date)date=v.getFullYear()+"-"+p2(v.getMonth()+1)+"-"+p2(v.getDate())}
+        break}
+    }
+    if(!text){m.style.color="var(--warn)";m.textContent="ไม่พบตาราง \"รวมทั้งหมด\" ในไฟล์ — ลองคลุมตารางแล้ววางในช่องด้านบนแทน";return}
+    applyBase(text,date);m.textContent="จากไฟล์ "+file.name+" (ชีต "+name+") · "+m.textContent;
+  }catch(err){m.style.color="var(--warn)";m.textContent="อ่านไฟล์ไม่ได้: "+err+" (รองรับเฉพาะ .xlsx)"}
+}
+$("b-file").onchange=e=>{const f=e.target.files[0];if(f)readBaseFile(f);e.target.value=""};
+$("b-pbtn").onclick=()=>applyBase($("b-paste").value);
+$("b-paste").addEventListener("paste",()=>setTimeout(()=>applyBase($("b-paste").value),0));
+$("b-grid").addEventListener("paste",e=>{const t=(e.clipboardData||window.clipboardData).getData("text");if(/[\t\n]/.test(t.trim())){e.preventDefault();$("b-paste").value=t;applyBase(t)}});
+$("b-grid").addEventListener("input",e=>{const t=e.target;if(!t||!/^b-/.test(t.id))return;const d=t.value.replace(/[^0-9]/g,"");const f=d?Number(d).toLocaleString("en-US"):"";if(f!==t.value)t.value=f;});
+function bMsg(t,cls){const m=$("b-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
+$("b-sel").onchange=()=>{const v=$("b-sel").value;if(v){$("b-month").value=v.slice(0,7);fillBase(v.slice(0,7));renderE()}};
+$("b-save").onclick=async()=>{
+  const key=$("e-key").value.trim(),mo=$("b-month").value,q=bIn();
+  if(!mo){bMsg("เลือกเดือนของโควต้าตั้งต้น","warn");return}
+  if(!key){bMsg("ใส่รหัสบันทึกก่อน (ช่องด้านบนสุดของหน้า)","warn");return}
+  try{localStorage.setItem("fgkey",key)}catch(e){}
+  const rows=[];SC.forEach(c=>{const s=q[c].sizes;if(q[c].total>0||s.some(x=>x!=null))rows.push(["qbase",c].concat(s.map(x=>x==null?"":x),[q[c].total||""]))});
+  if(!rows.length){bMsg("ยังไม่ได้กรอกโควต้าตั้งต้น","warn");return}
+  $("b-save").disabled=true;
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:mo+"-01",by:$("e-by").value.trim(),rows})}).then(r=>r.json());
+    bMsg(r.ok?"บันทึกโควต้าตั้งต้น "+thM(mo)+" แล้ว":(r.error||"บันทึกไม่สำเร็จ"),r.ok?"ok":"warn");if(r.ok){await load();$("b-sel").value=mo+"-01"}}
+  catch(err){bMsg("บันทึกไม่สำเร็จ: "+err,"warn")}
+  $("b-save").disabled=false;
+};
+function monInfo(ed){
+  const mo=ed.slice(0,7),B=stkGet("qbase",mo+"-01");if(!Object.keys(B).length)return{missing:true,mo};
+  const qd=$("e-qdate").value;if(!qd||qd.slice(0,7)!==mo)return{missing:false,nodate:true,mo};
+  const Q=qIn(),elapsed=dayDiff(mo+"-01",qd),left=dayDiff(qd,ed)+1,dim=dayDiff(mo+"-01",addD(monEnd(mo+"-01"),1)),rows={};let any=false;
+  SC.forEach(c=>{const b=B[c];if(!b)return;const base=vTot(b.slice(0,6),b[6]),rem=vTot(Q[c].sizes,Q[c].total),used=base-rem;
+    const rate=elapsed>0&&used>0?used/elapsed:null,proj=rate!=null?Math.min(rem,rate*left):null;
+    rows[c]={base,rem,used,rate,proj,left_:proj!=null?rem-proj:null,out:rate?addD(qd,Math.floor(rem/rate)):null,f:rate!=null&&rem>0?Math.min(1,rate*left/rem):null};any=true});
+  return{missing:false,mo,qd,elapsed,left,dim,rows,any};
+}
+function renderMon(c){
+  const P=$("e-monp"),I=monInfo(c.ed);
+  if(!c.hasQ){P.hidden=true;return}
+  P.hidden=false;
+  if(I.missing){$("e-monn").textContent="ยังไม่มีโควต้าตั้งต้นของเดือน "+thM(I.mo)+" — ใส่ในช่อง \"โควต้าตั้งต้นประจำเดือน\" ด้านบน เพื่อดูว่าใช้ไปกี่ % และขายเฉลี่ยวันละเท่าไร";$("e-mont").innerHTML="";return}
+  if(I.nodate){$("e-monn").textContent="โควต้าคงเหลือที่โหลดอยู่ไม่ใช่ของเดือน "+thM(I.mo)+" — เปรียบเทียบไม่ได้";$("e-mont").innerHTML="";return}
+  const T=a=>a.reduce((x,y)=>x+y,0),pc=(a,b)=>b>0?Math.round(a/b*100)+"%":"–";
+  let h='<table><thead><tr><th>สี</th><th>ตั้งต้น</th><th>คงเหลือ</th><th>ใช้ไป</th><th>ใช้ไป %</th><th>ขายเฉลี่ย/วัน</th><th>คาดโควต้าหมด</th><th>คาดขายได้ถึง '+thD(c.ed)+'</th><th>คาดเหลือไม่ได้ขาย</th></tr></thead><tbody>',tb=0,tr=0,tp=0,tl=0,tr2=0;
+  SC.forEach(x=>{const r=I.rows[x];if(!r)return;tb+=r.base;tr+=r.rem;tr2+=r.rate||0;tp+=r.proj==null?r.rem:r.proj;tl+=r.left_==null?0:r.left_;
+    const early=r.out&&r.out<=c.ed;
+    h+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td><td>"+fmt(r.base)+"</td><td>"+fmt(r.rem)+"</td><td>"+fmt(r.used)+'</td><td class="'+(r.used<0?"neg":"")+'"><b>'+pc(r.used,r.base)+"</b></td><td>"+(r.rate!=null?fmt(r.rate):"–")+'</td><td class="'+(early?"neg":"")+'"'+(early?' style="font-weight:600"':"")+">"+(r.out?(early?thD(r.out):"ไม่หมดในเดือนนี้"):"–")+"</td><td>"+(r.proj!=null?fmt(r.proj):"–")+"</td><td>"+(r.left_!=null?fmt(r.left_):"–")+"</td></tr>"});
+  h+='</tbody><tfoot><tr><td>รวม</td><td>'+fmt(tb)+"</td><td>"+fmt(tr)+"</td><td>"+fmt(tb-tr)+"</td><td>"+pc(tb-tr,tb)+"</td><td>"+fmt(tr2)+"</td><td></td><td>"+fmt(tp)+"</td><td>"+fmt(tl)+"</td></tr></tfoot></table>";
+  $("e-mont").innerHTML=h;
+  $("e-monn").textContent="โควต้าคงเหลือ ณ ต้นวันที่ "+thD(I.qd)+" · ผ่านไป "+I.elapsed+" วัน จาก "+I.dim+" วัน ("+pc(I.elapsed,I.dim)+" ของเดือน) · ถ้าสีไหนใช้ไป % มากกว่าเวลาที่ผ่านไป โควต้าจะหมดก่อนสิ้นเดือน (สีแดง) · ใช้ไปติดลบ = มีการเติมโควต้า ต้องแก้ตัวเลขตั้งต้น"+(c.pace?" · กำลังคิดยอดสิ้นเดือนตามอัตราขายจริง":"");
+}
 let EINIT=false;
 function initE(){
-  if(!EINIT){buildGrid();EINIT=true;try{$("e-key").value=localStorage.getItem("fgkey")||""}catch(e){}$("e-qdate").value=todayS()}
+  if(!EINIT){buildGrid();buildBGrid();EINIT=true;try{$("e-key").value=localStorage.getItem("fgkey")||""}catch(e){}$("e-qdate").value=todayS()}
   const sdv=$("e-sd").value,qdv=$("e-qd").value;
   const sds=stkDates(["net","stock"]);$("e-sd").innerHTML=sds.length?sds.slice().reverse().map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join(""):'<option value="">ยังไม่มีสต็อก</option>';
   if(sdv&&sds.includes(sdv))$("e-sd").value=sdv;
   if(!$("e-end").value||!sdv)$("e-end").value=$("e-sd").value?monEnd($("e-sd").value):"";
   if(!sds.length&&!window._o1){$("e-d1").open=true;window._o1=1}
   const qds=stkDates(["quota"]);$("e-qd").innerHTML='<option value="">—</option>'+qds.slice().reverse().map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join("");
+  {const bds=stkDates(["qbase"]),bv=$("b-sel").value;$("b-sel").innerHTML='<option value="">—</option>'+bds.slice().reverse().map(d=>'<option value="'+d+'">'+thM(d.slice(0,7))+"</option>").join("");
+    if(bv&&bds.includes(bv))$("b-sel").value=bv;else if(bds.length&&!window._bf){const mo=($("e-end").value||bds[bds.length-1]).slice(0,7),pick=bds.includes(mo+"-01")?mo+"-01":bds[bds.length-1];$("b-sel").value=pick;$("b-month").value=pick.slice(0,7);fillBase(pick.slice(0,7));window._bf=1}
+    if(!$("b-month").value)$("b-month").value=($("e-end").value||todayS()).slice(0,7)}
   if(qdv&&qds.includes(qdv))$("e-qd").value=qdv;
   else if(qds.length&&!window._qf){$("e-qd").value=qds[qds.length-1];fillGrid(qds[qds.length-1]);window._qf=1}
 }
@@ -739,12 +872,13 @@ function calcE(){
   Object.keys(dayPool).forEach(a=>{const P=dayPool[a],g=k=>P[k]||Z6(),o={};
     ["น้ำเงิน","เขียว","แดง","เหลือง","เทา"].forEach(k=>o[k]=sm(g(k)));
     o["ขาว"]=sm(g("ขาว").map((x,i)=>x*wReg[i]));o["ดำ/ขาว"]=sm(g("ขาว").map((x,i)=>x*(1-wReg[i])));o["ดำ"]=sm(g("ดำ").map((x,i)=>x*bReg[i]));dayCol[a]=o});
-  const q=qIn(),res={};
+  const q=qIn(),res={},pace=$("e-pace").checked?monInfo(ed):null;
   SC.forEach(c=>{const s=q[c].sizes,has=s.some(x=>x!=null&&x>0),b=st[c]||Z6(),B=T(b);
-    const qv=(has?SIZES.map((z,i)=>s[i]||0):SIZES.map((z,i)=>B>0?q[c].total*b[i]/B:q[c].total/6)).map(x=>x*pct);
+    const pf=pace&&pace.rows&&pace.rows[c]&&pace.rows[c].f!=null?pace.rows[c].f:1;
+    const qv=(has?SIZES.map((z,i)=>s[i]||0):SIZES.map((z,i)=>B>0?q[c].total*b[i]/B:q[c].total/6)).map(x=>x*pct*pf);
     const start=b.slice(0,6),o={start,inn:inn[c],quota:qv,target:q[c].target};o.mid=start.map((x,i)=>x+o.inn[i]);o.end=start.map((x,i)=>x+o.inn[i]-qv[i]);res[c]=o});
   const tq=SC.reduce((a,c)=>a+T(res[c].quota),0);
-  return{sd,ed,lag,f,pct,nd,last,d1,d2,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0};
+  return{sd,ed,lag,f,pct,nd,last,d1,d2,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0,pace:!!(pace&&pace.rows)};
 }
 function periodsOf(c,mode){
   const days=[];for(let d=c.sd;d<=c.ed;d=addD(d,1))days.push(d);
@@ -766,7 +900,7 @@ function periodsOf(c,mode){
 function renderE(){
   if($("view-e").hidden)return;
   const c=calcE(),W=$("e-warn");
-  if(c.err){W.hidden=false;W.textContent=c.err;["e-kpis","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-status"].forEach(i=>$(i).innerHTML="");return}
+  if(c.err){W.hidden=false;W.textContent=c.err;["e-mont","e-kpis","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-status"].forEach(i=>$(i).innerHTML="");return}
   const T=a=>a.reduce((x,y)=>x+y,0),sum=k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0),w=[];
   if(!c.hasQ)w.push("ยังไม่ได้กรอกโควต้าฝ่ายขาย — ตอนนี้ยอดสิ้นเดือน = สต็อก + ยอดที่จะเข้าเท่านั้น");
   if(!c.nd)w.push("ไม่มีข้อมูลแผ่นยางในช่วง "+thD(c.d1)+" ถึง "+thD(c.d2));
@@ -783,14 +917,14 @@ function renderE(){
   const mat=(m,flag)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
     SC.forEach(x=>{const v=m[x];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&Math.round(y)<0?"neg":(Math.round(y)?"":"zero"))+'"'+(flag&&Math.round(y)<0?' style="font-weight:600"':"")+">"+(Math.round(y)?fmt(y):"-")+"</td>").join("")+'<td class="'+(flag&&Math.round(T(v))<0?"neg":"")+'"><b>'+fmt(T(v))+"</b></td></tr>"});
     return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>'<td class="'+(flag&&Math.round(y)<0?"neg":"")+'">'+fmt(y)+"</td>").join("")+"<td>"+fmt(T(col))+"</td></tr></tfoot></table>"};
-  const qp=c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":"",st=EV==="m"?thD(c.sd):thD(o.sdate);
+  const qp=(c.pct!==1?" (× "+Math.round(c.pct*100)+"%)":"")+(c.pace?" (ตามอัตราขายจริงรายสี)":""),st=EV==="m"?thD(c.sd):thD(o.sdate);
   const H=["1) สต็อกคงเหลือ ณ "+(EV==="m"||PI===0?"ต้นวันที่ "+thD(c.sd):"สิ้นวันที่ "+st)+(PI===0&&c.kind==="net"?" (สุทธิหลังหักยอดซื้อ)":""),"2) + สต็อกที่ผลิตได้ จากแผ่นยางที่ รง. ส่งมา "+o.rg,"3) = สต็อกคาดว่า ณ "+(EV==="m"?"สิ้นเดือน "+thM(c.ed.slice(0,7)):"สิ้นวันที่ "+thD(o.to))+" (ก่อนหักโควต้า) = ตาราง 1 + ตาราง 2","4) − โควต้าคงเหลือที่ยังไม่ได้ขาย (ประเมินว่าจะขายได้) "+o.rg+qp,"5) = สต็อกคาดว่าคงเหลือ ณ "+thD(o.to)+(EV==="m"?" (สิ้นเดือน)":"")+" = ตาราง 3 − ตาราง 4"];
   $("e-mt").textContent=EV==="m"?"รายเดือน · ถึงสิ้นเดือน "+thD(c.ed):(EV==="w"?"รายสัปดาห์ · ":"รายวัน · ")+o.label;
   $("e-rnote").textContent="หน่วย: คู่ · ค่าลบสีส้ม = ของขาด"+(EV==="m"?"":" · เลือกช่วงจากช่องด้านบน (ตารางต่อเนื่องกัน: ยอดคงเหลือสิ้นช่วงก่อนหน้า = สต็อกตั้งต้นของช่วงนี้)");
   [o.start,o.inn,o.mid,o.quota,o.end].forEach((m,i)=>{$("e-h"+(i+1)).textContent=H[i];$("e-t"+(i+1)).innerHTML=mat(m,i===4)});
   $("e-h5").style.color="var(--accent)";
   $("e-foot").innerHTML="แผ่นที่นับ: วันจ่าย "+thD(c.d1)+" – "+thD(c.d2)+(c.lag?" (ดีเลย์ "+c.lag+" วัน)":"")+" · ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติ จากแผ่นดำ (ที่เหลือเป็นสีพิเศษ พื้นดำ): "+c.bsrc+" · สีพิเศษอื่น (Xmas, พื้นแดง หูเหลือง ฯลฯ) ไม่มีสต็อกในไฟล์ จึงไม่รวมในตารางนี้";
-  window._ec=c;
+  renderMon(c);window._ec=c;
 }
 $("e-per").onchange=()=>{PI=+$("e-per").value;renderE()};
 document.querySelectorAll("#view-e input,#view-e select").forEach(el=>{if(!["e-per","e-file","e-fdate","e-key","e-by","e-qdate","e-qd","e-sd"].includes(el.id))el.addEventListener("input",renderE)});
@@ -818,6 +952,13 @@ $("exl").onclick=async()=>{
   });
   ws.addRow([]);
   note("ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติจากแผ่นดำ: "+c.bsrc+". สีพิเศษอื่นไม่มีสต็อกในไฟล์ จึงไม่รวม");
+  {const I=monInfo(c.ed);if(I.rows&&I.any){const w2=wb.addWorksheet("ติดตามโควต้า");w2.columns=[{width:22}].concat(Array(8).fill({width:16}));
+    const t=w2.addRow(["ติดตามการใช้โควต้าฝ่ายขาย · เดือน "+thM(I.mo)+" · ข้อมูล ณ ต้นวันที่ "+thD(I.qd)]);t.getCell(1).font={bold:true,size:13};
+    w2.addRow(["ผ่านไป "+I.elapsed+" วัน จาก "+I.dim+" วัน"]).getCell(1).font={color:{argb:"FF555555"}};
+    const hd=w2.addRow(["สี","ตั้งต้น","คงเหลือ","ใช้ไป","ใช้ไป %","ขายเฉลี่ย/วัน","คาดโควต้าหมด","คาดขายได้ถึง "+thD(c.ed),"คาดเหลือไม่ได้ขาย"]);
+    hd.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center",vertical:"middle",wrapText:true};x.border=B});
+    SC.forEach(x=>{const r=I.rows[x];if(!r)return;const row=w2.addRow([SCN[x]||x,Math.round(r.base),Math.round(r.rem),Math.round(r.used),r.base>0?r.used/r.base:0,r.rate!=null?Math.round(r.rate):"",r.out?(r.out<=c.ed?thD(r.out):"ไม่หมดในเดือนนี้"):"",r.proj!=null?Math.round(r.proj):"",r.left_!=null?Math.round(r.left_):""]);
+      const cl=PCOL[x]||["FFFFFF","000000"];row.eachCell((cell,i)=>{cell.border=B;cell.fill=fill(cl[0]);if(i>1&&i!==5&&i!==7)cell.numFmt="#,##0;[Red]-#,##0;-";if(i===5)cell.numFmt="0%"})})}}
   ws.name=({m:"สต็อกสิ้นเดือน",w:"รายสัปดาห์",d:"รายวัน"})[EV];
   try{await saveBook(wb,({m:"สต็อกสิ้นเดือน",w:"สต็อกรายสัปดาห์",d:"สต็อกรายวัน"})[EV]+"_"+c.ed+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
