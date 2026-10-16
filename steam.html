@@ -8,15 +8,15 @@
 :root{
   --bg:#eef1f3; --surface:#ffffff; --surface2:#f6f8f9; --line:#d9e0e4; --ink:#14212b; --muted:#5d6e7a;
   --accent:#0b6b6b; --accent-ink:#ffffff; --accent-soft:#d8eeee; --warn:#a14b00; --warn-soft:#fbe9d6;
-  --bar:#7fb7b7;
+  --bar:#7fb7b7; --ok:#2f7d4f; --mid:#b7791f; --bad:#c0392b;
   --f-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif; --f-head:"Prompt","IBM Plex Sans Thai",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
-  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; color-scheme:dark}}
+  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; --ok:#5fc48a; --mid:#e0a84a; --bad:#ee7b6e; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
-  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; color-scheme:dark}
+  --accent:#5fc4c4; --accent-ink:#06191a; --accent-soft:#16393b; --warn:#f0a45c; --warn-soft:#3a2a17; --bar:#2f6f70; --ok:#5fc48a; --mid:#e0a84a; --bad:#ee7b6e; color-scheme:dark}
 [hidden]{display:none!important}
 .dbox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:0}
 .dbox>summary{cursor:pointer;font:600 15px var(--f-head);color:var(--ink)}
@@ -161,6 +161,27 @@ header{display:block}
   .smenu button{white-space:nowrap;width:auto}
   .app .wrap{padding:20px 16px 56px}
 }
+
+/* ---- dashboard / chart ---- */
+.layout>aside.toolbar{align-items:flex-start}
+#status{background:none;padding:0;color:var(--muted);font-size:13px}
+#status.warn{color:var(--warn)}
+.dr{display:grid;grid-template-columns:minmax(120px,200px) minmax(0,1fr) 52px minmax(110px,160px);gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.dr.tot{font-weight:600;border-bottom:1px solid var(--line2)}
+.dn{box-shadow:inset 3px 0 0 var(--c,transparent);padding-left:10px;min-width:0}
+.dtrack{position:relative;height:8px;background:var(--surface2);border-radius:4px;border:1px solid var(--line)}
+.dfill{display:block;height:100%;border-radius:4px;background:var(--ok)}
+.dfill.mid{background:var(--mid)}.dfill.bad{background:var(--bad)}
+.dtick{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--ink);opacity:.5}
+.dv{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.dt{color:var(--muted);font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+.leg{display:flex;flex-wrap:wrap;gap:6px 24px;font-size:13px;color:var(--muted)}
+.leg i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+.leg b{color:var(--ink);font-weight:600}
+td.hm-ok{background:color-mix(in srgb,var(--ok) 22%,transparent)}
+td.hm-mid{background:color-mix(in srgb,var(--mid) 26%,transparent)}
+td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
+@media (max-width:640px){.dr{grid-template-columns:1fr 52px}.dtrack{grid-column:1/-1;order:3}.dt{display:none}}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -174,7 +195,7 @@ header{display:block}
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
     <button role="tab" id="tab-i" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span>นำเข้าไฟล์นึ่งยาง</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (มินิมอล รอบ 2)</div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แดชบอร์ด)</div>
 </nav>
 <div class="wrap">
   <header>
@@ -212,15 +233,16 @@ header{display:block}
       <div id="status" class="msg" hidden></div>
       <div class="kpis" id="kpis"></div>
       <div class="panel">
-        <div class="head2"><h2>รวมตามสีและเบอร์</h2>
-          <div class="row"><div class="tabs" id="unit"><button data-u="pair" aria-selected="true">คู่ (คาดการณ์)</button><button data-u="sheet" aria-selected="false">แผ่นยาง</button></div>
-          <button class="btn" id="xl">ดาวน์โหลด Excel</button></div></div>
-        <div id="gaps" class="note"></div>
-        <div class="scroll" id="matrix"></div>
+        <div class="head2"><h2>สะสมทั้งเดือน เทียบแผนผลิต</h2><span class="note" id="cq-n"></span></div>
+        <div id="cq"></div>
+        <details class="dbox"><summary>ดูรายวัน (ตาราง)</summary><div class="scroll" id="daily"></div></details>
       </div>
       <div class="panel">
-        <h2>รายวัน</h2>
-        <div class="scroll" id="daily"></div>
+        <div class="head2"><h2>รวมตามสีและเบอร์</h2>
+          <div class="row"><div class="tabs" id="unit"><button data-u="pair" aria-selected="true">คู่ (คาดการณ์)</button><button data-u="sheet" aria-selected="false">แผ่นยาง</button></div>
+          <button class="btn ghost" id="xl">ดาวน์โหลด Excel</button></div></div>
+        <div id="gaps" class="note"></div>
+        <div class="scroll" id="matrix"></div>
       </div>
     </main>
   </div>
@@ -326,9 +348,11 @@ header{display:block}
       <div class="note" id="m-note"></div>
     </div>
     <div class="kpis" id="m-kpis"></div>
+    <div class="panel"><div class="head2"><h2>ทำได้ตามแผนแค่ไหน (รายสี)</h2><span class="note" id="m-dn"></span></div><div id="m-dash"></div></div>
+    <div class="panel"><div class="head2"><h2>สะสมทั้งเดือน เทียบแผนผลิต</h2><span class="note" id="cm-n"></span></div><div id="cm"></div></div>
     <div class="panel"><h2>สรุปรายสี</h2><div class="note">เข้าโกดังจริง = ยอดที่บันทึกในเมนู "รับเข้าโกดังพี่ชุมพร" · นึ่งแล้ว = แผ่นยางที่ รง. แจ้ง × คู่ต่อแผ่น · คาดสิ้นเดือน = อัตราเข้าโกดังเฉลี่ยต่อวัน × จำนวนวันในเดือน</div><div class="scroll" id="m-t1"></div></div>
     <div class="panel"><h2>เข้าโกดังจริงสะสม รายสี × เบอร์</h2><div class="scroll" id="m-t2"></div></div>
-    <div class="panel"><h2>% เข้าโกดังจริงเทียบแผน รายสี × เบอร์</h2><div class="scroll" id="m-t3"></div></div>
+    <div class="panel"><h2>% เข้าโกดังจริงเทียบแผน รายสี × เบอร์</h2><div class="note">สีพื้น = เทียบกับที่ควรได้ ณ วันนี้ตามเวลาที่ผ่านไป: เขียว ตามแผน (≥95%) · เหลือง ช้ากว่า (75–95%) · แดง ช้ามาก (&lt;75%)</div><div class="scroll" id="m-t3"></div></div>
   </div>
   <div id="view-r" hidden><iframe id="fr" title="รับเข้าโกดังพี่ชุมพร" style="width:100%;height:900px;border:0;display:block;background:transparent"></iframe></div>
   <div id="view-i" hidden class="panel">
@@ -1105,7 +1129,7 @@ function render(){
    '<div class="kpi"><div class="k">จำนวนวันที่มีข้อมูล</div><div class="v">'+n+'</div></div>'+
    '<div class="kpi"><div class="k">เฉลี่ยต่อวัน (คู่)</div><div class="v">'+fmt(n?tot*F()/n:0)+'</div></div>'+
    '<div class="kpi"><div class="k">สูงสุดใน 1 วัน (คู่)</div><div class="v">'+fmt(mx[1]*F())+'</div><div class="k">'+(mx[0]?thD(mx[0]):"")+'</div></div>';
-  $("gaps").innerHTML=(c.inR.length?"ข้อมูลช่วงนี้: "+thD(c.inR[0])+" ถึง "+thD(c.inR[c.inR.length-1])+". ":"ไม่มีข้อมูลในช่วงที่เลือก. ")+(c.gaps.length?'<b style="color:var(--warn)">วันที่ไม่มีไฟล์ (ยังไม่รวมในยอด): '+c.gaps.map(d=>+d.slice(8)+" "+MON[+d.slice(5,7)-1]).join(", ")+"</b>":"");
+  $("gaps").innerHTML=(c.inR.length?"ข้อมูลช่วงนี้: "+thD(c.inR[0])+" ถึง "+thD(c.inR[c.inR.length-1])+". ":"ไม่มีข้อมูลในช่วงที่เลือก. ")+(c.gaps.length?'<span style="color:var(--warn)">วันที่ไม่มีไฟล์ (ยังไม่รวมในยอด): '+c.gaps.map(d=>+d.slice(8)+" "+MON[+d.slice(5,7)-1]).join(", ")+"</span>":"");
   const hasAny=Object.values(c.mat).some(v=>v.some(x=>x));
   const rows=PTPL.map(r=>({pk:r[0],label:r[1],fk:FK[r[0]]}));
   let h='<table><thead><tr><th>สี ('+U+')</th>'+SIZES.map(s=>"<th>"+s+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>", col=Array(6).fill(0);
@@ -1115,6 +1139,7 @@ function render(){
   $("matrix").innerHTML=hasAny?h:'<div class="empty">ไม่มีข้อมูลตามเงื่อนไขที่เลือก</div>';
   const m=Math.max(1,...c.daily.map(x=>x[1]));
   $("daily").innerHTML=c.daily.length?'<table><thead><tr><th>วันที่จ่ายไปประกอบ</th><th>วันที่นึ่ง</th><th>แผ่น</th><th>คู่ (คาดการณ์)</th><th class="barcell"></th></tr></thead><tbody>'+c.daily.map(x=>"<tr><td>"+thD(x[0])+"</td><td>"+(x[2]||"–")+"</td><td>"+fmt(x[1])+"</td><td><b>"+fmt(x[1]*F())+'</b></td><td class="barcell"><div class="bar" style="width:'+(x[1]/m*100)+'%"></div></td></tr>').join("")+"</tbody></table>":'<div class="empty">ไม่มีข้อมูล</div>';
+  drawCum("cq","cq-n",($("to").value||"").slice(0,7));
 }
 ["from","to","factor"].forEach(i=>$(i).oninput=render);
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
@@ -1611,6 +1636,56 @@ function renderMon(c){
   $("e-monn").textContent="โควต้าคงเหลือ ณ ต้นวันที่ "+thD(I.qd)+" · ผ่านไป "+I.elapsed+" วัน จาก "+I.dim+" วัน ("+pc(I.elapsed,I.dim)+" ของเดือน) · ถ้าสีไหนใช้ไป % มากกว่าเวลาที่ผ่านไป โควต้าจะหมดก่อนสิ้นเดือน (สีแดง) · ใช้ไปติดลบ = มีการเติมโควต้า ต้องแก้ตัวเลขตั้งต้น"+(c.pace?" · กำลังคิดยอดสิ้นเดือนตามอัตราขายจริง":"");
 }
 
+function cumData(mo,rev){
+  const T=a=>a.reduce((x,y)=>x+y,0),f=F(),dim=new Date(+mo.slice(0,4),+mo.slice(5,7),0).getDate();
+  const plan=(PL[mo]&&PL[mo][rev]&&PL[mo][rev].colors)||null,ok={};PTPL.forEach(r=>ok[r[0]]=1);
+  let pt=0;if(plan)PTPL.forEach(r=>{pt+=T((plan[r[0]]||[]).map(Number))});
+  const s=[0],a=[0];let cs=0,ca=0,ls=0,la=0;
+  for(let d=1;d<=dim;d++){const ds=mo+"-"+p2(d);
+    if(DATA[ds]){Object.keys(DATA[ds]).forEach(k=>{if(k==="_s")return;const pk=SUPMAP[k];if(pk&&ok[pk])cs+=T(DATA[ds][k])*f});ls=d}
+    if(FGD[ds]){Object.keys(FGD[ds]).forEach(k=>{if(ok[k])ca+=T(FGD[ds][k])});la=d}
+    s[d]=cs;a[d]=ca}
+  return{mo,dim,pt:plan?pt:0,hasPlan:!!plan&&pt>0,s,a,ls,la,cs,ca};
+}
+function cumView(D){
+  if(!D.ls&&!D.la)return{svg:'<div class="empty">ยังไม่มีข้อมูลเดือนนี้</div>',note:""};
+  const W=760,H=270,L=76,R=14,Tp=12,B=28,pw=W-L-R,ph=H-Tp-B;
+  const mx=Math.max(D.pt,D.cs,D.ca,1)*1.05,raw=mx/4,mag=Math.pow(10,Math.floor(Math.log10(raw))),st=[1,2,2.5,5,10].find(m=>m*mag>=raw)*mag,ym=st*4;
+  const X=d=>L+d/D.dim*pw,Y=v=>Tp+ph-v/ym*ph;
+  let g="";for(let i=0;i<=4;i++){const y=Y(st*i);g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" fill="var(--muted)" font-size="11">'+fmt(st*i)+'</text>'}
+  for(let d=0;d<=D.dim;d++){if(d===0||(d%5===0&&D.dim-d>2)||d===D.dim)g+='<text x="'+X(d)+'" y="'+(H-8)+'" text-anchor="middle" fill="var(--muted)" font-size="11">'+(d||"")+'</text>'}
+  const path=(arr,last)=>{let p="";for(let d=0;d<=last;d++)p+=(d?"L":"M")+X(d).toFixed(1)+" "+Y(arr[d]).toFixed(1)+" ";return p};
+  const dot=(d,v,c,t)=>'<circle cx="'+X(d)+'" cy="'+Y(v)+'" r="4" fill="'+c+'"><title>'+t+'</title></circle>';
+  let o='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;font-family:inherit" role="img" aria-label="กราฟสะสมทั้งเดือน เทียบแผนผลิต">'+g;
+  if(D.hasPlan)o+='<path d="M'+X(0)+' '+Y(0)+' L'+X(D.dim)+' '+Y(D.pt)+'" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="5 4" fill="none"/>';
+  if(D.ls)o+='<path d="'+path(D.s,D.ls)+'" stroke="var(--accent)" stroke-width="2.2" fill="none"/>'+dot(D.ls,D.s[D.ls],"var(--accent)","คาดการณ์จากแผ่นยาง "+fmt(D.s[D.ls])+" คู่");
+  if(D.la)o+='<path d="'+path(D.a,D.la)+'" stroke="var(--warn)" stroke-width="2.2" fill="none"/>'+dot(D.la,D.a[D.la],"var(--warn)","FG เข้าโกดังจริง "+fmt(D.a[D.la])+" คู่");
+  o+='</svg>';
+  const lg='<div class="leg">'+(D.hasPlan?'<span><i style="border-top-style:dashed;border-color:var(--muted)"></i>แผนผลิตทั้งเดือน <b>'+fmt(D.pt)+'</b></span>':'<span>ยังไม่มีแผนผลิตเดือนนี้</span>')+
+    '<span><i style="border-color:var(--accent)"></i>คาดการณ์จากแผ่นยาง <b>'+fmt(D.cs)+'</b>'+(D.ls?' (ถึงวันที่ '+D.ls+')':'')+'</span>'+
+    '<span><i style="border-color:var(--warn)"></i>FG เข้าโกดังจริง <b>'+fmt(D.ca)+'</b>'+(D.la?' (ถึงวันที่ '+D.la+')':' ยังไม่มีข้อมูล')+'</span></div>';
+  let note="";if(D.la){const sv=D.s[D.la],gp=sv-D.a[D.la];note="ณ วันที่ "+D.la+": แผ่นยางคาดการณ์สะสม "+fmt(sv)+" · FG เข้าโกดังจริง "+fmt(D.a[D.la])+" · ต่างกัน "+fmt(gp)+" คู่ (จริง "+(sv?Math.round(D.a[D.la]/sv*100):0)+"% ของที่คาดไว้)"}
+  return{svg:o+lg,note};
+}
+function drawCum(el,nel,mo){
+  if(!mo){$(el).innerHTML="";return}
+  const revs=PL[mo]?Object.keys(PL[mo]).map(Number).sort((a,b)=>b-a):[];
+  const v=cumView(cumData(mo,revs.length?revs[0]:""));$(el).innerHTML=v.svg;$(nel).textContent=v.note;
+}
+function drawDash(M){
+  const tf=M.dim?M.el/M.dim:0,pc=v=>Math.round(v*100)+"%";
+  const st=(a,p)=>{if(!p||!tf)return"";const r=a/(p*tf);return r>=.95?"":r>=.75?"mid":"bad"};
+  const row=(label,tintS,a,p,cls)=>{const w=p?Math.min(100,a/p*100):0;
+    return'<div class="dr'+(cls||"")+'"><span class="dn"'+tintS+'>'+label+'</span><div class="dtrack"><span class="dfill '+st(a,p)+'" style="width:'+w.toFixed(1)+'%"></span>'+(tf?'<b class="dtick" style="left:'+(tf*100).toFixed(1)+'%" title="ควรได้ ณ วันนี้ตามเวลา"></b>':"")+'</div><span class="dv">'+(p?pc(a/p):"–")+'</span><span class="dt">'+fmt(a)+" / "+fmt(p)+'</span></div>'};
+  const rs=M.rows.filter(r=>r.pt>0||r.at>0).sort((x,y)=>y.pt-x.pt);
+  let h=row("รวมทุกสี","",M.tot.at,M.tot.pt," tot");
+  rs.forEach(r=>{h+=row(r.label,tint(r.k),r.at,r.pt,"")});
+  const behind=rs.filter(r=>st(r.at,r.pt)==="bad").length,mid=rs.filter(r=>st(r.at,r.pt)==="mid").length;
+  $("m-dash").innerHTML=h;
+  $("m-dn").textContent=tf?("แถบ = % ของแผนทั้งเดือน · เส้นดำ = ควรได้ ณ วันที่ "+M.el+" ("+pc(tf)+" ของเดือน) · ช้ามาก "+behind+" สี · ช้ากว่าเล็กน้อย "+mid+" สี"):"ยังไม่มีข้อมูล FG เดือนนี้";
+  drawCum("cm","cm-n",M.mo);
+}
+
 function initM(){
   const mv=$("m-mo").value,ms=[...new Set(Object.keys(PL).concat(Object.keys(FGD).map(d=>d.slice(0,7)),Object.keys(DATA).map(d=>d.slice(0,7))))].sort();
   $("m-mo").innerHTML=ms.slice().reverse().map(m=>'<option value="'+m+'">'+thM(m)+"</option>").join("");
@@ -1638,6 +1713,7 @@ function mCalc(){
 function renderM(){
   const M=mCalc();if(!M)return;
   const pc=v=>v==null?"–":Math.round(v*100)+"%";
+  drawDash(M);
   $("m-note").textContent="แผนผลิต "+(M.rev!==""?revName(M.rev):"—")+" · เป้า = "+Math.round(M.hc*100)+"% ของแผน · ข้อมูลเข้าโกดังถึง "+(M.lastA?thD(M.lastA):"ยังไม่มี")+" · แผ่นยางถึง "+(M.lastS?thD(M.lastS):"ยังไม่มี");
   $("m-kpis").innerHTML=[["แผนผลิตทั้งเดือน",fmt(M.tot.pt),""],["เป้า "+Math.round(M.hc*100)+"% ของแผน",fmt(M.tot.tg),""],["เข้าโกดังจริงสะสม",fmt(M.tot.at),pc(M.tot.pt?M.tot.at/M.tot.pt:null)+" ของแผน · เวลาผ่านไป "+(M.el?Math.round(M.el/M.dim*100)+"%":"–")],["คาดสิ้นเดือน (ตามอัตราปัจจุบัน)",M.tot.proj==null?"–":fmt(M.tot.proj),M.tot.proj==null||!M.tot.pt?"":pc(M.tot.proj/M.tot.pt)+" ของแผน"]]
    .map((k,i)=>'<div class="kpi'+(i===2?" main":"")+'"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="k">'+k[2]+"</div></div>").join("");
@@ -1650,7 +1726,7 @@ function renderM(){
   const T0=a=>a.reduce((x,y)=>x+y,0);
   {const [t,col]=mt(r=>r.a);$("m-t2").innerHTML=t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(T0(col))+"</td></tr></tfoot></table>"}
   {let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";const pl=Z6(),ac=Z6();
-    M.rows.forEach(r=>{if(!r.pt&&!r.at)return;r.pl.forEach((x,i)=>{pl[i]+=x;ac[i]+=r.a[i]});t+="<tr"+tint(r.k)+"><td>"+r.label+"</td>"+r.pl.map((x,i)=>"<td>"+(x>0?pc(r.a[i]/x):(r.a[i]>0?"ไม่มีแผน":'<span class="zero">–</span>'))+"</td>").join("")+"<td><b>"+pc(r.pt?r.at/r.pt:null)+"</b></td></tr>"});
+    M.rows.forEach(r=>{if(!r.pt&&!r.at)return;r.pl.forEach((x,i)=>{pl[i]+=x;ac[i]+=r.a[i]});t+="<tr"+tint(r.k)+"><td>"+r.label+"</td>"+r.pl.map((x,i)=>{const tf=M.dim?M.el/M.dim:0,q=x>0&&tf?r.a[i]/(x*tf):null,c=q==null?"":q>=.95?"hm-ok":q>=.75?"hm-mid":"hm-bad";return'<td class="'+c+'">'+(x>0?pc(r.a[i]/x):(r.a[i]>0?"ไม่มีแผน":'<span class="zero">–</span>'))+"</td>"}).join("")+"<td><b>"+pc(r.pt?r.at/r.pt:null)+"</b></td></tr>"});
     $("m-t3").innerHTML=t+"</tbody><tfoot><tr><td>รวม</td>"+pl.map((x,i)=>"<td>"+(x>0?pc(ac[i]/x):"–")+"</td>").join("")+"<td>"+pc(T0(pl)?T0(ac)/T0(pl):null)+"</td></tr></tfoot></table>"}
 }
 $("m-mo").onchange=()=>{mRevs();renderM()};$("m-rev").onchange=renderM;$("m-hc").oninput=renderM;
