@@ -200,7 +200,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 19)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 20)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -260,7 +260,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <div class="panel" id="st1">
       <h2>1) สต็อกต้นงวด (น้องสุ)</h2>
       <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">ใช้สต็อก ณ วันที่</span><select id="po-sd"></select></div></div>
-      <details class="dbox" id="e-d1"><summary>นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด</summary><div class="dbody">
+      <span id="e-d1-ph"></span><details class="dbox" id="e-d1"><summary>นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด</summary><div class="dbody">
       <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่น้องสุนำสต็อกจาก รง. มาตัดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
       <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button><button class="btn ghost" id="e-fdel" type="button">ลบสต็อกวันที่ที่เลือก</button></div>
       <div id="e-fprev" class="note"></div>
@@ -345,12 +345,55 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <div class="panel" style="display:none"><h2>ส่วนต่างรายแถว (ได้จากแผ่น − แผน) ค่าลบ = ขาด</h2><div class="scroll" id="p-rowdiff"></div></div>
   </div>
 
-  <div id="view-e" hidden style="display:flex;flex-direction:column;gap:14px">
+  <div id="view-e" hidden style="display:flex;flex-direction:column;gap:16px">
     <div class="panel">
-      <div class="head2"><h2>ประเมินสต็อกคงเหลือ</h2><input type="password" id="e-key" style="display:none" autocomplete="off"></div>
+      <div class="head2"><h2 style="font-size:15px">สรุปคงเหลือสิ้นเดือน = สต็อกวันนี้ + ผลิตได้ − โควต้าที่ยังไม่ได้ขาย</h2><button class="btn" id="exl">ดาวน์โหลด Excel</button><input type="password" id="e-key" style="display:none" autocomplete="off"></div>
+      <div class="row" style="align-items:center;gap:10px 14px">
+        <span class="lbl" style="margin:0">ดูผลแบบ</span>
+        <label class="chip on"><input type="radio" name="e-view" value="m" checked>รายเดือน (ณ สิ้นเดือน)</label>
+        <label class="chip"><input type="radio" name="e-view" value="w">รายสัปดาห์</label>
+        <label class="chip"><input type="radio" name="e-view" value="d">รายวัน</label>
+        <select id="e-per" hidden style="max-width:260px" aria-label="เลือกช่วง"></select>
+      </div>
+      <h2 id="e-mt" style="font-size:15px"></h2>
+      <div class="note" id="e-rnote"></div>
     </div>
     <div id="e-msg" class="msg" hidden></div>
-    <details class="dbox" id="e-d2" open><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
+    <div id="e-warn" class="msg warn" hidden></div>
+    <div class="panel" id="es1">
+      <h2>1) สต็อก ณ วันนี้ (จากไฟล์พี่ชุมพร)</h2>
+      <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div></div>
+      <div id="e-s1imp"></div>
+      <div class="note" id="e-status"></div>
+      <div class="kpis" id="e-k1"></div>
+      <details class="dbox"><summary>ดูตารางสี × เบอร์</summary><div class="dbody"><div class="t5" id="e-h1"></div><div class="scroll" id="e-t1"></div></div></details>
+    </div>
+    <div class="panel" id="es2">
+      <h2>2) + แผ่นยางที่เหลือถึงสิ้นเดือน คาดว่าจะผลิตได้</h2>
+      <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">คิดถึงวันที่ (สิ้นเดือน)</span><input type="date" id="e-end"></div></div>
+      <div class="note">ใช้แผ่นยางที่ รง. ส่งมาตามเมนู "แผ่นยางประกอบ" แปลงเป็นคู่ตามที่ตั้งค่าไว้</div>
+      <div class="kpis" id="e-k2"></div>
+      <details class="dbox"><summary>ดูตารางสี × เบอร์</summary><div class="dbody"><div class="t5" id="e-h2"></div><div class="scroll" id="e-t2"></div></div></details>
+      <details class="dbox"><summary>ตั้งค่าการคำนวณ (ไม่ต้องแก้ก็ใช้ได้)</summary><div class="dbody">
+      <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+        <div><span class="lbl">ดีเลย์แผ่นยาง→เข้าคลัง (วัน)</span><input type="number" id="e-lag" value="0" min="0" step="1"></div>
+        <div><span class="lbl">โควต้าที่ขายได้จริง (%)</span><input type="number" id="e-pct" value="100" min="0" step="5"></div>
+        <div><span class="lbl">ดำหน้าขาว จากแผ่นขาว (%)</span><input type="number" id="e-wpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
+        <div><span class="lbl">ดำปกติ จากแผ่นดำ (%)</span><input type="number" id="e-bpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
+      </div>
+      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-fg" style="width:auto"> ใช้ยอดเข้าโกดังพี่ชุมพรจริง แทนประมาณการจากแผ่นยาง สำหรับวันที่บันทึกแล้ว (นับถึงวันล่าสุดที่มีข้อมูลรับเข้า) — เปิดเมื่อสต็อกตั้งต้นยังไม่รวมของที่เข้าโกดังช่วงนั้น</label>
+      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-pace" style="width:auto"> คิดยอดขายที่เหลือตามอัตราขายจริงรายสี (จากโควต้าตั้งต้น − โควต้าคงเหลือ) แทนการสมมติว่าขายหมดโควต้า — ต้องมีโควต้าตั้งต้นของเดือนนี้</label>
+      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-net" checked style="width:auto"> ใช้ "คงเหลือสุทธิที่สั่งได้จริง" (หักยอดซื้อแล้ว) เป็นสต็อกตั้งต้น · จำนวนคู่ต่อแผ่นใช้ค่าจากแท็บ "ดูยอดคาดการณ์"</label>
+    </div></details>
+    </div>
+    <div class="panel" id="es3">
+      <h2>3) = สต็อกคาดว่าจะมี ถึงสิ้นเดือน (ก่อนหักโควต้า)</h2>
+      <div class="kpis" id="e-k3"></div>
+      <details class="dbox"><summary>ดูตารางสี × เบอร์</summary><div class="dbody"><div class="t5" id="e-h3"></div><div class="scroll" id="e-t3"></div></div></details>
+    </div>
+    <div class="panel" id="es4">
+      <h2>4) − โควต้าฝ่ายขายที่ยังไม่ได้ขาย</h2>
+      <details class="dbox" id="e-d2"><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
       <div class="note">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (กัน key ผิด) หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
       <div><span class="lbl">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (ทั้งตารางสี × เบอร์ รวมหัวตารางได้)</span>
         <textarea id="e-paste" rows="4" placeholder="คลุมตารางโควต้าใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V (หรือวางลงช่องตัวเลขในตารางด้านล่างได้เลย)" style="width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px"></textarea>
@@ -363,34 +406,17 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
         <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
       </div>
     </div></details>
-    <div class="panel">
-      <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
-        <div><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div>
-        <div><span class="lbl">คิดถึงวันที่</span><input type="date" id="e-end"></div>
-      </div>
-      <div class="note" id="e-status"></div>
+      <div class="kpis" id="e-k4"></div>
+      <details class="dbox"><summary>ดูตารางสี × เบอร์</summary><div class="dbody"><div class="t5" id="e-h4"></div><div class="scroll" id="e-t4"></div></div></details>
     </div>
-    <div id="e-warn" class="msg warn" hidden></div>
-    <div class="kpis" id="e-kpis"></div>
     <div class="panel" id="e-monp" hidden><h2>ติดตามการใช้โควต้าฝ่ายขาย</h2><div class="note" id="e-monn"></div><div class="scroll" id="e-mont"></div></div>
-    <div class="panel" id="e-res-m">
-      <div class="row" style="align-items:center;gap:10px 14px">
-        <span class="lbl" style="margin:0">ดูผลแบบ</span>
-        <label class="chip on"><input type="radio" name="e-view" value="m" checked>รายเดือน (ณ สิ้นเดือน)</label>
-        <label class="chip"><input type="radio" name="e-view" value="w">รายสัปดาห์</label>
-        <label class="chip"><input type="radio" name="e-view" value="d">รายวัน</label>
-        <select id="e-per" hidden style="max-width:260px" aria-label="เลือกช่วง"></select>
-        <button class="btn" id="exl" style="margin-left:auto">ดาวน์โหลด Excel</button>
-      </div>
-      <h2 id="e-mt"></h2>
-      <div class="note" id="e-rnote"></div>
-      <div><div class="t5" id="e-h1"></div><div class="scroll" id="e-t1"></div></div>
-      <div><div class="t5" id="e-h2"></div><div class="scroll" id="e-t2"></div></div>
-      <div><div class="t5" id="e-h3"></div><div class="scroll" id="e-t3"></div></div>
-      <div><div class="t5" id="e-h4"></div><div class="scroll" id="e-t4"></div></div>
-      <div><div class="t5" id="e-h5"></div><div class="scroll" id="e-t5"></div></div>
+    <div class="panel" id="es5">
+      <h2>5) = ยอดคงเหลือสิ้นเดือน</h2>
+      <div class="kpis" id="e-k5"></div>
+      <div class="t5" id="e-h5"></div><div class="scroll" id="e-t5"></div>
       <div class="note" id="e-foot"></div>
     </div>
+    <div class="kpis" id="e-kpis" style="display:none"></div>
     <div class="panel" id="e-nx">
       <div class="head2"><h2>ประเมินสั่งผลิตเดือนถัดไป (สต็อกสิ้นเดือน + ยอดจองฝ่ายขาย)</h2><button class="btn ghost" id="nb-xl">ดาวน์โหลด Excel</button></div>
       <div class="note">เอา "สต็อกคาดว่าคงเหลือสิ้นเดือน" (ตาราง 5 ด้านบน) เทียบกับ "ยอดจองเดือนถัดไป" จากฝ่ายขาย → ได้ว่าสีไหนเบอร์ไหนต้องมีของเพิ่ม แล้วเทียบกับแผนผลิตเดือนนั้น (หักออก X%) ว่าต้องเพิ่มหรือลดแผนเท่าไร · ไฟล์ยอดจอง = ไฟล์ Excel ที่ฝ่ายขายสรุปยอดจอง (ชีต "พ.ย." ที่มีคอลัมน์ เขต × สี × เบอร์) ระบบรวมทุกเขตให้เอง</div>
@@ -404,18 +430,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
       <div id="nb-msg" class="msg" hidden></div>
       <div id="nb-body"></div>
     </div>
-    <details class="dbox"><summary>ตั้งค่าการคำนวณ (ไม่ต้องแก้ก็ใช้ได้)</summary><div class="dbody">
-      <div class="dates" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
-        <div><span class="lbl">ดีเลย์แผ่นยาง→เข้าคลัง (วัน)</span><input type="number" id="e-lag" value="0" min="0" step="1"></div>
-        <div><span class="lbl">โควต้าที่ขายได้จริง (%)</span><input type="number" id="e-pct" value="100" min="0" step="5"></div>
-        <div><span class="lbl">ดำหน้าขาว จากแผ่นขาว (%)</span><input type="number" id="e-wpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
-        <div><span class="lbl">ดำปกติ จากแผ่นดำ (%)</span><input type="number" id="e-bpct" placeholder="ว่าง = ตามแผนผลิต" min="0" max="100"></div>
       </div>
-      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-fg" style="width:auto"> ใช้ยอดเข้าโกดังพี่ชุมพรจริง แทนประมาณการจากแผ่นยาง สำหรับวันที่บันทึกแล้ว (นับถึงวันล่าสุดที่มีข้อมูลรับเข้า) — เปิดเมื่อสต็อกตั้งต้นยังไม่รวมของที่เข้าโกดังช่วงนั้น</label>
-      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-pace" style="width:auto"> คิดยอดขายที่เหลือตามอัตราขายจริงรายสี (จากโควต้าตั้งต้น − โควต้าคงเหลือ) แทนการสมมติว่าขายหมดโควต้า — ต้องมีโควต้าตั้งต้นของเดือนนี้</label>
-      <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e-net" checked style="width:auto"> ใช้ "คงเหลือสุทธิที่สั่งได้จริง" (หักยอดซื้อแล้ว) เป็นสต็อกตั้งต้น · จำนวนคู่ต่อแผ่นใช้ค่าจากแท็บ "ดูยอดคาดการณ์"</label>
-    </div></details>
-  </div>
 
   <div id="view-m" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="panel">
@@ -1331,7 +1346,7 @@ $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>se
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 const PT={q:"แผ่นยางประกอบ",p:"เทียบแผนผลิต",m:"ติดตามผลิตจริง",e:"ประเมินสต็อกสิ้นเดือน",r:"รับเข้าโกดังพี่ชุมพร"};
-function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
+function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อก (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
 $("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
 $("tab-r").onclick=()=>{show("r");window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
@@ -2163,7 +2178,7 @@ function renderE(){
   if($("view-e").hidden)return;
   const c=calcE(),W=$("e-warn");
   try{renderNb(c)}catch(err){console.error(err)}
-  if(c.err){W.hidden=false;W.textContent=c.err;["e-mont","e-kpis","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-status"].forEach(i=>$(i).innerHTML="");return}
+  if(c.err){W.hidden=false;W.textContent=c.err;["e-mont","e-k1","e-k2","e-k3","e-k4","e-k5","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-status"].forEach(i=>$(i).innerHTML="");return}
   const T=a=>a.reduce((x,y)=>x+y,0),sum=k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0),w=[];
   if(!c.hasQ)w.push("ยังไม่ได้กรอกโควต้าฝ่ายขาย — ตอนนี้ยอดสิ้นเดือน = สต็อก + ยอดที่จะเข้าเท่านั้น");
   if(!c.nd)w.push("ไม่มีข้อมูลแผ่นยางในช่วง "+thD(c.d1)+" ถึง "+thD(c.d2));
@@ -2173,7 +2188,8 @@ function renderE(){
   $("e-status").textContent="สต็อกจริง ณ "+thD(c.sd)+" รวม "+fmt(SC.reduce((a,x)=>a+T(c.res[x].start),0))+" คู่ · โควต้าขายคงเหลือ "+(c.hasQ?fmt(c.tq)+" คู่"+($("e-qd").value?" (ณ "+thD($("e-qd").value)+")":""):"ยังไม่ได้กรอก (เปิดหัวข้อ 'โควต้าฝ่ายขาย' ด้านล่าง)");
   const E=sum("end"),neg=SC.reduce((a,x)=>a+c.res[x].end.filter(v=>v<0).length,0);
   const er=f=>SC.map(x=>({tr:tint(x),lab:SCN[x]||x,v:f(x)}));
-  $("e-kpis").innerHTML='<div class="kpi"'+hvK("e1","สต็อกตั้งต้น ("+thD(c.sd)+") (คู่)",er(x=>c.res[x].start))+'><div class="k">สต็อกตั้งต้น ('+thD(c.sd)+')</div><div class="v">'+fmt(sum("start"))+'</div></div><div class="kpi"'+hvK("e2","ยอดที่จะเข้า (คู่)",er(x=>c.res[x].inn))+'><div class="k">+ ยอดที่จะเข้า ('+c.nd+' วันจ่ายแผ่น)</div><div class="v">'+fmt(sum("inn"))+'</div></div><div class="kpi"'+hvK("e3","โควต้าขายคงเหลือ (คู่)",er(x=>c.res[x].quota))+'><div class="k">− โควต้าขายคงเหลือ</div><div class="v">'+fmt(c.tq)+'</div></div><div class="kpi main"'+hvK("e4","สต็อกสิ้นเดือน (คู่) · แดง = ติดลบ",er(x=>c.res[x].end),{neg:1})+'><div class="k">= สต็อกสิ้นเดือน ('+thD(c.ed)+')</div><div class="v">'+fmt(E)+'</div></div><div class="kpi"'+hvK("e5","ช่องที่ขาด (สี × เบอร์) · แสดงเฉพาะค่าติดลบ",er(x=>c.res[x].end.map(v=>v<0?v:0)),{neg:1})+'><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(neg?"var(--warn)":"inherit")+'">'+neg+"</div></div>";
+  $("e-kpis").innerHTML='<div class="kpi"'+hvK("e1","สต็อกตั้งต้น ("+thD(c.sd)+") (คู่)",er(x=>c.res[x].start))+'><div class="k">สต็อกตั้งต้น ('+thD(c.sd)+')</div><div class="v">'+fmt(sum("start"))+'</div></div><div class="kpi"'+hvK("e2","ยอดที่จะเข้า (คู่)",er(x=>c.res[x].inn))+'><div class="k">+ ยอดที่จะเข้า ('+c.nd+' วันจ่ายแผ่น)</div><div class="v">'+fmt(sum("inn"))+'</div></div><div class="kpi"'+hvK("e2b","สต็อกคาดว่าจะมี ถึงสิ้นเดือน (คู่) · ก่อนหักโควต้า",er(x=>c.res[x].mid))+'><div class="k">= สต็อกคาดว่าจะมี ถึง '+thD(c.ed)+'</div><div class="v">'+fmt(sum("mid"))+'</div></div><div class="kpi"'+hvK("e3","โควต้าขายคงเหลือ (คู่)",er(x=>c.res[x].quota))+'><div class="k">− โควต้าขายคงเหลือ</div><div class="v">'+fmt(c.tq)+'</div></div><div class="kpi main"'+hvK("e4","สต็อกสิ้นเดือน (คู่) · แดง = ติดลบ",er(x=>c.res[x].end),{neg:1})+'><div class="k">= สต็อกสิ้นเดือน ('+thD(c.ed)+')</div><div class="v">'+fmt(E)+'</div></div><div class="kpi"'+hvK("e5","ช่องที่ขาด (สี × เบอร์) · แสดงเฉพาะค่าติดลบ",er(x=>c.res[x].end.map(v=>v<0?v:0)),{neg:1})+'><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(neg?"var(--warn)":"inherit")+'">'+neg+"</div></div>";
+  {const ch=[...$("e-kpis").children];[[0],[1],[2],[3],[4,5]].forEach((ix,n)=>$("e-k"+(n+1)).replaceChildren(...ix.map(q=>ch[q]).filter(Boolean)))}
   const P=periodsOf(c,EV),sel=$("e-per");
   if(PI>=P.length)PI=0;
   sel.hidden=EV==="m"||!P.length;if(EV!=="m"){sel.innerHTML=P.map((o,i)=>'<option value="'+i+'">'+o.label+"</option>").join("");sel.value=PI}
