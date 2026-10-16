@@ -88,35 +88,83 @@ table.tpl td,table.tpl th{border:1px solid var(--line)}
 table.tpl td:first-child{text-align:left}
 tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
 
-/* ---- app shell: left menu ---- */
-.app{display:grid;grid-template-columns:248px minmax(0,1fr);gap:20px;max-width:1560px;margin:0 auto;align-items:start}
-.app .wrap{max-width:none;margin:0;min-width:0}
-.side{position:sticky;top:16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 10px 30px -18px rgba(20,33,43,.25)}
-.brand{display:flex;align-items:center;gap:10px;padding:4px 6px 14px;border-bottom:1px solid var(--line);margin-bottom:6px}
-.brand b{display:block;font:600 15px/1.2 var(--f-head)}.brand small{color:var(--muted);font-size:12px}
-.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#2a9d9d);color:var(--accent-ink);display:grid;place-items:center;font:600 13px var(--f-head);flex:none}
-.sgroup{font-size:11px;letter-spacing:.08em;color:var(--muted);padding:6px 8px 2px}
-.smenu{display:flex;flex-direction:column;gap:4px}
-.smenu button{display:flex;align-items:center;gap:11px;text-align:left;width:100%;font:500 14.5px var(--f-body);border:0;background:none;color:var(--ink);padding:11px 12px;border-radius:11px;cursor:pointer}
-.smenu button svg{flex:none;opacity:.8}
-.smenu button:hover{background:var(--surface2)}
-.smenu button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 16px -8px var(--accent)}
-.smenu button[aria-selected="true"] svg{opacity:1}
-.app .panel,.app .dbox,.app .kpi{border-radius:14px;box-shadow:0 1px 2px rgba(20,33,43,.04),0 10px 26px -18px rgba(20,33,43,.22)}
-.app .kpi{padding:14px 16px}
-body{background:linear-gradient(160deg,var(--bg) 0%,var(--bg) 60%,color-mix(in srgb,var(--accent) 6%,var(--bg)) 100%) fixed}
-@media (max-width:1180px){.layout{grid-template-columns:1fr}}
+
+/* ---- minimal ---- */
+:root{--bg:#ffffff;--surface:#ffffff;--surface2:#f6f7f8;--line:#e8eaec;--line2:#cfd4d8;--ink:#17191c;--muted:#7b838b;--accent-soft:#e9f4f4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101518;--surface:#101518;--surface2:#171d21;--line:#252d33;--line2:#3a444b;--ink:#e8edf0;--muted:#8c98a1;--accent-soft:#14312f}}
+:root[data-theme="dark"]{--bg:#101518;--surface:#101518;--surface2:#171d21;--line:#252d33;--line2:#3a444b;--ink:#e8edf0;--muted:#8c98a1;--accent-soft:#14312f}
+body{background:var(--bg);font-size:14.5px}
+h1{font:600 22px/1.25 var(--f-body);letter-spacing:0;margin:0}
+h2{font:600 15px var(--f-body)}
+.panel{background:none;border:0;border-radius:0;box-shadow:none;padding:0;gap:14px}
+.dbox{background:none;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none;padding:14px 0}
+.dbox>summary{font:500 14.5px var(--f-body)}
+.kpis{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.kpi{flex:1 1 150px;background:none;border:0;border-radius:0;box-shadow:none;padding:14px 20px}
+.kpi:first-child{padding-left:0}
+.kpi+.kpi{border-left:1px solid var(--line)}
+.kpi .k{font-size:12.5px;color:var(--muted)}
+.kpi .v{font:500 24px/1.3 var(--f-body)}
+.kpi.main{background:none;border:0;color:inherit}
+.kpi.main .k{color:var(--muted);opacity:1}
+.kpi.main .v{color:var(--accent)}
+thead th{background:var(--surface);border-bottom:1px solid var(--line2);font-weight:500;color:var(--muted)}
+tbody tr:hover td{background:var(--surface2)}
+tfoot td{background:var(--surface);border-top:1px solid var(--line2);border-bottom:0;font-weight:600}
+tr[style*="--c"] td:first-child{box-shadow:inset 3px 0 0 var(--c);padding-left:14px}
+tr.dim{opacity:.45}
+td.hit{background:var(--accent-soft)}
+.chip{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13.5px}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.mini{border:0;background:none;color:var(--muted);padding:2px 6px;text-decoration:underline;text-underline-offset:3px}
+.btn{border-radius:6px;box-shadow:none}
+.btn.ghost{border-color:var(--line2);color:var(--ink);background:none}
+.msg{border:0;border-radius:6px}
+input[type=date],input[type=number],input[type=month],input[type=text],input[type=password],select{background:var(--surface);border-color:var(--line2);border-radius:6px}
+.tabs{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0;gap:20px}
+.tabs button{border-radius:0;padding:8px 2px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;background:none}
+.tabs button[aria-selected="true"]{background:none;color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.chips .chip[style*="opacity"]{display:none}
+tr[style*="--c"] .dot{display:none}
+
+/* ---- shell: flat left rail ---- */
+body{padding:0}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);gap:0;max-width:none;margin:0;align-items:start}
+.app .wrap{max-width:1320px;margin:0;padding:30px 40px 72px;min-width:0;gap:22px}
+.side{position:sticky;top:0;height:100vh;background:var(--surface2);border:0;border-right:1px solid var(--line);border-radius:0;box-shadow:none;padding:26px 14px 18px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.brand{padding:0 10px 18px;border:0;margin:0;display:block}
+.brand b{display:block;font:600 15px/1.3 var(--f-body)}
+.brand small{color:var(--muted);font-size:12.5px}
+.sgroup{display:none}
+.smenu{display:flex;flex-direction:column;gap:2px}
+.smenu button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;font:400 14.5px var(--f-body);border:0;background:none;color:var(--muted);padding:9px 10px;border-radius:6px;cursor:pointer;box-shadow:none}
+.smenu button svg{flex:none;width:18px;height:18px;opacity:.75}
+.smenu button:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.smenu button[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:inset 2px 0 0 var(--accent),0 0 0 1px var(--line)}
+.smenu button[aria-selected="true"] svg{opacity:1;color:var(--accent)}
+.ver{margin-top:auto;padding:14px 10px 0;font-size:11.5px;line-height:1.5;color:var(--muted)}
+header{display:block}
+.layout{display:flex;flex-direction:column;gap:22px}
+.layout>aside.toolbar{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;padding:0;background:none;border:0}
+.layout>aside.toolbar .field{min-width:0}
+.layout>aside.toolbar .dates{display:flex;gap:8px}
+.layout>aside.toolbar .dates input{width:auto}
+.layout>aside.toolbar #factor{width:90px}
+.layout>aside.toolbar #factor+.note{display:none}
+.layout>aside.toolbar details.dbox{flex:1 0 100%;padding:10px 0 4px}
+.layout>aside.toolbar details .field{margin-bottom:10px}
 @media (max-width:860px){
-  .app{grid-template-columns:minmax(0,1fr);gap:12px}
-  .side{position:static;flex-direction:row;align-items:center;padding:8px;border-radius:14px;overflow-x:auto}
-  .brand,.sgroup{display:none}
-  .smenu{flex-direction:row;gap:6px}
-  .smenu button{white-space:nowrap;width:auto;padding:9px 12px}
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;flex-direction:row;align-items:center;padding:10px 12px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .brand,.ver{display:none}
+  .smenu{flex-direction:row;gap:4px}
+  .smenu button{white-space:nowrap;width:auto}
+  .app .wrap{padding:20px 16px 56px}
 }
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
-  <div class="brand"><span class="logo">200</span><div><b>ฟองน้ำ รุ่น 200</b><small>ระบบคาดการณ์การผลิต</small></div></div>
+  <div class="brand"><b>ฟองน้ำ รุ่น 200</b><small>คาดการณ์การผลิต</small></div>
   <div class="sgroup">เมนูหลัก</div>
   <div class="smenu" role="tablist">
     <button role="tab" id="tab-q" aria-selected="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><rect x="5" y="11" width="3.2" height="7" rx="1"/><rect x="10.4" y="6" width="3.2" height="12" rx="1"/><rect x="15.8" y="9" width="3.2" height="9" rx="1"/></svg><span>ดูยอดคาดการณ์</span></button>
@@ -126,17 +174,17 @@ body{background:linear-gradient(160deg,var(--bg) 0%,var(--bg) 60%,color-mix(in s
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
     <button role="tab" id="tab-i" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span>นำเข้าไฟล์นึ่งยาง</span></button>
   </div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (มินิมอล รอบ 2)</div>
 </nav>
 <div class="wrap">
   <header>
     <div>
       <h1 id="ptitle">ดูยอดคาดการณ์</h1>
-      <div class="sub">เวอร์ชัน 15 ต.ค. 69 เวลา 11:00 (หน้ารับเข้าโกดังพี่ชุมพรรวมอยู่ในไฟล์นี้ไฟล์เดียว) · แผ่นยางที่จ่ายไปประกอบรายวัน → คาดการณ์จำนวนรองเท้า (คู่) · รุ่น 200</div>
     </div>
   </header>
 
   <div id="view-q" class="layout">
-    <aside class="panel">
+    <aside class="toolbar">
       <div class="field">
         <span class="lbl">ช่วงวันที่จ่ายไปประกอบ</span>
         <div class="dates"><input type="date" id="from" aria-label="ตั้งแต่วันที่"><input type="date" id="to" aria-label="ถึงวันที่"></div>
@@ -144,9 +192,10 @@ body{background:linear-gradient(160deg,var(--bg) 0%,var(--bg) 60%,color-mix(in s
       </div>
       <div class="field">
         <span class="lbl">จำนวนคู่ต่อยาง 1 แผ่น</span>
-        <input type="number" id="factor" value="2" min="0.1" step="0.01">
+        <input type="number" id="factor" value="2" min="0.1" step="0.01" title="ใส่ต่ำกว่า 2 ถ้าอยากหักของเสีย เช่น 1.95">
         <div class="note" style="margin-top:4px">ใส่ต่ำกว่า 2 ถ้าอยากหักของเสีย เช่น 1.95</div>
       </div>
+      <details class="dbox"><summary>กรองสีและเบอร์</summary>
       <div class="field">
         <span class="lbl">สี</span>
         <div class="row" style="margin-bottom:6px"><button class="mini" id="c-all">ทุกสี</button><button class="mini" id="c-none">ล้าง</button></div>
@@ -157,6 +206,7 @@ body{background:linear-gradient(160deg,var(--bg) 0%,var(--bg) 60%,color-mix(in s
         <div class="row" style="margin-bottom:6px"><button class="mini" id="s-all">ทุกเบอร์</button><button class="mini" id="s-none">ล้าง</button></div>
         <div class="chips" id="sizes"></div>
       </div>
+      </details>
     </aside>
     <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
       <div id="status" class="msg" hidden></div>
@@ -367,6 +417,52 @@ td.hit{background:var(--accent-soft);font-weight:600}
 .msg.ok{background:var(--accent-soft);color:var(--ink);border-color:transparent}
 .entry input[type=number]{width:84px;text-align:right;padding:5px 7px}
 .entry td,.entry th{padding:4px 6px}
+
+/* ---- minimal ---- */
+:root{--bg:#ffffff;--surface:#ffffff;--surface2:#f6f7f8;--line:#e8eaec;--line2:#cfd4d8;--ink:#17191c;--muted:#7b838b;--accent-soft:#e9f4f4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101518;--surface:#101518;--surface2:#171d21;--line:#252d33;--line2:#3a444b;--ink:#e8edf0;--muted:#8c98a1;--accent-soft:#14312f}}
+:root[data-theme="dark"]{--bg:#101518;--surface:#101518;--surface2:#171d21;--line:#252d33;--line2:#3a444b;--ink:#e8edf0;--muted:#8c98a1;--accent-soft:#14312f}
+body{background:var(--bg);font-size:14.5px}
+h1{font:600 22px/1.25 var(--f-body);letter-spacing:0;margin:0}
+h2{font:600 15px var(--f-body)}
+.panel{background:none;border:0;border-radius:0;box-shadow:none;padding:0;gap:14px}
+.dbox{background:none;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none;padding:14px 0}
+.dbox>summary{font:500 14.5px var(--f-body)}
+.kpis{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.kpi{flex:1 1 150px;background:none;border:0;border-radius:0;box-shadow:none;padding:14px 20px}
+.kpi:first-child{padding-left:0}
+.kpi+.kpi{border-left:1px solid var(--line)}
+.kpi .k{font-size:12.5px;color:var(--muted)}
+.kpi .v{font:500 24px/1.3 var(--f-body)}
+.kpi.main{background:none;border:0;color:inherit}
+.kpi.main .k{color:var(--muted);opacity:1}
+.kpi.main .v{color:var(--accent)}
+thead th{background:var(--surface);border-bottom:1px solid var(--line2);font-weight:500;color:var(--muted)}
+tbody tr:hover td{background:var(--surface2)}
+tfoot td{background:var(--surface);border-top:1px solid var(--line2);border-bottom:0;font-weight:600}
+tr[style*="--c"] td:first-child{box-shadow:inset 3px 0 0 var(--c);padding-left:14px}
+tr.dim{opacity:.45}
+td.hit{background:var(--accent-soft)}
+.chip{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13.5px}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.mini{border:0;background:none;color:var(--muted);padding:2px 6px;text-decoration:underline;text-underline-offset:3px}
+.btn{border-radius:6px;box-shadow:none}
+.btn.ghost{border-color:var(--line2);color:var(--ink);background:none}
+.msg{border:0;border-radius:6px}
+input[type=date],input[type=number],input[type=month],input[type=text],input[type=password],select{background:var(--surface);border-color:var(--line2);border-radius:6px}
+.tabs{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0;gap:20px}
+.tabs button{border-radius:0;padding:8px 2px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;background:none}
+.tabs button[aria-selected="true"]{background:none;color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.chips .chip[style*="opacity"]{display:none}
+
+.layout{display:flex;flex-direction:column;gap:22px}
+.layout>aside.toolbar{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;padding:0;background:none;border:0}
+.layout>aside.toolbar .field{min-width:0}
+.layout>aside.toolbar .dates{display:flex;gap:8px}
+.layout>aside.toolbar .dates input{width:auto}
+.layout>aside.toolbar details.dbox{flex:1 0 100%;padding:10px 0 4px}
+.layout>aside.toolbar details .field{margin-bottom:10px}
+tr[style*="--c"] .dot{display:none}
 body.embed{padding:0;background:transparent}
 body.embed header>div:first-child{display:none}
 body.embed header{justify-content:flex-start}
@@ -387,7 +483,7 @@ body.embed header{justify-content:flex-start}
   </header>
 
   <div id="view-q" class="layout">
-    <aside class="panel">
+    <aside class="toolbar">
       <div class="field">
         <span class="lbl">ช่วงวันที่</span>
         <div class="dates">
@@ -400,6 +496,7 @@ body.embed header{justify-content:flex-start}
           <button class="mini" id="r-1">วันล่าสุด</button>
         </div>
       </div>
+      <details class="dbox"><summary>กรองสีและเบอร์</summary>
       <div class="field">
         <span class="lbl">สี</span>
         <div class="row" style="margin-bottom:8px">
@@ -420,6 +517,7 @@ body.embed header{justify-content:flex-start}
         </div>
         <div class="chips" id="chips-size"></div>
       </div>
+      </details>
     </aside>
 
     <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
@@ -1112,7 +1210,7 @@ const PTPL=[["น้ำเงิน","น้ำเงิน"],["เขียว"
 const PCOL={"น้ำเงิน":["D6E4F5","1F4FD8"],"เขียว":["DDEEDD","1E7E34"],"แดง":["F8D7DA","C62828"],"เหลือง":["FFF2CC","B7791F"],"ขาว":["F5F5F5","333333"],"ดำ":["D9D9D9","000000"],"เทา":["E8E8E8","666666"],"ดำ/ขาว":["D9D9D9","000000"],"เขียว/แดง":["F8D7DA","1E7E34"],"แดง/เขียว":["DDEEDD","C62828"],"เหลือง/แดง":["F8D7DA","B7791F"],"เหลือง/ดำ":["FFF9C4","333333"],"น้ำเงิน/น้ำเงิน":["D6E4F5","1F4FD8"],"แดง/แดง":["F8D7DA","C62828"],"โกโก้ล้วน":["F0E4DA","6B4226"]};
 const colOf=k=>PCOL[k]||(k.indexOf("/ดำ")>0?["D9D9D9","333333"]:["FFFFFF","333333"]);
 const POOLKEY={"น้ำเงิน":"น้ำเงิน","เขียว":"เขียว","แดง":"แดง","เหลือง":"เหลือง","ขาว":"ขาว","ดำ":"ดำ","เทา":"เทา","Xmas เขียว":"เขียว/แดง","Xmas แดง":"แดง/เขียว","พื้นแดง เหลือง":"เหลือง/แดง","น้ำเงินล้วน":"น้ำเงิน/น้ำเงิน","แดงล้วน":"แดง/แดง","โกโก้":"โกโก้ล้วน"};
-const tint=k=>' style="background:#'+colOf(k)[0]+'55"';
+const tint=k=>' style="--c:#'+(k==="ขาว"?"BFC5CB":colOf(k)[1])+'"';
 function planView(c){ // -> {rows:[{label,v,st}], tot, prevRev}
   const prevs=Object.keys(PL[c.m]).map(Number).filter(r=>r<Number(c.rev)).sort((a,b)=>a-b), pr=prevs.length?prevs[prevs.length-1]:null, pc=pr!=null?PL[c.m][pr].colors:null;
   const known=PTPL.map(r=>r[0]), extra=Object.keys(c.P.colors).filter(k=>!known.includes(k)&&c.P.colors[k].some(x=>x)).map(k=>[k,k]);
@@ -1544,7 +1642,7 @@ function renderM(){
   $("m-kpis").innerHTML=[["แผนผลิตทั้งเดือน",fmt(M.tot.pt),""],["เป้า "+Math.round(M.hc*100)+"% ของแผน",fmt(M.tot.tg),""],["เข้าโกดังจริงสะสม",fmt(M.tot.at),pc(M.tot.pt?M.tot.at/M.tot.pt:null)+" ของแผน · เวลาผ่านไป "+(M.el?Math.round(M.el/M.dim*100)+"%":"–")],["คาดสิ้นเดือน (ตามอัตราปัจจุบัน)",M.tot.proj==null?"–":fmt(M.tot.proj),M.tot.proj==null||!M.tot.pt?"":pc(M.tot.proj/M.tot.pt)+" ของแผน"]]
    .map((k,i)=>'<div class="kpi'+(i===2?" main":"")+'"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="k">'+k[2]+"</div></div>").join("");
   let h='<table><thead><tr><th>สี</th><th>แผนผลิต</th><th>เป้า</th><th>นึ่งแล้ว (คู่)</th><th>เข้าโกดังจริง</th><th>% ของแผน</th><th>% ของเป้า</th><th>ค้างระหว่างทาง</th><th>คาดสิ้นเดือน</th></tr></thead><tbody>';
-  M.rows.forEach(r=>{const dim=r.pt===0&&r.at===0&&r.st===0;h+="<tr"+tint(r.k)+(dim?' style="opacity:.45"':"")+"><td>"+r.label+"</td><td>"+(r.pt?fmt(r.pt):"–")+"</td><td>"+(r.tg?fmt(r.tg):"–")+"</td><td>"+(r.st?fmt(r.st):"–")+"</td><td><b>"+(r.at?fmt(r.at):"–")+"</b></td><td>"+pc(r.pct)+"</td><td>"+pc(r.pctT)+"</td><td>"+(r.gap?fmt(r.gap):"–")+"</td><td>"+(r.proj==null?"–":fmt(r.proj))+"</td></tr>"});
+  M.rows.forEach(r=>{const dim=r.pt===0&&r.at===0&&r.st===0;h+="<tr"+tint(r.k)+(dim?' class="dim"':"")+"><td>"+r.label+"</td><td>"+(r.pt?fmt(r.pt):"–")+"</td><td>"+(r.tg?fmt(r.tg):"–")+"</td><td>"+(r.st?fmt(r.st):"–")+"</td><td><b>"+(r.at?fmt(r.at):"–")+"</b></td><td>"+pc(r.pct)+"</td><td>"+pc(r.pctT)+"</td><td>"+(r.gap?fmt(r.gap):"–")+"</td><td>"+(r.proj==null?"–":fmt(r.proj))+"</td></tr>"});
   $("m-t1").innerHTML=h+"</tbody><tfoot><tr><td>รวม</td><td>"+fmt(M.tot.pt)+"</td><td>"+fmt(M.tot.tg)+"</td><td>"+fmt(M.tot.st)+"</td><td>"+fmt(M.tot.at)+"</td><td>"+pc(M.tot.pt?M.tot.at/M.tot.pt:null)+"</td><td>"+pc(M.tot.tg?M.tot.at/M.tot.tg:null)+"</td><td>"+fmt(M.tot.st-M.tot.at)+"</td><td>"+(M.tot.proj==null?"–":fmt(M.tot.proj))+"</td></tr></tfoot></table>";
   const mt=(f)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6(),pcol=Z6();
     M.rows.forEach(r=>{const v=f(r);v.forEach((x,i)=>{col[i]+=x});t+="<tr"+tint(r.k)+"><td>"+r.label+"</td>"+v.map(x=>"<td>"+(Math.round(x)?fmt(x):'<span class="zero">–</span>')+"</td>").join("")+"<td><b>"+fmt(T0(v))+"</b></td></tr>"});
