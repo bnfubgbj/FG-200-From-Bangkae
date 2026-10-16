@@ -74,6 +74,9 @@ td.hit{background:var(--accent-soft);font-weight:600}
 .msg.ok{background:var(--accent-soft);color:var(--ink);border-color:transparent}
 .entry input[type=number]{width:84px;text-align:right;padding:5px 7px}
 .entry td,.entry th{padding:4px 6px}
+body.embed{padding:0;background:transparent}
+body.embed header>div:first-child{display:none}
+body.embed header{justify-content:flex-start}
 </style>
 
 <div class="wrap">
@@ -183,6 +186,7 @@ td.hit{background:var(--accent-soft);font-weight:600}
 </div>
 
 <script>
+if(/[?&]embed=1/.test(location.search)){document.body.classList.add("embed");const rs=()=>parent.postMessage({fgh:document.body.scrollHeight},"*");new ResizeObserver(rs).observe(document.body);addEventListener("load",rs)}
 const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4aryCA0j4UvW7NFGcCG2aslnaDXThjKuUxi8xnRBhtQ6VLQg/exec";
 const SIZES=["8.5","9","9.5","10","10.5","11"];
 // รูปแบบตามตารางแผนผลิต: [คีย์ในชีต (หู/พื้น), ชื่อแสดง, สีพื้นแถว Excel, สีตัวอักษร]
