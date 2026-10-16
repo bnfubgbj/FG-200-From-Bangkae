@@ -194,7 +194,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 7)</div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 9)</div>
 </nav>
 <div class="wrap">
   <header>
@@ -274,8 +274,8 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
       <div class="row" style="align-items:center"><button class="btn" id="sx-save" disabled>บันทึกที่เลือก</button></div>
       <div id="sx-msg" class="msg" hidden></div>
     </div></details>
-    <details class="dbox" id="e-d1" open><summary>สต็อกต้นเดือน (นำเข้าไฟล์สต็อกจาก รง.)</summary><div class="dbody">
-      <div class="note">เลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
+    <details class="dbox" id="e-d1" open><summary>สต็อกต้นเดือน (นำเข้าไฟล์มาตรฐาน หรือไฟล์สต็อกจาก รง.)</summary><div class="dbody">
+      <div class="note">ใช้ไฟล์มาตรฐาน "FG200 สต็อกคงเหลือ" (ตัวเลขที่ลดไว้บริหารจัดการแล้วก็ได้) — ระบบใช้ตัวเลขนี้เป็นสต็อกต้นเดือนเลย หรือเลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
       <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
       <div id="e-fprev" class="note"></div>
       <div id="ps-msg" class="msg" hidden></div>
@@ -293,25 +293,26 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
       <div id="b-msg" class="msg" hidden></div>
     </div></details>
     <div class="panel">
-      <div class="head2"><h2>เทียบแผนผลิตกับแผ่นยางที่จ่ายไปประกอบ</h2><button class="btn ghost" id="pxl">ดาวน์โหลด Excel</button></div>
+      <div class="head2"><h2>เลือกเดือนและฉบับแผนผลิต</h2><button class="btn ghost" id="pxl" style="display:none">ดาวน์โหลด Excel</button></div>
       <div class="dates"><div><span class="lbl">เดือนของแผน</span><select id="p-month"></select></div><div><span class="lbl">ฉบับแผน</span><select id="p-rev"></select></div></div>
       <div id="p-note" class="note"></div>
     </div>
-    <details class="dbox" id="po-d" open><summary>ประเมินสต็อกปลายเดือน — ดาวน์โหลด Excel</summary><div class="dbody">
-      <div class="note">สต็อกต้นงวด + ผลิต (หักออก X%) − โควต้าขายฝ่ายขาย = สต็อกปลายเดือนที่คาดว่าจะเหลือ · ใช้เดือนและฉบับแผนที่เลือกไว้ด้านล่าง · โควต้า = โควต้าต้นเดือนฝ่ายขายที่บันทึกไว้ · ได้เป็นไฟล์ Excel เท่านั้น (แก้ X% ในไฟล์ได้)</div>
+    <details class="dbox" id="po-d" open><summary>ประเมินสต็อกปลายเดือน (สต็อกต้น + แผนผลิตหัก % − โควต้าฝ่ายขาย)</summary><div class="dbody">
+      <div class="note">ช่องสีแดง = ติดลบ (ของไม่พอขายตามโควต้า) ใช้เดือน/ฉบับแผนที่เลือกด้านบน · โควต้า = โควต้าต้นเดือนฝ่ายขายที่บันทึกไว้</div>
       <div class="row" style="align-items:flex-end">
         <div style="min-width:200px"><span class="lbl">สต็อกต้นงวด ณ วันที่</span><select id="po-sd"></select></div>
         <div style="min-width:120px"><span class="lbl">หักผลิตออก (%)</span><input type="number" id="po-x" value="10" min="0" max="100" step="1"></div>
-        <div style="min-width:260px"><span class="lbl">วิธีคิดตัวเลขผลิต</span><select id="po-opt"><option value="1">แบบ 1: สต็อกต้นงวด + แผนผลิต − โควต้า</option><option value="2">แบบ 2: สต็อกต้นงวด + แผนประกอบนึ่งยาง − โควต้า</option><option value="both">ทั้งสองแบบ (2 ชีตในไฟล์เดียว)</option></select></div>
+        <select id="po-opt" style="display:none"><option value="1">1</option></select>
         <button class="btn" id="po-xl">ดาวน์โหลด Excel</button>
       </div>
       <div id="po-note" class="note"></div>
+      <div id="po-out"></div>
       <div id="po-msg" class="msg" hidden></div>
     </div></details>
-    <div class="kpis" id="p-kpis"></div>
-    <div class="panel"><h2>แผนผลิต (หน่วย: คู่)</h2><div class="scroll" id="p-plan"></div></div>
-    <div class="panel"><h2>ได้จากแผ่นที่จ่ายประกอบ (หน่วย: คู่)</h2><div class="scroll" id="p-sup"></div></div>
-    <div class="panel"><h2>ส่วนต่างรายแถว (ได้จากแผ่น − แผน) ค่าลบ = ขาด</h2><div class="scroll" id="p-rowdiff"></div></div>
+    <div class="kpis" id="p-kpis" style="display:none"></div>
+    <div class="panel" style="display:none"><h2>แผนผลิต (หน่วย: คู่)</h2><div class="scroll" id="p-plan"></div></div>
+    <div class="panel" style="display:none"><h2>ได้จากแผ่นที่จ่ายประกอบ (หน่วย: คู่)</h2><div class="scroll" id="p-sup"></div></div>
+    <div class="panel" style="display:none"><h2>ส่วนต่างรายแถว (ได้จากแผ่น − แผน) ค่าลบ = ขาด</h2><div class="scroll" id="p-rowdiff"></div></div>
   </div>
 
   <div id="view-e" hidden style="display:flex;flex-direction:column;gap:14px">
@@ -1538,7 +1539,13 @@ function thDate(t){
 async function readStock(file){
   const out={name:file.name,date:"",tabs:{},err:""};
   try{
-    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());const ws=wb.worksheets[0];
+    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());
+    {let sw=null;wb.eachSheet(w=>{if(sw)return;const a=String(cv(w.getCell("A1"))==null?"":cv(w.getCell("A1"))).trim();if(/^FG200\s*สต็อก/.test(a))sw=w});
+     if(sw){const rd=sxRead(sw),ck=sxCheck(sw,rd.rows),dv=cv(sw.getCell("B2"));
+      out.std=true;out.date=sxDate(dv)||"";out.tabs.stock=rd.rows;out.tabs.booked={};out.tabs.net=JSON.parse(JSON.stringify(rd.rows));
+      if(!rd.any)out.err="แผ่นสต็อกในไฟล์ยังไม่มีตัวเลข";else if(ck.bad.length)out.err="ยอดรายสี/รายเบอร์ไม่ตรงใบ: "+ck.bad.join(", ");
+      return out}}
+    const ws=wb.worksheets[0];
     const lab=r=>norm(cv(ws.getCell(r,1))||"");
     const find=(re,from)=>{for(let r=from||1;r<=Math.min(ws.rowCount,260);r++)if(re.test(lab(r)))return r;return 0};
     const grab=r0=>{const o={};if(!r0||!/^สี/.test(lab(r0+1)))return o;for(let r=r0+2;r<r0+14;r++){const l=lab(r);if(!l)break;o[l]=SIZES.map((s,i)=>Math.round(Number(cv(ws.getCell(r,i+2)))||0))}return o};
@@ -1557,7 +1564,7 @@ $("e-file").onchange=async e=>{
   const r=await readStock(f);
   if(r.err){$("e-fprev").textContent=r.err;return}
   EIMP=r;$("e-fdate").value=r.date;$("e-fsave").disabled=false;
-  const a=sumT(r.tabs.stock),b=sumT(r.tabs.booked),n=sumT(r.tabs.net);
+  const a=sumT(r.tabs.stock),b=sumT(r.tabs.booked),n=sumT(r.tabs.net);if(r.std){$("e-fprev").innerHTML="อ่านไฟล์มาตรฐานได้: สต็อกต้นเดือน <b>"+fmt(a)+"</b> คู่"+(r.date?"":' <span style="color:var(--warn)">(ไม่มีวันที่ในช่อง B2 — เลือกวันที่ด้านบน)</span>');return}
   $("e-fprev").innerHTML="อ่านได้: คงเหลือ <b>"+fmt(a)+"</b> − ยอดซื้อ <b>"+fmt(b)+"</b> = สุทธิ <b>"+fmt(n)+"</b> คู่"+(Math.abs(a-b-n)>1?' <span style="color:var(--warn)">(ตัวเลขในไฟล์ไม่ตรงสูตร ตรวจอีกครั้ง)</span>':"")+" · วันที่ในหัวตาราง "+(r.date?thD(r.date):"อ่านไม่ได้ — กรอกวันที่เอง");
 };
 $("e-fsave").onclick=async()=>{
@@ -1854,9 +1861,31 @@ function poCalc(opt){
   return{m,rev,sd,kind,x,start,raw,net,quota,end,warn,skipped,opt};
 }
 function poNote(){
-  const o=[];for(const opt of [1,2]){const C=poCalc(opt);if(C.err){$("po-note").textContent=C.err;return}C.warn.forEach(w=>{if(!o.includes(w))o.push(w)})}
-  const C=poCalc(1);
-  $("po-note").innerHTML="สต็อก ณ "+thD(C.sd)+" ("+(C.kind==="net"?"คงเหลือสุทธิที่สั่งได้จริง":"คงเหลือ")+") · แผน "+(C.rev!==""?revName(C.rev):"—")+(o.length?'<br><span style="color:var(--warn)">'+o.join("<br>")+"</span>":"");
+  const C=poCalc(1);if(C.err){$("po-note").textContent=C.err;poOut(null);return}
+  $("po-note").innerHTML="สต็อกต้น ณ "+thD(C.sd)+" ("+(C.kind==="net"?"คงเหลือสุทธิที่สั่งได้จริง":"คงเหลือ")+") · แผน "+(C.rev!==""?revName(C.rev):"—")+" หักออก "+Math.round(C.x*100)+"%"+(C.warn.length?'<br><span style="color:var(--warn)">'+C.warn.join("<br>")+"</span>":"");
+  poOut(C);
+}
+function poOut(C){
+  const el=$("po-out");if(!el)return;if(!C){el.innerHTML="";return}
+  const R=v=>Math.round(v),T=a=>a.reduce((x,y)=>x+y,0);
+  const cols=SC.filter(c=>T(C.start[c])||T(C.raw[c])||T(C.quota[c]));
+  const exp={},end={};cols.forEach(c=>{exp[c]=C.start[c].map((v,i)=>R(v)+R(C.net[c][i]));end[c]=exp[c].map((v,i)=>v-R(C.quota[c][i]))});
+  const tbl=(get,neg)=>{let h='<div class="scroll"><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+    const S=[0,0,0,0,0,0];
+    cols.forEach(c=>{const v=get(c).map(R);v.forEach((x,i)=>S[i]+=x);const t=T(v);
+      h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+"</td>"+v.map(x=>'<td'+(neg&&x<0?' class="neg" style="font-weight:700;background:color-mix(in srgb,var(--warn) 16%,transparent)"':"")+">"+(x?x.toLocaleString("en-US"):"–")+"</td>").join("")+"<td"+(neg&&t<0?' class="neg"':"")+"><b>"+(t?t.toLocaleString("en-US"):"–")+"</b></td></tr>"});
+    return h+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+S.map(x=>"<td"+(neg&&x<0?' class="neg"':"")+">"+x.toLocaleString("en-US")+"</td>").join("")+"<td>"+T(S).toLocaleString("en-US")+"</td></tr></tfoot></table></div>"};
+  const short=[];let sumShort=0;
+  cols.forEach(c=>{const a=[];end[c].forEach((v,i)=>{if(v<0){a.push("เบอร์ "+SIZES[i]+" ขาด "+(-v).toLocaleString("en-US"));sumShort+=-v}});if(a.length)short.push("<b>"+(SCN[c]||c)+"</b>: "+a.join(" · "))});
+  let h='<h3 style="margin:14px 0 6px;font-size:15px">คงเหลือสิ้นเดือน '+thM(C.m)+' (= สต็อกต้น + ผลิตหัก '+Math.round(C.x*100)+'% − โควต้าฝ่ายขาย)</h3>';
+  h+=short.length?'<div class="msg warn" style="margin:0 0 8px"><b>ติดลบ '+sumShort.toLocaleString("en-US")+' คู่ — แจ้งแก้แผนผลิตกับ รง.</b><br>'+short.join("<br>")+"</div>":'<div class="msg ok" style="margin:0 0 8px">ไม่มีช่องไหนติดลบ — สต็อกพอขายตามโควต้าทุกสี/เบอร์</div>';
+  h+=tbl(c=>end[c],true);
+  h+='<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">ดูที่มาของตัวเลข</summary>'+
+    '<h4 style="margin:10px 0 4px">1) สต็อกต้น ณ '+thD(C.sd)+'</h4>'+tbl(c=>C.start[c])+
+    '<h4 style="margin:10px 0 4px">2) แผนผลิตหักออก '+Math.round(C.x*100)+'%</h4>'+tbl(c=>C.net[c])+
+    '<h4 style="margin:10px 0 4px">3) ยอดคาดว่าจะมี ณ สิ้นเดือน (= 1 + 2)</h4>'+tbl(c=>exp[c])+
+    '<h4 style="margin:10px 0 4px">4) โควต้าขายฝ่ายขาย</h4>'+tbl(c=>C.quota[c])+'</details>';
+  el.innerHTML=h;
 }
 function poSheet(wb,C){
   const ws=wb.addWorksheet(C.opt===1?"แบบ1 แผนผลิต":"แบบ2 แผนประกอบนึ่งยาง");ws.columns=[{width:34}].concat(Array(7).fill({width:13}));
