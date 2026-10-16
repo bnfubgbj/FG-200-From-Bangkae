@@ -224,6 +224,29 @@ tbody tr:hover td{background:var(--accent-soft)}
 .btn:disabled{opacity:.5}
 .panel:not(.toolbar)>.head2:first-child .tabs button,.panel:not(.toolbar)>.head2:first-child .seg button{color:rgba(255,255,255,.7)}
 .panel:not(.toolbar)>.head2:first-child .tabs button[aria-selected="true"],.panel:not(.toolbar)>.head2:first-child .seg button[aria-selected="true"]{color:#fff;border-bottom-color:var(--gold)}
+
+/* ---- theme: outlook blue (สว่างสบายตา) ---- */
+:root{--bg:#f5f5f5;--surface:#ffffff;--surface2:#f8fafc;--line:#e1e5ea;--line2:#c8d0d8;--ink:#242424;--muted:#616b75;--accent:#0f6cbd;--accent-ink:#ffffff;--accent-soft:#eaf3fc;--sel:#cfe4fa;--hdr-bg:#e5f0fb;--hdr-ink:#0f548c;--gold:#0f6cbd;--teal:#107c10;--warn:#b45309;--warn-soft:#fdf0d5;--ok:#107c10;--mid:#c58b12;--bad:#c4314b;--bar:#0f6cbd}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1f1f;--surface:#2b2b2b;--surface2:#333333;--line:#3d3d3d;--line2:#525252;--ink:#f5f5f5;--muted:#b3b3b3;--accent:#479ef5;--accent-ink:#0b2540;--accent-soft:#16324b;--sel:#0c3b5e;--hdr-bg:#17314a;--hdr-ink:#9fd0ff;--gold:#479ef5;--teal:#6ccb5f;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#6ccb5f;--mid:#e0a84a;--bad:#ff8a9a;--bar:#479ef5}}
+:root[data-theme="dark"]{--bg:#1f1f1f;--surface:#2b2b2b;--surface2:#333333;--line:#3d3d3d;--line2:#525252;--ink:#f5f5f5;--muted:#b3b3b3;--accent:#479ef5;--accent-ink:#0b2540;--accent-soft:#16324b;--sel:#0c3b5e;--hdr-bg:#17314a;--hdr-ink:#9fd0ff;--gold:#479ef5;--teal:#6ccb5f;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#6ccb5f;--mid:#e0a84a;--bad:#ff8a9a;--bar:#479ef5}
+.side{background:#0f6cbd;color:#fff}
+.brand b{color:#fff}.brand small{color:#cfe4fa}
+.smenu button{color:#e3eefb}
+.smenu button:hover{color:#fff;background:rgba(255,255,255,.15)}
+.smenu button[aria-selected="true"]{background:#fff;color:#0f548c;box-shadow:none;font-weight:600}
+.smenu button[aria-selected="true"] svg{color:#0f6cbd;opacity:1}
+.ver,.ver a{color:#cfe4fa}
+.panel:not(.toolbar){box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.panel:not(.toolbar)>h2:first-child,.panel:not(.toolbar)>.head2:first-child{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid var(--line)}
+.panel:not(.toolbar)>.head2:first-child .btn{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.panel:not(.toolbar)>.head2:first-child .tabs button,.panel:not(.toolbar)>.head2:first-child .seg button{color:var(--muted)}
+.panel:not(.toolbar)>.head2:first-child .tabs button[aria-selected="true"],.panel:not(.toolbar)>.head2:first-child .seg button[aria-selected="true"]{color:var(--hdr-ink);border-bottom-color:var(--accent)}
+.kpi.main{background:var(--sel);color:var(--hdr-ink);box-shadow:inset 0 -3px 0 var(--accent)}
+.kpi.main .k{color:var(--muted)}
+.kpi.main .v{color:var(--hdr-ink)}
+.kpi.main[data-hk] .v,.kpi.main[data-hv] .v{border-bottom-color:var(--accent)}
+thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid var(--line2)}
+.dbox>summary{color:var(--ink)}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -236,7 +259,7 @@ tbody tr:hover td{background:var(--accent-soft)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 25)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 26)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -687,6 +710,29 @@ tbody tr:hover td{background:var(--accent-soft)}
 .btn:disabled{opacity:.5}
 .panel:not(.toolbar)>.head2:first-child .tabs button,.panel:not(.toolbar)>.head2:first-child .seg button{color:rgba(255,255,255,.7)}
 .panel:not(.toolbar)>.head2:first-child .tabs button[aria-selected="true"],.panel:not(.toolbar)>.head2:first-child .seg button[aria-selected="true"]{color:#fff;border-bottom-color:var(--gold)}
+
+/* ---- theme: outlook blue (สว่างสบายตา) ---- */
+:root{--bg:#f5f5f5;--surface:#ffffff;--surface2:#f8fafc;--line:#e1e5ea;--line2:#c8d0d8;--ink:#242424;--muted:#616b75;--accent:#0f6cbd;--accent-ink:#ffffff;--accent-soft:#eaf3fc;--sel:#cfe4fa;--hdr-bg:#e5f0fb;--hdr-ink:#0f548c;--gold:#0f6cbd;--teal:#107c10;--warn:#b45309;--warn-soft:#fdf0d5;--ok:#107c10;--mid:#c58b12;--bad:#c4314b;--bar:#0f6cbd}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1f1f;--surface:#2b2b2b;--surface2:#333333;--line:#3d3d3d;--line2:#525252;--ink:#f5f5f5;--muted:#b3b3b3;--accent:#479ef5;--accent-ink:#0b2540;--accent-soft:#16324b;--sel:#0c3b5e;--hdr-bg:#17314a;--hdr-ink:#9fd0ff;--gold:#479ef5;--teal:#6ccb5f;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#6ccb5f;--mid:#e0a84a;--bad:#ff8a9a;--bar:#479ef5}}
+:root[data-theme="dark"]{--bg:#1f1f1f;--surface:#2b2b2b;--surface2:#333333;--line:#3d3d3d;--line2:#525252;--ink:#f5f5f5;--muted:#b3b3b3;--accent:#479ef5;--accent-ink:#0b2540;--accent-soft:#16324b;--sel:#0c3b5e;--hdr-bg:#17314a;--hdr-ink:#9fd0ff;--gold:#479ef5;--teal:#6ccb5f;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#6ccb5f;--mid:#e0a84a;--bad:#ff8a9a;--bar:#479ef5}
+.side{background:#0f6cbd;color:#fff}
+.brand b{color:#fff}.brand small{color:#cfe4fa}
+.smenu button{color:#e3eefb}
+.smenu button:hover{color:#fff;background:rgba(255,255,255,.15)}
+.smenu button[aria-selected="true"]{background:#fff;color:#0f548c;box-shadow:none;font-weight:600}
+.smenu button[aria-selected="true"] svg{color:#0f6cbd;opacity:1}
+.ver,.ver a{color:#cfe4fa}
+.panel:not(.toolbar){box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.panel:not(.toolbar)>h2:first-child,.panel:not(.toolbar)>.head2:first-child{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid var(--line)}
+.panel:not(.toolbar)>.head2:first-child .btn{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.panel:not(.toolbar)>.head2:first-child .tabs button,.panel:not(.toolbar)>.head2:first-child .seg button{color:var(--muted)}
+.panel:not(.toolbar)>.head2:first-child .tabs button[aria-selected="true"],.panel:not(.toolbar)>.head2:first-child .seg button[aria-selected="true"]{color:var(--hdr-ink);border-bottom-color:var(--accent)}
+.kpi.main{background:var(--sel);color:var(--hdr-ink);box-shadow:inset 0 -3px 0 var(--accent)}
+.kpi.main .k{color:var(--muted)}
+.kpi.main .v{color:var(--hdr-ink)}
+.kpi.main[data-hk] .v,.kpi.main[data-hv] .v{border-bottom-color:var(--accent)}
+thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid var(--line2)}
+.dbox>summary{color:var(--ink)}
 </style>
 
 <div class="wrap">
