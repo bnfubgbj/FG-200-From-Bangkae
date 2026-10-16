@@ -200,7 +200,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 17)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 18)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -262,7 +262,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
       <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">ใช้สต็อก ณ วันที่</span><select id="po-sd"></select></div></div>
       <details class="dbox" id="e-d1"><summary>นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด</summary><div class="dbody">
       <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่น้องสุนำสต็อกจาก รง. มาตัดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
-      <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
+      <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button><button class="btn ghost" id="e-fdel" type="button">ลบสต็อกวันที่ที่เลือก</button></div>
       <div id="e-fprev" class="note"></div>
       <div id="ps-msg" class="msg" hidden></div>
     </div></details>
@@ -285,7 +285,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
         <div style="min-width:150px"><span class="lbl">เดือนของแผน</span><input type="month" id="pf-month"></div>
         <div style="min-width:190px"><span class="lbl">บันทึกเป็นฉบับ</span><select id="pf-rev"></select></div>
         <input type="password" id="pf-key" style="display:none" autocomplete="off">
-        <button class="btn" id="pf-save" disabled>บันทึกแผน</button>
+        <button class="btn" id="pf-save" disabled>บันทึกแผน</button><button class="btn ghost" id="pf-del" type="button">ลบแผนที่เลือกด้านบน</button>
       </div>
       <div id="pf-prev" class="scroll"></div>
       <div id="pf-msg" class="msg" hidden></div>
@@ -302,7 +302,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
         <div class="row" style="align-items:flex-end;gap:10px 14px">
           <label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ยอดจอง (.xlsx) <input type="file" id="bk-file" accept=".xlsx" style="display:none"></label>
           <div style="min-width:160px"><span class="lbl">เดือนของยอดจอง</span><input type="month" id="bk-month"></div>
-          <button class="btn" id="bk-save" disabled>บันทึกยอดจอง</button>
+          <button class="btn" id="bk-save" disabled>บันทึกยอดจอง</button><button class="btn ghost" id="bk-del" type="button">ลบยอดจองของเดือนนี้</button>
         </div>
         <div id="bk-msg" class="msg" hidden></div>
       </div></details>
@@ -2499,6 +2499,24 @@ $("bk-save").onclick=async()=>{
     if(r.ok){bkMsg("บันทึกยอดจอง "+thM(mo)+" แล้ว","ok");BKIMP=null;await load();poNote()}else{bkMsg(r.error||"บันทึกไม่สำเร็จ","warn");$("bk-save").disabled=false}}
   catch(err){bkMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("bk-save").disabled=false}
 };
+/* ===== ลบข้อมูลที่บันทึกไว้ ===== */
+async function fgClear(body,label,okMsg,done){
+  const key=($("pf-key").value||$("e-key").value).trim()||fgKeySet(true);
+  if(!key){okMsg("ใส่รหัสบันทึกก่อน","warn");return}
+  if(!window.confirm("ลบ "+label+" ออกจากระบบถาวร ใช่ไหม?\n(ไฟล์ Excel ต้นฉบับของคุณไม่ถูกลบ)"))return;
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(Object.assign({type:"clear",key},body))}).then(r=>r.json());
+    if(r.ok){okMsg("ลบ "+label+" แล้ว ("+r.rows+" แถว)","ok");await load();poInit();poNote();if(done)done()}
+    else okMsg((r.error||"ลบไม่สำเร็จ")+(/Object\.keys|undefined|วันที่/.test(r.error||"")?" — ต้องอัปเดต Code.gs ใน Apps Script แล้ว Deploy เวอร์ชันใหม่ก่อน":""),"warn")}
+  catch(err){okMsg("ลบไม่สำเร็จ: "+err,"warn")}
+}
+$("e-fdel").onclick=()=>{const d=$("po-sd").value;if(!d){sMsg("ยังไม่มีสต็อกให้ลบ","warn");return}
+  fgClear({scope:"stock",date:d,kinds:["stock","booked","net"]},"สต็อกต้นงวดวันที่ "+thD(d),sMsg)};
+$("pf-del").onclick=()=>{const m=$("p-month").value,v=$("p-rev").value,pm=$("pf-msg");
+  const say=(t,k)=>{pm.hidden=false;pm.className="msg "+k;pm.textContent=t};
+  if(!m||v==="new"||v===""){say("เลือกเดือนและฉบับแผนที่จะลบที่ช่องด้านบนก่อน","warn");return}
+  fgClear({scope:"plan",month:m,rev:+v},"แผนผลิต "+thM(m)+" "+(+v===0?"แผนเริ่มต้น":"revise "+v),say,()=>{setTimeout(()=>location.reload(),900)})};
+$("bk-del").onclick=()=>{const m=$("bk-month").value||$("p-month").value;if(!m){bkMsg("เลือกเดือนของยอดจองก่อน","warn");return}
+  fgClear({scope:"stock",date:m+"-01",kinds:["nbook"]},"ยอดจองฝ่ายขาย "+thM(m),bkMsg,()=>{BKIMP=null})};
 function fgKeySet(ask){let k="";try{k=localStorage.getItem("fgkey")||""}catch(e){}
   if(!k||ask){const v=window.prompt("ใส่รหัสบันทึก (ถามครั้งเดียว เครื่องนี้จะจำไว้)",ask?k:"");if(v!==null&&v.trim()){k=v.trim();try{localStorage.setItem("fgkey",k)}catch(e){}}}
   ["i-key","pf-key","sx-key","e-key"].forEach(i=>{const el=$(i);if(el)el.value=k});return k}
