@@ -194,7 +194,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 9)</div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 10)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -209,7 +209,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <div class="note">เลือกไฟล์ Excel "ยอดนึ่งรองเท้าฟองน้ำ ประจำวัน" ได้ทีละหลายไฟล์ (1 ไฟล์ = 1 วัน ใช้ไฟล์ตามเดิมได้เลย ไม่ต้องแก้) แอปอ่านวันที่จ่ายไปประกอบจากช่อง C2 และตรวจยอดรวมให้</div>
     <div class="row"><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (เลือกหลายไฟล์ได้) <input type="file" id="i-file" accept=".xlsx" multiple style="display:none"></label></div>
     <div id="i-prev" class="scroll"></div>
-    <div class="row" style="align-items:center"><input type="password" id="i-key" placeholder="รหัสบันทึก" style="max-width:200px" autocomplete="off"><button class="btn" id="i-save" disabled>บันทึกที่เลือก</button></div>
+    <div class="row" style="align-items:center"><input type="password" id="i-key" style="display:none" autocomplete="off"><button class="btn" id="i-save" disabled>บันทึกที่เลือก</button></div>
     <div id="i-msg" class="msg" hidden></div>
   </div></details>
     <aside class="toolbar">
@@ -257,33 +257,33 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
         <label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="pf-file" accept=".xlsx" style="display:none"></label>
         <div style="min-width:150px"><span class="lbl">เดือนของแผน</span><input type="month" id="pf-month"></div>
         <div style="min-width:190px"><span class="lbl">บันทึกเป็นฉบับ</span><select id="pf-rev"></select></div>
-        <div style="min-width:150px"><span class="lbl">รหัสบันทึก</span><input type="password" id="pf-key" autocomplete="off"></div>
+        <input type="password" id="pf-key" style="display:none" autocomplete="off">
         <button class="btn" id="pf-save" disabled>บันทึกแผน</button>
       </div>
       <div id="pf-prev" class="scroll"></div>
       <div id="pf-msg" class="msg" hidden></div>
     </div></details>
-    <details class="dbox" id="sx-d" open><summary>นำเข้าไฟล์มาตรฐาน (ไฟล์เดียว ครบทุกชนิดข้อมูล)</summary><div class="dbody">
+    <details class="dbox" id="sx-d"><summary>นำเข้าไฟล์มาตรฐานหลายชนิดในไฟล์เดียว (ไม่จำเป็น — ใช้เมื่อมีหลายแผ่นในไฟล์เดียว)</summary><div class="dbody">
       <div class="note">ทุกข้อมูลใช้รูปแบบเดียวกัน: ตารางสี × เบอร์ ตำแหน่งตายตัว (8 สีหลักแถว 6–13 · สีพิเศษแถว 17–29 · เบอร์ 8.5–11 คอลัมน์ B–G) ชนิดข้อมูลดูจากชื่อแผ่นในช่อง A1 (รายวัน · แผนผลิต · ยอดจอง · โควต้าต้นเดือน · โควต้าคงเหลือ · สต็อกคงเหลือ/ยอดซื้อ/สุทธิ) ในไฟล์เดียวมีกี่แผ่นก็ได้ ระบบแยกชนิดเองและตรวจยอดรวมตามใบก่อนบันทึก · กล่องนำเข้าแบบเดิมด้านล่างยังใช้ได้</div>
       <div class="row" style="align-items:center;gap:10px 14px">
         <button class="btn ghost" id="sx-tpl" type="button">ดาวน์โหลดแม่แบบมาตรฐาน</button>
         <label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์มาตรฐาน (.xlsx) <input type="file" id="sx-file" accept=".xlsx" style="display:none"></label>
-        <input type="password" id="sx-key" placeholder="รหัสบันทึก" style="max-width:170px" autocomplete="off" aria-label="รหัสบันทึก">
+        <input type="password" id="sx-key" style="display:none" autocomplete="off">
       </div>
       <div id="sx-prev" class="scroll"></div>
       <div class="row" style="align-items:center"><button class="btn" id="sx-save" disabled>บันทึกที่เลือก</button></div>
       <div id="sx-msg" class="msg" hidden></div>
     </div></details>
-    <details class="dbox" id="e-d1" open><summary>สต็อกต้นเดือน (นำเข้าไฟล์มาตรฐาน หรือไฟล์สต็อกจาก รง.)</summary><div class="dbody">
-      <div class="note">ใช้ไฟล์มาตรฐาน "FG200 สต็อกคงเหลือ" (ตัวเลขที่ลดไว้บริหารจัดการแล้วก็ได้) — ระบบใช้ตัวเลขนี้เป็นสต็อกต้นเดือนเลย หรือเลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
+    <details class="dbox" id="e-d1" open><summary>สต็อกต้นงวดจากน้องสุ</summary><div class="dbody">
+      <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่น้องสุนำสต็อกจาก รง. มาตัดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
       <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
       <div id="e-fprev" class="note"></div>
       <div id="ps-msg" class="msg" hidden></div>
     </div></details>
     <details class="dbox" id="e-d3" open><summary>โควต้าต้นเดือนฝ่ายขาย (ฐานตั้งต้น) — นำเข้า Excel</summary><div class="dbody">
-      <div class="note">ใส่ต้นเดือนครั้งเดียว: เลือกไฟล์แบ่งโควต้าของฝ่ายขาย (ระบบอ่านตาราง "รวมทั้งหมด" ในชีต "แจ้งโควตา") หรือวางตารางสี × เบอร์ หรือพิมพ์เอง ระบบใช้เทียบกับ "โควต้าคงเหลือ" เพื่อดูว่าใช้ไปกี่ % ขายเฉลี่ยวันละเท่าไร และโควต้าจะหมดวันไหน</div>
-      <textarea id="b-paste" rows="3" placeholder="คลุมตารางโควต้าตั้งต้นใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V"></textarea>
-      <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="b-pbtn" type="button">นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="b-file" accept=".xlsx" style="display:none"></label><span id="b-pmsg" class="note"></span></div>
+      <div class="note">ใส่ต้นเดือนครั้งเดียว: เลือกไฟล์แบ่งโควต้าของฝ่ายขาย (ระบบอ่านตาราง "รวมทั้งหมด" ในชีต "แจ้งโควตา") หรือพิมพ์เองในตารางด้านล่าง ระบบใช้เทียบกับ "โควต้าคงเหลือ" เพื่อดูว่าใช้ไปกี่ % ขายเฉลี่ยวันละเท่าไร และโควต้าจะหมดวันไหน</div>
+      <textarea id="b-paste" rows="3" style="display:none" placeholder="คลุมตารางโควต้าตั้งต้นใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V"></textarea>
+      <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="b-pbtn" type="button" style="display:none">นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="b-file" accept=".xlsx" style="display:none"></label><span id="b-pmsg" class="note"></span></div>
       <div class="scroll" id="b-grid"></div>
       <div class="row" style="align-items:center">
         <div style="min-width:170px"><span class="lbl">เดือนของโควต้าตั้งต้น</span><input type="month" id="b-month"></div>
@@ -317,7 +317,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
 
   <div id="view-e" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="panel">
-      <div class="head2"><h2>ประเมินสต็อกคงเหลือ</h2><input type="password" id="e-key" placeholder="รหัสบันทึก" style="max-width:170px" autocomplete="off" aria-label="รหัสบันทึก"></div>
+      <div class="head2"><h2>ประเมินสต็อกคงเหลือ</h2><input type="password" id="e-key" style="display:none" autocomplete="off"></div>
     </div>
     <div id="e-msg" class="msg" hidden></div>
     <details class="dbox" id="e-d2" open><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
@@ -2402,5 +2402,10 @@ $("sx-save").onclick=async()=>{
   $("sx-save").disabled=true;
 };
 
+function fgKeySet(ask){let k="";try{k=localStorage.getItem("fgkey")||""}catch(e){}
+  if(!k||ask){const v=window.prompt("ใส่รหัสบันทึก (ถามครั้งเดียว เครื่องนี้จะจำไว้)",ask?k:"");if(v!==null&&v.trim()){k=v.trim();try{localStorage.setItem("fgkey",k)}catch(e){}}}
+  ["i-key","pf-key","sx-key","e-key"].forEach(i=>{const el=$(i);if(el)el.value=k});return k}
+$("chg-key").onclick=e=>{e.preventDefault();fgKeySet(true)};
+setTimeout(()=>fgKeySet(false),400);
 load();
 </script>
