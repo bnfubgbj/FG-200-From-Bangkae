@@ -259,7 +259,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 27)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 29)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2266,19 +2266,19 @@ function calcE(){
   const m=ed.slice(0,7),revs=PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>b-a):[],Pm=revs.length?PL[m][revs[0]].colors:null;
   const pk=k=>Pm&&Pm[k]?Pm[k]:Z6(),T=a=>a.reduce((x,y)=>x+y,0);
   const shr=(num,den,fb)=>SIZES.map((z,i)=>den[i]>0?num[i]/den[i]:(T(den)>0?T(num)/T(den):fb));
+  const pmode=(document.querySelector('input[name="e-prod"]:checked')||{}).value||"net",mul=pmode==="net"?1-Math.min(100,Math.max(0,+$("e-px").value||0))/100:1;
   const wo=nn($("e-wpct").value),bo=nn($("e-bpct").value);let wReg,bReg,wsrc,bsrc;
   const sw=st["ขาว"]||Z6(),sx=st["ดำ/ขาว"]||Z6();
   if(wo!=null){wReg=SIZES.map(()=>1-wo/100);wsrc="ตามที่กำหนด"}
-  else if(Pm){wReg=shr(pk("ขาว"),pk("ขาว").map((x,i)=>x+pk("ดำ/ขาว")[i]),1);wsrc="ตามแผนผลิต "+thM(m)}
+  else if(Pm){wReg=SIZES.map((z,i)=>{const pool=sup["ขาว"][i]*mul;return pool>0?Math.max(0,pool-pk("ดำ/ขาว")[i])/pool:1});wsrc="ทำดำหน้าขาวตามแผน "+thM(m)+" ให้ครบก่อน ที่เหลือเป็นขาว"}
   else{wReg=shr(sw,sw.map((x,i)=>x+sx[i]),1);wsrc="ตามสัดส่วนสต็อก (ไม่มีแผนเดือนนี้)"}
   const pkD=Pm?Object.keys(Pm).filter(k=>planPool(k)==="ดำ").reduce((a,k)=>a.map((x,i)=>x+Pm[k][i]),Z6()):Z6();
   if(bo!=null){bReg=SIZES.map(()=>bo/100);bsrc="ตามที่กำหนด"}
-  else if(Pm){bReg=shr(pk("ดำ"),pkD,1);bsrc="ตามแผนผลิต "+thM(m)}
+  else if(Pm){const spc=pkD.map((x,i)=>Math.max(0,x-pk("ดำ")[i]));bReg=SIZES.map((z,i)=>{const pool=sup["ดำ"][i]*mul;return pool>0?Math.max(0,pool-spc[i])/pool:1});bsrc="ตัดให้พื้นดำหูพิเศษตามแผน "+thM(m)+" ก่อน ที่เหลือเป็นดำล้วน"}
   else{bReg=SIZES.map(()=>1);bsrc="ใช้ทั้งหมด (ไม่มีแผนเดือนนี้)"}
   const inn={"น้ำเงิน":sup["น้ำเงิน"],"เขียว":sup["เขียว"],"แดง":sup["แดง"],"เหลือง":sup["เหลือง"],"เทา":sup["เทา"],
     "ขาว":sup["ขาว"].map((x,i)=>x*wReg[i]),"ดำ/ขาว":sup["ขาว"].map((x,i)=>x*(1-wReg[i])),"ดำ":sup["ดำ"].map((x,i)=>x*bReg[i])};
   const dayCol={},sm=a=>a.reduce((x,y)=>x+y,0);
-  const pmode=(document.querySelector('input[name="e-prod"]:checked')||{}).value||"net",mul=pmode==="net"?1-Math.min(100,Math.max(0,+$("e-px").value||0))/100:1;
   Object.keys(dayPool).forEach(a=>{const P=dayPool[a],g=k=>P[k]||Z6(),o={};
     ["น้ำเงิน","เขียว","แดง","เหลือง","เทา"].forEach(k=>o[k]=sm(g(k)));
     o["ขาว"]=sm(g("ขาว").map((x,i)=>x*wReg[i]));o["ดำ/ขาว"]=sm(g("ขาว").map((x,i)=>x*(1-wReg[i])));o["ดำ"]=sm(g("ดำ").map((x,i)=>x*bReg[i]));dayCol[a]=o});
