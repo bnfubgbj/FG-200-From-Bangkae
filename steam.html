@@ -247,6 +247,11 @@ tbody tr:hover td{background:var(--accent-soft)}
 .kpi.main[data-hk] .v,.kpi.main[data-hv] .v{border-bottom-color:var(--accent)}
 thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid var(--line2)}
 .dbox>summary{color:var(--ink)}
+
+.qpair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.qpair table{font-size:11.5px}.qpair th,.qpair td{padding:6px 5px!important}
+.qpair td:first-child,.qpair th:first-child{white-space:normal;min-width:120px}
+@media(max-width:1399px){.qpair{grid-template-columns:minmax(0,1fr)}}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -259,7 +264,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 29)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 30)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -304,12 +309,19 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
       <div id="status" class="msg" hidden></div>
       <div class="kpis" id="kpis"></div>
+      <div class="qpair">
       <div class="panel">
         <div class="head2"><h2>รวมตามสีและเบอร์</h2>
           <div class="row"><div class="tabs" id="unit"><button data-u="pair" aria-selected="true">คู่ (คาดการณ์)</button><button data-u="sheet" aria-selected="false">แผ่นยาง</button></div>
           <button class="btn ghost" id="xl">ดาวน์โหลด Excel</button></div></div>
         <div id="gaps" class="note"></div>
         <div class="scroll" id="matrix"></div>
+      </div>
+      <div class="panel">
+        <div class="head2"><h2>หลังตัดแผ่นให้สีพิเศษตามแผนผลิต</h2></div>
+        <div id="qnote2" class="note"></div>
+        <div class="scroll" id="matrix2"></div>
+      </div>
       </div>
       <details class="dbox"><summary>ดูรายวัน (ตาราง)</summary><div class="scroll" id="daily"></div></details>
     </main>
@@ -1450,6 +1462,31 @@ function calc(){
   const gaps=[];if(inR.length>1){let c=new Date(inR[0]+"T00:00:00");const e=new Date(inR[inR.length-1]+"T00:00:00");while(c<e){c=new Date(c.getTime()+864e5);const s=c.getFullYear()+"-"+p2(c.getMonth()+1)+"-"+p2(c.getDate());if(s<inR[inR.length-1]&&!DATA[s])gaps.push(s)}}
   return {f,t,mat,daily,inR,gaps};
 }
+function render2(c,hasAny,k,U){
+  const M=$("matrix2"),N=$("qnote2");if(!M)return;
+  const m2=($("to").value||"").slice(0,7),rv=PL[m2]?Object.keys(PL[m2]).map(Number).sort((a,b)=>b-a)[0]:null;
+  if(!hasAny){M.innerHTML='<div class="empty">ไม่มีข้อมูลตามเงื่อนไขที่เลือก</div>';N.textContent="";return}
+  if(rv==null){N.textContent="ไม่มีแผนผลิตของเดือน "+(m2?thM(m2):"ที่เลือก")+" — นำเข้าแผนผลิตที่หน้า 'เทียบแผนผลิต' ก่อน";M.innerHTML="";return}
+  const pc=PL[m2][rv].colors,pf=unit==="pair"?1:1/F(),Z=()=>[0,0,0,0,0,0],pl=key=>(pc[key]||Z()).map(x=>x*pf);
+  const sup={};Object.keys(c.mat).forEach(fk=>{const p=STEAMPOOL[fk];if(!p)return;sup[p]=sup[p]||Z();c.mat[fk].forEach((x,i)=>sup[p][i]+=x*k)});
+  const al={},pools={};PTPL.forEach(r=>{const p=planPool(r[0]);(pools[p]=pools[p]||[]).push(r)});
+  Object.keys(pools).forEach(p=>{const av=(sup[p]||Z()).slice(),pri=pools[p].find(r=>FK[r[0]]);
+    pools[p].filter(r=>!FK[r[0]]).forEach(r=>{const need=pl(r[0]);al[r[0]]=av.map((x,i)=>{const a=Math.min(need[i],Math.max(0,x));av[i]-=a;return a})});
+    if(pri)al[pri[0]]=av.map(x=>Math.max(0,x))});
+  const T=a=>a.reduce((x,y)=>x+y,0),lab=r=>{const p=planPool(r[0]),pri=(pools[p]||[]).find(x=>FK[x[0]]),sec=(pools[p]||[]).some(x=>!FK[x[0]]&&T(pl(x[0]))>0);
+    return r[1]+(!FK[r[0]]&&pri?' <span class="zero" style="font-size:11px">(ตัดจากแผ่น'+pri[1]+')</span>':(FK[r[0]]&&sec?' <span class="zero" style="font-size:11px">(ส่วนที่เหลือ)</span>':""))};
+  const rows=PTPL.filter(r=>T(al[r[0]]||Z())>0||T(pl(r[0]))>0);
+  const dot=r=>'<span class="dot" style="background:'+dot21(r[0])+';display:inline-block;margin-right:8px"></span>';
+  let h1='<table><thead><tr><th>สี ('+U+') · แผ่นที่ได้หลังตัด</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z();
+  rows.forEach(r=>{const v=al[r[0]]||Z();h1+="<tr"+tint(r[0])+"><td>"+dot(r)+lab(r)+"</td>"+v.map((x,i)=>{col[i]+=x;return '<td class="'+(x>0.5?"":"zero")+'">'+(x>0.5?fmt(x):"–")+"</td>"}).join("")+"<td><b>"+(T(v)>0.5?fmt(T(v)):"–")+"</b></td></tr>"});
+  h1+="</tbody><tfoot><tr><td>รวม</td>"+col.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(T(col))+"</td></tr></tfoot></table>";
+  const sg=x=>Math.abs(x)<0.5?'<td class="zero">–</td>':'<td style="color:var(--'+(x>0?"ok":"bad")+')">'+(x>0?"+":"−")+fmt(Math.abs(x))+"</td>";
+  let h2='<table style="margin-top:14px"><thead><tr><th>เหลือ (+) / ขาด (−) เทียบแผน '+thM(m2)+'</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",dc=Z();
+  rows.forEach(r=>{const d=(al[r[0]]||Z()).map((x,i)=>x-pl(r[0])[i]);h2+="<tr"+tint(r[0])+"><td>"+dot(r)+r[1]+"</td>"+d.map((x,i)=>{dc[i]+=x;return sg(x)}).join("")+sg(T(d)).replace("<td","<td style='font-weight:700'")+"</tr>"});
+  h2+="</tbody><tfoot><tr><td>รวม</td>"+dc.map(x=>sg(x)).join("")+sg(T(dc))+"</tr></tfoot></table>";
+  N.innerHTML="ตามแผนผลิต "+thM(m2)+" "+revName(rv)+" · ตัดแผ่นให้ ดำหน้าขาว (จากแผ่นขาว) และพื้นดำหูพิเศษ (จากแผ่นดำล้วน) ให้ครบก่อน ที่เหลือจึงเป็นขาว / ดำล้วน · ยอดแผ่นนับถึงวันที่ข้อมูลล่าสุด เทียบกับแผนทั้งเดือน";
+  M.innerHTML=h1+h2;
+}
 function render(){
   if(!dates().length)return; sync(); const c=cur=calc(), k=unit==="pair"?F():1, U=unit==="pair"?"คู่":"แผ่น";
   const tot=c.daily.reduce((a,x)=>a+x[1],0), n=c.daily.filter(x=>x[1]>0).length, mx=c.daily.reduce((a,x)=>x[1]>a[1]?x:a,["",0]);
@@ -1470,6 +1507,7 @@ function render(){
     h+="<tr"+tint(r.pk)+(r.fk?"":' title="'+NAHINT(r.pk)+'"')+'><td><span class="dot" style="background:'+dot21(r.pk)+';display:inline-block;margin-right:8px"></span>'+r.label+(r.fk?"":' <span class="zero" style="font-size:11px">(ไม่แยกแผ่น)</span>')+"</td>"+v.map((x,i)=>{col[i]+=x;return '<td class="'+(x?"":"zero")+'">'+(x?fmt(x*k):"–")+"</td>"}).join("")+"<td><b>"+(tot?fmt(tot*k):"–")+"</b></td></tr>"});
   h+="</tbody><tfoot><tr><td>รวม</td>"+col.map(x=>"<td>"+fmt(x*k)+"</td>").join("")+"<td>"+fmt(col.reduce((a,b)=>a+b,0)*k)+"</td></tr></tfoot></table>";
   $("matrix").innerHTML=hasAny?h:'<div class="empty">ไม่มีข้อมูลตามเงื่อนไขที่เลือก</div>';
+  try{render2(c,hasAny,k,U)}catch(err){console.error(err)}
   const m=Math.max(1,...c.daily.map(x=>x[1]));
   $("daily").innerHTML=c.daily.length?'<table><thead><tr><th>วันที่จ่ายไปประกอบ</th><th>วันที่นึ่ง</th><th>แผ่น</th><th>คู่ (คาดการณ์)</th><th class="barcell"></th></tr></thead><tbody>'+c.daily.map(x=>"<tr><td>"+thD(x[0])+"</td><td>"+(x[2]||"–")+"</td><td>"+fmt(x[1])+"</td><td><b>"+fmt(x[1]*F())+'</b></td><td class="barcell"><div class="bar" style="width:'+(x[1]/m*100)+'%"></div></td></tr>').join("")+"</tbody></table>":'<div class="empty">ไม่มีข้อมูล</div>';
 }
