@@ -194,7 +194,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 3)</div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 4)</div>
 </nav>
 <div class="wrap">
   <header>
@@ -263,6 +263,12 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
       <div id="pf-prev" class="scroll"></div>
       <div id="pf-msg" class="msg" hidden></div>
     </div></details>
+    <details class="dbox" id="e-d1" open><summary>สต็อกต้นเดือน (นำเข้าไฟล์สต็อกจาก รง.)</summary><div class="dbody">
+      <div class="note">เลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
+      <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
+      <div id="e-fprev" class="note"></div>
+      <div id="ps-msg" class="msg" hidden></div>
+    </div></details>
     <details class="dbox" id="e-d3" open><summary>โควต้าต้นเดือนฝ่ายขาย (ฐานตั้งต้น) — นำเข้า Excel</summary><div class="dbody">
       <div class="note">ใส่ต้นเดือนครั้งเดียว: เลือกไฟล์แบ่งโควต้าของฝ่ายขาย (ระบบอ่านตาราง "รวมทั้งหมด" ในชีต "แจ้งโควตา") หรือวางตารางสี × เบอร์ หรือพิมพ์เอง ระบบใช้เทียบกับ "โควต้าคงเหลือ" เพื่อดูว่าใช้ไปกี่ % ขายเฉลี่ยวันละเท่าไร และโควต้าจะหมดวันไหน</div>
       <textarea id="b-paste" rows="3" placeholder="คลุมตารางโควต้าตั้งต้นใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V"></textarea>
@@ -280,6 +286,17 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
       <div class="dates"><div><span class="lbl">เดือนของแผน</span><select id="p-month"></select></div><div><span class="lbl">ฉบับแผน</span><select id="p-rev"></select></div></div>
       <div id="p-note" class="note"></div>
     </div>
+    <details class="dbox" id="po-d" open><summary>ประเมินสต็อกปลายเดือน — ดาวน์โหลด Excel</summary><div class="dbody">
+      <div class="note">สต็อกต้นงวด + ผลิต (หักออก X%) − โควต้าขายฝ่ายขาย = สต็อกปลายเดือนที่คาดว่าจะเหลือ · ใช้เดือนและฉบับแผนที่เลือกไว้ด้านล่าง · โควต้า = โควต้าต้นเดือนฝ่ายขายที่บันทึกไว้ · ได้เป็นไฟล์ Excel เท่านั้น (แก้ X% ในไฟล์ได้)</div>
+      <div class="row" style="align-items:flex-end">
+        <div style="min-width:200px"><span class="lbl">สต็อกต้นงวด ณ วันที่</span><select id="po-sd"></select></div>
+        <div style="min-width:120px"><span class="lbl">หักผลิตออก (%)</span><input type="number" id="po-x" value="10" min="0" max="100" step="1"></div>
+        <div style="min-width:260px"><span class="lbl">วิธีคิดตัวเลขผลิต</span><select id="po-opt"><option value="1">แบบ 1: สต็อกต้นงวด + แผนผลิต − โควต้า</option><option value="2">แบบ 2: สต็อกต้นงวด + แผนประกอบนึ่งยาง − โควต้า</option><option value="both">ทั้งสองแบบ (2 ชีตในไฟล์เดียว)</option></select></div>
+        <button class="btn" id="po-xl">ดาวน์โหลด Excel</button>
+      </div>
+      <div id="po-note" class="note"></div>
+      <div id="po-msg" class="msg" hidden></div>
+    </div></details>
     <div class="kpis" id="p-kpis"></div>
     <div class="panel"><h2>แผนผลิต (หน่วย: คู่)</h2><div class="scroll" id="p-plan"></div></div>
     <div class="panel"><h2>ได้จากแผ่นที่จ่ายประกอบ (หน่วย: คู่)</h2><div class="scroll" id="p-sup"></div></div>
@@ -290,12 +307,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <div class="panel">
       <div class="head2"><h2>ประเมินสต็อกคงเหลือ</h2><input type="password" id="e-key" placeholder="รหัสบันทึก" style="max-width:170px" autocomplete="off" aria-label="รหัสบันทึก"></div>
     </div>
-    <details class="dbox" id="e-d1" open><summary>นำเข้าสต็อกจริงจาก รง.</summary><div class="dbody">
-      <div class="note">เลือกไฟล์ Stock ที่ รง. ส่งทุกวัน ระบบอ่านตาราง "คงเหลือ / ยอดซื้อ / คงเหลือสุทธิที่สั่งได้จริง" ของรุ่น 200 ให้เอง แล้วกดบันทึกเพื่อเก็บไว้ใน Google Sheet</div>
-      <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
-      <div id="e-fprev" class="note"></div>
-      <div id="e-msg" class="msg" hidden></div>
-    </div></details>
+    <div id="e-msg" class="msg" hidden></div>
     <details class="dbox" id="e-d2" open><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
       <div class="note">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (กัน key ผิด) หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
       <div><span class="lbl">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (ทั้งตารางสี × เบอร์ รวมหัวตารางได้)</span>
@@ -1139,7 +1151,7 @@ function load(){
   $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
   return fetch(API_URL).then(r=>r.json()).then(j=>{
     PLANROWS=j.plan||[];STK=j.stock||[];FGD={};(j.rows||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(FGD[d]=FGD[d]||{})[r[1]]=r.slice(2,8).map(v=>Number(v)||0)});DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
-    $("status").hidden=true;buildPlans();init();render();if(EINIT){initE();renderE()}
+    $("status").hidden=true;buildPlans();init();render();if(EINIT){initE();renderE()}poInit();
   }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
 }
 const dates=()=>Object.keys(DATA).sort();
@@ -1196,7 +1208,7 @@ $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").oncl
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 const PT={q:"แผ่นยางประกอบ",p:"เทียบแผนผลิต",m:"ติดตามผลิตจริง",e:"ประเมินสต็อกสิ้นเดือน",r:"รับเข้าโกดังพี่ชุมพร"};
 function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
-$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};
+$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
 $("tab-r").onclick=()=>{show("r");window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
 window.addEventListener("message",e=>{if(e.origin===location.origin&&e.data&&e.data.fgh)$("fr").style.height=Math.max(500,e.data.fgh+8)+"px"});
@@ -1493,6 +1505,7 @@ async function readStock(file){
   return out;
 }
 const sumT=o=>Object.values(o||{}).reduce((q,v)=>q+v.reduce((x,y)=>x+y,0),0);
+function sMsg(t,cls){const m=$("ps-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
 function eMsg(t,cls){const m=$("e-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
 $("e-file").onchange=async e=>{
   const f=e.target.files[0];EIMP=null;$("e-fsave").disabled=true;$("e-fprev").textContent="";if(!f)return;
@@ -1503,24 +1516,29 @@ $("e-file").onchange=async e=>{
   $("e-fprev").innerHTML="อ่านได้: คงเหลือ <b>"+fmt(a)+"</b> − ยอดซื้อ <b>"+fmt(b)+"</b> = สุทธิ <b>"+fmt(n)+"</b> คู่"+(Math.abs(a-b-n)>1?' <span style="color:var(--warn)">(ตัวเลขในไฟล์ไม่ตรงสูตร ตรวจอีกครั้ง)</span>':"")+" · วันที่ในหัวตาราง "+(r.date?thD(r.date):"อ่านไม่ได้ — กรอกวันที่เอง");
 };
 $("e-fsave").onclick=async()=>{
-  const key=$("e-key").value.trim(),d=$("e-fdate").value;if(!EIMP||!d){eMsg("เลือกไฟล์และวันที่ก่อน","warn");return}
-  if(!key){eMsg("ใส่รหัสบันทึกก่อน","warn");return}
+  const key=($("pf-key").value||$("e-key").value).trim(),d=$("e-fdate").value;if(!EIMP||!d){sMsg("เลือกไฟล์และวันที่ก่อน","warn");return}
+  if(!key){sMsg("ใส่รหัสบันทึกก่อน","warn");return}
   try{localStorage.setItem("fgkey",key)}catch(e){}
   const rows=[];["stock","booked","net"].forEach(k=>Object.keys(EIMP.tabs[k]).forEach(c=>rows.push([k,c].concat(EIMP.tabs[k][c],[""]))));
   $("e-fsave").disabled=true;
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by:"",rows})}).then(r=>r.json());
-    if(r.ok){eMsg("บันทึกสต็อกวันที่ "+thD(d)+" แล้ว ("+r.rows+" แถว)","ok");EIMP=null;$("e-file").value="";$("e-fprev").textContent="";await load();$("e-sd").value=d;renderE()}
-    else{eMsg(r.error||"บันทึกไม่สำเร็จ","warn");$("e-fsave").disabled=false}}
-  catch(err){eMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("e-fsave").disabled=false}
+    if(r.ok){sMsg("บันทึกสต็อกวันที่ "+thD(d)+" แล้ว ("+r.rows+" แถว)","ok");EIMP=null;$("e-file").value="";$("e-fprev").textContent="";await load();$("e-sd").value=d;renderE();poInit()}
+    else{sMsg(r.error||"บันทึกไม่สำเร็จ","warn");$("e-fsave").disabled=false}}
+  catch(err){sMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("e-fsave").disabled=false}
 };
 function buildGrid(){
   let h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวมต่อสี</th><th>เป้าสต็อกสิ้นเดือน</th></tr></thead><tbody>";
   SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+'</td>'+SIZES.map((z,j)=>'<td><input type="text" inputmode="numeric" autocomplete="off" id="q-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="text" inputmode="numeric" autocomplete="off" id="q-t-'+i+'" style="width:96px"></td><td><input type="text" inputmode="numeric" autocomplete="off" id="q-g-'+i+'" style="width:96px"></td></tr>'});
-  $("e-grid").innerHTML=h+"</tbody></table>";
+  $("e-grid").innerHTML=h+'</tbody><tfoot><tr><td>รวมทุกสี</td>'+SIZES.map((z,j)=>'<td id="qt-s-'+j+'"></td>').join("")+'<td id="qt-t"></td><td id="qt-g"></td></tr></tfoot></table>';
 }
 const fc=v=>v===""||v==null?"":Number(v).toLocaleString("en-US");
-const setQ=(id,v)=>{$(id).value=v==null||v===""?"":fc(v)};
+const setQ=(id,v)=>{$(id).value=v==null||v===""?"":fc(v);if(id[0]==="b")bFoot();else if(id[0]==="q")qFoot()};
+function gFoot(px,fp,hasG){if(!$(fp+"t"))return;const S=Z6();let tot=0,g=0;
+  SC.forEach((c,i)=>{let any=false,sm=0;SIZES.forEach((z,j)=>{const v=gv(px+"-s-"+i+"-"+j);if(v!=null){S[j]+=v;sm+=v;any=true}});tot+=any?sm:(gv(px+"-t-"+i)||0);if(hasG)g+=gv(px+"-g-"+i)||0});
+  SIZES.forEach((z,j)=>{$(fp+"s-"+j).textContent=fmt(S[j])});$(fp+"t").textContent=fmt(tot);if(hasG)$(fp+"g").textContent=fmt(g)}
+const bFoot=()=>gFoot("b","bt-",false),qFoot=()=>gFoot("q","qt-",true);
 const gv=id=>nn(($(id).value||"").replace(/,/g,"").trim());
+$("e-grid").addEventListener("input",()=>qFoot());
 $("e-grid").addEventListener("input",e=>{const t=e.target;if(!t||!/^q-/.test(t.id))return;const d=t.value.replace(/[^0-9]/g,"");const f=d?Number(d).toLocaleString("en-US"):"";if(f!==t.value)t.value=f});
 function qIn(){const q={};SC.forEach((c,i)=>{q[c]={total:gv("q-t-"+i)||0,sizes:SIZES.map((z,j)=>gv("q-s-"+i+"-"+j)),target:gv("q-g-"+i)||0}});return q}
 function fillGrid(d){
@@ -1598,7 +1616,7 @@ const dayDiff=(a,b)=>Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00")
 function buildBGrid(){
   let h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวมต่อสี</th></tr></thead><tbody>";
   SC.forEach((c,i)=>{h+="<tr"+tint(c)+"><td>"+(SCN[c]||c)+"</td>"+SIZES.map((z,j)=>'<td><input type="text" inputmode="numeric" autocomplete="off" id="b-s-'+i+"-"+j+'" style="width:78px"></td>').join("")+'<td><input type="text" inputmode="numeric" autocomplete="off" id="b-t-'+i+'" style="width:96px"></td></tr>'});
-  $("b-grid").innerHTML=h+"</tbody></table>";
+  $("b-grid").innerHTML=h+'</tbody><tfoot><tr><td>รวมทุกสี</td>'+SIZES.map((z,j)=>'<td id="bt-s-'+j+'"></td>').join("")+'<td id="bt-t"></td></tr></tfoot></table>';
 }
 function bIn(){const q={};SC.forEach((c,i)=>{q[c]={total:gv("b-t-"+i)||0,sizes:SIZES.map((z,j)=>gv("b-s-"+i+"-"+j))}});return q}
 const vTot=(sizes,total)=>sizes.some(x=>x!=null)?sizes.reduce((a,b)=>a+(b||0),0):(total||0);
@@ -1750,6 +1768,92 @@ $("pf-save").onclick=async()=>{
     m.className="msg ok";m.textContent="บันทึกแผน "+thM(mo)+" แล้ว";PFIMP=null;pfDraw();await load();$("p-month").value=mo;renderP();pfRevs()}
   catch(err){m.className="msg warn";m.textContent="บันทึกไม่สำเร็จ: "+(err&&err.message||err);$("pf-save").disabled=false}
 };
+
+/* ===== ประเมินสต็อกปลายเดือน (ดาวน์โหลด Excel) ===== */
+function poInit(){
+  const sds=stkDates(["net","stock"]),cur=$("po-sd").value,m=$("p-month").value||"";
+  $("po-sd").innerHTML=sds.length?sds.slice().reverse().map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join(""):'<option value="">ยังไม่มีสต็อก — นำเข้าไฟล์สต็อกด้านบนก่อน</option>';
+  if(cur&&sds.includes(cur))$("po-sd").value=cur;else{const inm=sds.filter(d=>d.slice(0,7)===m);if(inm.length)$("po-sd").value=inm[0]}
+  poNote();
+}
+function poCalc(opt){
+  const m=$("p-month").value,rev=$("p-rev").value,sd=$("po-sd").value,x=Math.max(0,+$("po-x").value||0)/100,f=F();
+  if(!m)return{err:"เลือกเดือนของแผนก่อน (กล่องเทียบแผนผลิตด้านล่าง)"};
+  if(!sd)return{err:"ยังไม่มีสต็อกต้นงวด — นำเข้าไฟล์สต็อกด้านบนก่อน"};
+  const T=a=>a.reduce((u,v)=>u+v,0),n0=a=>(a||Z6()).slice(0,6).map(v=>v||0),warn=[];
+  const sn=stkGet("net",sd),kind=Object.keys(sn).length?"net":"stock",st=kind==="net"?sn:stkGet("stock",sd);
+  const start={},quota={},raw={};SC.forEach(c=>start[c]=n0(st[c]));
+  const B=stkGet("qbase",m+"-01");if(!Object.keys(B).length)warn.push("ยังไม่มีโควต้าต้นเดือนของ "+thM(m)+" (ใส่ในกล่องโควต้าต้นเดือนฝ่ายขายด้านบน) ตอนนี้โควต้า = 0");
+  SC.forEach(c=>{const a=B[c]||[],sz=a.slice(0,6),has=sz.some(v=>v!=null&&v>0),tot=a[6]||0,sb=T(start[c]);
+    quota[c]=has?SIZES.map((z,i)=>sz[i]||0):SIZES.map((z,i)=>sb>0?tot*start[c][i]/sb:tot/6)});
+  const Pm=PL[m]&&rev!==""&&PL[m][rev]?PL[m][rev].colors:null,pk=k=>n0(Pm&&Pm[k]);
+  let skipped=0;
+  if(opt===1){
+    if(!Pm)warn.push("ยังไม่มีแผนผลิตเดือนนี้ ตอนนี้ผลิต = 0");
+    SC.forEach(c=>raw[c]=pk(c));
+    if(Pm)Object.keys(Pm).forEach(k=>{if(!SC.includes(k))skipped+=T(n0(Pm[k]))});
+  }else{
+    const P0=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา"],sup={};P0.forEach(p=>sup[p]=Z6());let nd=0;
+    dates().forEach(d=>{if(d.slice(0,7)!==m)return;nd++;Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!sup[p])return;DATA[d][k].forEach((v,i)=>sup[p][i]+=v*f)})});
+    if(!nd)warn.push("ยังไม่มีข้อมูลแผ่นยางที่จ่ายประกอบของเดือนนี้ ตอนนี้ผลิต = 0");
+    const shr=(num,den,fb)=>SIZES.map((z,i)=>den[i]>0?num[i]/den[i]:(T(den)>0?T(num)/T(den):fb));
+    const wo=nn($("e-wpct").value),bo=nn($("e-bpct").value),sw=start["ขาว"],sx=start["ดำ/ขาว"];
+    let wReg,bReg;
+    if(wo!=null)wReg=SIZES.map(()=>1-wo/100);else if(Pm)wReg=shr(pk("ขาว"),pk("ขาว").map((v,i)=>v+pk("ดำ/ขาว")[i]),1);else wReg=shr(sw,sw.map((v,i)=>v+sx[i]),1);
+    const pkD=Pm?Object.keys(Pm).filter(k=>planPool(k)==="ดำ").reduce((a,k)=>a.map((v,i)=>v+n0(Pm[k])[i]),Z6()):Z6();
+    if(bo!=null)bReg=SIZES.map(()=>bo/100);else if(Pm)bReg=shr(pk("ดำ"),pkD,1);else bReg=SIZES.map(()=>1);
+    raw["น้ำเงิน"]=sup["น้ำเงิน"];raw["เขียว"]=sup["เขียว"];raw["แดง"]=sup["แดง"];raw["เหลือง"]=sup["เหลือง"];raw["เทา"]=sup["เทา"];
+    raw["ขาว"]=sup["ขาว"].map((v,i)=>v*wReg[i]);raw["ดำ/ขาว"]=sup["ขาว"].map((v,i)=>v*(1-wReg[i]));raw["ดำ"]=sup["ดำ"].map((v,i)=>v*bReg[i]);
+  }
+  const net={},end={};SC.forEach(c=>{net[c]=raw[c].map(v=>v*(1-x));end[c]=start[c].map((v,i)=>v+net[c][i]-quota[c][i])});
+  return{m,rev,sd,kind,x,start,raw,net,quota,end,warn,skipped,opt};
+}
+function poNote(){
+  const o=[];for(const opt of [1,2]){const C=poCalc(opt);if(C.err){$("po-note").textContent=C.err;return}C.warn.forEach(w=>{if(!o.includes(w))o.push(w)})}
+  const C=poCalc(1);
+  $("po-note").innerHTML="สต็อก ณ "+thD(C.sd)+" ("+(C.kind==="net"?"คงเหลือสุทธิที่สั่งได้จริง":"คงเหลือ")+") · แผน "+(C.rev!==""?revName(C.rev):"—")+(o.length?'<br><span style="color:var(--warn)">'+o.join("<br>")+"</span>":"");
+}
+function poSheet(wb,C){
+  const ws=wb.addWorksheet(C.opt===1?"แบบ1 แผนผลิต":"แบบ2 แผนประกอบนึ่งยาง");ws.columns=[{width:34}].concat(Array(7).fill({width:13}));
+  const fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},NF="#,##0;[Red]-#,##0;-",L="BCDEFG";
+  ws.addRow([C.opt===1?"ประเมินสต็อกปลายเดือน แบบ 1: สต็อกต้นงวด + แผนผลิต (หักออก X%) − โควต้าฝ่ายขาย":"ประเมินสต็อกปลายเดือน แบบ 2: สต็อกต้นงวด + แผนประกอบนึ่งยาง (หักออก X%) − โควต้าฝ่ายขาย"]).getCell(1).font={bold:true,size:13};
+  ws.addRow(["เดือน",thM(C.m)]);ws.addRow(["สต็อกต้นงวด ณ วันที่",thD(C.sd)+" ("+(C.kind==="net"?"คงเหลือสุทธิที่สั่งได้จริง":"คงเหลือ")+")"]);
+  ws.addRow(["แหล่งตัวเลขผลิต",C.opt===1?("แผนผลิต "+(C.rev!==""?revName(C.rev):"-")):"แผ่นยางที่จ่ายไปประกอบ × "+F()+" คู่/แผ่น (แยกขาว/ดำ ตามแผน)"]);
+  ws.addRow(["โควต้า","โควต้าต้นเดือนฝ่ายขาย (ฐานตั้งต้น)"]);
+  const xr=ws.addRow(["หักออก X% (แก้ตัวเลขนี้ในไฟล์ได้ ตาราง 3 และ 5 คำนวณตาม)",C.x]);xr.getCell(2).numFmt="0%";xr.getCell(2).fill=fill("FFF2CC");const xRef="$B$"+xr.number;
+  const rows={};
+  const addT=(key,title,vf,ff)=>{
+    ws.addRow([]);ws.addRow([title]).getCell(1).font={bold:true};
+    const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
+    rows[key]={};let first=0,last=0;
+    SC.forEach(c=>{const v=vf(c),r=ws.addRow([SCN[c]||c].concat(v.map(Math.round),[0])),n=r.number;if(!first)first=n;last=n;rows[key][c]=n;
+      SIZES.forEach((z,j)=>{const fo=ff?ff(c,j):null;if(fo)r.getCell(j+2).value={formula:fo,result:Math.round(v[j])}});
+      r.getCell(8).value={formula:"SUM(B"+n+":G"+n+")",result:Math.round(v.reduce((a,b)=>a+b,0))};
+      let cl="FFFFFF";try{cl=colOf(c)[0]}catch(e){}
+      r.eachCell((cc,i)=>{cc.border=B;cc.fill=fill(cl);if(i>1)cc.numFmt=NF})});
+    const tr=ws.addRow(["รวมทุกสี"]);tr.font={bold:true};
+    "BCDEFGH".split("").forEach((col,i)=>{const t=SC.reduce((a,c)=>a+(i<6?vf(c)[i]:vf(c).reduce((p,q)=>p+q,0)),0);tr.getCell(i+2).value={formula:"SUM("+col+first+":"+col+last+")",result:Math.round(t)};tr.getCell(i+2).numFmt=NF});
+    tr.eachCell(c=>{c.border=B;c.fill=fill("EEEEEE")});
+  };
+  addT("s","1) สต็อกต้นงวด ณ "+thD(C.sd),c=>C.start[c]);
+  addT("r","2) "+(C.opt===1?"แผนผลิต":"แผนประกอบนึ่งยาง (แผ่นที่จ่ายไปประกอบ × คู่ต่อแผ่น)")+" ก่อนหัก",c=>C.raw[c]);
+  addT("n","3) ผลิตหัก X% (= ตาราง 2 × (1 − X))",c=>C.net[c],(c,j)=>L[j]+rows.r[c]+"*(1-"+xRef+")");
+  addT("q","4) โควต้าขายฝ่ายขาย (โควต้าต้นเดือน)",c=>C.quota[c]);
+  addT("e","5) สต็อกปลายเดือนที่คาดว่าจะเหลือ (= 1 + 3 − 4)",c=>C.end[c],(c,j)=>L[j]+rows.s[c]+"+"+L[j]+rows.n[c]+"-"+L[j]+rows.q[c]);
+  ws.addRow([]);
+  const notes=["ค่าติดลบ (สีแดง) = โควต้ามากกว่าสต็อกต้นงวด + ผลิต ซึ่งของจะไม่พอขาย"];
+  if(C.opt===1&&C.skipped)notes.push("แบบ 1 ไม่รวมสีพิเศษที่ไม่มีในตารางสต็อก (พื้นดำหูสีต่างๆ Xmas น้ำเงิน/แดงล้วน โกโก้ ฯลฯ) รวม "+Math.round(C.skipped).toLocaleString("en-US")+" คู่");
+  C.warn.forEach(w=>notes.push("ข้อควรระวัง: "+w));
+  notes.forEach(t=>{const r=ws.addRow([t]);r.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}}});
+}
+$("po-xl").onclick=async()=>{
+  const b=$("po-xl"),m=$("po-msg"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),sel=$("po-opt").value,opts=sel==="both"?[1,2]:[+sel];
+  m.hidden=true;if(typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้";back();return}
+  const wb=new ExcelJS.Workbook();let mo="";
+  for(const o of opts){const C=poCalc(o);if(C.err){m.hidden=false;m.className="msg warn";m.textContent=C.err;return}poSheet(wb,C);mo=C.m}
+  try{await saveBook(wb,"ประเมินสต็อกปลายเดือน_"+mo+(sel==="both"?"_2แบบ":"_แบบ"+sel)+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
+};
+["po-sd","po-x","po-opt","p-month","p-rev"].forEach(i=>$(i).addEventListener("change",poNote));$("po-x").addEventListener("input",poNote);
 
 function initM(){
   const mv=$("m-mo").value,ms=[...new Set(Object.keys(PL).concat(Object.keys(FGD).map(d=>d.slice(0,7)),Object.keys(DATA).map(d=>d.slice(0,7))))].sort();
