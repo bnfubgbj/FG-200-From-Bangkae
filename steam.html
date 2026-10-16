@@ -200,7 +200,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 15)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 17)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -298,7 +298,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <div class="panel" id="st3">
       <h2>3) ยอดจองฝ่ายขาย (ตารางการจอง)</h2>
       <details class="dbox" id="bk-d"><summary>นำเข้า / เปลี่ยนไฟล์ยอดจอง</summary><div class="dbody">
-        <div class="note">เลือกไฟล์ตารางการจองของฝ่ายขาย (ชีตเดือน เช่น "ต.ค." ที่มีหัวคอลัมน์ "น้ำเงิน เบอร์ 8.5 (คู่)" และคอลัมน์ เขต) ระบบรวมทุกเขตให้ แล้วกดบันทึกยอดจอง</div>
+        <div class="note">เลือกไฟล์ตารางการจองของฝ่ายขาย (ชีตเดือน เช่น "ต.ค." ที่มีหัวคอลัมน์ "น้ำเงิน เบอร์ 8.5 (คู่)" และคอลัมน์ เขต) ระบบรวมทุกเขตให้ หรือไฟล์มาตรฐาน "FG200 ยอดจอง" แล้วกดบันทึกยอดจอง</div>
         <div class="row" style="align-items:flex-end;gap:10px 14px">
           <label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ยอดจอง (.xlsx) <input type="file" id="bk-file" accept=".xlsx" style="display:none"></label>
           <div style="min-width:160px"><span class="lbl">เดือนของยอดจอง</span><input type="month" id="bk-month"></div>
@@ -2183,26 +2183,38 @@ function nbMsg(t,k){const m=$("nb-msg");m.hidden=!t;m.className="msg"+(k?" "+k:"
 function nbNum(v){if(v&&typeof v==="object"&&"result" in v)v=v.result;const n=Number(v);return isNaN(n)?0:n}
 async function parseBook(file){
   const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let best=null;
+  const a1=w=>String(cv(w.getCell("A1"))==null?"":cv(w.getCell("A1"))).trim();
+  const sw=wb.worksheets.find(w=>/^FG200\s*ยอดจอง/.test(a1(w)));
+  if(sw){const rd=sxRead(sw),ck=sxCheck(sw,rd.rows);
+    if(!rd.any)return{err:"แผ่นยอดจองในไฟล์ยังไม่มีตัวเลข"};
+    if(ck.bad.length)return{err:"ยอดรายสี/รายเบอร์ไม่ตรงใบ: "+ck.bad.join(", ")};
+    const ALLB=SC.concat(SXS.map(d=>d[0])),rows={};ALLB.forEach(c=>rows[c]=(rd.rows[c]||Z6()).slice(0,6));
+    const tot=ALLB.reduce((a,c)=>a+rows[c].reduce((x,y)=>x+y,0),0);
+    return{rows,zones:[],tot,fileTot:null,mo:sxMonth(cv(sw.getCell("B2")))||"",sheet:sw.name,fname:file.name,std:true,chk:ck.n}}
   wb.worksheets.forEach(ws=>{const hm={};let nh=0,zc=0,tc=0;
     ws.getRow(1).eachCell({includeEmpty:false},(cell,j)=>{let h=String(cv(cell)==null?"":cv(cell)).replace(/\s+/g,"");
       if(h==="เขต")zc=j;if(h==="รวม/คู่")tc=j;
       const r=h.match(/^(.+?)เบอร์([\d.]+)/);if(!r)return;const col=NBMAP[r[1]]||r[1],si=SIZES.indexOf(String(+r[2]));
       if(SC.includes(col)&&si>=0){hm[j]=[col,si];nh++}});
     if(nh>=20&&(!best||nh>best.nh))best={ws,hm,nh,zc,tc}});
-  if(!best)return{err:"ไม่พบตารางยอดจอง — ต้องมีหัวคอลัมน์แบบ 'น้ำเงิน เบอร์ 8.5 (คู่)' ในแถวแรกของชีต"};
-  const {ws,hm,zc,tc}=best,rows={};SC.forEach(c=>rows[c]=Z6());let zones=[],last=1;
+  if(!best){const o=wb.worksheets.map(a1).find(a=>/^FG200\s/.test(a));
+    if(o)return{err:"ไฟล์นี้เป็นชนิด \""+o.replace(/\s*\(คู่\)\s*$/,"")+"\" ไม่ใช่ยอดจอง — ถ้าเป็นไฟล์มาตรฐานของยอดจอง ช่อง A1 ต้องขึ้นต้นว่า \"FG200 ยอดจอง\""};
+    return{err:"ไม่พบตารางยอดจอง — ต้องเป็นไฟล์ตารางการจองของฝ่ายขาย (หัวคอลัมน์ 'น้ำเงิน เบอร์ 8.5 (คู่)' ในแถวแรก) หรือไฟล์มาตรฐาน \"FG200 ยอดจอง\""}}
+  const {ws,hm,zc,tc}=best,rows={};SC.forEach(c=>rows[c]=Z6());let zones=[],last=1,unk=0;
   for(let r=2;r<=ws.rowCount;r++){const z=zc?cv(ws.getCell(r,zc)):null;if(z==null||String(z).trim()==="")continue;
     if(/^รวม/.test(String(z).trim()))continue;
-    Object.keys(hm).forEach(j=>{const v=nbNum(cv(ws.getCell(r,+j)));if(v)rows[hm[j][0]][hm[j][1]]+=v});zones.push(String(z).trim());last=r}
+    Object.keys(hm).forEach(j=>{const cell=ws.getCell(r,+j),rv=cell.value;if(rv&&typeof rv==="object"&&("formula" in rv||"sharedFormula" in rv)&&rv.result===undefined)unk++;const v=nbNum(cv(cell));if(v)rows[hm[j][0]][hm[j][1]]+=v});zones.push(String(z).trim());last=r}
   let fileTot=null;if(tc){for(let r=last+1;r<=last+8&&r<=ws.rowCount;r++){const v=cv(ws.getCell(r,tc));if(typeof v==="number"&&v>0){fileTot=v;break}}}
   const tot=SC.reduce((a,c)=>a+rows[c].reduce((x,y)=>x+y,0),0);
   let mo="";const mi=MON.indexOf(ws.name.trim());
   if(mi>=0){const c=window._ec,ref=(c&&c.ed)||todayS();let y=+ref.slice(0,4);if(mi+1<+ref.slice(5,7))y++;mo=y+"-"+p2(mi+1)}
-  return{rows,zones,tot,fileTot,mo,sheet:ws.name,fname:file.name};
+  return{rows,zones,tot,fileTot,mo,sheet:ws.name,fname:file.name,unk};
 }
 function bookMsg(r){
+  if(r.std)return{msg:"อ่านไฟล์มาตรฐานยอดจอง (แผ่น "+r.sheet+") รวม "+fmt(r.tot)+" คู่ · ตรวจรายสี/รายเบอร์ "+r.chk+" ช่อง ตรงใบ",k:"ok"};
   let msg="อ่านจาก "+r.fname+" (ชีต "+r.sheet+") · "+r.zones.length+" เขต ("+r.zones.join(", ")+") รวม "+fmt(r.tot)+" คู่",k="ok";
   if(r.fileTot!=null){if(Math.abs(r.fileTot-r.tot)<=1)msg+=" · ตรงกับยอด 'รวม/คู่' ในไฟล์ ("+fmt(r.fileTot)+")";else{msg+=" · ไม่ตรงยอด 'รวม/คู่' ในไฟล์ ("+fmt(r.fileTot)+" ต่าง "+fmt(r.tot-r.fileTot)+") ตรวจชีตอีกครั้ง";k="warn"}}
+  if(r.unk){msg+=" · ⚠ มี "+r.unk+" ช่องเป็นสูตรที่ไม่มีค่าคำนวณเก็บไว้ในไฟล์ (อ่านเป็น 0) ยอดอาจขาด — เปิดไฟล์ใน Excel กดบันทึก แล้วนำเข้าใหม่";k="warn"}
   return{msg,k};
 }
 async function readBookFile(file){
@@ -2311,7 +2323,7 @@ const SXS=[["เขียว/แดง","พื้นแดง หูเขี�
 const SXT=[
  {id:"day",title:"FG200 รายวัน",name:"รายวัน",n:3,l2:"วันที่ (เช่น 13/10/2026)",f2:"date",l3:"ยอดรวมที่พิมพ์ในรายงาน",all:1,d:"ยอดเข้าโกดังพี่ชุมพรรายวัน (คู่) · 1 แผ่น = 1 วัน"},
  {id:"plan",title:"FG200 แผนผลิต",name:"แผนผลิต",n:1,l2:"เดือนที่ผลิต (เช่น 10/2026)",f2:"month",l3:"ฉบับ (0 = แผนเริ่มต้น, 1, 2, ...)",all:1,d:"แผนผลิตของโรงงาน · วันที่แจ้งโรงงาน D2 · หมายเหตุ D3 (ไม่บังคับ)"},
- {id:"book",title:"FG200 ยอดจอง",name:"ยอดจอง",n:1,l2:"เดือนของยอดจอง (เช่น 11/2026)",f2:"month",l3:"ยอดรวมตามใบ",d:"ยอดจองของฝ่ายขาย รวมทุกเขตแล้ว · ใช้เฉพาะ 8 สีหลัก"},
+ {id:"book",title:"FG200 ยอดจอง",name:"ยอดจอง",n:1,l2:"เดือนของยอดจอง (เช่น 11/2026)",f2:"month",l3:"ยอดรวมตามใบ",all:1,d:"ยอดจองของฝ่ายขาย รวมทุกเขตแล้ว · 8 สีหลัก + สีพิเศษ (พี่มอส)"},
  {id:"qbase",title:"FG200 โควต้าต้นเดือน",name:"โควต้าต้นเดือน",n:1,l2:"เดือนของโควต้า (เช่น 10/2026)",f2:"month",l3:"ยอดรวมตามใบ",d:"โควต้าฝ่ายขายตอนต้นเดือน (ฐานตั้งต้น) · ใช้เฉพาะ 8 สีหลัก"},
  {id:"quota",title:"FG200 โควต้าคงเหลือ",name:"โควต้าคงเหลือ",n:1,l2:"โควต้า ณ วันที่ (เช่น 15/10/2026)",f2:"date",l3:"ยอดรวมตามใบ",d:"โควต้าฝ่ายขายที่ยังไม่ได้ขาย ณ วันนั้น · ใช้เฉพาะ 8 สีหลัก"},
  {id:"stock",title:"FG200 สต็อกคงเหลือ",name:"สต็อกคงเหลือ",n:1,l2:"สต็อก ณ วันที่ (เช่น 15/10/2026)",f2:"date",l3:"ยอดรวมตามใบ",kind:"stock",d:"สต็อกคงเหลือในคลัง · ใช้เฉพาะ 8 สีหลัก"},
@@ -2463,7 +2475,7 @@ function bkMsg(t,k){const m=$("bk-msg");m.hidden=!t;m.className="msg"+(k?" "+k:"
 function bkGet(m){
   if(BKIMP&&BKIMP.m===m)return{rows:BKIMP.rows,unsaved:true};
   const B=stkGet("nbook",m+"-01");if(!Object.keys(B).length)return null;
-  const rows={};SC.forEach(c=>rows[c]=(B[c]||Z6()).slice(0,6).map(v=>v||0));return{rows,unsaved:false};
+  const rows={};SC.concat(SXS.map(d=>d[0])).forEach(c=>rows[c]=(B[c]||Z6()).slice(0,6).map(v=>v||0));return{rows,unsaved:false};
 }
 $("bk-file").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
   try{const r=await parseBook(f);if(r.err){bkMsg(r.err,"warn");return}
@@ -2480,7 +2492,7 @@ $("bk-save").onclick=async()=>{
   const key=($("pf-key").value||$("e-key").value).trim(),mo=$("bk-month").value;
   if(!BKIMP||!mo){bkMsg("เลือกไฟล์ยอดจองก่อน","warn");return}
   if(!key){fgKeySet(true);bkMsg("ใส่รหัสบันทึกแล้วกดบันทึกอีกครั้ง","warn");return}
-  const rows=[];SC.forEach(c=>{const a=BKIMP.rows[c],t=a.reduce((x,y)=>x+y,0);if(t>0)rows.push(["nbook",c].concat(a,[t]))});
+  const rows=[];Object.keys(BKIMP.rows).forEach(c=>{const a=BKIMP.rows[c],t=a.reduce((x,y)=>x+y,0);if(t>0)rows.push(["nbook",c].concat(a,[t]))});
   if(!rows.length){bkMsg("ไม่มียอดจองให้บันทึก","warn");return}
   $("bk-save").disabled=true;
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:mo+"-01",by:"",rows})}).then(r=>r.json());
