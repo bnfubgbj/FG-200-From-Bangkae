@@ -194,7 +194,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 4)</div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 5)</div>
 </nav>
 <div class="wrap">
   <header>
@@ -995,7 +995,7 @@ $("p-save").onclick=async()=>{
 
 
 /* ---------- Excel template + import ---------- */
-function tplBody(ws,input){
+function tplBody(ws,input,chk){
   ws.columns=[{width:34}].concat(SIZES.map(()=>({width:11})),[{width:13}]);
   const thin={style:"thin",color:{argb:"FFD0D0D0"}}, bd={top:thin,left:thin,bottom:thin,right:thin};
   const fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+c}});
@@ -1006,6 +1006,15 @@ function tplBody(ws,input){
     SIZES.forEach((s,i)=>{const c=row.getCell(i+2);c.numFmt="#,##0";c.fill=fill(input);c.border=bd});
     const tc=row.getCell(8);tc.value={formula:"SUM(B"+r+":G"+r+")"};tc.numFmt="#,##0";tc.font={bold:true};tc.fill=fill("EEF2FF");tc.border=bd});
   sec(4,"8 สีหลัก");hdr(5);body(6,TPL8);sec(15,"สีพิเศษ (Export เท่านั้น)");hdr(16);body(17,TPLS);
+  if(chk){ws.getColumn(9).width=14;ws.getColumn(10).width=16;
+    [5,16].forEach(r=>{[["รวมตามใบ",9,"B45309"],["ตรวจ",10,"6B7280"]].forEach(a=>{const c=ws.getRow(r).getCell(a[1]);c.value=a[0];c.font={bold:true,color:{argb:"FFFFFFFF"}};c.alignment={horizontal:"center"};c.fill=fill(a[2]);c.border=bd})});
+    const rr=[];for(let r=6;r<=13;r++)rr.push(r);for(let r=17;r<=29;r++)rr.push(r);
+    rr.forEach(r=>{const ci=ws.getRow(r).getCell(9);ci.numFmt="#,##0";ci.fill=fill(input);ci.border=bd;
+      const cj=ws.getRow(r).getCell(10);cj.value={formula:'IF(I'+r+'="","",IF(I'+r+'=H'+r+',"ตรง","ต่าง "&(H'+r+'-I'+r+')))'};cj.font={bold:true,color:{argb:"FF6B7280"}};cj.border=bd});
+    const t2=ws.getRow(32);t2.getCell(1).value="รวมตามใบ (แถวล่างสุดของใบ แต่ละเบอร์)";t2.getCell(1).font={bold:true,color:{argb:"FFB45309"}};
+    const t3=ws.getRow(33);t3.getCell(1).value="ตรวจรายเบอร์";t3.getCell(1).font={bold:true,color:{argb:"FF6B7280"}};
+    for(let j=2;j<=7;j++){const L=String.fromCharCode(64+j),c=t2.getCell(j);c.numFmt="#,##0";c.fill=fill(input);c.border=bd;
+      const d=t3.getCell(j);d.value={formula:'IF('+L+'32="","",IF('+L+'32='+L+'31,"ตรง","ต่าง "&('+L+'31-'+L+'32)))'};d.font={bold:true,color:{argb:"FF6B7280"}};d.alignment={horizontal:"center"};d.border=bd}}
   const tr=ws.getRow(31);tr.getCell(1).value="รวมทั้งหมด";
   for(let j=2;j<=8;j++){const L=String.fromCharCode(64+j),c=tr.getCell(j);c.value={formula:"SUM("+L+"6:"+L+"13)+SUM("+L+"17:"+L+"29)"};c.numFmt="#,##0"}
   tr.eachCell(c=>{c.font={bold:true};c.fill=fill("DCE6FA");c.border=bd});
@@ -1019,12 +1028,14 @@ function mkTemplate(){
    "   - ช่องยอดรวมที่พิมพ์ในรายงาน (B3): พิมพ์ตัวเลขรวมที่พิมพ์ท้ายใบรายงานของพี่ชุมพร",
    "   - ช่องสีเหลืองคือช่องกรอก ใส่ตัวเลขจากใบรายงานตรงๆ ไม่ต้องบวกเอง ช่องที่ไม่มีให้เว้นว่าง",
    "   - ช่อง D3 จะบอกทันทีว่ายอดรวมที่กรอกตรงกับยอดที่พิมพ์หรือไม่",
+   "   - คอลัมน์ I 'รวมตามใบ' (ไม่บังคับ): พิมพ์ยอดรวมท้ายแถวของแต่ละสีตามใบรายงาน ระบบจะเทียบกับยอดที่รวมจากตัวเลขที่กรอก จับกรณีสีสลับกันได้",
+   "   - แถว 32 'รวมตามใบ' (ไม่บังคับ): พิมพ์ยอดรวมท้ายคอลัมน์ของแต่ละเบอร์ตามใบ จับกรณีเบอร์สลับกันในสีเดียวกันได้ ช่องที่เว้นว่างระบบจะข้ามการตรวจ",
    "2) แผนผลิต: ใช้แผ่น 'แผนผลิต' ใส่เดือน (B2) ฉบับ (B3: 0 = แผนเริ่มต้น, 1 = revise ครั้งที่ 1, ...) วันที่แจ้งโรงงาน (D2) หมายเหตุ (D3)",
    "   (ถ้าจะทำหลายฉบับ ให้ทำสำเนาแผ่นนี้ แผ่นละ 1 ฉบับ)",
    "3) กรอกเสร็จ บันทึกไฟล์ แล้วเข้าแอป > แท็บ 'นำเข้า Excel' > เลือกไฟล์ > ตรวจรายการ > กด 'บันทึกที่เลือก'",
    "แผ่นที่ว่าง (ไม่ได้กรอกอะไร) แอปจะข้ามให้อัตโนมัติ"].forEach((t,i)=>{const c=g.getCell("A"+(i+1));c.value=t;if(i===0)c.font={bold:true,size:14}});
   for(let n=1;n<=10;n++){
-    const ws=wb.addWorksheet("วัน "+n); tplBody(ws,inp);
+    const ws=wb.addWorksheet("วัน "+n); tplBody(ws,inp,true);
     ws.getCell("A1").value="FG200 รายวัน: ยอดเข้าโกดังพี่ชุมพร (คู่)"; ws.getCell("A1").font={bold:true,size:14};
     ws.getCell("A2").value="วันที่ (เช่น 13/10/2026)"; ws.getCell("A2").font=blue; ws.getCell("B2").fill=fill(inp); ws.getCell("B2").numFmt="dd/mm/yyyy";
     ws.getCell("A3").value="ยอดรวมที่พิมพ์ในรายงาน"; ws.getCell("A3").font=blue; ws.getCell("B3").fill=fill(inp); ws.getCell("B3").numFmt="#,##0";
@@ -1064,6 +1075,15 @@ function readRows(ws){
   TPLS.forEach((d,k)=>{const v=SIZES.map((s,i)=>Math.max(0,Math.round(Number(cv(ws.getCell(17+k,i+2)))||0)));if(v.some(x=>x)){rows[d[0]]=v;any=true}});
   return {rows,any,total:Object.values(rows).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0)};
 }
+function readChk(ws,rows){
+  const bad=[];let n=0,lab=[];
+  TPL8.concat(TPLS).forEach((d,k)=>{const r=k<TPL8.length?6+k:17+k-TPL8.length,v=cv(ws.getCell(r,9));
+    if(v===null||v===undefined||v==="")return; const pv=Number(v); if(isNaN(pv))return; n++;
+    const sum=(rows[d[0]]||[]).reduce((a,b)=>a+b,0); if(sum!==pv)bad.push(d[1]+" (ใบ "+pv.toLocaleString("en-US")+" / รวมได้ "+sum.toLocaleString("en-US")+")")});
+  SIZES.forEach((s,i)=>{const v=cv(ws.getCell(32,i+2)); if(v===null||v===undefined||v==="")return; const pv=Number(v); if(isNaN(pv))return; n++;
+    const sum=Object.values(rows).reduce((a,r)=>a+(r[i]||0),0); if(sum!==pv)bad.push("เบอร์ "+s+" (ใบ "+pv.toLocaleString("en-US")+" / รวมได้ "+sum.toLocaleString("en-US")+")")});
+  return {n,bad};
+}
 let IMP=[];
 async function readImport(file){
   const wb=new ExcelJS.Workbook(); await wb.xlsx.load(await file.arrayBuffer()); IMP=[];
@@ -1077,6 +1097,7 @@ async function readImport(file){
       else if(!rd.any){st="err";msg="ไม่มียอดที่กรอก"}
       else if(printed===null||isNaN(printed)){st="warn";msg="ไม่ได้ใส่ยอดพิมพ์ จึงไม่ได้ตรวจ"}
       else if(printed!==rd.total){st="err";msg="ไม่ตรงยอดพิมพ์ "+printed.toLocaleString("en-US")+" (ต่าง "+(rd.total-printed).toLocaleString("en-US")+")"}
+      if(st!=="err"&&rd.any){const ck=readChk(ws,rd.rows); if(ck.bad.length){st="err";msg="ยอดรายสี/รายเบอร์ไม่ตรงใบ: "+ck.bad.join(", ")} else if(ck.n){msg="ตรวจรายสี/รายเบอร์ "+ck.n+" ช่อง ตรงทั้งหมด"}}
       if(date&&docs[date]&&st!=="err")msg=(msg?msg+" · ":"")+"มีข้อมูลวันนี้แล้ว จะเขียนทับ";
       IMP.push({kind:"day",sheet:ws.name,date,rows:rd.rows,total:rd.total,printed,st,msg,on:st!=="err"&&!!date});
     } else if(t.indexOf("FG200 แผนผลิต")===0){
