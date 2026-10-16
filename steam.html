@@ -194,7 +194,7 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 11)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 12)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -288,9 +288,18 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
     
     </div>
     <div class="panel" id="st3">
-      <h2>3) โควต้าต้นงวดฝ่ายขาย</h2>
+      <h2>3) ยอดจองฝ่ายขาย (ตารางการจอง)</h2>
       <div id="po-d3"></div>
-      <details class="dbox" id="e-d3"><summary>นำเข้า / แก้ไขโควต้าต้นเดือนฝ่ายขาย</summary><div class="dbody">
+      <details class="dbox" id="bk-d"><summary>นำเข้า / เปลี่ยนไฟล์ยอดจอง</summary><div class="dbody">
+        <div class="note">เลือกไฟล์ตารางการจองของฝ่ายขาย (ชีตเดือน เช่น "ต.ค." ที่มีหัวคอลัมน์ "น้ำเงิน เบอร์ 8.5 (คู่)" และคอลัมน์ เขต) ระบบรวมทุกเขตให้ แล้วกดบันทึกยอดจอง</div>
+        <div class="row" style="align-items:flex-end;gap:10px 14px">
+          <label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ยอดจอง (.xlsx) <input type="file" id="bk-file" accept=".xlsx" style="display:none"></label>
+          <div style="min-width:160px"><span class="lbl">เดือนของยอดจอง</span><input type="month" id="bk-month"></div>
+          <button class="btn" id="bk-save" disabled>บันทึกยอดจอง</button>
+        </div>
+        <div id="bk-msg" class="msg" hidden></div>
+      </div></details>
+      <div style="display:none"><details class="dbox" id="e-d3"><summary>นำเข้า / แก้ไขโควต้าต้นเดือนฝ่ายขาย</summary><div class="dbody">
       <div class="note">ใส่ต้นเดือนครั้งเดียว: เลือกไฟล์แบ่งโควต้าของฝ่ายขาย (ระบบอ่านตาราง "รวมทั้งหมด" ในชีต "แจ้งโควตา") หรือพิมพ์เองในตารางด้านล่าง ระบบใช้เทียบกับ "โควต้าคงเหลือ" เพื่อดูว่าใช้ไปกี่ % ขายเฉลี่ยวันละเท่าไร และโควต้าจะหมดวันไหน</div>
       <textarea id="b-paste" rows="3" style="display:none" placeholder="คลุมตารางโควต้าตั้งต้นใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V"></textarea>
       <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="b-pbtn" type="button" style="display:none">นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="b-file" accept=".xlsx" style="display:none"></label><span id="b-pmsg" class="note"></span></div>
@@ -301,11 +310,10 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
         <button class="btn" id="b-save" style="align-self:flex-end">บันทึกโควต้าตั้งต้น</button>
       </div>
       <div id="b-msg" class="msg" hidden></div>
-    </div></details>
-    
+    </div></details></div>
     </div>
     <div class="panel" id="st4">
-      <div class="head2"><h2>4) คงเหลือสิ้นเดือน = (1 + 2) − 3</h2><button class="btn" id="po-xl">ดาวน์โหลด Excel</button></div>
+      <div class="head2"><h2>4) คงเหลือสิ้นเดือน = (1 + 2) − 3 (ยอดจอง)</h2><button class="btn" id="po-xl">ดาวน์โหลด Excel</button></div>
       <select id="po-opt" style="display:none"><option value="1">1</option></select>
       <div id="po-note" class="note"></div>
       <div id="po-out"></div>
@@ -1848,9 +1856,8 @@ function poCalc(opt){
   const T=a=>a.reduce((u,v)=>u+v,0),n0=a=>(a||Z6()).slice(0,6).map(v=>v||0),warn=[];
   const sn=stkGet("net",sd),kind=Object.keys(sn).length?"net":"stock",st=kind==="net"?sn:stkGet("stock",sd);
   const start={},quota={},raw={};SC.forEach(c=>start[c]=n0(st[c]));
-  const B=stkGet("qbase",m+"-01");if(!Object.keys(B).length)warn.push("ยังไม่มีโควต้าต้นเดือนของ "+thM(m)+" (ใส่ในกล่องโควต้าต้นเดือนฝ่ายขายด้านบน) ตอนนี้โควต้า = 0");
-  SC.forEach(c=>{const a=B[c]||[],sz=a.slice(0,6),has=sz.some(v=>v!=null&&v>0),tot=a[6]||0,sb=T(start[c]);
-    quota[c]=has?SIZES.map((z,i)=>sz[i]||0):SIZES.map((z,i)=>sb>0?tot*start[c][i]/sb:tot/6)});
+  const BK=bkGet(m);if(!BK)warn.push("ยังไม่มียอดจองฝ่ายขายของ "+thM(m)+" (นำเข้าในขั้น 3) ตอนนี้ยอดจอง = 0");
+  SC.forEach(c=>{quota[c]=BK?BK.rows[c].slice():Z6()});
   const Pm=PL[m]&&rev!==""&&PL[m][rev]?PL[m][rev].colors:null,pk=k=>n0(Pm&&Pm[k]);
   let skipped=0;
   if(opt===1){
@@ -1893,21 +1900,21 @@ function poOut(C){
   const xp=Math.round(C.x*100),s1=sum(c=>C.start[c]),s2r=sum(c=>C.raw[c]),s2=sum(c=>C.net[c]),s3=sum(c=>C.quota[c]),s4=sum(c=>end[c]);
   $("po-d1").innerHTML='<div class="kpis">'+kp("สต็อกต้นงวด ณ "+thD(C.sd)+" (คู่)",F(s1),1)+"</div>"+tbl(c=>C.start[c]);
   $("po-d2").innerHTML='<div class="kpis">'+kp("แผนผลิต "+(C.rev!==""?revName(C.rev):"")+" ก่อนหัก (คู่)",F(s2r))+kp("หักออก "+xp+"%",F(s2r-s2))+kp("ผลิตสุทธิหลังหัก (คู่)",F(s2),1)+"</div>"+tbl(c=>C.net[c]);
-  $("po-d3").innerHTML=s3?'<div class="kpis">'+kp("โควต้าต้นงวดฝ่ายขาย "+thM(C.m)+" (คู่)",F(s3),1)+"</div>"+tbl(c=>C.quota[c]):'<div class="msg warn">ยังไม่ได้บันทึกโควต้าต้นงวดของ '+thM(C.m)+" — นำเข้าด้านล่าง</div>";
+  $("po-d3").innerHTML=s3?'<div class="kpis">'+kp("ยอดจองฝ่ายขาย "+thM(C.m)+" (คู่)",F(s3),1)+"</div>"+tbl(c=>C.quota[c]):'<div class="msg warn">ยังไม่ได้บันทึกโควต้าต้นงวดของ '+thM(C.m)+" — นำเข้าด้านล่าง</div>";
   const short=[];let sumShort=0;
   cols.forEach(c=>{const a=[];end[c].forEach((v,i)=>{if(v<0){a.push("เบอร์ "+SIZES[i]+" ขาด "+(-v).toLocaleString("en-US"));sumShort+=-v}});if(a.length)short.push("<b>"+(SCN[c]||c)+"</b>: "+a.join(" · "))});
-  let h='<div class="kpis">'+kp("(1) สต็อกต้นงวด",F(s1))+kp("(2) ผลิตสุทธิ",F(s2))+kp("(1+2) คาดว่าจะมี",F(s1+s2))+kp("(3) โควต้าขาย",F(s3))+kp("(4) คงเหลือสิ้นเดือน",F(s4),1)+"</div>";
-  h+=short.length?'<div class="msg warn" style="margin:0"><b>ติดลบ '+sumShort.toLocaleString("en-US")+' คู่ — แจ้งแก้แผนผลิตกับ รง.</b><br>'+short.join("<br>")+"</div>":(s3?'<div class="msg ok" style="margin:0">ไม่มีช่องไหนติดลบ — สต็อกพอขายตามโควต้าทุกสี/เบอร์</div>':"");
+  let h='<div class="kpis">'+kp("(1) สต็อกต้นงวด",F(s1))+kp("(2) ผลิตสุทธิ",F(s2))+kp("(1+2) คาดว่าจะมี",F(s1+s2))+kp("(3) ยอดจองฝ่ายขาย",F(s3))+kp("(4) คงเหลือสิ้นเดือน",F(s4),1)+"</div>";
+  h+=short.length?'<div class="msg warn" style="margin:0"><b>ติดลบ '+sumShort.toLocaleString("en-US")+' คู่ — แจ้งแก้แผนผลิตกับ รง.</b><br>'+short.join("<br>")+"</div>":(s3?'<div class="msg ok" style="margin:0">ไม่มีช่องไหนติดลบ — สต็อกพอตามยอดจองทุกสี/เบอร์</div>':"");
   h+=tbl(c=>end[c],true)+'<details><summary style="cursor:pointer;font-weight:600">ดูตาราง (1 + 2) ยอดคาดว่าจะมี</summary>'+tbl(c=>exp[c])+"</details>";
   $("po-out").innerHTML=h;
 }
 function poSheet(wb,C){
   const ws=wb.addWorksheet(C.opt===1?"แบบ1 แผนผลิต":"แบบ2 แผนประกอบนึ่งยาง");ws.columns=[{width:34}].concat(Array(7).fill({width:13}));
   const fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},NF="#,##0;[Red]-#,##0;-",L="BCDEFG";
-  ws.addRow([C.opt===1?"ประเมินสต็อกปลายเดือน แบบ 1: สต็อกต้นงวด + แผนผลิต (หักออก X%) − โควต้าฝ่ายขาย":"ประเมินสต็อกปลายเดือน แบบ 2: สต็อกต้นงวด + แผนประกอบนึ่งยาง (หักออก X%) − โควต้าฝ่ายขาย"]).getCell(1).font={bold:true,size:13};
+  ws.addRow([C.opt===1?"ประเมินสต็อกปลายเดือน แบบ 1: สต็อกต้นงวด + แผนผลิต (หักออก X%) − ยอดจองฝ่ายขาย":"ประเมินสต็อกปลายเดือน แบบ 2: สต็อกต้นงวด + แผนประกอบนึ่งยาง (หักออก X%) − ยอดจองฝ่ายขาย"]).getCell(1).font={bold:true,size:13};
   ws.addRow(["เดือน",thM(C.m)]);ws.addRow(["สต็อกต้นงวด ณ วันที่",thD(C.sd)+" ("+(C.kind==="net"?"คงเหลือสุทธิที่สั่งได้จริง":"คงเหลือ")+")"]);
   ws.addRow(["แหล่งตัวเลขผลิต",C.opt===1?("แผนผลิต "+(C.rev!==""?revName(C.rev):"-")):"แผ่นยางที่จ่ายไปประกอบ × "+F()+" คู่/แผ่น (แยกขาว/ดำ ตามแผน)"]);
-  ws.addRow(["โควต้า","โควต้าต้นเดือนฝ่ายขาย (ฐานตั้งต้น)"]);
+  ws.addRow(["ยอดจอง","ยอดจองจากฝ่ายขาย "+thM(C.m)]);
   const xr=ws.addRow(["หักออก X% (แก้ตัวเลขนี้ในไฟล์ได้ ตาราง 3 และ 5 คำนวณตาม)",C.x]);xr.getCell(2).numFmt="0%";xr.getCell(2).fill=fill("FFF2CC");const xRef="$B$"+xr.number;
   const rows={};
   const addT=(key,title,vf,ff)=>{
@@ -1926,10 +1933,10 @@ function poSheet(wb,C){
   addT("s","1) สต็อกต้นงวด ณ "+thD(C.sd),c=>C.start[c]);
   addT("r","2) "+(C.opt===1?"แผนผลิต":"แผนประกอบนึ่งยาง (แผ่นที่จ่ายไปประกอบ × คู่ต่อแผ่น)")+" ก่อนหัก",c=>C.raw[c]);
   addT("n","3) ผลิตหัก X% (= ตาราง 2 × (1 − X))",c=>C.net[c],(c,j)=>L[j]+rows.r[c]+"*(1-"+xRef+")");
-  addT("q","4) โควต้าขายฝ่ายขาย (โควต้าต้นเดือน)",c=>C.quota[c]);
+  addT("q","4) ยอดจองฝ่ายขาย",c=>C.quota[c]);
   addT("e","5) สต็อกปลายเดือนที่คาดว่าจะเหลือ (= 1 + 3 − 4)",c=>C.end[c],(c,j)=>L[j]+rows.s[c]+"+"+L[j]+rows.n[c]+"-"+L[j]+rows.q[c]);
   ws.addRow([]);
-  const notes=["ค่าติดลบ (สีแดง) = โควต้ามากกว่าสต็อกต้นงวด + ผลิต ซึ่งของจะไม่พอขาย"];
+  const notes=["ค่าติดลบ (สีแดง) = ยอดจองมากกว่าสต็อกต้นงวด + ผลิต ซึ่งของจะไม่พอส่ง"];
   if(C.opt===1&&C.skipped)notes.push("แบบ 1 ไม่รวมสีพิเศษที่ไม่มีในตารางสต็อก (พื้นดำหูสีต่างๆ Xmas น้ำเงิน/แดงล้วน โกโก้ ฯลฯ) รวม "+Math.round(C.skipped).toLocaleString("en-US")+" คู่");
   C.warn.forEach(w=>notes.push("ข้อควรระวัง: "+w));
   notes.forEach(t=>{const r=ws.addRow([t]);r.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}}});
@@ -2145,30 +2152,35 @@ let NBIMP=null;
 const NBMAP={"ดำ(หูดำหน้าขาว)":"ดำ/ขาว"};
 function nbMsg(t,k){const m=$("nb-msg");m.hidden=!t;m.className="msg"+(k?" "+k:"");m.textContent=t||""}
 function nbNum(v){if(v&&typeof v==="object"&&"result" in v)v=v.result;const n=Number(v);return isNaN(n)?0:n}
+async function parseBook(file){
+  const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let best=null;
+  wb.worksheets.forEach(ws=>{const hm={};let nh=0,zc=0,tc=0;
+    ws.getRow(1).eachCell({includeEmpty:false},(cell,j)=>{let h=String(cv(cell)==null?"":cv(cell)).replace(/\s+/g,"");
+      if(h==="เขต")zc=j;if(h==="รวม/คู่")tc=j;
+      const r=h.match(/^(.+?)เบอร์([\d.]+)/);if(!r)return;const col=NBMAP[r[1]]||r[1],si=SIZES.indexOf(String(+r[2]));
+      if(SC.includes(col)&&si>=0){hm[j]=[col,si];nh++}});
+    if(nh>=20&&(!best||nh>best.nh))best={ws,hm,nh,zc,tc}});
+  if(!best)return{err:"ไม่พบตารางยอดจอง — ต้องมีหัวคอลัมน์แบบ 'น้ำเงิน เบอร์ 8.5 (คู่)' ในแถวแรกของชีต"};
+  const {ws,hm,zc,tc}=best,rows={};SC.forEach(c=>rows[c]=Z6());let zones=[],last=1;
+  for(let r=2;r<=ws.rowCount;r++){const z=zc?cv(ws.getCell(r,zc)):null;if(z==null||String(z).trim()==="")continue;
+    if(/^รวม/.test(String(z).trim()))continue;
+    Object.keys(hm).forEach(j=>{const v=nbNum(cv(ws.getCell(r,+j)));if(v)rows[hm[j][0]][hm[j][1]]+=v});zones.push(String(z).trim());last=r}
+  let fileTot=null;if(tc){for(let r=last+1;r<=last+8&&r<=ws.rowCount;r++){const v=cv(ws.getCell(r,tc));if(typeof v==="number"&&v>0){fileTot=v;break}}}
+  const tot=SC.reduce((a,c)=>a+rows[c].reduce((x,y)=>x+y,0),0);
+  let mo="";const mi=MON.indexOf(ws.name.trim());
+  if(mi>=0){const c=window._ec,ref=(c&&c.ed)||todayS();let y=+ref.slice(0,4);if(mi+1<+ref.slice(5,7))y++;mo=y+"-"+p2(mi+1)}
+  return{rows,zones,tot,fileTot,mo,sheet:ws.name,fname:file.name};
+}
+function bookMsg(r){
+  let msg="อ่านจาก "+r.fname+" (ชีต "+r.sheet+") · "+r.zones.length+" เขต ("+r.zones.join(", ")+") รวม "+fmt(r.tot)+" คู่",k="ok";
+  if(r.fileTot!=null){if(Math.abs(r.fileTot-r.tot)<=1)msg+=" · ตรงกับยอด 'รวม/คู่' ในไฟล์ ("+fmt(r.fileTot)+")";else{msg+=" · ไม่ตรงยอด 'รวม/คู่' ในไฟล์ ("+fmt(r.fileTot)+" ต่าง "+fmt(r.tot-r.fileTot)+") ตรวจชีตอีกครั้ง";k="warn"}}
+  return{msg,k};
+}
 async function readBookFile(file){
-  try{
-    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let best=null;
-    wb.worksheets.forEach(ws=>{const hm={};let nh=0,zc=0,tc=0;
-      ws.getRow(1).eachCell({includeEmpty:false},(cell,j)=>{let h=String(cv(cell)==null?"":cv(cell)).replace(/\s+/g,"");
-        if(h==="เขต")zc=j;if(h==="รวม/คู่")tc=j;
-        const r=h.match(/^(.+?)เบอร์([\d.]+)/);if(!r)return;const col=NBMAP[r[1]]||r[1],si=SIZES.indexOf(String(+r[2]));
-        if(SC.includes(col)&&si>=0){hm[j]=[col,si];nh++}});
-      if(nh>=20&&(!best||nh>best.nh))best={ws,hm,nh,zc,tc}});
-    if(!best){nbMsg("ไม่พบตารางยอดจอง — ต้องมีหัวคอลัมน์แบบ 'น้ำเงิน เบอร์ 8.5 (คู่)' ในแถวแรกของชีต","warn");return}
-    const {ws,hm,zc,tc}=best,rows={};SC.forEach(c=>rows[c]=Z6());let zones=[],last=1;
-    for(let r=2;r<=ws.rowCount;r++){const z=zc?cv(ws.getCell(r,zc)):null;if(z==null||String(z).trim()==="")continue;
-      if(/^รวม/.test(String(z).trim()))continue;
-      let any=false;Object.keys(hm).forEach(j=>{const v=nbNum(cv(ws.getCell(r,+j)));if(v){rows[hm[j][0]][hm[j][1]]+=v;any=true}});zones.push(String(z).trim());last=r}
-    let fileTot=null;if(tc){for(let r=last+1;r<=last+8&&r<=ws.rowCount;r++){const v=cv(ws.getCell(r,tc));if(typeof v==="number"&&v>0){fileTot=v;break}}}
-    const tot=SC.reduce((a,c)=>a+rows[c].reduce((x,y)=>x+y,0),0);
-    let mo=$("nb-month").value;const mi=MON.indexOf(ws.name.trim());
-    if(mi>=0){const c=window._ec,ref=(c&&c.ed)||todayS();let y=+ref.slice(0,4);if(mi+1<+ref.slice(5,7))y++;mo=y+"-"+p2(mi+1)}
-    if(mo)$("nb-month").value=mo;
-    NBIMP={m:mo,rows,fname:file.name};
-    let msg="อ่านจาก "+file.name+" (ชีต "+ws.name+") · "+zones.length+" เขต ("+zones.join(", ")+") รวม "+fmt(tot)+" คู่";
-    let k="ok";
-    if(fileTot!=null){if(Math.abs(fileTot-tot)<=1)msg+=" · ตรงกับยอด 'รวม/คู่' ในไฟล์ ("+fmt(fileTot)+")";else{msg+=" · ไม่ตรงยอด 'รวม/คู่' ในไฟล์ ("+fmt(fileTot)+" ต่าง "+fmt(tot-fileTot)+") ตรวจชีตอีกครั้ง";k="warn"}}
-    if(!mo){msg+=" · เลือกเดือนของยอดจองก่อนบันทึก";k="warn"}
+  try{const r=await parseBook(file);if(r.err){nbMsg(r.err,"warn");return}
+    let mo=r.mo||$("nb-month").value;if(mo)$("nb-month").value=mo;
+    NBIMP={m:mo,rows:r.rows,fname:file.name};
+    const b=bookMsg(r);let msg=b.msg,k=b.k;if(!mo){msg+=" · เลือกเดือนของยอดจองก่อนบันทึก";k="warn"}
     nbMsg(msg,k);$("nb-save").disabled=!mo;renderE();
   }catch(err){nbMsg("อ่านไฟล์ไม่ได้: "+err+" (รองรับเฉพาะ .xlsx)","warn")}
 }
@@ -2416,6 +2428,36 @@ $("sx-save").onclick=async()=>{
   $("sx-save").disabled=true;
 };
 
+/* ---------- ขั้น 3: ยอดจองฝ่ายขาย ---------- */
+let BKIMP=null;
+function bkMsg(t,k){const m=$("bk-msg");m.hidden=!t;m.className="msg"+(k?" "+k:"");m.textContent=t||""}
+function bkGet(m){
+  if(BKIMP&&BKIMP.m===m)return{rows:BKIMP.rows,unsaved:true};
+  const B=stkGet("nbook",m+"-01");if(!Object.keys(B).length)return null;
+  const rows={};SC.forEach(c=>rows[c]=(B[c]||Z6()).slice(0,6).map(v=>v||0));return{rows,unsaved:false};
+}
+$("bk-file").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+  try{const r=await parseBook(f);if(r.err){bkMsg(r.err,"warn");return}
+    const mo=r.mo||$("p-month").value||"";$("bk-month").value=mo;BKIMP=mo?{m:mo,rows:r.rows,fname:f.name}:null;
+    const b=bookMsg(r);let msg=b.msg,k=b.k;
+    if(!mo){msg+=" · เลือกเดือนของยอดจองก่อนบันทึก";k="warn"}
+    else if(![...$("p-month").options].some(o=>o.value===mo)){msg+=" · ยังไม่มีแผนผลิตของ "+thM(mo)+" จึงยังคำนวณขั้น 4 ไม่ได้";k="warn"}
+    bkMsg(msg+" · ตรวจตัวเลขแล้วกด 'บันทึกยอดจอง'",k);$("bk-save").disabled=!mo;
+    if(mo&&$("p-month").value!==mo&&[...$("p-month").options].some(o=>o.value===mo)){$("p-month").value=mo;$("p-rev").innerHTML="";renderP()}
+    poNote();
+  }catch(err){bkMsg("อ่านไฟล์ไม่ได้: "+err+" (รองรับเฉพาะ .xlsx)","warn")}};
+$("bk-month").addEventListener("input",()=>{if(BKIMP)BKIMP.m=$("bk-month").value;$("bk-save").disabled=!(BKIMP&&$("bk-month").value);poNote()});
+$("bk-save").onclick=async()=>{
+  const key=($("pf-key").value||$("e-key").value).trim(),mo=$("bk-month").value;
+  if(!BKIMP||!mo){bkMsg("เลือกไฟล์ยอดจองก่อน","warn");return}
+  if(!key){fgKeySet(true);bkMsg("ใส่รหัสบันทึกแล้วกดบันทึกอีกครั้ง","warn");return}
+  const rows=[];SC.forEach(c=>{const a=BKIMP.rows[c],t=a.reduce((x,y)=>x+y,0);if(t>0)rows.push(["nbook",c].concat(a,[t]))});
+  if(!rows.length){bkMsg("ไม่มียอดจองให้บันทึก","warn");return}
+  $("bk-save").disabled=true;
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:mo+"-01",by:"",rows})}).then(r=>r.json());
+    if(r.ok){bkMsg("บันทึกยอดจอง "+thM(mo)+" แล้ว","ok");BKIMP=null;await load();poNote()}else{bkMsg(r.error||"บันทึกไม่สำเร็จ","warn");$("bk-save").disabled=false}}
+  catch(err){bkMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("bk-save").disabled=false}
+};
 function fgKeySet(ask){let k="";try{k=localStorage.getItem("fgkey")||""}catch(e){}
   if(!k||ask){const v=window.prompt("ใส่รหัสบันทึก (ถามครั้งเดียว เครื่องนี้จะจำไว้)",ask?k:"");if(v!==null&&v.trim()){k=v.trim();try{localStorage.setItem("fgkey",k)}catch(e){}}}
   ["i-key","pf-key","sx-key","e-key"].forEach(i=>{const el=$(i);if(el)el.value=k});return k}
