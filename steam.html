@@ -190,17 +190,17 @@ td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
 .kpi[data-hv],.kpi[data-hk]{cursor:pointer}.kpi[data-hv] .v,.kpi[data-hk] .v{display:inline-block;border-bottom:1px dotted var(--muted)}
 
 /* ---- theme: navy dashboard (กรมท่า + ฟ้าอมเขียว + เหลืองทอง) ---- */
-:root{--bg:#ebf1f4;--surface:#ffffff;--surface2:#f3f7f9;--line:#d3dde3;--line2:#b9c8d1;--ink:#0c1524;--muted:#5b7080;--accent:#233f57;--accent-ink:#ffffff;--accent-soft:#e1ecf3;--gold:#f2c94c;--teal:#2a9d8f;--warn:#b45309;--warn-soft:#fdf0d5;--ok:#1f8a70;--mid:#c58b12;--bad:#c0392b;--bar:#2a9d8f}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#2f5f87;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}}
-:root[data-theme="dark"]{--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#2f5f87;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}
+:root{--bg:#ebf1f4;--surface:#ffffff;--surface2:#f3f7f9;--line:#d3dde3;--line2:#b9c8d1;--ink:#0c1524;--muted:#5b7080;--accent:#2f6690;--accent-ink:#ffffff;--accent-soft:#e1ecf3;--gold:#f2c94c;--teal:#2a9d8f;--warn:#b45309;--warn-soft:#fdf0d5;--ok:#1f8a70;--mid:#c58b12;--bad:#c0392b;--bar:#2a9d8f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#3b77a8;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}}
+:root[data-theme="dark"]{--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#3b77a8;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}
 body{background:var(--bg)}
-.side{background:#0c1524;border-right:0;color:#e8f0f5}
-.brand b{color:#fff}.brand small{color:#8fa5b5}
-.smenu button{color:#a9bccb}
-.smenu button:hover{color:#fff;background:rgba(255,255,255,.08)}
-.smenu button[aria-selected="true"]{background:#233f57;color:#fff;box-shadow:inset 3px 0 0 var(--gold)}
+.side{background:#1b3a57;border-right:0;color:#e8f0f5}
+.brand b{color:#fff}.brand small{color:#b4c8d8}
+.smenu button{color:#c8d7e3}
+.smenu button:hover{color:#fff;background:rgba(255,255,255,.1)}
+.smenu button[aria-selected="true"]{background:#2f6690;color:#fff;box-shadow:inset 3px 0 0 var(--gold)}
 .smenu button[aria-selected="true"] svg{color:var(--gold);opacity:1}
-.ver,.ver a{color:#7f95a6}
+.ver,.ver a{color:#9fb4c5}
 @media (max-width:860px){.side{border-bottom:0}}
 .panel:not(.toolbar){background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 0;gap:14px;overflow:hidden;box-shadow:0 1px 2px rgba(12,21,36,.05)}
 .panel:not(.toolbar)>*{margin-left:16px;margin-right:16px}
@@ -236,7 +236,7 @@ tbody tr:hover td{background:var(--accent-soft)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 24)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 25)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -653,17 +653,17 @@ body.embed header>div:first-child{display:none}
 body.embed header{justify-content:flex-start}
 
 /* ---- theme: navy dashboard (กรมท่า + ฟ้าอมเขียว + เหลืองทอง) ---- */
-:root{--bg:#ebf1f4;--surface:#ffffff;--surface2:#f3f7f9;--line:#d3dde3;--line2:#b9c8d1;--ink:#0c1524;--muted:#5b7080;--accent:#233f57;--accent-ink:#ffffff;--accent-soft:#e1ecf3;--gold:#f2c94c;--teal:#2a9d8f;--warn:#b45309;--warn-soft:#fdf0d5;--ok:#1f8a70;--mid:#c58b12;--bad:#c0392b;--bar:#2a9d8f}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#2f5f87;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}}
-:root[data-theme="dark"]{--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#2f5f87;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}
+:root{--bg:#ebf1f4;--surface:#ffffff;--surface2:#f3f7f9;--line:#d3dde3;--line2:#b9c8d1;--ink:#0c1524;--muted:#5b7080;--accent:#2f6690;--accent-ink:#ffffff;--accent-soft:#e1ecf3;--gold:#f2c94c;--teal:#2a9d8f;--warn:#b45309;--warn-soft:#fdf0d5;--ok:#1f8a70;--mid:#c58b12;--bad:#c0392b;--bar:#2a9d8f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#3b77a8;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}}
+:root[data-theme="dark"]{--bg:#0c1524;--surface:#14243a;--surface2:#1a2f48;--line:#26405c;--line2:#34546f;--ink:#e8f0f5;--muted:#93a9b8;--accent:#3b77a8;--accent-ink:#ffffff;--accent-soft:#17314a;--gold:#f2c94c;--teal:#4fb3a5;--warn:#f0a45c;--warn-soft:#3a2a17;--ok:#4fc29a;--mid:#e0a84a;--bad:#ee7b6e;--bar:#4fb3a5}
 body{background:var(--bg)}
-.side{background:#0c1524;border-right:0;color:#e8f0f5}
-.brand b{color:#fff}.brand small{color:#8fa5b5}
-.smenu button{color:#a9bccb}
-.smenu button:hover{color:#fff;background:rgba(255,255,255,.08)}
-.smenu button[aria-selected="true"]{background:#233f57;color:#fff;box-shadow:inset 3px 0 0 var(--gold)}
+.side{background:#1b3a57;border-right:0;color:#e8f0f5}
+.brand b{color:#fff}.brand small{color:#b4c8d8}
+.smenu button{color:#c8d7e3}
+.smenu button:hover{color:#fff;background:rgba(255,255,255,.1)}
+.smenu button[aria-selected="true"]{background:#2f6690;color:#fff;box-shadow:inset 3px 0 0 var(--gold)}
 .smenu button[aria-selected="true"] svg{color:var(--gold);opacity:1}
-.ver,.ver a{color:#7f95a6}
+.ver,.ver a{color:#9fb4c5}
 @media (max-width:860px){.side{border-bottom:0}}
 .panel:not(.toolbar){background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 0;gap:14px;overflow:hidden;box-shadow:0 1px 2px rgba(12,21,36,.05)}
 .panel:not(.toolbar)>*{margin-left:16px;margin-right:16px}
