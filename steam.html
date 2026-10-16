@@ -236,7 +236,7 @@ tbody tr:hover td{background:var(--accent-soft)}
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 22)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 23)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -432,10 +432,10 @@ tbody tr:hover td{background:var(--accent-soft)}
     <div class="panel" id="es4">
       <h2>4) − โควต้าฝ่ายขายที่ยังไม่ได้ขาย</h2>
       <details class="dbox" id="e-d2"><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
-      <div class="note">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (กัน key ผิด) หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
-      <div><span class="lbl">เลือกไฟล์ Excel หรือวางตารางที่ copy มา (ทั้งตารางสี × เบอร์ รวมหัวตารางได้)</span>
-        <textarea id="e-paste" rows="4" placeholder="คลุมตารางโควต้าใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V (หรือวางลงช่องตัวเลขในตารางด้านล่างได้เลย)" style="width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px"></textarea>
-        <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="e-pbtn" type="button">นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="e-qfile" accept=".xlsx" style="display:none"></label><span id="e-pmsg" class="note"></span></div></div>
+      <div class="note">เลือกไฟล์โควต้า Excel (.xlsx) ด้านล่าง ระบบกรอกตารางให้เอง หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
+      <div><span class="lbl" hidden>วางตาราง</span>
+        <textarea id="e-paste" hidden rows="4" placeholder="คลุมตารางโควต้าใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V (หรือวางลงช่องตัวเลขในตารางด้านล่างได้เลย)" style="width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px"></textarea>
+        <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="e-pbtn" type="button" hidden>นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="e-qfile" accept=".xlsx" style="display:none"></label><span id="e-pmsg" class="note"></span></div></div>
       <div class="scroll" id="e-grid"></div>
       <div class="row" style="align-items:center">
         <div style="min-width:170px"><span class="lbl">โควต้า ณ วันที่</span><input type="date" id="e-qdate"></div>
