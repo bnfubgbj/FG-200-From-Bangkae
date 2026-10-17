@@ -264,7 +264,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 31)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 35)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -503,8 +503,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     </div>
     <div class="kpis" id="e-kpis" style="display:none"></div>
     <div class="panel" id="e-nx">
-      <div class="head2"><h2>ประเมินสั่งผลิตเดือนถัดไป (สต็อกสิ้นเดือน + แผนผลิต − ยอดจอง)</h2><button class="btn ghost" id="nb-xl">ดาวน์โหลด Excel</button></div>
-      <div class="note">เอา "สต็อกคาดว่าคงเหลือสิ้นเดือน" (ตาราง 5 ด้านบน) เทียบกับ "ยอดจองเดือนถัดไป" จากฝ่ายขาย → ได้ว่าสีไหนเบอร์ไหนต้องมีของเพิ่ม แล้วเทียบกับแผนผลิตเดือนนั้น (หักออก X%) ว่าต้องเพิ่มหรือลดแผนเท่าไร · ไฟล์ยอดจอง = ไฟล์ Excel ที่ฝ่ายขายสรุปยอดจอง (ชีต "พ.ย." ที่มีคอลัมน์ เขต × สี × เบอร์) ระบบรวมทุกเขตให้เอง</div>
+      <div class="head2"><h2>เดือนถัดไป: ขั้น 5 ถึง 9</h2><button class="btn ghost" id="nb-xl">ดาวน์โหลด Excel</button></div>
       <div class="row" style="align-items:flex-end;gap:10px 14px">
         <div style="min-width:160px"><span class="lbl">เดือนของยอดจอง</span><input type="month" id="nb-month"></div>
         <div style="min-width:190px"><span class="lbl">แผนผลิตของเดือนนั้น (ฉบับ)</span><select id="nb-rev"></select></div>
@@ -2426,6 +2425,52 @@ let NBIMP=null;
 const NBMAP={"ดำ(หูดำหน้าขาว)":"ดำ/ขาว"};
 function nbMsg(t,k){const m=$("nb-msg");m.hidden=!t;m.className="msg"+(k?" "+k:"");m.textContent=t||""}
 function nbNum(v){if(v&&typeof v==="object"&&"result" in v)v=v.result;const n=Number(v);return isNaN(n)?0:n}
+function parseMail(ws,file){
+  const rc=ws.rowCount,cc=Math.min(ws.columnCount,120),CN={"สีน้ำเงิน":"น้ำเงิน","สีเขียว":"เขียว","สีแดง":"แดง","สีเหลือง":"เหลือง","สีขาว":"ขาว","สีดำ":"ดำ","สีเทา":"เทา","สีดำหน้าขาว":"ดำ/ขาว"};
+  const tx=(r,c)=>{const v=cv(ws.getCell(r,c));return v==null?"":String(v).replace(/\s+/g," ").trim()};
+  let hr=0,cols={},gt=0,zc=0;
+  for(let r=1;r<=rc&&!hr;r++){let z=0;for(let c=1;c<=cc;c++){if(tx(r,c)==="เขต"){z=c;break}}if(!z)continue;
+    const f={};let n=0,g=0;for(let c=z+1;c<=cc;c++){const t=tx(r,c).replace(/\s+/g,"");if(CN[t]&&!f[CN[t]]){f[CN[t]]=c;n++}if(t==="รวมทั้งสิ้น"){g=c;break}}
+    if(n>=7){hr=r;cols=f;gt=g;zc=z}}
+  if(!hr)return null;
+  const rows={};SC.forEach(c=>rows[c]=Z6());
+  const zones=[];let tr=0;
+  for(let r=hr+2;r<=rc;r++){const z=tx(r,zc);if(!z)continue;if(/^(total|รวม)/i.test(z)){tr=r;break}if(z==="%")break;
+    SC.forEach(c=>{if(!cols[c])return;for(let i=0;i<6;i++){const v=nbNum(cv(ws.getCell(r,cols[c]+i)));if(v)rows[c][i]+=v}});zones.push(z)}
+  if(!zones.length)return null;
+  let bad=0,fileTot=null;
+  if(tr){SC.forEach(c=>{if(!cols[c])return;for(let i=0;i<6;i++){if(Math.abs(nbNum(cv(ws.getCell(tr,cols[c]+i)))-rows[c][i])>1)bad++}});if(gt){const v=nbNum(cv(ws.getCell(tr,gt)));if(v>0)fileTot=v}}
+  const tot=SC.reduce((a,c)=>a+rows[c].reduce((x,y)=>x+y,0),0);
+  // สีพิเศษ (พี่มอส)
+  let sp=0,spFile=null,spUn=[],spRows=0,sr=0,sc=0;
+  for(let r=1;r<=rc&&!sr;r++)for(let c=1;c<=cc;c++){if(/ยอดจองสีพิเศษ/.test(tx(r,c))){sr=r;sc=c;break}}
+  if(sr){const byL={};SXS.forEach(d=>byL[d[1].replace(/\s+/g,"")]=d[0]);
+    for(let r=sr+1;r<=sr+30&&r<=rc;r++){const lb=tx(r,sc).replace(/\s+/g,"");if(!lb||lb==="สี")continue;
+      if(/^รวม/.test(lb)){const v=nbNum(cv(ws.getCell(r,sc+7)));if(v>0)spFile=v;break}
+      const k=byL[lb];const a=[0,0,0,0,0,0];for(let i=0;i<6;i++)a[i]=nbNum(cv(ws.getCell(r,sc+1+i)));
+      const t=a.reduce((x,y)=>x+y,0);if(!k){if(t)spUn.push(lb);continue}
+      rows[k]=a;sp+=t;if(t)spRows++}}
+  let mo="";const b1=cv(ws.getCell("B1"));let m1=null;
+  if(b1 instanceof Date)m1=[b1.getMonth()+1,b1.getFullYear()];else{const q=String(b1==null?"":b1).trim().match(/^(\d{1,2})\/(\d{4})$/);if(q)m1=[+q[1],+q[2]]}
+  if(m1){let m=m1[0]+1,y=m1[1];if(m>12){m=1;y++}mo=y+"-"+p2(m);}
+  return{rows,zones,tot,fileTot,mo,sheet:ws.name,fname:file.name,mail:true,bad,sp,spFile,spUn,spRows,m1};
+}
+function parseSimple(ws,file){
+  const rc=ws.rowCount,CN={"สีน้ำเงิน":"น้ำเงิน","สีเขียว":"เขียว","สีแดง":"แดง","สีเหลือง":"เหลือง","สีขาว":"ขาว","สีดำ":"ดำ","สีเทา":"เทา","สีดำหน้าขาว":"ดำ/ขาว"};
+  const tx=(r,c)=>{const v=cv(ws.getCell(r,c));return v==null?"":String(v).replace(/\s+/g," ").trim()};
+  const byL={};SXS.forEach(d=>byL[d[1].replace(/\s+/g,"")]=d[0]);
+  const rows={};SC.forEach(c=>rows[c]=Z6());let found=0,hdr=0,sp=0,spRows=0,tr=0;const spUn=[];
+  for(let r=1;r<=rc;r++){const lb=tx(r,1).replace(/\s+/g,"");if(!lb)continue;
+    if(lb==="สี"&&SIZES.every((z,i)=>tx(r,2+i)===z))hdr++;
+    else if(CN[lb]){const a=[];for(let i=0;i<6;i++)a.push(nbNum(cv(ws.getCell(r,2+i))));rows[CN[lb]]=a;found++}
+    else if(byL[lb]){const a=[];for(let i=0;i<6;i++)a.push(nbNum(cv(ws.getCell(r,2+i))));rows[byL[lb]]=a;const t=a.reduce((x,y)=>x+y,0);sp+=t;if(t)spRows++}
+    else if(/^รวมทั้งหมด/.test(lb))tr=r}
+  if(!hdr||found<6)return null;
+  const tot=SC.reduce((a,c)=>a+rows[c].reduce((x,y)=>x+y,0),0);let bad=0,fileTot=null;
+  if(tr){const all=SC.concat(SXS.map(d=>d[0]));for(let i=0;i<6;i++){const sum=all.reduce((a,c)=>a+(rows[c]?rows[c][i]:0),0);if(Math.abs(nbNum(cv(ws.getCell(tr,2+i)))-sum)>1)bad++}
+    const g=nbNum(cv(ws.getCell(tr,8)));if(g>0)fileTot=g}
+  return{rows,zones:[],tot,fileTot:fileTot==null?null:fileTot-sp,mo:"",sheet:ws.name,fname:file.name,mail:true,simple:true,bad,sp,spFile:null,spUn,spRows,m1:null};
+}
 async function parseBook(file){
   const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let best=null;
   const a1=w=>String(cv(w.getCell("A1"))==null?"":cv(w.getCell("A1"))).trim();
@@ -2436,6 +2481,7 @@ async function parseBook(file){
     const ALLB=SC.concat(SXS.map(d=>d[0])),rows={};ALLB.forEach(c=>rows[c]=(rd.rows[c]||Z6()).slice(0,6));
     const tot=ALLB.reduce((a,c)=>a+rows[c].reduce((x,y)=>x+y,0),0);
     return{rows,zones:[],tot,fileTot:null,mo:sxMonth(cv(sw.getCell("B2")))||"",sheet:sw.name,fname:file.name,std:true,chk:ck.n}}
+  for(const w of wb.worksheets){const mr=parseMail(w,file)||parseSimple(w,file);if(mr)return mr}
   wb.worksheets.forEach(ws=>{const hm={};let nh=0,zc=0,tc=0;
     ws.getRow(1).eachCell({includeEmpty:false},(cell,j)=>{let h=String(cv(cell)==null?"":cv(cell)).replace(/\s+/g,"");
       if(h==="เขต")zc=j;if(h==="รวม/คู่")tc=j;
@@ -2456,10 +2502,17 @@ async function parseBook(file){
   return{rows,zones,tot,fileTot,mo,sheet:ws.name,fname:file.name,unk};
 }
 function bookMsg(r){
+  if(r.mail){let k="ok",msg="อ่านแล้ว "+(r.simple?"":r.zones.length+" เขต · ")+"สีปกติ "+fmt(r.tot)+" คู่";
+    if(r.fileTot!=null){if(Math.abs(r.fileTot-r.tot)<=1)msg+=" (ตรงยอดรวม)";else{msg+=" ⚠ ไม่ตรงยอดรวมในไฟล์ "+fmt(r.fileTot);k="warn"}}
+    if(r.bad){msg+=" ⚠ "+r.bad+" ช่องไม่ตรงแถว Total";k="warn"}
+    if(r.sp||r.spFile){msg+=" · สีพิเศษ "+fmt(r.sp)+" คู่";if(r.spFile!=null&&Math.abs(r.spFile-r.sp)>1){msg+=" ⚠ ไม่ตรงยอดรวม "+fmt(r.spFile);k="warn"}}
+    if(r.spUn.length){msg+=" · ⚠ ไม่รู้จัก: "+r.spUn.join(", ");k="warn"}
+    if(r.mo)msg+=" · เดือนผลิต "+thM(r.mo);
+    return{msg,k}}
   if(r.std)return{msg:"อ่านไฟล์มาตรฐานยอดจอง (แผ่น "+r.sheet+") รวม "+fmt(r.tot)+" คู่ · ตรวจรายสี/รายเบอร์ "+r.chk+" ช่อง ตรงใบ",k:"ok"};
   let msg="อ่านจาก "+r.fname+" (ชีต "+r.sheet+") · "+r.zones.length+" เขต ("+r.zones.join(", ")+") รวม "+fmt(r.tot)+" คู่",k="ok";
   if(r.fileTot!=null){if(Math.abs(r.fileTot-r.tot)<=1)msg+=" · ตรงกับยอด 'รวม/คู่' ในไฟล์ ("+fmt(r.fileTot)+")";else{msg+=" · ไม่ตรงยอด 'รวม/คู่' ในไฟล์ ("+fmt(r.fileTot)+" ต่าง "+fmt(r.tot-r.fileTot)+") ตรวจชีตอีกครั้ง";k="warn"}}
-  if(r.unk){msg+=" · ⚠ มี "+r.unk+" ช่องเป็นสูตรที่ไม่มีค่าคำนวณเก็บไว้ในไฟล์ (อ่านเป็น 0) ยอดอาจขาด — เปิดไฟล์ใน Excel กดบันทึก แล้วนำเข้าใหม่";k="warn"}
+  if(r.unk&&!(r.fileTot!=null&&Math.abs(r.fileTot-r.tot)<=1)){msg+=" · ⚠ มี "+r.unk+" ช่องเป็นสูตรที่ไม่มีค่าคำนวณเก็บไว้ในไฟล์ (อ่านเป็น 0) ยอดอาจขาด — เปิดไฟล์ใน Excel กดบันทึก แล้วนำเข้าใหม่";k="warn"}
   return{msg,k};
 }
 async function readBookFile(file){
@@ -2478,7 +2531,7 @@ $("nb-save").onclick=async()=>{
   if(!NBIMP||!mo){nbMsg("เลือกไฟล์ยอดจองและเดือนก่อน","warn");return}
   if(!key){nbMsg("ใส่รหัสบันทึกก่อน (ช่องรหัสบันทึกด้านบนของหน้านี้)","warn");return}
   try{localStorage.setItem("fgkey",key)}catch(e){}
-  const rows=[];SC.forEach(c=>{const a=NBIMP.rows[c];const t=a.reduce((x,y)=>x+y,0);if(t>0)rows.push(["nbook",c].concat(a,[t]))});
+  const rows=[];SC.concat(SXS.map(d=>d[0])).forEach(c=>{const a=NBIMP.rows[c];if(!a)return;const t=a.reduce((x,y)=>x+y,0);if(t>0)rows.push(["nbook",c].concat(a,[t]))});
   if(!rows.length){nbMsg("ไม่มียอดจองให้บันทึก","warn");return}
   $("nb-save").disabled=true;
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:mo+"-01",by:$("e-by").value.trim(),rows})}).then(r=>r.json());
@@ -2486,18 +2539,21 @@ $("nb-save").onclick=async()=>{
   catch(err){nbMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("nb-save").disabled=false}
 };
 function nbBook(m){
-  if(NBIMP&&NBIMP.m===m)return{rows:NBIMP.rows,src:"ไฟล์ "+NBIMP.fname+" (ยังไม่ได้บันทึก)"};
+  const SPK=SXS.map(d=>d[0]),spOf=o=>{const q={};SPK.forEach(k=>{if(o[k]&&o[k].some(v=>v>0))q[k]=o[k].slice(0,6)});return q};
+  if(NBIMP&&NBIMP.m===m)return{rows:NBIMP.rows,sp:spOf(NBIMP.rows),src:"ไฟล์ "+NBIMP.fname+" (ยังไม่ได้บันทึก)"};
   const B=stkGet("nbook",m+"-01");if(!Object.keys(B).length)return null;
-  const rows={};SC.forEach(c=>rows[c]=(B[c]||Z6()).slice(0,6).map(v=>v||0));return{rows,src:"ที่บันทึกไว้"};
+  const rows={};SC.forEach(c=>rows[c]=(B[c]||Z6()).slice(0,6).map(v=>v||0));const sp={};SPK.forEach(k=>{if(B[k]){const a=B[k].slice(0,6).map(v=>v||0);if(a.some(v=>v>0))sp[k]=a}});return{rows,sp,src:"ที่บันทึกไว้"};
 }
 function nbCalc(c){
   const m=$("nb-month").value,x=Math.max(0,+$("nb-x").value||0)/100;if(!m||c.err)return null;
   const bk=nbBook(m);if(!bk)return{m,x,nobook:true};
   const revs=PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>a-b):[],pv=$("nb-rev").value,rev=revs.length?(pv!==""&&revs.includes(+pv)?+pv:revs[0]):null,Pm=rev!==null?PL[m][rev].colors:null;
-  const book=bk.rows,stock={},plan={},end={},need={};
+  const book=bk.rows,stock={},plan={},end={},need={},have={};
   SC.forEach(k=>{stock[k]=c.res[k].end.slice();plan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0)*(1-x));
-    end[k]=stock[k].map((v,i)=>v+plan[k][i]-book[k][i]);need[k]=end[k].map(v=>Math.max(0,-v))});
-  return{m,x,book,stock,plan,end,need,rev,hasPlan:!!Pm,src:bk.src,ed:c.ed,sd:c.sd};
+    have[k]=stock[k].map((v,i)=>v+plan[k][i]);end[k]=have[k].map((v,i)=>v-book[k][i]);need[k]=end[k].map(v=>Math.max(0,-v))});
+  const sp=bk.sp||{},spPlan={};Object.keys(sp).forEach(k=>{spPlan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0)*(1-x))});
+  if(Pm)Object.keys(Pm).forEach(k=>{if(!SC.includes(k)&&SXS.some(d=>d[0]===k)&&!sp[k]&&Pm[k].some(v=>v>0)){sp[k]=Z6();spPlan[k]=Pm[k].slice(0,6).map(v=>(v||0)*(1-x))}});
+  return{m,x,book,stock,plan,have,end,need,rev,hasPlan:!!Pm,src:bk.src,ed:c.ed,sd:c.sd,sp,spPlan};
 }
 function renderNb(c){
   const sel=$("nb-sel"),ds=stkDates(["nbook"]),cur=sel.value;
@@ -2513,24 +2569,30 @@ function renderNb(c){
   if(!r){B.innerHTML='<div class="note">เลือกเดือนของยอดจองก่อน</div>';return}
   if(r.nobook){B.innerHTML='<div class="note">ยังไม่มียอดจองของ '+thM(r.m)+' — เลือกไฟล์ยอดจองจากฝ่ายขายด้านบน</div>';return}
   const T=a=>a.reduce((x,y)=>x+y,0),sum=o=>SC.reduce((a,k)=>a+T(o[k]),0);
-  const short=SC.reduce((a,k)=>a+r.end[k].filter(v=>Math.round(v)<0).length,0),lack=SC.reduce((a,k)=>a+T(r.need[k]),0),sur=SC.reduce((a,k)=>a+r.end[k].reduce((p,v)=>p+Math.max(0,v),0),0);
   const sgn=(v,mode)=>{const y=Math.round(v);if(!y)return'<td class="zero">-</td>';
     if(mode==="adj")return'<td style="font-weight:600;color:var(--'+(y>0?"warn":"accent")+')">'+(y>0?"+":"")+fmt(y)+"</td>";
     if(mode==="need")return'<td'+(y>0?' style="font-weight:600;color:var(--warn)"':"")+">"+(y>0?"+":"")+fmt(y)+"</td>";
+    if(mode==="adj2")return'<td'+(y<0?' class="neg" style="font-weight:600"':"")+">"+(y>0?"+":"")+fmt(y)+"</td>";
     if(mode==="stk"&&y<0)return'<td class="neg" style="font-weight:600">'+fmt(y)+"</td>";
     return"<td>"+fmt(y)+"</td>"};
   const mat=(o,mode)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";const col=Z6();
     SC.forEach(k=>{const v=o[k];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(k)+"><td>"+(SCN[k]||k)+"</td>"+v.map(y=>sgn(y,mode)).join("")+(mode==="adj"||mode==="need"?sgn(T(v),mode):'<td><b>'+fmt(T(v))+"</b></td>")+"</tr>"});
     return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>sgn(y,mode)).join("")+sgn(T(col),mode)+"</tr></tfoot></table>"};
-  const H=[["ก) สต็อกต้นเดือน "+thM(r.m)+" = ยอดคาดคงเหลือสิ้น "+thM(r.ed.slice(0,7))+" (ขั้น 5 ด้านบน)",r.stock,"stk"],
-    ["ข) + แผนผลิต "+thM(r.m)+(r.hasPlan?" ("+revName(r.rev)+") หักออก "+Math.round(r.x*100)+"%":" (ไม่มีแผน)"),r.plan,""],
-    ["ค) − ยอดจอง "+thM(r.m)+" จากฝ่ายขาย ("+r.src+")",r.book,""],
-    ["ง) = คาดว่าคงเหลือสิ้น "+thM(r.m)+" (ก + ข − ค)   ค่าติดลบสีแดง = ของไม่พอขาย",r.end,"stk"],
-    ["จ) ควรเพิ่มแผนผลิตเท่าไร (= ส่วนที่ติดลบใน ง)   ค่าบวกสีส้ม = ต้องแจ้ง รง. เพิ่ม",r.need,"need"]];
-  let h='<div class="kpis" style="margin:10px 0"><div class="kpi"><div class="k">สต็อกต้นเดือน '+thM(r.m)+'</div><div class="v">'+fmt(sum(r.stock))+'</div></div><div class="kpi"><div class="k">+ แผนผลิต</div><div class="v">'+fmt(sum(r.plan))+'</div></div><div class="kpi"><div class="k">− ยอดจอง</div><div class="v">'+fmt(sum(r.book))+'</div></div><div class="kpi main"><div class="k">ควรเพิ่มแผน (เฉพาะช่องที่ขาด)</div><div class="v" style="color:'+(lack?"var(--warn)":"inherit")+'">'+fmt(lack)+'</div></div><div class="kpi"><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(short?"var(--warn)":"inherit")+'">'+short+'</div></div><div class="kpi"><div class="k">ส่วนที่เหลือเกินยอดจอง (คู่)</div><div class="v">'+fmt(sur)+"</div></div></div>";
-  if(!r.hasPlan)h+='<div class="note" style="color:var(--warn)">ยังไม่มีแผนผลิตของ '+thM(r.m)+' (นำเข้าในเมนู "เทียบแผนผลิต") ตารางนี้จึงคิดโดยไม่มีแผน</div>';
+  const mo1=thM(r.ed.slice(0,7)),mo2=thM(r.m);
+  const H=[["5) สต็อกคาดว่าจะเหลือสิ้น "+mo1+" (จากขั้น 5 ด้านบน)",r.stock,"stk"],
+    ["6) + แผนผลิต "+mo2+(r.hasPlan?" ("+revName(r.rev)+(r.x?" หัก "+Math.round(r.x*100)+"%":"")+")":" (ไม่มีแผน)"),r.plan,""],
+    ["7) = สต็อกคาดว่าจะมี (5 + 6)",r.have,"stk"],
+    ["8) − การจองของฝ่ายขาย "+mo2,r.book,""],
+    ["9) = สต็อกคาดว่าจะเหลือสิ้น "+mo2+" (7 − 8)",r.end,"stk"]];
+  let h='<div class="kpis" style="margin:10px 0">'+[["5) สต็อกสิ้น "+mo1,sum(r.stock)],["6) + แผนผลิต",sum(r.plan)],["7) = สต็อกที่จะมี",sum(r.have)],["8) − ยอดจอง",sum(r.book)],["9) เหลือสิ้น "+mo2,sum(r.end),1]].map((q,i)=>'<div class="kpi'+(i===4?" main":"")+'"><div class="k">'+q[0]+'</div><div class="v"'+(q[2]&&q[1]<0?' style="color:var(--bad)"':"")+'>'+fmt(q[1])+"</div></div>").join("")+"</div>";
+  if(!r.hasPlan)h+='<div class="note" style="color:var(--warn)">ยังไม่มีแผนผลิต '+mo2+'</div>';
   H.forEach(a=>{h+='<div><div class="t5">'+a[0]+'</div><div class="scroll">'+mat(a[1],a[2]==="stk"?"stk":a[2])+"</div></div>"});
-  h+='<div class="note">หมายเหตุ: นึ่งยางจนเป็นสินค้าสำเร็จรูป (FG) ใช้เวลาประมาณ 20 วัน จึงควรแจ้ง รง. ปรับแผนก่อนถึงเดือนที่ต้องใช้ล่วงหน้าอย่างน้อย 20 วัน · ถ้าช่องไหนในสต็อกต้นเดือน (ก) ติดลบ ระบบนับเป็นของขาดต่อเนื่องมาที่ ง) · สีพิเศษที่ไม่มีสต็อกในไฟล์ไม่รวมในตารางนี้ · เปลี่ยนฉบับแผนได้ที่ช่อง "แผนผลิตของเดือนนั้น"</div>';
+  {const ks=Object.keys(r.sp);if(ks.length){const nm=k=>(SXS.find(d=>d[0]===k)||[0,k])[1],cl=k=>{try{return colOf(k)[0]}catch(e){return "FFFFFF"}};
+    const tb=(o,sg)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
+      ks.forEach(k=>{const v=o(k);v.forEach((y,i)=>col[i]+=y);t+="<tr><td>"+nm(k)+"</td>"+v.map(y=>sg?sgn(y,"adj2"):(Math.round(y)?"<td>"+fmt(y)+"</td>":'<td class="zero">-</td>')).join("")+(sg?sgn(T(v),"adj2"):"<td><b>"+fmt(T(v))+"</b></td>")+"</tr>"});
+      return t+"</tbody><tfoot><tr><td>รวมสีพิเศษ</td>"+col.map(y=>sg?sgn(y,"adj2"):"<td>"+fmt(y)+"</td>").join("")+(sg?sgn(T(col),"adj2"):"<td>"+fmt(T(col))+"</td>")+"</tr></tfoot></table>"};
+    h+='<div><div class="t5">สีพิเศษ: ยอดจอง (พี่มอส)</div><div class="scroll">'+tb(k=>r.sp[k],0)+"</div></div>";
+    if(r.hasPlan)h+='<div><div class="t5">สีพิเศษ: แผน − ยอดจอง</div><div class="scroll">'+tb(k=>r.spPlan[k].map((v,i)=>v-r.sp[k][i]),1)+"</div></div>"}}
   B.innerHTML=h;window._nb=r;
 }
 ["nb-x","nb-rev"].forEach(i=>$(i).addEventListener("input",()=>renderE()));
@@ -2539,9 +2601,9 @@ $("nb-xl").onclick=async()=>{
   if(!r||typeof ExcelJS==="undefined"){nbMsg("ยังไม่มีข้อมูลให้ดาวน์โหลด — นำเข้ายอดจองก่อน","warn");return}
   const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("ประเมินสั่งผลิต "+r.m);ws.columns=[{width:34}].concat(Array(7).fill({width:13}));
   const fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},NF="#,##0;[Red]-#,##0;-",L="BCDEFG";
-  ws.addRow(["ประเมินสั่งผลิต "+thM(r.m)+" = สต็อกต้นเดือน + แผนผลิต − ยอดจอง (หน่วย: คู่)"]).getCell(1).font={bold:true,size:13};
+  ws.addRow(["ประเมินสั่งผลิต "+thM(r.m)+" ขั้น 5 ถึง 9 (หน่วย: คู่)"]).getCell(1).font={bold:true,size:13};
   ws.addRow(["ยอดจองจาก",r.src]);ws.addRow(["แผนผลิต",r.hasPlan?revName(r.rev):"ไม่มี"]);
-  const xr=ws.addRow(["หักผลิตออก X% (ตาราง ข คำนวณตาม)",r.x]);xr.getCell(2).numFmt="0%";xr.getCell(2).fill=fill("FFF2CC");const xRef="$B$"+xr.number;
+  const xr=ws.addRow(["หักผลิตออก X% (ขั้น 6)",r.x]);xr.getCell(2).numFmt="0%";xr.getCell(2).fill=fill("FFF2CC");const xRef="$B$"+xr.number;
   const rows={};
   const addT=(key,title,vf,ff)=>{ws.addRow([]);ws.addRow([title]).getCell(1).font={bold:true};
     const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
@@ -2554,11 +2616,11 @@ $("nb-xl").onclick=async()=>{
     const tr=ws.addRow(["รวมทุกสี"]);tr.font={bold:true};
     "BCDEFGH".split("").forEach((col,i)=>{const t=SC.reduce((a,k)=>a+(i<6?vf(k)[i]:vf(k).reduce((p,q)=>p+q,0)),0);tr.getCell(i+2).value={formula:"SUM("+col+first+":"+col+last+")",result:Math.round(t)};tr.getCell(i+2).numFmt=NF});
     tr.eachCell(c=>{c.border=B;c.fill=fill("EEEEEE")})};
-  addT("a","ก) สต็อกต้นเดือน "+thM(r.m)+" = คาดคงเหลือสิ้น "+thM(r.ed.slice(0,7)),k=>r.stock[k]);
-  addT("b","ข) + แผนผลิต "+thM(r.m)+" หักออก X%",k=>r.plan[k]);
-  addT("c","ค) − ยอดจอง "+thM(r.m)+" จากฝ่ายขาย",k=>r.book[k]);
-  addT("d","ง) = คาดว่าคงเหลือสิ้น "+thM(r.m)+" (ก + ข − ค · ลบ = ของไม่พอ)",k=>r.end[k],(k,j)=>L[j]+rows.a[k]+"+"+L[j]+rows.b[k]+"-"+L[j]+rows.c[k]);
-  addT("e","จ) ควรเพิ่มแผนผลิต = MAX(0, −ง)",k=>r.need[k],(k,j)=>"MAX(0,-"+L[j]+rows.d[k]+")");
+  addT("a","5) สต็อกคาดว่าจะเหลือสิ้น "+thM(r.ed.slice(0,7)),k=>r.stock[k]);
+  addT("b","6) + แผนผลิต "+thM(r.m)+" หักออก X%",k=>r.plan[k]);
+  addT("c","7) = สต็อกคาดว่าจะมี (5 + 6)",k=>r.have[k],(k,j)=>L[j]+rows.a[k]+"+"+L[j]+rows.b[k]);
+  addT("d","8) − การจองของฝ่ายขาย "+thM(r.m),k=>r.book[k]);
+  addT("e","9) = สต็อกคาดว่าจะเหลือสิ้น "+thM(r.m)+" (7 − 8)",k=>r.end[k],(k,j)=>L[j]+rows.c[k]+"-"+L[j]+rows.d[k]);
   try{await saveBook(wb,"ประเมินสั่งผลิต_"+r.m+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
 
