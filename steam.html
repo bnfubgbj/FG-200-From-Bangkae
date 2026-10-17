@@ -264,7 +264,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 30)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 31)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -503,10 +503,11 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     </div>
     <div class="kpis" id="e-kpis" style="display:none"></div>
     <div class="panel" id="e-nx">
-      <div class="head2"><h2>ประเมินสั่งผลิตเดือนถัดไป (สต็อกสิ้นเดือน + ยอดจองฝ่ายขาย)</h2><button class="btn ghost" id="nb-xl">ดาวน์โหลด Excel</button></div>
+      <div class="head2"><h2>ประเมินสั่งผลิตเดือนถัดไป (สต็อกสิ้นเดือน + แผนผลิต − ยอดจอง)</h2><button class="btn ghost" id="nb-xl">ดาวน์โหลด Excel</button></div>
       <div class="note">เอา "สต็อกคาดว่าคงเหลือสิ้นเดือน" (ตาราง 5 ด้านบน) เทียบกับ "ยอดจองเดือนถัดไป" จากฝ่ายขาย → ได้ว่าสีไหนเบอร์ไหนต้องมีของเพิ่ม แล้วเทียบกับแผนผลิตเดือนนั้น (หักออก X%) ว่าต้องเพิ่มหรือลดแผนเท่าไร · ไฟล์ยอดจอง = ไฟล์ Excel ที่ฝ่ายขายสรุปยอดจอง (ชีต "พ.ย." ที่มีคอลัมน์ เขต × สี × เบอร์) ระบบรวมทุกเขตให้เอง</div>
       <div class="row" style="align-items:flex-end;gap:10px 14px">
         <div style="min-width:160px"><span class="lbl">เดือนของยอดจอง</span><input type="month" id="nb-month"></div>
+        <div style="min-width:190px"><span class="lbl">แผนผลิตของเดือนนั้น (ฉบับ)</span><select id="nb-rev"></select></div>
         <div style="min-width:110px"><span class="lbl">หักผลิตออก (%)</span><input type="number" id="nb-x" value="10" min="0" max="100" step="1"></div>
         <label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ยอดจอง (.xlsx) <input type="file" id="nb-file" accept=".xlsx" style="display:none"></label>
         <div style="min-width:170px"><span class="lbl">ดูที่บันทึกไว้</span><select id="nb-sel"></select></div>
@@ -2492,11 +2493,11 @@ function nbBook(m){
 function nbCalc(c){
   const m=$("nb-month").value,x=Math.max(0,+$("nb-x").value||0)/100;if(!m||c.err)return null;
   const bk=nbBook(m);if(!bk)return{m,x,nobook:true};
-  const revs=PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>b-a):[],rev=revs.length?revs[0]:null,Pm=rev!==null?PL[m][rev].colors:null;
-  const book=bk.rows,stock={},need={},plan={},adj={};
-  SC.forEach(k=>{stock[k]=c.res[k].end.slice();need[k]=book[k].map((v,i)=>v-stock[k][i]);
-    plan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0)*(1-x));adj[k]=need[k].map((v,i)=>Math.max(0,v)-plan[k][i])});
-  return{m,x,book,stock,need,plan,adj,rev,hasPlan:!!Pm,src:bk.src,ed:c.ed,sd:c.sd};
+  const revs=PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>a-b):[],pv=$("nb-rev").value,rev=revs.length?(pv!==""&&revs.includes(+pv)?+pv:revs[0]):null,Pm=rev!==null?PL[m][rev].colors:null;
+  const book=bk.rows,stock={},plan={},end={},need={};
+  SC.forEach(k=>{stock[k]=c.res[k].end.slice();plan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0)*(1-x));
+    end[k]=stock[k].map((v,i)=>v+plan[k][i]-book[k][i]);need[k]=end[k].map(v=>Math.max(0,-v))});
+  return{m,x,book,stock,plan,end,need,rev,hasPlan:!!Pm,src:bk.src,ed:c.ed,sd:c.sd};
 }
 function renderNb(c){
   const sel=$("nb-sel"),ds=stkDates(["nbook"]),cur=sel.value;
@@ -2505,12 +2506,14 @@ function renderNb(c){
   if(!$("nb-month").value){const ref=(c&&!c.err&&c.ed)||todayS(),y=+ref.slice(0,4),mo=+ref.slice(5,7);$("nb-month").value=mo===12?(y+1)+"-01":y+"-"+p2(mo+1)}
   const B=$("nb-body");
   if(!c||c.err){B.innerHTML='<div class="note">'+(c?c.err:"")+"</div>";return}
+  {const m=$("nb-month").value,rs=m&&PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>a-b):[],cv=$("nb-rev").value;
+   $("nb-rev").innerHTML=rs.length?rs.map(v=>'<option value="'+v+'">'+(v===0?"แผนเริ่มต้น (ฉบับตั้งต้น)":"revise ครั้งที่ "+v)+"</option>").join(""):'<option value="">ไม่มีแผน</option>';
+   if(cv&&rs.includes(+cv))$("nb-rev").value=cv}
   const r=nbCalc(c);
   if(!r){B.innerHTML='<div class="note">เลือกเดือนของยอดจองก่อน</div>';return}
   if(r.nobook){B.innerHTML='<div class="note">ยังไม่มียอดจองของ '+thM(r.m)+' — เลือกไฟล์ยอดจองจากฝ่ายขายด้านบน</div>';return}
   const T=a=>a.reduce((x,y)=>x+y,0),sum=o=>SC.reduce((a,k)=>a+T(o[k]),0);
-  const pos=SC.reduce((a,k)=>a+r.need[k].reduce((p,v)=>p+Math.max(0,v),0),0),short=SC.reduce((a,k)=>a+r.need[k].filter(v=>Math.round(v)>0).length,0),
-    up=SC.reduce((a,k)=>a+r.adj[k].reduce((p,v)=>p+Math.max(0,v),0),0),dn=SC.reduce((a,k)=>a+r.adj[k].reduce((p,v)=>p+Math.min(0,v),0),0);
+  const short=SC.reduce((a,k)=>a+r.end[k].filter(v=>Math.round(v)<0).length,0),lack=SC.reduce((a,k)=>a+T(r.need[k]),0),sur=SC.reduce((a,k)=>a+r.end[k].reduce((p,v)=>p+Math.max(0,v),0),0);
   const sgn=(v,mode)=>{const y=Math.round(v);if(!y)return'<td class="zero">-</td>';
     if(mode==="adj")return'<td style="font-weight:600;color:var(--'+(y>0?"warn":"accent")+')">'+(y>0?"+":"")+fmt(y)+"</td>";
     if(mode==="need")return'<td'+(y>0?' style="font-weight:600;color:var(--warn)"':"")+">"+(y>0?"+":"")+fmt(y)+"</td>";
@@ -2519,26 +2522,26 @@ function renderNb(c){
   const mat=(o,mode)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";const col=Z6();
     SC.forEach(k=>{const v=o[k];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(k)+"><td>"+(SCN[k]||k)+"</td>"+v.map(y=>sgn(y,mode)).join("")+(mode==="adj"||mode==="need"?sgn(T(v),mode):'<td><b>'+fmt(T(v))+"</b></td>")+"</tr>"});
     return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>sgn(y,mode)).join("")+sgn(T(col),mode)+"</tr></tfoot></table>"};
-  const H=[["ก) ยอดจอง "+thM(r.m)+" จากฝ่ายขาย ("+r.src+")",r.book,""],["ข) สต็อกคาดว่าคงเหลือ ณ สิ้นเดือน "+thM(r.ed.slice(0,7))+" (ตาราง 5 ด้านบน)",r.stock,"stk"],
-    ["ค) ต้องมีของเพิ่ม = ก − ข (ค่าบวกสีส้ม = ของไม่พอต้องผลิต · ค่าลบ = สต็อกเหลือเกินยอดจอง)",r.need,"need"]];
-  if(r.hasPlan){H.push(["ง) แผนผลิต "+thM(r.m)+" ("+revName(r.rev)+") หักออก "+Math.round(r.x*100)+"%",r.plan,""]);
-    H.push(["จ) ควรปรับแผนผลิต = ค (เฉพาะส่วนที่ขาด) − ง   ค่าบวกสีส้ม = ควรเพิ่มแผน · ค่าลบสีน้ำเงิน = แผนเกินความต้องการ ลดได้",r.adj,"adj"])}
-  let h='<div class="kpis" style="margin:10px 0"><div class="kpi"><div class="k">ยอดจอง '+thM(r.m)+'</div><div class="v">'+fmt(sum(r.book))+'</div></div><div class="kpi"><div class="k">สต็อกคาดสิ้นเดือน</div><div class="v">'+fmt(sum(r.stock))+'</div></div><div class="kpi main"><div class="k">ต้องมีของเพิ่ม (เฉพาะช่องที่ขาด)</div><div class="v">'+fmt(pos)+'</div></div><div class="kpi"><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(short?"var(--warn)":"inherit")+'">'+short+"</div></div>"+
-    (r.hasPlan?'<div class="kpi"><div class="k">ควรเพิ่มแผน</div><div class="v" style="color:var(--warn)">+'+fmt(up)+'</div></div><div class="kpi"><div class="k">ลดแผนได้</div><div class="v" style="color:var(--accent)">'+fmt(dn)+"</div></div>":"")+"</div>";
-  if(!r.hasPlan)h+='<div class="note" style="color:var(--warn)">ยังไม่มีแผนผลิตของ '+thM(r.m)+' (นำเข้าในเมนู "เทียบแผนผลิต") จึงแสดงถึงตาราง ค) เท่านั้น</div>';
+  const H=[["ก) สต็อกต้นเดือน "+thM(r.m)+" = ยอดคาดคงเหลือสิ้น "+thM(r.ed.slice(0,7))+" (ขั้น 5 ด้านบน)",r.stock,"stk"],
+    ["ข) + แผนผลิต "+thM(r.m)+(r.hasPlan?" ("+revName(r.rev)+") หักออก "+Math.round(r.x*100)+"%":" (ไม่มีแผน)"),r.plan,""],
+    ["ค) − ยอดจอง "+thM(r.m)+" จากฝ่ายขาย ("+r.src+")",r.book,""],
+    ["ง) = คาดว่าคงเหลือสิ้น "+thM(r.m)+" (ก + ข − ค)   ค่าติดลบสีแดง = ของไม่พอขาย",r.end,"stk"],
+    ["จ) ควรเพิ่มแผนผลิตเท่าไร (= ส่วนที่ติดลบใน ง)   ค่าบวกสีส้ม = ต้องแจ้ง รง. เพิ่ม",r.need,"need"]];
+  let h='<div class="kpis" style="margin:10px 0"><div class="kpi"><div class="k">สต็อกต้นเดือน '+thM(r.m)+'</div><div class="v">'+fmt(sum(r.stock))+'</div></div><div class="kpi"><div class="k">+ แผนผลิต</div><div class="v">'+fmt(sum(r.plan))+'</div></div><div class="kpi"><div class="k">− ยอดจอง</div><div class="v">'+fmt(sum(r.book))+'</div></div><div class="kpi main"><div class="k">ควรเพิ่มแผน (เฉพาะช่องที่ขาด)</div><div class="v" style="color:'+(lack?"var(--warn)":"inherit")+'">'+fmt(lack)+'</div></div><div class="kpi"><div class="k">ช่องที่ขาด (สี×เบอร์)</div><div class="v" style="color:'+(short?"var(--warn)":"inherit")+'">'+short+'</div></div><div class="kpi"><div class="k">ส่วนที่เหลือเกินยอดจอง (คู่)</div><div class="v">'+fmt(sur)+"</div></div></div>";
+  if(!r.hasPlan)h+='<div class="note" style="color:var(--warn)">ยังไม่มีแผนผลิตของ '+thM(r.m)+' (นำเข้าในเมนู "เทียบแผนผลิต") ตารางนี้จึงคิดโดยไม่มีแผน</div>';
   H.forEach(a=>{h+='<div><div class="t5">'+a[0]+'</div><div class="scroll">'+mat(a[1],a[2]==="stk"?"stk":a[2])+"</div></div>"});
-  h+='<div class="note">สต็อกต้นเดือนถัดไป = ตาราง ข) · ถ้าช่องไหนในตาราง ข) ติดลบ (ของขาดตั้งแต่เดือนนี้) ระบบรวมส่วนที่ขาดนั้นเข้าไปในความต้องการด้วย · สีพิเศษที่ไม่มีสต็อกในไฟล์ไม่รวมในตารางนี้</div>';
+  h+='<div class="note">หมายเหตุ: นึ่งยางจนเป็นสินค้าสำเร็จรูป (FG) ใช้เวลาประมาณ 20 วัน จึงควรแจ้ง รง. ปรับแผนก่อนถึงเดือนที่ต้องใช้ล่วงหน้าอย่างน้อย 20 วัน · ถ้าช่องไหนในสต็อกต้นเดือน (ก) ติดลบ ระบบนับเป็นของขาดต่อเนื่องมาที่ ง) · สีพิเศษที่ไม่มีสต็อกในไฟล์ไม่รวมในตารางนี้ · เปลี่ยนฉบับแผนได้ที่ช่อง "แผนผลิตของเดือนนั้น"</div>';
   B.innerHTML=h;window._nb=r;
 }
-["nb-x","nb-month"].forEach(i=>{});
+["nb-x","nb-rev"].forEach(i=>$(i).addEventListener("input",()=>renderE()));
 $("nb-xl").onclick=async()=>{
   const b=$("nb-xl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),r=window._nb;
   if(!r||typeof ExcelJS==="undefined"){nbMsg("ยังไม่มีข้อมูลให้ดาวน์โหลด — นำเข้ายอดจองก่อน","warn");return}
   const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("ประเมินสั่งผลิต "+r.m);ws.columns=[{width:34}].concat(Array(7).fill({width:13}));
   const fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},NF="#,##0;[Red]-#,##0;-",L="BCDEFG";
-  ws.addRow(["ประเมินสั่งผลิต "+thM(r.m)+" = สต็อกคาดสิ้น "+thM(r.ed.slice(0,7))+" เทียบยอดจองฝ่ายขาย (หน่วย: คู่)"]).getCell(1).font={bold:true,size:13};
+  ws.addRow(["ประเมินสั่งผลิต "+thM(r.m)+" = สต็อกต้นเดือน + แผนผลิต − ยอดจอง (หน่วย: คู่)"]).getCell(1).font={bold:true,size:13};
   ws.addRow(["ยอดจองจาก",r.src]);ws.addRow(["แผนผลิต",r.hasPlan?revName(r.rev):"ไม่มี"]);
-  const xr=ws.addRow(["หักผลิตออก X% (แก้ได้ ตาราง ง และ จ คำนวณตาม)",r.x]);xr.getCell(2).numFmt="0%";xr.getCell(2).fill=fill("FFF2CC");const xRef="$B$"+xr.number;
+  const xr=ws.addRow(["หักผลิตออก X% (ตาราง ข คำนวณตาม)",r.x]);xr.getCell(2).numFmt="0%";xr.getCell(2).fill=fill("FFF2CC");const xRef="$B$"+xr.number;
   const rows={};
   const addT=(key,title,vf,ff)=>{ws.addRow([]);ws.addRow([title]).getCell(1).font={bold:true};
     const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
@@ -2551,13 +2554,11 @@ $("nb-xl").onclick=async()=>{
     const tr=ws.addRow(["รวมทุกสี"]);tr.font={bold:true};
     "BCDEFGH".split("").forEach((col,i)=>{const t=SC.reduce((a,k)=>a+(i<6?vf(k)[i]:vf(k).reduce((p,q)=>p+q,0)),0);tr.getCell(i+2).value={formula:"SUM("+col+first+":"+col+last+")",result:Math.round(t)};tr.getCell(i+2).numFmt=NF});
     tr.eachCell(c=>{c.border=B;c.fill=fill("EEEEEE")})};
-  addT("a","ก) ยอดจอง "+thM(r.m)+" จากฝ่ายขาย",k=>r.book[k]);
-  addT("b","ข) สต็อกคาดว่าคงเหลือสิ้นเดือน "+thM(r.ed.slice(0,7)),k=>r.stock[k]);
-  addT("c","ค) ต้องมีของเพิ่ม = ก − ข (บวก = ของไม่พอ)",k=>r.need[k],(k,j)=>L[j]+rows.a[k]+"-"+L[j]+rows.b[k]);
-  if(r.hasPlan){
-    addT("d","ง) แผนผลิต "+thM(r.m)+" หักออก X%",k=>r.plan[k]);
-    addT("e","จ) ควรปรับแผน = MAX(0,ค) − ง (บวก = ควรเพิ่มแผน · ลบ = ลดได้)",k=>r.adj[k],(k,j)=>"MAX(0,"+L[j]+rows.c[k]+")-"+L[j]+rows.d[k]);
-  }
+  addT("a","ก) สต็อกต้นเดือน "+thM(r.m)+" = คาดคงเหลือสิ้น "+thM(r.ed.slice(0,7)),k=>r.stock[k]);
+  addT("b","ข) + แผนผลิต "+thM(r.m)+" หักออก X%",k=>r.plan[k]);
+  addT("c","ค) − ยอดจอง "+thM(r.m)+" จากฝ่ายขาย",k=>r.book[k]);
+  addT("d","ง) = คาดว่าคงเหลือสิ้น "+thM(r.m)+" (ก + ข − ค · ลบ = ของไม่พอ)",k=>r.end[k],(k,j)=>L[j]+rows.a[k]+"+"+L[j]+rows.b[k]+"-"+L[j]+rows.c[k]);
+  addT("e","จ) ควรเพิ่มแผนผลิต = MAX(0, −ง)",k=>r.need[k],(k,j)=>"MAX(0,-"+L[j]+rows.d[k]+")");
   try{await saveBook(wb,"ประเมินสั่งผลิต_"+r.m+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
 
