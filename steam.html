@@ -266,7 +266,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 36)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 37)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2553,8 +2553,8 @@ function nbCalc(c){
   const book=bk.rows,stock={},plan={},end={},need={},have={};
   SC.forEach(k=>{stock[k]=c.res[k].end.slice();plan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0)*(1-x));
     have[k]=stock[k].map((v,i)=>v+plan[k][i]);end[k]=have[k].map((v,i)=>v-book[k][i]);need[k]=end[k].map(v=>Math.max(0,-v))});
-  const sp=bk.sp||{},spPlan={};Object.keys(sp).forEach(k=>{spPlan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0)*(1-x))});
-  if(Pm)Object.keys(Pm).forEach(k=>{if(!SC.includes(k)&&SXS.some(d=>d[0]===k)&&!sp[k]&&Pm[k].some(v=>v>0)){sp[k]=Z6();spPlan[k]=Pm[k].slice(0,6).map(v=>(v||0)*(1-x))}});
+  const sp=bk.sp||{},spPlan={};Object.keys(sp).forEach(k=>{spPlan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0))});
+  if(Pm)Object.keys(Pm).forEach(k=>{if(!SC.includes(k)&&SXS.some(d=>d[0]===k)&&!sp[k]&&Pm[k].some(v=>v>0)){sp[k]=Z6();spPlan[k]=Pm[k].slice(0,6).map(v=>(v||0))}});
   return{m,x,book,stock,plan,have,end,need,rev,hasPlan:!!Pm,src:bk.src,ed:c.ed,sd:c.sd,sp,spPlan};
 }
 function renderNb(c){
