@@ -266,7 +266,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 39)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 42)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -513,6 +513,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
         <label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ยอดจอง (.xlsx) <input type="file" id="nb-file" accept=".xlsx" style="display:none"></label>
         <div style="min-width:170px"><span class="lbl">ดูที่บันทึกไว้</span><select id="nb-sel"></select></div>
         <button class="btn" id="nb-save" disabled>บันทึกยอดจอง</button>
+        <button class="btn ghost" id="nb-del" title="ลบยอดจองของเดือนที่เลือกออกจากระบบ">ลบยอดจองเดือนนี้</button>
       </div>
       <div id="nb-msg" class="msg" hidden></div>
       <div id="nb-body"></div>
@@ -869,7 +870,7 @@ const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4ary
 const SIZES=["8.5","9","9.5","10","10.5","11"];
 // รูปแบบตามตารางแผนผลิต: [คีย์ในชีต (หู/พื้น), ชื่อแสดง, สีพื้นแถว Excel, สีตัวอักษร]
 const TPL8=[["น้ำเงิน","สีน้ำเงิน","D6E4F5","1F4FD8"],["เขียว","สีเขียว","DDEEDD","1E7E34"],["แดง","สีแดง","F8D7DA","C62828"],["เหลือง","สีเหลือง","FFF2CC","B7791F"],["ขาว","สีขาว","F5F5F5","333333"],["ดำ","สีดำ","D9D9D9","000000"],["เทา","สีเทา","E8E8E8","666666"],["ดำ/ขาว","สีดำหน้าขาว","D9D9D9","000000"]];
-const TPLS=[["เขียว/แดง","พื้นแดง หูเขียว","F8D7DA","333333"],["แดง/เขียว","พื้นเขียว หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง","F8D7DA","333333"],["น้ำเงิน/ดำ","พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
+const TPLS=[["เขียว/แดง","Xmas หูเขียว","F8D7DA","333333"],["แดง/เขียว","Xmas หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
 const MAIN=TPL8.map(r=>r[0]), MIX=TPLS.map(r=>r[0]), ALL=MAIN.concat(MIX);
 const LAB={}; TPL8.concat(TPLS).forEach(r=>LAB[r[0]]=r[1]);
 const lab=c=>LAB[c]||c;
@@ -1411,6 +1412,8 @@ const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4ary
 const $=id=>document.getElementById(id), SIZES=["8.5","9","9.5","10","10.5","11"], MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
 const COLORS=[["น้ำเงิน","#1f4fd8"],["เขียว","#1e7e34"],["แดง","#c62828"],["เหลือง","#e6b800"],["ขาว","#ffffff"],["ดำล้วน","#111111"],["เทา","#8a8a8a"],["Xmax หูเขียว","#2e9e4f"],["Xmax หูแดง","#d84a4a"],["โควิด หูเหลือง","#f2c200"],["น้ำเงินล้วน","#3b6ae0"],["แดงล้วน","#e04b4b"],["โกโก้ล้วน","#8b5a3c"]];
 const CKEYS=COLORS.map(c=>c[0]), HEX=Object.fromEntries(COLORS);
+const DNX={"ดำล้วน":"สีดำ","Xmax หูเขียว":"Xmas หูเขียว","Xmax หูแดง":"Xmas หูแดง","โควิด หูเหลือง":"พื้นแดง หูเหลือง(โควิด)"};
+const DN=k=>DNX[k]||(typeof SCN!=="undefined"&&SCN[k])||((typeof SXS!=="undefined"?SXS.find(d=>d[0]===k):0)||[0,["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","เทา"].includes(k)?"สี"+k:k])[1];
 const p2=n=>String(n).padStart(2,"0"), fmt=n=>Math.round(n).toLocaleString("en-US");
 const ymd=s=>s.replace(/-/g,"/"); const thD=s=>{const[y,m,d]=s.split("-");return +d+" "+MON[+m-1]+" "+(+y+543)};
 const thM=s=>{const[y,m]=s.split("-");return MON[+m-1]+" "+(+y+543)};
@@ -1452,7 +1455,7 @@ function init(){
     if(!selC.has(k)&&!window._ci)selC.add(k);
     l.innerHTML='<input type="checkbox"><span class="dot" style="background:'+dotc+'"></span>'+label;l.querySelector("input").onchange=e=>{e.target.checked?selC.add(k):selC.delete(k);render()};$("colors").appendChild(l)};
   PTPL.forEach(r=>{const fk=FK[r[0]];fk?mk(r[1],dot21(r[0]),fk,""):mk(r[1],dot21(r[0]),"",NAHINT(r[0]))});
-  all.filter(k=>!Object.keys(SUPMAP).includes(k)).forEach(k=>mk(k,HEX[k]||"#999",k,""));window._ci=1;
+  all.filter(k=>!Object.keys(SUPMAP).includes(k)).forEach(k=>mk(DN(k),HEX[k]||"#999",k,""));window._ci=1;
   $("sizes").innerHTML="";SIZES.forEach(s=>{const l=document.createElement("label");l.className="chip";l.dataset.k=s;l.innerHTML='<input type="checkbox">'+s;l.querySelector("input").onchange=e=>{e.target.checked?selS.add(s):selS.delete(s);render()};$("sizes").appendChild(l)});
 }
 function sync(){document.querySelectorAll("#colors .chip").forEach(l=>{if(!l.querySelector("input"))return;const on=selC.has(l.dataset.k);l.classList.toggle("on",on);l.querySelector("input").checked=on});document.querySelectorAll("#sizes .chip").forEach(l=>{const on=selS.has(l.dataset.k);l.classList.toggle("on",on);l.querySelector("input").checked=on})}
@@ -1486,14 +1489,14 @@ function render2(c,hasAny,k,U){
   let h2='<table style="margin-top:14px"><thead><tr><th>เหลือ (+) / ขาด (−) เทียบแผน '+thM(m2)+'</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",dc=Z();
   rows.forEach(r=>{const d=(al[r[0]]||Z()).map((x,i)=>x-pl(r[0])[i]);h2+="<tr"+tint(r[0])+"><td>"+dot(r)+r[1]+"</td>"+d.map((x,i)=>{dc[i]+=x;return sg(x)}).join("")+sg(T(d)).replace("<td","<td style='font-weight:700'")+"</tr>"});
   h2+="</tbody><tfoot><tr><td>รวม</td>"+dc.map(x=>sg(x)).join("")+sg(T(dc))+"</tr></tfoot></table>";
-  N.innerHTML="ตามแผนผลิต "+thM(m2)+" "+revName(rv)+" · ตัดแผ่นให้ ดำหน้าขาว (จากแผ่นขาว) และพื้นดำหูพิเศษ (จากแผ่นดำล้วน) ให้ครบก่อน ที่เหลือจึงเป็นขาว / ดำล้วน · ยอดแผ่นนับถึงวันที่ข้อมูลล่าสุด เทียบกับแผนทั้งเดือน";
+  N.innerHTML="ตามแผนผลิต "+thM(m2)+" "+revName(rv)+" · ตัดแผ่นให้ ดำหน้าขาว (จากแผ่นขาว) และพื้นดำหูพิเศษ (จากแผ่นสีดำ) ให้ครบก่อน ที่เหลือจึงเป็นขาว / สีดำ · ยอดแผ่นนับถึงวันที่ข้อมูลล่าสุด เทียบกับแผนทั้งเดือน";
   M.innerHTML=h1+h2;
 }
 function render(){
   if(!dates().length)return; sync(); const c=cur=calc(), k=unit==="pair"?F():1, U=unit==="pair"?"คู่":"แผ่น";
   const tot=c.daily.reduce((a,x)=>a+x[1],0), n=c.daily.filter(x=>x[1]>0).length, mx=c.daily.reduce((a,x)=>x[1]>a[1]?x:a,["",0]);
-  const sr=(g,m)=>Object.keys(c.mat).map(k=>({tr:' style="--c:'+(HEX[k]||"#999")+'"',lab:k,v:g(k).map(x=>x*m)}));
-  const dR=mx[0]?Object.keys(c.mat).map(k=>({tr:' style="--c:'+(HEX[k]||"#999")+'"',lab:k,v:((DATA[mx[0]]||{})[k]||[0,0,0,0,0,0]).map((x,i)=>selS.has(SIZES[i])?x:0)})):[];
+  const sr=(g,m)=>Object.keys(c.mat).map(k=>({tr:' style="--c:'+(HEX[k]||"#999")+'"',lab:DN(k),v:g(k).map(x=>x*m)}));
+  const dR=mx[0]?Object.keys(c.mat).map(k=>({tr:' style="--c:'+(HEX[k]||"#999")+'"',lab:DN(k),v:((DATA[mx[0]]||{})[k]||[0,0,0,0,0,0]).map((x,i)=>selS.has(SIZES[i])?x:0)})):[];
   const nn1=n||1;
   $("kpis").innerHTML=
    '<div class="kpi main"'+hvK("s1","คาดการณ์ (คู่) แยกสี × เบอร์",sr(k=>c.mat[k],F()))+'><div class="k">คาดการณ์ (คู่)</div><div class="v">'+fmt(tot*F())+'</div></div>'+
@@ -1527,7 +1530,7 @@ try{$("i-key").value=localStorage.getItem("fgkey")||""}catch(e){}
 /* ---------- Excel export ---------- */
 async function saveBook(wb,name){const buf=await wb.xlsx.writeBuffer();const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 const TPL8=[["น้ำเงิน","สีน้ำเงิน","D6E4F5","1F4FD8"],["เขียว","สีเขียว","DDEEDD","1E7E34"],["แดง","สีแดง","F8D7DA","C62828"],["เหลือง","สีเหลือง","FFF2CC","B7791F"],["ขาว","สีขาว","F5F5F5","333333"],["ดำล้วน","สีดำ","D9D9D9","000000"],["เทา","สีเทา","E8E8E8","666666"],["-","สีดำหน้าขาว","D9D9D9","000000"]];
-const TPLS=[["Xmax หูเขียว","พื้นแดง หูเขียว","F8D7DA","333333"],["Xmax หูแดง","พื้นเขียว หูแดง","DDEEDD","333333"],["โควิด หูเหลือง","พื้นแดง หูเหลือง (โควิด)","F8D7DA","333333"],["-","พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["-","พื้นดำ หูเขียว","D9D9D9","333333"],["-","พื้นดำ หูแดง","D9D9D9","333333"],["-","พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["-","พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["-","พื้นดำ หูขาว","D9D9D9","333333"],["-","พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงินล้วน","น้ำเงินล้วน","D6E4F5","333333"],["แดงล้วน","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
+const TPLS=[["Xmax หูเขียว","Xmas หูเขียว","F8D7DA","333333"],["Xmax หูแดง","Xmas หูแดง","DDEEDD","333333"],["โควิด หูเหลือง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["-","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["-","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงินล้วน","น้ำเงินล้วน","D6E4F5","333333"],["แดงล้วน","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
 $("xl").onclick=async()=>{
   const b=$("xl"), back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500);
   if(typeof ExcelJS==="undefined"){b.textContent="โหลดตัวสร้าง Excel ไม่ได้";back();return}
@@ -1603,7 +1606,7 @@ function planCalc(){
   ds.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!p)return;DATA[d][k].forEach((x,i)=>sup[p][i]+=x*f)}));
   return {m,rev,P,plan,sup,ds,f};
 }
-const PTPL=[["น้ำเงิน","น้ำเงิน"],["เขียว","เขียว"],["แดง","แดง"],["เหลือง","เหลือง"],["ขาว","ขาว"],["ดำ","ดำล้วน"],["เทา","เทา"],["ดำ/ขาว","ดำ( หูดำ หน้าขาว)"],["เขียว/แดง","Xmas หูเขียว"],["แดง/เขียว","Xmas หูแดง"],["เหลือง/แดง","พื้นแดง หูเหลือง (โควิด)"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน"],["แดง/แดง","แดงล้วน"],["โกโก้ล้วน","โกโก้ล้วน"]];
+const PTPL=[["น้ำเงิน","สีน้ำเงิน"],["เขียว","สีเขียว"],["แดง","สีแดง"],["เหลือง","สีเหลือง"],["ขาว","สีขาว"],["ดำ","สีดำ"],["เทา","สีเทา"],["ดำ/ขาว","สีดำหน้าขาว"],["เขียว/แดง","Xmas หูเขียว"],["แดง/เขียว","Xmas หูแดง"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน"],["แดง/แดง","แดงล้วน"],["โกโก้ล้วน","โกโก้ล้วน"]];
 const PCOL={"น้ำเงิน":["D6E4F5","1F4FD8"],"เขียว":["DDEEDD","1E7E34"],"แดง":["F8D7DA","C62828"],"เหลือง":["FFF2CC","B7791F"],"ขาว":["F5F5F5","333333"],"ดำ":["D9D9D9","000000"],"เทา":["E8E8E8","666666"],"ดำ/ขาว":["D9D9D9","000000"],"เขียว/แดง":["F8D7DA","1E7E34"],"แดง/เขียว":["DDEEDD","C62828"],"เหลือง/แดง":["F8D7DA","B7791F"],"เหลือง/ดำ":["FFF9C4","333333"],"น้ำเงิน/น้ำเงิน":["D6E4F5","1F4FD8"],"แดง/แดง":["F8D7DA","C62828"],"โกโก้ล้วน":["F0E4DA","6B4226"]};
 const colOf=k=>PCOL[k]||(k.indexOf("/ดำ")>0?["D9D9D9","333333"]:["FFFFFF","333333"]);
 const POOLKEY={"น้ำเงิน":"น้ำเงิน","เขียว":"เขียว","แดง":"แดง","เหลือง":"เหลือง","ขาว":"ขาว","ดำ":"ดำ","เทา":"เทา","Xmas เขียว":"เขียว/แดง","Xmas แดง":"แดง/เขียว","พื้นแดง เหลือง":"เหลือง/แดง","น้ำเงินล้วน":"น้ำเงิน/น้ำเงิน","แดงล้วน":"แดง/แดง","โกโก้":"โกโก้ล้วน"};
@@ -1620,7 +1623,7 @@ const SUPMAP={"น้ำเงิน":"น้ำเงิน","เขียว":
 function supView(c){ // แถวเดียวกับแบบฟอร์มแผน ตามที่โรงงานแยกแผ่นจริง
   const by={};c.ds.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const pk=SUPMAP[k]||k;(by[pk]=by[pk]||[0,0,0,0,0,0]);DATA[d][k].forEach((x,i)=>by[pk][i]+=x*c.f)}));
   const rows=PTPL.map(r=>({k:r[0],label:r[1],na:!Object.values(SUPMAP).includes(r[0]),v:(by[r[0]]||[0,0,0,0,0,0]).map(Math.round)}));
-  // แผ่นดำ: ตัดให้ พื้นดำหูพิเศษ ตามแผนให้ครบก่อน ที่เหลือจึงเป็น ดำล้วน
+  // แผ่นดำ: ตัดให้ พื้นดำหูพิเศษ ตามแผนให้ครบก่อน ที่เหลือจึงเป็น สีดำ
   const SPK=["น้ำเงิน/ดำ","เขียว/ดำ","แดง/ดำ","เหลือง/ดำ(พระ)","ขาว/ดำ","เทา/ดำ","เหลือง/ดำ"],Z=[0,0,0,0,0,0],bl=(by["ดำ"]||Z).map(Math.round),spl=SPK.map(k=>(c.P.colors[k]||Z));
   const al=SPK.map(()=>Z.slice()),rest=Z.slice();
   SIZES.forEach((z,i)=>{const S=spl.reduce((q,a)=>q+a[i],0),give=Math.min(S,bl[i]);let used=0;
@@ -1642,7 +1645,7 @@ function drawRowDiff(c){
   let h='<table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
   d.rows.forEach(r=>{const t=T(r.v);h+="<tr"+tint(r.k)+"><td>"+r.label+"</td>"+r.v.map(x=>'<td class="'+(x<0?"neg":x>0?"pos":"zero")+'"'+(x<0?' style="font-weight:600"':"")+">"+(x?(x>0?"+":"")+fmt(x):"-")+"</td>").join("")+'<td class="'+(t<0?"neg":t>0?"pos":"zero")+'"><b>'+(t?(t>0?"+":"")+fmt(t):"-")+"</b></td></tr>"});
   h+="</tbody><tfoot><tr><td>รวม</td>"+d.tot.map(x=>"<td>"+(x>0?"+":"")+fmt(x)+"</td>").join("")+"<td>"+(T(d.tot)>0?"+":"")+fmt(T(d.tot))+"</td></tr></tfoot></table>";
-  h+='<div class="note" style="margin-top:8px">ค่าลบ (สีส้ม) = ได้จากแผ่นยังไม่ครบแผน · แผ่นดำถูกตัดให้ พื้นดำหูพิเศษ (รวมหูเหลืองโควิด) ตามแผนให้ครบก่อน ที่เหลือจึงเป็น ดำล้วน</div>';
+  h+='<div class="note" style="margin-top:8px">ค่าลบ (สีส้ม) = ได้จากแผ่นยังไม่ครบแผน · แผ่นดำถูกตัดให้ พื้นดำหูพิเศษ (รวมหูเหลืองโควิด) ตามแผนให้ครบก่อน ที่เหลือจึงเป็น สีดำ</div>';
   $("p-rowdiff").innerHTML=h;
 }
 function drawSupTable(c){
@@ -1650,7 +1653,7 @@ function drawSupTable(c){
   let h='<div style="font-weight:600;margin-bottom:8px">ได้จากแผ่นที่จ่ายไปประกอบ'+thM(c.m)+' (แยกตามที่โรงงานแยกแผ่นจริง)</div><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
   sv.rows.forEach(r=>{h+="<tr"+tint(r.k)+"><td>"+r.label+"</td>"+r.v.map(x=>'<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(r.v)?fmt(T(r.v)):"-")+"</b></td></tr>"});
   h+="</tbody><tfoot><tr><td>รวม</td>"+sv.tot.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(T(sv.tot))+"</td></tr></tfoot></table>";
-  h+='<div class="note" style="margin-top:8px">แถวที่เป็น "-" คือโรงงานไม่ได้แยกแผ่นไว้: สีดำหน้าขาว รวมอยู่ในแถว ขาว · พื้นดำหูพิเศษ (รวมหูเหลืองโควิด) นึ่งเป็นแผ่นดำ ระบบตัดแผ่นดำให้แถวพื้นดำหูพิเศษตามแผนให้ครบก่อน ที่เหลือเป็นแถว ดำล้วน (ดูส่วนต่างรายแถวด้านล่าง) · พื้นแดง หูเหลือง (โควิด) โรงงานแยกแถวแผ่น "โควิด หูเหลือง" ให้</div>';
+  h+='<div class="note" style="margin-top:8px">แถวที่เป็น "-" คือโรงงานไม่ได้แยกแผ่นไว้: สีดำหน้าขาว รวมอยู่ในแถว ขาว · พื้นดำหูพิเศษ (รวมหูเหลืองโควิด) นึ่งเป็นแผ่นดำ ระบบตัดแผ่นดำให้แถวพื้นดำหูพิเศษตามแผนให้ครบก่อน ที่เหลือเป็นแถว สีดำ (ดูส่วนต่างรายแถวด้านล่าง) · พื้นแดง หูเหลือง (โควิด) โรงงานแยกแถวแผ่น "โควิด หูเหลือง" ให้</div>';
   $("p-sup").innerHTML=h;
 }
 function drawPlanTable(c){
@@ -1710,7 +1713,7 @@ $("pxl").onclick=async()=>{
   block(ws,"แผนผลิต (ตามแบบฟอร์มแผน)",pv.rows,pv.tot);
   block(ws,"ได้จากแผ่นที่จ่ายประกอบ (แผ่นดำตัดให้พื้นดำหูพิเศษครบแผนก่อน)",sv.rows,sv.tot);
   {const rd=rowDiff(c);block(ws,"ส่วนต่างรายแถว (ได้จากแผ่น − แผน) ลบ = ขาด",rd.rows,rd.tot)}
-  ["แถวที่เป็น - = โรงงานไม่ได้แยกแผ่นแถวนี้","ดำหน้าขาว รวมอยู่ในแถว ขาว","แผ่นดำตัดให้ พื้นดำหูพิเศษ ตามแผนให้ครบก่อน ที่เหลือเป็น ดำล้วน","พื้นแดง หูเหลือง (โควิด) โรงงานแยกแผ่นให้","ลบ = ได้จากแผ่นยังไม่ครบแผน"].forEach(t=>note(ws,"หมายเหตุ: "+t,{italic:true}));
+  ["แถวที่เป็น - = โรงงานไม่ได้แยกแผ่นแถวนี้","ดำหน้าขาว รวมอยู่ในแถว ขาว","แผ่นดำตัดให้ พื้นดำหูพิเศษ ตามแผนให้ครบก่อน ที่เหลือเป็น สีดำ","พื้นแดง หูเหลือง (โควิด) โรงงานแยกแผ่นให้","ลบ = ได้จากแผ่นยังไม่ครบแผน"].forEach(t=>note(ws,"หมายเหตุ: "+t,{italic:true}));
   const rows=POOLS.filter(p=>c.plan[p].some(x=>x)||c.sup[p].some(x=>x));
   const pool=(t,fn)=>{const L=rows.map(p=>({k:POOLKEY[p],label:POOLN[p],v:SIZES.map((z,i)=>Math.round(fn(p,i)))}));const tot=SIZES.map((z,i)=>L.reduce((q,r)=>q+r.v[i],0));block(ws,t,L,tot,"กลุ่มแผ่นยาง")};
   pool("สรุปกลุ่ม: แผนผลิต",(p,i)=>NAPOOL.includes(p)?0:c.plan[p][i]);
@@ -1786,10 +1789,10 @@ $("i-save").onclick=async()=>{
 };
 const FK=(()=>{const o={};Object.keys(SUPMAP).forEach(f=>o[SUPMAP[f]]=f);return o})();   // plan key -> factory row
 const DOT21={"ดำ/ขาว":"#ffffff","เหลือง/แดง":"#e04b4b","น้ำเงิน/ดำ":"#3b6ae0","เขียว/ดำ":"#1e7e34","แดง/ดำ":"#c62828","เหลือง/ดำ(พระ)":"#e6b800","เหลือง/ดำ":"#f2c200","ขาว/ดำ":"#ffffff","เทา/ดำ":"#8a8a8a"};
-const NAHINT=k=>k==="ดำ/ขาว"?"โรงงานไม่แยกแผ่น — ใช้แผ่นขาวร่วมกับสีขาว":k==="เหลือง/แดง"?"โรงงานไม่มีแถวแผ่นแยกสีนี้":"โรงงานไม่แยกแผ่น — ใช้แผ่นดำล้วนร่วมกัน";
+const NAHINT=k=>k==="ดำ/ขาว"?"โรงงานไม่แยกแผ่น — ใช้แผ่นขาวร่วมกับสีขาว":k==="เหลือง/แดง"?"โรงงานไม่มีแถวแผ่นแยกสีนี้":"โรงงานไม่แยกแผ่น — ใช้แผ่นสีดำร่วมกัน";
 const dot21=(k)=>HEX[FK[k]]||DOT21[k]||"#999";
 /* ===== ประเมินสต็อกสิ้นเดือน ===== */
-const SC=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา","ดำ/ขาว"], SCN={"ดำ/ขาว":"ดำหน้าขาว (ดำ/ขาว)"}, Z6=()=>[0,0,0,0,0,0];
+const SC=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา","ดำ/ขาว"], SCN={"น้ำเงิน":"สีน้ำเงิน","เขียว":"สีเขียว","แดง":"สีแดง","เหลือง":"สีเหลือง","ขาว":"สีขาว","ดำ":"สีดำ","เทา":"สีเทา","ดำ/ขาว":"สีดำหน้าขาว"}, Z6=()=>[0,0,0,0,0,0];
 let STK=[], EIMP=null;
 const nn=x=>x===""||x==null||isNaN(Number(x))?null:Number(x);
 function stkGet(kind,date){const o={};STK.forEach(r=>{if(r[1]===kind&&normD(r[0])===date)o[r[2]]=r.slice(3,9).map(nn).concat([nn(r[9])])});return o}
@@ -2029,7 +2032,7 @@ function drawDash(M){
 }
 
 /* ===== นำเข้าแผนผลิตจาก Excel ===== */
-const PLABALT={"สีน้ำเงิน": "น้ำเงิน", "สีเขียว": "เขียว", "สีแดง": "แดง", "สีเหลือง": "เหลือง", "สีขาว": "ขาว", "สีดำ": "ดำ", "สีเทา": "เทา", "สีดำหน้าขาว": "ดำ/ขาว", "พื้นแดง หูเขียว": "เขียว/แดง", "พื้นเขียว หูแดง": "แดง/เขียว", "พื้นแดง หูเหลือง": "เหลือง/แดง", "พื้นดำ หูน้ำเงิน": "น้ำเงิน/ดำ", "พื้นดำ หูเขียว": "เขียว/ดำ", "พื้นดำ หูแดง": "แดง/ดำ", "พื้นดำ หูเหลือง(พระ)": "เหลือง/ดำ(พระ)", "พื้นดำ หูเหลือง(โควิด)": "เหลือง/ดำ", "พื้นดำ หูขาว": "ขาว/ดำ", "พื้นดำ หูเทา": "เทา/ดำ", "น้ำเงินล้วน": "น้ำเงิน/น้ำเงิน", "แดงล้วน": "แดง/แดง", "น้ำตาลล้วน": "โกโก้ล้วน"};
+const PLABALT={"สีน้ำเงิน": "น้ำเงิน", "สีเขียว": "เขียว", "สีแดง": "แดง", "สีเหลือง": "เหลือง", "สีขาว": "ขาว", "สีดำ": "ดำ", "สีเทา": "เทา", "สีดำหน้าขาว": "ดำ/ขาว", "พื้นแดง หูเขียว": "เขียว/แดง", "พื้นเขียว หูแดง": "แดง/เขียว", "พื้นแดง หูเหลือง": "เหลือง/แดง", "พื้นดำ หูน้ำเงิน": "น้ำเงิน/ดำ", "พื้นดำ หูเขียว": "เขียว/ดำ", "พื้นดำ หูแดง": "แดง/ดำ", "พื้นดำ หูเหลือง(พระ)": "เหลือง/ดำ(พระ)", "พื้นดำ หูเหลือง(โควิด)": "เหลือง/ดำ", "พื้นดำ หูขาว": "ขาว/ดำ", "พื้นดำ หูเทา": "เทา/ดำ", "น้ำเงินล้วน": "น้ำเงิน/น้ำเงิน", "แดงล้วน": "แดง/แดง", "น้ำตาลล้วน": "โกโก้ล้วน", "X,mas หูเขียว": "เขียว/แดง", "X,mas หูแดง": "แดง/เขียว", "Xmas สายเขียว": "เขียว/แดง", "Xmas สายแดง": "แดง/เขียว", "ดำล้วน": "ดำ", "ดำ( หูดำ หน้าขาว)": "ดำ/ขาว", "ดำ(หูดำหน้าขาว)": "ดำ/ขาว", "ดำหน้าขาว (ดำ/ขาว)": "ดำ/ขาว", "พื้นแดง หูเหลือง": "เหลือง/แดง"};
 const normLab=s=>String(s||"").replace(/\s+/g,"").replace(/^สี/,"").toLowerCase();
 function planKeyOf(l){const n=normLab(l);if(!n)return null;
   for(const r of PTPL){if(normLab(r[0])===n||normLab(r[1])===n)return r[0]}
@@ -2039,11 +2042,11 @@ async function readPlanFile(file){
   const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let best=null;
   wb.eachSheet(ws=>{
     let cols=null,hr=0;
-    for(let r=1;r<=15&&!cols;r++){const pos={};for(let c=1;c<=20;c++){const v=norm(String(cv(ws.getCell(r,c))==null?"":cv(ws.getCell(r,c))));if(v!==""&&!isNaN(Number(v)))SIZES.forEach(z=>{if(Number(v)===Number(z))pos[z]=c})}
+    for(let r=1;r<=45&&!cols;r++){const pos={};for(let c=1;c<=20;c++){const v=norm(String(cv(ws.getCell(r,c))==null?"":cv(ws.getCell(r,c))));if(v!==""&&!isNaN(Number(v)))SIZES.forEach(z=>{if(Number(v)===Number(z))pos[z]=c})}
       if(Object.keys(pos).length===6){hr=r;cols=SIZES.map(z=>pos[z])}}
     const rows={},un=[];
     for(let r=hr+1;r<=Math.min(ws.rowCount,90);r++){
-      let lab="";for(let c=1;c<=3;c++){const v=cv(ws.getCell(r,c));if(typeof v==="string"&&v.trim()){lab=v;break}}
+      let lab="";for(let c=1;c<=8;c++){const v=cv(ws.getCell(r,c));if(typeof v==="string"&&v.trim()){lab=v;break}}
       if(!lab)continue;
       const v=(cols||[2,3,4,5,6,7]).map(c=>Math.max(0,Math.round(Number(cv(ws.getCell(r,c)))||0))),k=planKeyOf(lab);
       if(k){if(v.some(x=>x))rows[k]=v}else if(v.some(x=>x)&&!/รวม/.test(lab))un.push(norm(lab))}
@@ -2314,7 +2317,7 @@ function calcE(){
   else{wReg=shr(sw,sw.map((x,i)=>x+sx[i]),1);wsrc="ตามสัดส่วนสต็อก (ไม่มีแผนเดือนนี้)"}
   const pkD=Pm?Object.keys(Pm).filter(k=>planPool(k)==="ดำ").reduce((a,k)=>a.map((x,i)=>x+Pm[k][i]),Z6()):Z6();
   if(bo!=null){bReg=SIZES.map(()=>bo/100);bsrc="ตามที่กำหนด"}
-  else if(Pm){const spc=pkD.map((x,i)=>Math.max(0,x-pk("ดำ")[i]));bReg=SIZES.map((z,i)=>{const pool=sup["ดำ"][i]*mul;return pool>0?Math.max(0,pool-spc[i])/pool:1});bsrc="ตัดให้พื้นดำหูพิเศษตามแผน "+thM(m)+" ก่อน ที่เหลือเป็นดำล้วน"}
+  else if(Pm){const spc=pkD.map((x,i)=>Math.max(0,x-pk("ดำ")[i]));bReg=SIZES.map((z,i)=>{const pool=sup["ดำ"][i]*mul;return pool>0?Math.max(0,pool-spc[i])/pool:1});bsrc="ตัดให้พื้นดำหูพิเศษตามแผน "+thM(m)+" ก่อน ที่เหลือเป็นสีดำ"}
   else{bReg=SIZES.map(()=>1);bsrc="ใช้ทั้งหมด (ไม่มีแผนเดือนนี้)"}
   const inn={"น้ำเงิน":sup["น้ำเงิน"],"เขียว":sup["เขียว"],"แดง":sup["แดง"],"เหลือง":sup["เหลือง"],"เทา":sup["เทา"],
     "ขาว":sup["ขาว"].map((x,i)=>x*wReg[i]),"ดำ/ขาว":sup["ขาว"].map((x,i)=>x*(1-wReg[i])),"ดำ":sup["ดำ"].map((x,i)=>x*bReg[i])};
@@ -2582,8 +2585,8 @@ function renderNb(c){
     const row=(k,col)=>{const v=o[k];v.forEach((y,i)=>col[i]+=y);return"<tr"+tint(k)+"><td>"+nm(k)+"</td>"+v.map(y=>sgn(y,mode)).join("")+(mode==="adj"||mode==="need"?sgn(T(v),mode):'<td><b>'+fmt(T(v))+"</b></td>")+"</tr>"};
     const col=Z6();SC.forEach(k=>{t+=row(k,col)});
     const tr=(lab,c)=>"<tr class=\"tot\" style=\"font-weight:700;background:var(--hdr-bg)\"><td>"+lab+"</td>"+c.map(y=>sgn(y,mode)).join("")+sgn(T(c),mode)+"</tr>";
-    t+=tr("รวมสีปกติ",col);
-    if((r.ks||[]).length){const c2=Z6();r.ks.forEach(k=>{t+=row(k,c2)});t+=tr("รวมสีพิเศษ",c2)}
+    t+=tr("รวม 8 สีหลัก",col);
+    if((r.ks||[]).length){const c2=Z6();r.ks.forEach(k=>{t+=row(k,c2)});t+=tr("รวมสีพิเศษ (Export เท่านั้น)",c2)}
     return t+"</tbody></table>"};
   const mo1=thM(r.ed.slice(0,7)),mo2=thM(r.m);
   const H=[["5) สต็อกคาดว่าจะเหลือสิ้น "+mo1+" (จากขั้น 5 ด้านบน)",r.stock,"stk"],
@@ -2592,7 +2595,7 @@ function renderNb(c){
     ["8) − การจองของฝ่ายขาย "+mo2,r.book,""],
     ["9) = สต็อกคาดว่าจะเหลือสิ้น "+mo2+" (7 − 8)",r.end,"stk"]];
   const nr=o=>KS.map(k=>({tr:tint(k),lab:nm(k),v:o[k],x:SC.includes(k)?0:1}));
-  let h='<div class="kpis" style="margin:10px 0">'+[["5) สต็อกสิ้น "+mo1,sum(r.stock),0,r.stock],["6) + แผนผลิต",sum(r.plan),0,r.plan],["7) = สต็อกที่จะมี",sum(r.have),0,r.have],["8) − ยอดจอง",sum(r.book),0,r.book],["9) เหลือสิ้น "+mo2,sum(r.end),1,r.end]].map((q,i)=>'<div class="kpi'+(i===4?" main":"")+'" data-go="nbt'+i+'" style="cursor:pointer"'+hvK("n"+(i+5),H[i][0],nr(q[3]),{neg:1,tl:"รวมสีปกติ"})+'><div class="k">'+q[0]+'</div><div class="v"'+(q[2]&&q[1]<0?' style="color:var(--bad)"':"")+'>'+fmt(q[1])+'</div><div class="k" style="font-size:11px">'+(i&&(r.ks||[]).length?'สีพิเศษ '+fmt(ssum(q[3]))+' · ':'')+'กดดูสี × เบอร์ ↓</div></div>').join("")+"</div>";
+  let h='<div class="kpis" style="margin:10px 0">'+[["5) สต็อกสิ้น "+mo1,sum(r.stock),0,r.stock],["6) + แผนผลิต",sum(r.plan),0,r.plan],["7) = สต็อกที่จะมี",sum(r.have),0,r.have],["8) − ยอดจอง",sum(r.book),0,r.book],["9) เหลือสิ้น "+mo2,sum(r.end),1,r.end]].map((q,i)=>'<div class="kpi'+(i===4?" main":"")+'" data-go="nbt'+i+'" style="cursor:pointer"'+hvK("n"+(i+5),H[i][0],nr(q[3]),{neg:1,tl:"รวม 8 สีหลัก"})+'><div class="k">'+q[0]+'</div><div class="v"'+(q[2]&&q[1]<0?' style="color:var(--bad)"':"")+'>'+fmt(q[1])+'</div><div class="k" style="font-size:11px">'+(i&&(r.ks||[]).length?'สีพิเศษ '+fmt(ssum(q[3]))+' · ':'')+'กดดูสี × เบอร์ ↓</div></div>').join("")+"</div>";
   if(!r.hasPlan)h+='<div class="note" style="color:var(--warn)">ยังไม่มีแผนผลิต '+mo2+'</div>';
   H.forEach((a,ix)=>{h+='<div id="nbt'+ix+'" style="scroll-margin-top:14px"><div class="t5">'+a[0]+'</div><div class="scroll">'+mat(a[1],a[2]==="stk"?"stk":a[2])+"</div></div>"});
   B.innerHTML=h;window._nb=r;
@@ -2629,7 +2632,7 @@ $("nb-xl").onclick=async()=>{
 
 /* ---------- นำเข้าไฟล์มาตรฐาน (ทุกชนิดข้อมูลใช้ตารางสี × เบอร์เดียวกัน) ---------- */
 const SX8=[["น้ำเงิน","สีน้ำเงิน","D6E4F5","1F4FD8"],["เขียว","สีเขียว","DDEEDD","1E7E34"],["แดง","สีแดง","F8D7DA","C62828"],["เหลือง","สีเหลือง","FFF2CC","B7791F"],["ขาว","สีขาว","F5F5F5","333333"],["ดำ","สีดำ","D9D9D9","000000"],["เทา","สีเทา","E8E8E8","666666"],["ดำ/ขาว","สีดำหน้าขาว","D9D9D9","000000"]];
-const SXS=[["เขียว/แดง","พื้นแดง หูเขียว","F8D7DA","333333"],["แดง/เขียว","พื้นเขียว หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง","F8D7DA","333333"],["น้ำเงิน/ดำ","พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
+const SXS=[["เขียว/แดง","Xmas หูเขียว","F8D7DA","333333"],["แดง/เขียว","Xmas หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
 const SXT=[
  {id:"day",title:"FG200 รายวัน",name:"รายวัน",n:3,l2:"วันที่ (เช่น 13/10/2026)",f2:"date",l3:"ยอดรวมที่พิมพ์ในรายงาน",all:1,d:"ยอดเข้าโกดังพี่ชุมพรรายวัน (คู่) · 1 แผ่น = 1 วัน"},
  {id:"plan",title:"FG200 แผนผลิต",name:"แผนผลิต",n:1,l2:"เดือนที่ผลิต (เช่น 10/2026)",f2:"month",l3:"ฉบับ (0 = แผนเริ่มต้น, 1, 2, ...)",all:1,d:"แผนผลิตของโรงงาน · วันที่แจ้งโรงงาน D2 · หมายเหตุ D3 (ไม่บังคับ)"},
@@ -2825,6 +2828,9 @@ $("pf-del").onclick=()=>{const m=$("p-month").value,v=$("p-rev").value,pm=$("pf-
   const say=(t,k)=>{pm.hidden=false;pm.className="msg "+k;pm.textContent=t};
   if(!m||v==="new"||v===""){say("เลือกเดือนและฉบับแผนที่จะลบที่ช่องด้านบนก่อน","warn");return}
   fgClear({scope:"plan",month:m,rev:+v},"แผนผลิต "+thM(m)+" "+(+v===0?"แผนเริ่มต้น":"revise "+v),say,()=>{setTimeout(()=>location.reload(),900)})};
+$("nb-del").onclick=()=>{const m=$("nb-month").value;if(!m){nbMsg("เลือกเดือนของยอดจองก่อน","warn");return}
+  if(!sxHas("nbook",m+"-01")){nbMsg("เดือนนี้ยังไม่มียอดจองที่บันทึกไว้","warn");return}
+  fgClear({scope:"stock",date:m+"-01",kinds:["nbook"]},"ยอดจองฝ่ายขาย "+thM(m),nbMsg,()=>{NBIMP=null;nbMsg("ลบยอดจอง "+thM(m)+" แล้ว เลือกไฟล์ใหม่แล้วกดบันทึกได้เลย","ok");renderE()})};
 $("bk-del").onclick=()=>{const m=$("bk-month").value||$("p-month").value;if(!m){bkMsg("เลือกเดือนของยอดจองก่อน","warn");return}
   fgClear({scope:"stock",date:m+"-01",kinds:["nbook"]},"ยอดจองฝ่ายขาย "+thM(m),bkMsg,()=>{BKIMP=null})};
 function fgKeySet(ask){let k="";try{k=localStorage.getItem("fgkey")||""}catch(e){}
