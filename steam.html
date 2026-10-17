@@ -252,6 +252,8 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 .qpair table{font-size:11.5px}.qpair th,.qpair td{padding:6px 5px!important}
 .qpair td:first-child,.qpair th:first-child{white-space:normal;min-width:120px}
 @media(max-width:1399px){.qpair{grid-template-columns:minmax(0,1fr)}}
+
+.flash{animation:flashbg 1.6s ease-out}@keyframes flashbg{0%,40%{background:var(--sel)}100%{background:transparent}}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -264,7 +266,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 35)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 36)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2584,9 +2586,10 @@ function renderNb(c){
     ["7) = สต็อกคาดว่าจะมี (5 + 6)",r.have,"stk"],
     ["8) − การจองของฝ่ายขาย "+mo2,r.book,""],
     ["9) = สต็อกคาดว่าจะเหลือสิ้น "+mo2+" (7 − 8)",r.end,"stk"]];
-  let h='<div class="kpis" style="margin:10px 0">'+[["5) สต็อกสิ้น "+mo1,sum(r.stock)],["6) + แผนผลิต",sum(r.plan)],["7) = สต็อกที่จะมี",sum(r.have)],["8) − ยอดจอง",sum(r.book)],["9) เหลือสิ้น "+mo2,sum(r.end),1]].map((q,i)=>'<div class="kpi'+(i===4?" main":"")+'"><div class="k">'+q[0]+'</div><div class="v"'+(q[2]&&q[1]<0?' style="color:var(--bad)"':"")+'>'+fmt(q[1])+"</div></div>").join("")+"</div>";
+  const nr=o=>SC.map(k=>({tr:tint(k),lab:SCN[k]||k,v:o[k]}));
+  let h='<div class="kpis" style="margin:10px 0">'+[["5) สต็อกสิ้น "+mo1,sum(r.stock),0,r.stock],["6) + แผนผลิต",sum(r.plan),0,r.plan],["7) = สต็อกที่จะมี",sum(r.have),0,r.have],["8) − ยอดจอง",sum(r.book),0,r.book],["9) เหลือสิ้น "+mo2,sum(r.end),1,r.end]].map((q,i)=>'<div class="kpi'+(i===4?" main":"")+'" data-go="nbt'+i+'" style="cursor:pointer"'+hvK("n"+(i+5),H[i][0],nr(q[3]),{neg:1})+'><div class="k">'+q[0]+'</div><div class="v"'+(q[2]&&q[1]<0?' style="color:var(--bad)"':"")+'>'+fmt(q[1])+'</div><div class="k" style="font-size:11px">กดดูสี × เบอร์ ↓</div></div>').join("")+"</div>";
   if(!r.hasPlan)h+='<div class="note" style="color:var(--warn)">ยังไม่มีแผนผลิต '+mo2+'</div>';
-  H.forEach(a=>{h+='<div><div class="t5">'+a[0]+'</div><div class="scroll">'+mat(a[1],a[2]==="stk"?"stk":a[2])+"</div></div>"});
+  H.forEach((a,ix)=>{h+='<div id="nbt'+ix+'" style="scroll-margin-top:14px"><div class="t5">'+a[0]+'</div><div class="scroll">'+mat(a[1],a[2]==="stk"?"stk":a[2])+"</div></div>"});
   {const ks=Object.keys(r.sp);if(ks.length){const nm=k=>(SXS.find(d=>d[0]===k)||[0,k])[1],cl=k=>{try{return colOf(k)[0]}catch(e){return "FFFFFF"}};
     const tb=(o,sg)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
       ks.forEach(k=>{const v=o(k);v.forEach((y,i)=>col[i]+=y);t+="<tr><td>"+nm(k)+"</td>"+v.map(y=>sg?sgn(y,"adj2"):(Math.round(y)?"<td>"+fmt(y)+"</td>":'<td class="zero">-</td>')).join("")+(sg?sgn(T(v),"adj2"):"<td><b>"+fmt(T(v))+"</b></td>")+"</tr>"});
@@ -2594,6 +2597,7 @@ function renderNb(c){
     h+='<div><div class="t5">สีพิเศษ: ยอดจอง (พี่มอส)</div><div class="scroll">'+tb(k=>r.sp[k],0)+"</div></div>";
     if(r.hasPlan)h+='<div><div class="t5">สีพิเศษ: แผน − ยอดจอง</div><div class="scroll">'+tb(k=>r.spPlan[k].map((v,i)=>v-r.sp[k][i]),1)+"</div></div>"}}
   B.innerHTML=h;window._nb=r;
+  B.querySelectorAll("[data-go]").forEach(k=>{k.onclick=()=>{const t=$(k.dataset.go);if(!t)return;t.scrollIntoView({behavior:"smooth",block:"start"});t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")}});
 }
 ["nb-x","nb-rev"].forEach(i=>$(i).addEventListener("input",()=>renderE()));
 $("nb-xl").onclick=async()=>{
