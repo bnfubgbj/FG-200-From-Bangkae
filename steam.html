@@ -266,7 +266,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 45)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 46)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -514,6 +514,12 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
         <div style="min-width:170px"><span class="lbl">ดูที่บันทึกไว้</span><select id="nb-sel"></select></div>
         <button class="btn" id="nb-save" disabled>บันทึกยอดจอง</button>
         <button class="btn ghost" id="nb-del" title="ลบยอดจองของเดือนที่เลือกออกจากระบบ">ลบยอดจองเดือนนี้</button>
+      </div>
+      <div class="row" style="align-items:flex-end;gap:10px 14px;margin-top:8px">
+        <div style="min-width:170px"><span class="lbl">ต้องการ FG ภายในวันที่</span><input type="date" id="nb-tg"></div>
+        <div style="min-width:150px"><span class="lbl">นึ่งยาง → จ่ายประกอบ (วัน)</span><input type="number" id="nb-lag" value="20" min="1" max="60" step="1" title="จากไฟล์ยอดนึ่งรายวัน 26 วัน: 18–20 วัน (ส่วนใหญ่ 19–20)"></div>
+        <div style="min-width:150px"><span class="lbl">กำลังผลิต/วัน (คู่)</span><input type="number" id="nb-cap" value="35000" min="0" step="1000"></div>
+        <div style="min-width:110px"><span class="lbl">วันทำงาน/เดือน</span><input type="number" id="nb-wd" value="25" min="1" max="31" step="1"></div>
       </div>
       <div id="nb-msg" class="msg" hidden></div>
       <div id="nb-body"></div>
@@ -2581,12 +2587,12 @@ function renderNb(c){
     if(mode==="adj2")return'<td'+(y<0?' class="neg" style="font-weight:600"':"")+">"+(y>0?"+":"")+fmt(y)+"</td>";
     if(mode==="stk"&&y<0)return'<td class="neg" style="font-weight:600">'+fmt(y)+"</td>";
     return"<td>"+fmt(y)+"</td>"};
-  const mat=(o,mode)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+  const mat=(o,mode,onlyMain)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
     const row=(k,col)=>{const v=o[k];v.forEach((y,i)=>col[i]+=y);return"<tr"+tint(k)+"><td>"+nm(k)+"</td>"+v.map(y=>sgn(y,mode)).join("")+(mode==="adj"||mode==="need"?sgn(T(v),mode):'<td><b>'+fmt(T(v))+"</b></td>")+"</tr>"};
     const col=Z6();SC.forEach(k=>{t+=row(k,col)});
     const tr=(lab,c)=>"<tr class=\"tot\" style=\"font-weight:700;background:var(--hdr-bg)\"><td>"+lab+"</td>"+c.map(y=>sgn(y,mode)).join("")+sgn(T(c),mode)+"</tr>";
     t+=tr("รวม 8 สีหลัก",col);
-    if((r.ks||[]).length){const c2=Z6();r.ks.forEach(k=>{t+=row(k,c2)});t+=tr("รวมสีพิเศษ (Export เท่านั้น)",c2);const c3=col.map((y,i)=>y+c2[i]);t+=tr("รวมทั้งหมด",c3)}
+    if(!onlyMain&&(r.ks||[]).length){const c2=Z6();r.ks.forEach(k=>{t+=row(k,c2)});t+=tr("รวมสีพิเศษ (Export เท่านั้น)",c2);const c3=col.map((y,i)=>y+c2[i]);t+=tr("รวมทั้งหมด",c3)}
     return t+"</tbody></table>"};
   const mo1=thM(r.ed.slice(0,7)),mo2=thM(r.m);
   const H=[["5) สต็อกคาดว่าจะเหลือสิ้น "+mo1+" (จากขั้น 5 ด้านบน)",r.stock,"stk"],
@@ -2602,10 +2608,38 @@ function renderNb(c){
     if(!bad.length||!r.hasPlan)return;const same=(a,b)=>a.every((v,i)=>Math.round(v)===Math.round(b[i])),pr=[];
     bad.forEach(k=>{const j=ks.find(q=>q!==k&&same(r.spPlan[k],r.sp[q]));if(j)pr.push([k,j])});
     h='<div class="note" style="color:var(--warn);margin:6px 0">แผนสีพิเศษไม่ตรงกับยอดจอง '+bad.length+' แถว'+(pr.length===bad.length?' — ตัวเลขในแผนตรงกับยอดจองของแถวอื่นพอดี (แผนน่าจะใส่สลับแถว): '+pr.map(x=>'แผน "'+nm(x[0])+'" = ยอดจอง "'+nm(x[1])+'"').join(' · ')+' · แก้โดยนำเข้าแผนเดือนนี้ใหม่ที่หน้าแผนผลิต':' — ตรวจแผนเดือนนี้ที่หน้าแผนผลิต')+'</div>'+h})();
+  {const tgEl=$("nb-tg");if(!tgEl.value||tgEl.dataset.m!==r.m){tgEl.value=r.m+"-25";tgEl.dataset.m=r.m}
+   const tg=tgEl.value,lag=Math.max(1,Math.round(+$("nb-lag").value||20)),capD=Math.max(0,+$("nb-cap").value||0),wd=Math.max(1,Math.round(+$("nb-wd").value||25)),fp=F(),
+     dt=new Date(tg+"T00:00:00Z");dt.setUTCDate(dt.getUTCDate()-lag);const lat=dt.toISOString().slice(0,10),
+     left=Math.round((new Date(lat+"T00:00:00Z")-new Date(todayS()+"T00:00:00Z"))/864e5),
+     ask={},sh={};SC.forEach(k=>{ask[k]=r.need[k].map(v=>v>0?Math.ceil(v/(1-r.x)):0);sh[k]=ask[k].map(v=>Math.ceil(v/fp))});
+   const askT=SC.reduce((a,k)=>a+T(ask[k]),0),shT=SC.reduce((a,k)=>a+T(sh[k]),0),needT=SC.reduce((a,k)=>a+T(r.need[k]),0),
+     planT=KS.reduce((a,k)=>a+T(r.full[k]),0),capT=capD*wd,freeT=Math.max(0,capT-planT),moveT=Math.max(0,askT-freeT);
+   const kv=(a,b,c)=>"<tr><td>"+a+"</td><td style=\"text-align:right\"><b>"+b+"</b></td><td>"+(c||"")+"</td></tr>";
+   h+='<div class="t5" style="margin-top:18px">10) ถ้าจะให้โรงงานนึ่งยางเพิ่ม — ต้องสั่งช้าสุดเมื่อไหร่ และเพิ่มเท่าไหร่</div><div class="scroll"><table class="tpl"><thead><tr><th>รายการ</th><th>ค่า</th><th>ที่มา</th></tr></thead><tbody>'
+    +kv("ต้องการ FG ภายในวันที่",thD(tg),"ตั้งได้ที่ช่องด้านบน")
+    +kv("ระยะนึ่งยาง → จ่ายประกอบ",lag+" วัน","จากไฟล์ยอดนึ่งรายวัน 26 วัน: 18–20 วัน")
+    +kv("สั่งนึ่งเพิ่มช้าสุดวันที่",thD(lat),"= "+thD(tg)+" − "+lag+" วัน · นึ่งหลังวันนี้ FG จะออกหลัง "+thD(tg))
+    +kv("เหลือเวลาจากวันนี้",left>=0?left+" วัน":"เลยกำหนดมา "+(-left)+" วัน",left<0?"ต้องเลื่อนวัน FG หรือขอโรงงานเร่ง":"")
+    +kv("ขาดจริงสิ้นเดือน (9 ติดลบ · สีหลัก)",fmt(needT)+" คู่","รวมเฉพาะช่องที่ติดลบ")
+    +kv("ขอเพิ่มในแผน (เต็ม cap 100%)",fmt(askT)+" คู่","= ขาด ÷ (1 − "+Math.round(r.x*100)+"%) เพราะโรงงานส่งจริงไม่เต็มแผน")
+    +kv("คิดเป็นแผ่นยางนึ่งเพิ่ม",fmt(shT)+" แผ่น","= คู่ ÷ "+fp+" คู่ต่อแผ่น")
+    +kv("แผนเต็ม cap เดือนนี้ (รวมสีพิเศษ)",fmt(planT)+" คู่","")
+    +kv("กำลังโรงงานเดือนนี้",fmt(capT)+" คู่","= "+fmt(capD)+" × "+wd+" วัน")
+    +kv("ที่ว่างเพิ่มได้",fmt(freeT)+" คู่","= กำลังโรงงาน − แผน")
+    +kv("ต้องย้ายจากสีที่เหลือเกิน",fmt(moveT)+" คู่",moveT?"เกินกำลังโรงงาน — ต้องลดสีที่เหลือเกินลงเท่ากัน":"เพิ่มได้โดยไม่ต้องลดสีอื่น")
+    +"</tbody></table></div>"
+    +'<div class="t5" style="margin-top:12px">10ก) ขาดจริง (คู่) — ช่องที่ 9 ติดลบ</div><div class="scroll">'+mat(r.need,"need",1)+"</div>"
+    +'<div class="t5" style="margin-top:12px">10ข) ขอเพิ่มในแผน (คู่ เต็ม cap 100%) — ส่งให้โรงงานนึ่งเพิ่มภายใน '+thD(lat)+'</div><div class="scroll">'+mat(ask,"need",1)+"</div>"
+    +'<div class="t5" style="margin-top:12px">10ค) คิดเป็นแผ่นยางที่ต้องนึ่งเพิ่ม (แผ่น)</div><div class="scroll">'+mat(sh,"need",1)+"</div>";
+   const sp0=SC.map(k=>{const v=r.end[k].map(Math.round);return{k,lack:-v.filter(z=>z<0).reduce((a,b)=>a+b,0),over:v.filter(z=>z>0).reduce((a,b)=>a+b,0)}});
+   h+='<div class="t5" style="margin-top:12px">10ง) สีที่ขาด / สีที่เหลือเกิน (คู่) — เพื่อดูว่าย้ายแผนจากสีไหนไปสีไหน</div><div class="scroll"><table class="tpl"><thead><tr><th>สี</th><th>ขาด</th><th>เหลือเกิน</th><th>สุทธิ</th></tr></thead><tbody>'
+    +sp0.map(o=>"<tr"+tint(o.k)+"><td>"+nm(o.k)+"</td><td"+(o.lack?' class="neg"':"")+">"+(o.lack?"−"+fmt(o.lack):"-")+"</td><td>"+(o.over?fmt(o.over):"-")+"</td><td><b>"+(o.over-o.lack<0?"−":"")+fmt(Math.abs(o.over-o.lack))+"</b></td></tr>").join("")
+    +'</tbody><tfoot><tr><td>รวม 8 สีหลัก</td><td>−'+fmt(sp0.reduce((a,o)=>a+o.lack,0))+"</td><td>"+fmt(sp0.reduce((a,o)=>a+o.over,0))+"</td><td>"+fmt(sp0.reduce((a,o)=>a+o.over-o.lack,0))+"</td></tr></tfoot></table></div>"}
   B.innerHTML=h;window._nb=r;
   B.querySelectorAll("[data-go]").forEach(k=>{k.onclick=()=>{const t=$(k.dataset.go);if(!t)return;t.scrollIntoView({behavior:"smooth",block:"start"});t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")}});
 }
-["nb-x","nb-rev"].forEach(i=>$(i).addEventListener("input",()=>renderE()));
+["nb-x","nb-rev","nb-tg","nb-lag","nb-cap","nb-wd"].forEach(i=>$(i).addEventListener("input",()=>renderE()));
 $("nb-xl").onclick=async()=>{
   const b=$("nb-xl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500),r=window._nb;
   if(!r||typeof ExcelJS==="undefined"){nbMsg("ยังไม่มีข้อมูลให้ดาวน์โหลด — นำเข้ายอดจองก่อน","warn");return}
@@ -2614,6 +2648,9 @@ $("nb-xl").onclick=async()=>{
   ws.addRow(["ประเมินสั่งผลิต "+thM(r.m)+" ขั้น 5 ถึง 9 (หน่วย: คู่)"]).getCell(1).font={bold:true,size:13};
   ws.addRow(["ยอดจองจาก",r.src]);ws.addRow(["แผนผลิต",r.hasPlan?revName(r.rev):"ไม่มี"]);
   const xr=ws.addRow(["หักผลิตออก X% (ขั้น 6)",r.x]);xr.getCell(2).numFmt="0%";xr.getCell(2).fill=fill("FFF2CC");const xRef="$B$"+xr.number;
+  const fr=ws.addRow(["คู่ต่อแผ่นยาง",F()]);fr.getCell(2).fill=fill("FFF2CC");const fRef="$B$"+fr.number;
+  const tg0=$("nb-tg").value||(r.m+"-25"),lag0=Math.max(1,Math.round(+$("nb-lag").value||20)),d0=new Date(tg0+"T00:00:00Z");d0.setUTCDate(d0.getUTCDate()-lag0);
+  ws.addRow(["ต้องการ FG ภายในวันที่",thD(tg0)]);ws.addRow(["นึ่งยาง → จ่ายประกอบ (วัน)",lag0]);ws.addRow(["สั่งนึ่งเพิ่มช้าสุดวันที่",thD(d0.toISOString().slice(0,10))]).font={bold:true,color:{argb:"FFB45309"}};
   const rows={};
   const addT=(key,title,vf,ff)=>{ws.addRow([]);ws.addRow([title]).getCell(1).font={bold:true};
     const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
@@ -2642,6 +2679,9 @@ $("nb-xl").onclick=async()=>{
   addT("c","7) = สต็อกคาดว่าจะมี (5 + 6)",k=>r.have[k],(k,j)=>L[j]+rows.a[k]+"+"+L[j]+rows.b[k]);
   addT("d","8) − การจองของฝ่ายขาย "+thM(r.m),k=>r.book[k]);
   addT("e","9) = สต็อกคาดว่าจะเหลือสิ้น "+thM(r.m)+" (7 − 8)",k=>r.end[k],(k,j)=>L[j]+rows.c[k]+"-"+L[j]+rows.d[k]);
+  addT("f","10ก) ขาดจริง (คู่) = ช่องที่ 9 ติดลบ (สีพิเศษไม่นับ)",k=>r.need[k],(k,j)=>"MAX(0,-"+L[j]+rows.e[k]+")");
+  addT("g","10ข) ขอเพิ่มในแผน (คู่ เต็ม cap 100%) = ขาด ÷ (1 − X%) ปัดขึ้น",k=>SC.includes(k)?r.need[k].map(v=>v>0?Math.ceil(v/(1-r.x)):0):r.need[k],(k,j)=>SC.includes(k)?"ROUNDUP("+L[j]+rows.f[k]+"/(1-"+xRef+"),0)":L[j]+rows.f[k]);
+  addT("h","10ค) แผ่นยางที่ต้องนึ่งเพิ่ม (แผ่น) = 10ข ÷ คู่ต่อแผ่น ปัดขึ้น",k=>SC.includes(k)?r.need[k].map(v=>v>0?Math.ceil(Math.ceil(v/(1-r.x))/F()):0):r.need[k],(k,j)=>"ROUNDUP("+L[j]+rows.g[k]+"/"+fRef+",0)");
   try{await saveBook(wb,"ประเมินสั่งผลิต_"+r.m+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
 
