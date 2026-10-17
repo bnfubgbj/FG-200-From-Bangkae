@@ -266,7 +266,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 46)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 47)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2616,7 +2616,7 @@ function renderNb(c){
    const askT=SC.reduce((a,k)=>a+T(ask[k]),0),shT=SC.reduce((a,k)=>a+T(sh[k]),0),needT=SC.reduce((a,k)=>a+T(r.need[k]),0),
      planT=KS.reduce((a,k)=>a+T(r.full[k]),0),capT=capD*wd,freeT=Math.max(0,capT-planT),moveT=Math.max(0,askT-freeT);
    const kv=(a,b,c)=>"<tr><td>"+a+"</td><td style=\"text-align:right\"><b>"+b+"</b></td><td>"+(c||"")+"</td></tr>";
-   h+='<div class="t5" style="margin-top:18px">10) ถ้าจะให้โรงงานนึ่งยางเพิ่ม — ต้องสั่งช้าสุดเมื่อไหร่ และเพิ่มเท่าไหร่</div><div class="scroll"><table class="tpl"><thead><tr><th>รายการ</th><th>ค่า</th><th>ที่มา</th></tr></thead><tbody>'
+   h+='<details id="nb-s10" style="margin-top:18px"'+(window._nb10?" open":"")+'><summary class="t5" style="cursor:pointer">10) ถ้าจะให้โรงงานนึ่งยางเพิ่ม — ต้องสั่งช้าสุดเมื่อไหร่ และเพิ่มเท่าไหร่ <span class="note">(กดเพื่อดู)</span></summary><div class="scroll"><table class="tpl"><thead><tr><th>รายการ</th><th>ค่า</th><th>ที่มา</th></tr></thead><tbody>'
     +kv("ต้องการ FG ภายในวันที่",thD(tg),"ตั้งได้ที่ช่องด้านบน")
     +kv("ระยะนึ่งยาง → จ่ายประกอบ",lag+" วัน","จากไฟล์ยอดนึ่งรายวัน 26 วัน: 18–20 วัน")
     +kv("สั่งนึ่งเพิ่มช้าสุดวันที่",thD(lat),"= "+thD(tg)+" − "+lag+" วัน · นึ่งหลังวันนี้ FG จะออกหลัง "+thD(tg))
@@ -2629,14 +2629,14 @@ function renderNb(c){
     +kv("ที่ว่างเพิ่มได้",fmt(freeT)+" คู่","= กำลังโรงงาน − แผน")
     +kv("ต้องย้ายจากสีที่เหลือเกิน",fmt(moveT)+" คู่",moveT?"เกินกำลังโรงงาน — ต้องลดสีที่เหลือเกินลงเท่ากัน":"เพิ่มได้โดยไม่ต้องลดสีอื่น")
     +"</tbody></table></div>"
-    +'<div class="t5" style="margin-top:12px">10ก) ขาดจริง (คู่) — ช่องที่ 9 ติดลบ</div><div class="scroll">'+mat(r.need,"need",1)+"</div>"
-    +'<div class="t5" style="margin-top:12px">10ข) ขอเพิ่มในแผน (คู่ เต็ม cap 100%) — ส่งให้โรงงานนึ่งเพิ่มภายใน '+thD(lat)+'</div><div class="scroll">'+mat(ask,"need",1)+"</div>"
-    +'<div class="t5" style="margin-top:12px">10ค) คิดเป็นแผ่นยางที่ต้องนึ่งเพิ่ม (แผ่น)</div><div class="scroll">'+mat(sh,"need",1)+"</div>";
+    +'<div class="t5" style="margin-top:12px">10.1) ขาดจริง (คู่) — ช่องที่ 9 ติดลบ</div><div class="scroll">'+mat(r.need,"need",1)+"</div>"
+    +'<div class="t5" style="margin-top:12px">10.2) ขอเพิ่มในแผน (คู่ เต็ม cap 100%) — ส่งให้โรงงานนึ่งเพิ่มภายใน '+thD(lat)+'</div><div class="scroll">'+mat(ask,"need",1)+"</div>"
+    +'<div class="t5" style="margin-top:12px">10.3) คิดเป็นแผ่นยางที่ต้องนึ่งเพิ่ม (แผ่น)</div><div class="scroll">'+mat(sh,"need",1)+"</div>";
    const sp0=SC.map(k=>{const v=r.end[k].map(Math.round);return{k,lack:-v.filter(z=>z<0).reduce((a,b)=>a+b,0),over:v.filter(z=>z>0).reduce((a,b)=>a+b,0)}});
-   h+='<div class="t5" style="margin-top:12px">10ง) สีที่ขาด / สีที่เหลือเกิน (คู่) — เพื่อดูว่าย้ายแผนจากสีไหนไปสีไหน</div><div class="scroll"><table class="tpl"><thead><tr><th>สี</th><th>ขาด</th><th>เหลือเกิน</th><th>สุทธิ</th></tr></thead><tbody>'
+   h+='<div class="t5" style="margin-top:12px">10.4) สีที่ขาด / สีที่เหลือเกิน (คู่) — เพื่อดูว่าย้ายแผนจากสีไหนไปสีไหน</div><div class="scroll"><table class="tpl"><thead><tr><th>สี</th><th>ขาด</th><th>เหลือเกิน</th><th>สุทธิ</th></tr></thead><tbody>'
     +sp0.map(o=>"<tr"+tint(o.k)+"><td>"+nm(o.k)+"</td><td"+(o.lack?' class="neg"':"")+">"+(o.lack?"−"+fmt(o.lack):"-")+"</td><td>"+(o.over?fmt(o.over):"-")+"</td><td><b>"+(o.over-o.lack<0?"−":"")+fmt(Math.abs(o.over-o.lack))+"</b></td></tr>").join("")
-    +'</tbody><tfoot><tr><td>รวม 8 สีหลัก</td><td>−'+fmt(sp0.reduce((a,o)=>a+o.lack,0))+"</td><td>"+fmt(sp0.reduce((a,o)=>a+o.over,0))+"</td><td>"+fmt(sp0.reduce((a,o)=>a+o.over-o.lack,0))+"</td></tr></tfoot></table></div>"}
-  B.innerHTML=h;window._nb=r;
+    +'</tbody><tfoot><tr><td>รวม 8 สีหลัก</td><td>−'+fmt(sp0.reduce((a,o)=>a+o.lack,0))+"</td><td>"+fmt(sp0.reduce((a,o)=>a+o.over,0))+"</td><td>"+fmt(sp0.reduce((a,o)=>a+o.over-o.lack,0))+"</td></tr></tfoot></table></div></details>"}
+  B.innerHTML=h;window._nb=r;{const d=$("nb-s10");if(d)d.ontoggle=()=>{window._nb10=d.open}}
   B.querySelectorAll("[data-go]").forEach(k=>{k.onclick=()=>{const t=$(k.dataset.go);if(!t)return;t.scrollIntoView({behavior:"smooth",block:"start"});t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")}});
 }
 ["nb-x","nb-rev","nb-tg","nb-lag","nb-cap","nb-wd"].forEach(i=>$(i).addEventListener("input",()=>renderE()));
@@ -2667,7 +2667,7 @@ $("nb-xl").onclick=async()=>{
   addT("b","6) + แผนผลิต "+thM(r.m)+" หักออก X% (สูตร = ตารางขวา × (1 − X%) · สีพิเศษไม่หัก)",k=>r.plan[k],(k,j)=>RL[j]+rows.b[k]+(SC.includes(k)?"*(1-"+xRef+")":""));
    (()=>{const KK=r.ks?SC.concat(r.ks):SC,f0=rows.b[KK[0]],f1=rows.b[KK[KK.length-1]];
      ws.getColumn(9).width=3;ws.getColumn(10).width=34;for(let c=11;c<=17;c++)ws.getColumn(c).width=13;
-     ws.getCell(f0-2,10).value="6ก) แผนผลิตเต็ม cap 100% (ตามแผนที่ส่งโรงงาน ยังไม่หัก)";ws.getCell(f0-2,10).font={bold:true};
+     ws.getCell(f0-2,10).value="6.1) แผนผลิตเต็ม cap 100% (ตามแผนที่ส่งโรงงาน ยังไม่หัก)";ws.getCell(f0-2,10).font={bold:true};
      ["สี"].concat(SIZES,["รวม"]).forEach((h,i)=>{const c=ws.getCell(f0-1,10+i);c.value=h;c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
      KK.forEach(k=>{const n=rows.b[k],v=r.full[k];let cl="FFFFFF";try{cl=colOf(k)[0]}catch(e){}
        ws.getCell(n,10).value=SCN[k]||(SXS.find(d=>d[0]===k)||[0,k])[1];
@@ -2679,9 +2679,9 @@ $("nb-xl").onclick=async()=>{
   addT("c","7) = สต็อกคาดว่าจะมี (5 + 6)",k=>r.have[k],(k,j)=>L[j]+rows.a[k]+"+"+L[j]+rows.b[k]);
   addT("d","8) − การจองของฝ่ายขาย "+thM(r.m),k=>r.book[k]);
   addT("e","9) = สต็อกคาดว่าจะเหลือสิ้น "+thM(r.m)+" (7 − 8)",k=>r.end[k],(k,j)=>L[j]+rows.c[k]+"-"+L[j]+rows.d[k]);
-  addT("f","10ก) ขาดจริง (คู่) = ช่องที่ 9 ติดลบ (สีพิเศษไม่นับ)",k=>r.need[k],(k,j)=>"MAX(0,-"+L[j]+rows.e[k]+")");
-  addT("g","10ข) ขอเพิ่มในแผน (คู่ เต็ม cap 100%) = ขาด ÷ (1 − X%) ปัดขึ้น",k=>SC.includes(k)?r.need[k].map(v=>v>0?Math.ceil(v/(1-r.x)):0):r.need[k],(k,j)=>SC.includes(k)?"ROUNDUP("+L[j]+rows.f[k]+"/(1-"+xRef+"),0)":L[j]+rows.f[k]);
-  addT("h","10ค) แผ่นยางที่ต้องนึ่งเพิ่ม (แผ่น) = 10ข ÷ คู่ต่อแผ่น ปัดขึ้น",k=>SC.includes(k)?r.need[k].map(v=>v>0?Math.ceil(Math.ceil(v/(1-r.x))/F()):0):r.need[k],(k,j)=>"ROUNDUP("+L[j]+rows.g[k]+"/"+fRef+",0)");
+  addT("f","10.1) ขาดจริง (คู่) = ช่องที่ 9 ติดลบ (สีพิเศษไม่นับ)",k=>r.need[k],(k,j)=>"MAX(0,-"+L[j]+rows.e[k]+")");
+  addT("g","10.2) ขอเพิ่มในแผน (คู่ เต็ม cap 100%) = ขาด ÷ (1 − X%) ปัดขึ้น",k=>SC.includes(k)?r.need[k].map(v=>v>0?Math.ceil(v/(1-r.x)):0):r.need[k],(k,j)=>SC.includes(k)?"ROUNDUP("+L[j]+rows.f[k]+"/(1-"+xRef+"),0)":L[j]+rows.f[k]);
+  addT("h","10.3) แผ่นยางที่ต้องนึ่งเพิ่ม (แผ่น) = 10.2 ÷ คู่ต่อแผ่น ปัดขึ้น",k=>SC.includes(k)?r.need[k].map(v=>v>0?Math.ceil(Math.ceil(v/(1-r.x))/F()):0):r.need[k],(k,j)=>"ROUNDUP("+L[j]+rows.g[k]+"/"+fRef+",0)");
   try{await saveBook(wb,"ประเมินสั่งผลิต_"+r.m+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
 
