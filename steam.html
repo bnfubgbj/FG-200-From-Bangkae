@@ -266,7 +266,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 37)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 39)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -1419,11 +1419,11 @@ function hvT(rows,o){o=o||{};const R=Math.round,SZ=SIZES;
   const S=[0,0,0,0,0,0],P=[0,0,0,0,0,0];
   let h='<table class="tpl"><thead><tr><th>สี</th>'+SZ.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
   rows.forEach(r=>{const v=r.v.map(R),p=(r.p||[]).map(R);if(!v.some(x=>x)&&!(o.pct&&p.some(x=>x)))return;
-    v.forEach((x,i)=>{S[i]+=x;P[i]+=p[i]||0});const t=v.reduce((a,b)=>a+b,0),tp=p.reduce((a,b)=>a+b,0);
+    if(!r.x)v.forEach((x,i)=>{S[i]+=x;P[i]+=p[i]||0});const t=v.reduce((a,b)=>a+b,0),tp=p.reduce((a,b)=>a+b,0);
     const c=(x,y)=>o.pct?(y?R(x/y*100)+"%":"–"):f(x);
     h+="<tr"+(r.tr||"")+"><td>"+r.lab+"</td>"+v.map((x,i)=>"<td"+(o.neg&&x<0?' class="neg"':"")+">"+c(x,p[i])+"</td>").join("")+"<td"+(o.neg&&t<0?' class="neg"':"")+"><b>"+c(t,tp)+"</b></td></tr>"});
   const T=S.reduce((a,b)=>a+b,0),TP=P.reduce((a,b)=>a+b,0);
-  return h+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+S.map((x,i)=>"<td"+(o.neg&&x<0?' class="neg"':"")+">"+(o.pct?(P[i]?R(x/P[i]*100)+"%":"–"):f(x))+"</td>").join("")+"<td>"+(o.pct?(TP?R(T/TP*100)+"%":"–"):f(T))+"</td></tr></tfoot></table>"}
+  return h+"</tbody><tfoot><tr><td>"+(o.tl||"รวมทุกสี")+"</td>"+S.map((x,i)=>"<td"+(o.neg&&x<0?' class="neg"':"")+">"+(o.pct?(P[i]?R(x/P[i]*100)+"%":"–"):f(x))+"</td>").join("")+"<td>"+(o.pct?(TP?R(T/TP*100)+"%":"–"):f(T))+"</td></tr></tfoot></table>"}
 window.FGHVK=window.FGHVK||{};
 function hvK(key,title,rows,o){FGHVK[key]='<div class="hvt">'+title+"</div>"+hvT(rows,o);return ' data-hk="'+key+'" tabindex="0"'}
 
@@ -2555,7 +2555,8 @@ function nbCalc(c){
     have[k]=stock[k].map((v,i)=>v+plan[k][i]);end[k]=have[k].map((v,i)=>v-book[k][i]);need[k]=end[k].map(v=>Math.max(0,-v))});
   const sp=bk.sp||{},spPlan={};Object.keys(sp).forEach(k=>{spPlan[k]=(Pm&&Pm[k]?Pm[k].slice(0,6):Z6()).map(v=>(v||0))});
   if(Pm)Object.keys(Pm).forEach(k=>{if(!SC.includes(k)&&SXS.some(d=>d[0]===k)&&!sp[k]&&Pm[k].some(v=>v>0)){sp[k]=Z6();spPlan[k]=Pm[k].slice(0,6).map(v=>(v||0))}});
-  return{m,x,book,stock,plan,have,end,need,rev,hasPlan:!!Pm,src:bk.src,ed:c.ed,sd:c.sd,sp,spPlan};
+  const ks=Object.keys(sp);ks.forEach(k=>{stock[k]=Z6();plan[k]=spPlan[k].slice();have[k]=spPlan[k].slice();book[k]=sp[k].slice();end[k]=spPlan[k].map((v,i)=>v-sp[k][i]);need[k]=end[k].map(v=>Math.max(0,-v))});
+  return{m,x,book,stock,plan,have,end,need,ks,rev,hasPlan:!!Pm,src:bk.src,ed:c.ed,sd:c.sd,sp,spPlan};
 }
 function renderNb(c){
   const sel=$("nb-sel"),ds=stkDates(["nbook"]),cur=sel.value;
@@ -2570,32 +2571,30 @@ function renderNb(c){
   const r=nbCalc(c);
   if(!r){B.innerHTML='<div class="note">เลือกเดือนของยอดจองก่อน</div>';return}
   if(r.nobook){B.innerHTML='<div class="note">ยังไม่มียอดจองของ '+thM(r.m)+' — เลือกไฟล์ยอดจองจากฝ่ายขายด้านบน</div>';return}
-  const T=a=>a.reduce((x,y)=>x+y,0),sum=o=>SC.reduce((a,k)=>a+T(o[k]),0);
+  const T=a=>a.reduce((x,y)=>x+y,0),KS=SC.concat(r.ks||[]),sum=o=>SC.reduce((a,k)=>a+T(o[k]),0),ssum=o=>(r.ks||[]).reduce((a,k)=>a+T(o[k]),0),nm=k=>SCN[k]||(SXS.find(d=>d[0]===k)||[0,k])[1];
   const sgn=(v,mode)=>{const y=Math.round(v);if(!y)return'<td class="zero">-</td>';
     if(mode==="adj")return'<td style="font-weight:600;color:var(--'+(y>0?"warn":"accent")+')">'+(y>0?"+":"")+fmt(y)+"</td>";
     if(mode==="need")return'<td'+(y>0?' style="font-weight:600;color:var(--warn)"':"")+">"+(y>0?"+":"")+fmt(y)+"</td>";
     if(mode==="adj2")return'<td'+(y<0?' class="neg" style="font-weight:600"':"")+">"+(y>0?"+":"")+fmt(y)+"</td>";
     if(mode==="stk"&&y<0)return'<td class="neg" style="font-weight:600">'+fmt(y)+"</td>";
     return"<td>"+fmt(y)+"</td>"};
-  const mat=(o,mode)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";const col=Z6();
-    SC.forEach(k=>{const v=o[k];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(k)+"><td>"+(SCN[k]||k)+"</td>"+v.map(y=>sgn(y,mode)).join("")+(mode==="adj"||mode==="need"?sgn(T(v),mode):'<td><b>'+fmt(T(v))+"</b></td>")+"</tr>"});
-    return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>sgn(y,mode)).join("")+sgn(T(col),mode)+"</tr></tfoot></table>"};
+  const mat=(o,mode)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+    const row=(k,col)=>{const v=o[k];v.forEach((y,i)=>col[i]+=y);return"<tr"+tint(k)+"><td>"+nm(k)+"</td>"+v.map(y=>sgn(y,mode)).join("")+(mode==="adj"||mode==="need"?sgn(T(v),mode):'<td><b>'+fmt(T(v))+"</b></td>")+"</tr>"};
+    const col=Z6();SC.forEach(k=>{t+=row(k,col)});
+    const tr=(lab,c)=>"<tr class=\"tot\" style=\"font-weight:700;background:var(--hdr-bg)\"><td>"+lab+"</td>"+c.map(y=>sgn(y,mode)).join("")+sgn(T(c),mode)+"</tr>";
+    t+=tr("รวมสีปกติ",col);
+    if((r.ks||[]).length){const c2=Z6();r.ks.forEach(k=>{t+=row(k,c2)});t+=tr("รวมสีพิเศษ",c2)}
+    return t+"</tbody></table>"};
   const mo1=thM(r.ed.slice(0,7)),mo2=thM(r.m);
   const H=[["5) สต็อกคาดว่าจะเหลือสิ้น "+mo1+" (จากขั้น 5 ด้านบน)",r.stock,"stk"],
-    ["6) + แผนผลิต "+mo2+(r.hasPlan?" ("+revName(r.rev)+(r.x?" หัก "+Math.round(r.x*100)+"%":"")+")":" (ไม่มีแผน)"),r.plan,""],
+    ["6) + แผนผลิต "+mo2+(r.hasPlan?" ("+revName(r.rev)+(r.x?" สีปกติหัก "+Math.round(r.x*100)+"% · สีพิเศษไม่หัก":"")+")":" (ไม่มีแผน)"),r.plan,""],
     ["7) = สต็อกคาดว่าจะมี (5 + 6)",r.have,"stk"],
     ["8) − การจองของฝ่ายขาย "+mo2,r.book,""],
     ["9) = สต็อกคาดว่าจะเหลือสิ้น "+mo2+" (7 − 8)",r.end,"stk"]];
-  const nr=o=>SC.map(k=>({tr:tint(k),lab:SCN[k]||k,v:o[k]}));
-  let h='<div class="kpis" style="margin:10px 0">'+[["5) สต็อกสิ้น "+mo1,sum(r.stock),0,r.stock],["6) + แผนผลิต",sum(r.plan),0,r.plan],["7) = สต็อกที่จะมี",sum(r.have),0,r.have],["8) − ยอดจอง",sum(r.book),0,r.book],["9) เหลือสิ้น "+mo2,sum(r.end),1,r.end]].map((q,i)=>'<div class="kpi'+(i===4?" main":"")+'" data-go="nbt'+i+'" style="cursor:pointer"'+hvK("n"+(i+5),H[i][0],nr(q[3]),{neg:1})+'><div class="k">'+q[0]+'</div><div class="v"'+(q[2]&&q[1]<0?' style="color:var(--bad)"':"")+'>'+fmt(q[1])+'</div><div class="k" style="font-size:11px">กดดูสี × เบอร์ ↓</div></div>').join("")+"</div>";
+  const nr=o=>KS.map(k=>({tr:tint(k),lab:nm(k),v:o[k],x:SC.includes(k)?0:1}));
+  let h='<div class="kpis" style="margin:10px 0">'+[["5) สต็อกสิ้น "+mo1,sum(r.stock),0,r.stock],["6) + แผนผลิต",sum(r.plan),0,r.plan],["7) = สต็อกที่จะมี",sum(r.have),0,r.have],["8) − ยอดจอง",sum(r.book),0,r.book],["9) เหลือสิ้น "+mo2,sum(r.end),1,r.end]].map((q,i)=>'<div class="kpi'+(i===4?" main":"")+'" data-go="nbt'+i+'" style="cursor:pointer"'+hvK("n"+(i+5),H[i][0],nr(q[3]),{neg:1,tl:"รวมสีปกติ"})+'><div class="k">'+q[0]+'</div><div class="v"'+(q[2]&&q[1]<0?' style="color:var(--bad)"':"")+'>'+fmt(q[1])+'</div><div class="k" style="font-size:11px">'+(i&&(r.ks||[]).length?'สีพิเศษ '+fmt(ssum(q[3]))+' · ':'')+'กดดูสี × เบอร์ ↓</div></div>').join("")+"</div>";
   if(!r.hasPlan)h+='<div class="note" style="color:var(--warn)">ยังไม่มีแผนผลิต '+mo2+'</div>';
   H.forEach((a,ix)=>{h+='<div id="nbt'+ix+'" style="scroll-margin-top:14px"><div class="t5">'+a[0]+'</div><div class="scroll">'+mat(a[1],a[2]==="stk"?"stk":a[2])+"</div></div>"});
-  {const ks=Object.keys(r.sp);if(ks.length){const nm=k=>(SXS.find(d=>d[0]===k)||[0,k])[1],cl=k=>{try{return colOf(k)[0]}catch(e){return "FFFFFF"}};
-    const tb=(o,sg)=>{let t='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
-      ks.forEach(k=>{const v=o(k);v.forEach((y,i)=>col[i]+=y);t+="<tr><td>"+nm(k)+"</td>"+v.map(y=>sg?sgn(y,"adj2"):(Math.round(y)?"<td>"+fmt(y)+"</td>":'<td class="zero">-</td>')).join("")+(sg?sgn(T(v),"adj2"):"<td><b>"+fmt(T(v))+"</b></td>")+"</tr>"});
-      return t+"</tbody><tfoot><tr><td>รวมสีพิเศษ</td>"+col.map(y=>sg?sgn(y,"adj2"):"<td>"+fmt(y)+"</td>").join("")+(sg?sgn(T(col),"adj2"):"<td>"+fmt(T(col))+"</td>")+"</tr></tfoot></table>"};
-    h+='<div><div class="t5">สีพิเศษ: ยอดจอง (พี่มอส)</div><div class="scroll">'+tb(k=>r.sp[k],0)+"</div></div>";
-    if(r.hasPlan)h+='<div><div class="t5">สีพิเศษ: แผน − ยอดจอง</div><div class="scroll">'+tb(k=>r.spPlan[k].map((v,i)=>v-r.sp[k][i]),1)+"</div></div>"}}
   B.innerHTML=h;window._nb=r;
   B.querySelectorAll("[data-go]").forEach(k=>{k.onclick=()=>{const t=$(k.dataset.go);if(!t)return;t.scrollIntoView({behavior:"smooth",block:"start"});t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")}});
 }
@@ -2612,13 +2611,13 @@ $("nb-xl").onclick=async()=>{
   const addT=(key,title,vf,ff)=>{ws.addRow([]);ws.addRow([title]).getCell(1).font={bold:true};
     const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
     rows[key]={};let first=0,last=0;
-    SC.forEach(k=>{const v=vf(k),rr=ws.addRow([SCN[k]||k].concat(v.map(Math.round),[0])),n=rr.number;if(!first)first=n;last=n;rows[key][k]=n;
+    (r.ks?SC.concat(r.ks):SC).forEach(k=>{const v=vf(k),rr=ws.addRow([SCN[k]||(SXS.find(d=>d[0]===k)||[0,k])[1]].concat(v.map(Math.round),[0])),n=rr.number;if(!first)first=n;last=n;rows[key][k]=n;
       SIZES.forEach((z,j)=>{const fo=ff?ff(k,j):null;if(fo)rr.getCell(j+2).value={formula:fo,result:Math.round(v[j])}});
       rr.getCell(8).value={formula:"SUM(B"+n+":G"+n+")",result:Math.round(v.reduce((a,c)=>a+c,0))};
       let cl="FFFFFF";try{cl=colOf(k)[0]}catch(e){}
       rr.eachCell((cc,i)=>{cc.border=B;cc.fill=fill(cl);if(i>1)cc.numFmt=NF})});
     const tr=ws.addRow(["รวมทุกสี"]);tr.font={bold:true};
-    "BCDEFGH".split("").forEach((col,i)=>{const t=SC.reduce((a,k)=>a+(i<6?vf(k)[i]:vf(k).reduce((p,q)=>p+q,0)),0);tr.getCell(i+2).value={formula:"SUM("+col+first+":"+col+last+")",result:Math.round(t)};tr.getCell(i+2).numFmt=NF});
+    "BCDEFGH".split("").forEach((col,i)=>{const t=(r.ks?SC.concat(r.ks):SC).reduce((a,k)=>a+(i<6?vf(k)[i]:vf(k).reduce((p,q)=>p+q,0)),0);tr.getCell(i+2).value={formula:"SUM("+col+first+":"+col+last+")",result:Math.round(t)};tr.getCell(i+2).numFmt=NF});
     tr.eachCell(c=>{c.border=B;c.fill=fill("EEEEEE")})};
   addT("a","5) สต็อกคาดว่าจะเหลือสิ้น "+thM(r.ed.slice(0,7)),k=>r.stock[k]);
   addT("b","6) + แผนผลิต "+thM(r.m)+" หักออก X%",k=>r.plan[k]);
