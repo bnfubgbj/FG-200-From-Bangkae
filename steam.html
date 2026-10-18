@@ -267,7 +267,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 56)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 57)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -1299,7 +1299,7 @@ function setEM(m){EM=m;document.querySelectorAll("#e-mode button").forEach(x=>x.
   if(m==="m"){if(!$("e-month").value)$("e-month").value=((dates().slice(-1)[0]||todayIso()).slice(0,7));fillMonth($("e-month").value)}
   else{$("e-date").value?fillGrid($("e-date").value):0}}
 const todayIso=()=>{const t=new Date();return t.getFullYear()+"-"+p2(t.getMonth()+1)+"-"+p2(t.getDate())};
-function fillMonth(m){const d=MACT[m]||{};ALL.forEach((c,r)=>SIZES.forEach((z,i)=>{const v=d[c]?d[c][i]:0;$("g-"+r+"-"+i).value=v?v:""}));$("e-printed").value="";calc();
+function fillMonth(m){const d=MACT[m]||{};ALL.forEach((c,r)=>SIZES.forEach((z,i)=>{const v=d[c]?d[c][i]:0;$("g-"+r+"-"+i).value=v?fv(v):""}));$("e-printed").value="";calc();
   const hasD=dates().some(x=>x.slice(0,7)===m);
   $("e-msg").textContent=(MACT[m]?"เดือนนี้มียอดรวมรายเดือนอยู่แล้ว กำลังแก้ไข":"เดือนใหม่ ยังไม่มียอดรวมรายเดือน")+(hasD?" · เดือนนี้มีข้อมูลรายวันอยู่แล้ว แดชบอร์ดจะใช้ข้อมูลรายวัน":"")}
 const monthAct=m=>{const o={};if(dates().some(d=>d.slice(0,7)===m)){dates().forEach(d=>{if(d.slice(0,7)!==m)return;const r=docs[d].rows||{};Object.keys(r).forEach(c=>{o[c]=o[c]||[0,0,0,0,0,0];r[c].forEach((x,i)=>o[c][i]+=x||0)})});return o}
@@ -1320,6 +1320,13 @@ async function saveMonth(){
   catch(e){msg.textContent="บันทึกไม่สำเร็จ: "+(e&&e.message||e)}
   $("e-save").disabled=false}
 
+/* ---------- thousands separators in grid inputs ---------- */
+function fv(n){return n?Math.round(n).toLocaleString("en-US"):""}
+function pn(v){return Number(String(v).replace(/,/g,""))||0}
+document.addEventListener("input",e=>{const t=e.target;if(!t||!t.id||!/^(g|p)-\d+-\d+$/.test(t.id)||e.__fmt)return;
+  const v=t.value,pos=t.selectionStart==null?v.length:t.selectionStart,digitsBefore=v.slice(0,pos).replace(/\D/g,"").length,d=v.replace(/\D/g,"");
+  const f=d?Number(d).toLocaleString("en-US"):"";if(f===v)return;t.value=f;
+  let k=0,np=0;while(np<f.length&&k<digitsBefore){if(/\d/.test(f[np]))k++;np++}try{t.setSelectionRange(np,np)}catch(x){}},true);
 /* ---------- paste from Excel into grids (g- = entry, p- = plan) ---------- */
 document.addEventListener("paste",e=>{
   const t=e.target,m=t&&t.id&&t.id.match(/^(g|p)-(\d+)-(\d+)$/);if(!m)return;
@@ -1332,7 +1339,7 @@ document.addEventListener("paste",e=>{
   let n=0,skipped=0;
   rows.forEach((cells,k)=>{
     let st=c0;if(cells.length>1&&num(cells[0])===null){cells=cells.slice(1);st=0}      // แถวที่ copy มาพร้อมชื่อสี → เริ่มที่เบอร์ 8.5
-    cells.slice(0,SIZES.length-st).forEach((v,j)=>{const el=$(pre+"-"+(r0+k)+"-"+(st+j)),x=num(v);if(!el){skipped++;return}if(x===null){skipped++;return}el.value=x?x:"";n++});
+    cells.slice(0,SIZES.length-st).forEach((v,j)=>{const el=$(pre+"-"+(r0+k)+"-"+(st+j)),x=num(v);if(!el){skipped++;return}if(x===null){skipped++;return}el.value=x?fv(x):"";n++});
   });
   const g=$(pre==="g"?"e-grid":"p-grid");g.dispatchEvent(new Event("input",{bubbles:true}));
   const msg=$(pre==="g"?"e-msg":"p-msg");if(msg)msg.textContent="วางข้อมูลแล้ว "+n+" ช่อง"+(skipped?" (ข้าม "+skipped+" ช่องที่ไม่ใช่ตัวเลข)":"")+" · ตรวจยอดรวมก่อนกดบันทึก";
@@ -1352,12 +1359,12 @@ document.addEventListener("keydown",e=>{
 function buildGrid(){
   let h='<table><thead><tr><th>สี</th>'+SIZES.map(s=>'<th>'+s+'</th>').join("")+'<th>รวม</th></tr></thead><tbody>';
   ALL.forEach((c,r)=>{h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(lab(c))+'</td>'+
-    SIZES.map((s,i)=>'<td><input type="number" min="0" step="1" id="g-'+r+'-'+i+'" aria-label="'+esc(lab(c))+' เบอร์ '+s+'"></td>').join("")+'<td id="gt-'+r+'">–</td></tr>'});
+    SIZES.map((s,i)=>'<td><input type="text" inputmode="numeric" autocomplete="off" id="g-'+r+'-'+i+'" aria-label="'+esc(lab(c))+' เบอร์ '+s+'"></td>').join("")+'<td id="gt-'+r+'">–</td></tr>'});
   h+='</tbody><tfoot><tr><td>รวม</td>'+SIZES.map((s,i)=>'<td id="gc-'+i+'">–</td>').join("")+'<td id="gg">–</td></tr></tfoot></table>';
   $("e-grid").innerHTML=h;
   $("e-grid").addEventListener("input",calc);
 }
-function readGrid(){return ALL.map((c,r)=>SIZES.map((s,i)=>Math.max(0,Math.round(Number($("g-"+r+"-"+i).value)||0))))}
+function readGrid(){return ALL.map((c,r)=>SIZES.map((s,i)=>Math.max(0,Math.round(pn($("g-"+r+"-"+i).value)))))}
 function calc(){
   const g=readGrid(); let all=0;
   g.forEach((row,r)=>{const t=row.reduce((a,b)=>a+b,0);all+=t;$("gt-"+r).textContent=fmt(t)});
@@ -1369,7 +1376,7 @@ function calc(){
   else{c.className="msg warn";c.textContent="ไม่ตรง: ในรายงาน "+p.toLocaleString("en-US")+" แต่รวมได้ "+all.toLocaleString("en-US")+" (ต่าง "+(all-p).toLocaleString("en-US")+")"}
 }
 function fillGrid(iso){
-  const d=docs[iso]; ALL.forEach((c,r)=>SIZES.forEach((s,i)=>{const v=d&&d.rows&&d.rows[c]?d.rows[c][i]:0;$("g-"+r+"-"+i).value=v?v:""}));
+  const d=docs[iso]; ALL.forEach((c,r)=>SIZES.forEach((s,i)=>{const v=d&&d.rows&&d.rows[c]?d.rows[c][i]:0;$("g-"+r+"-"+i).value=v?fv(v):""}));
   $("e-printed").value=d&&d.printedTotal!=null?d.printedTotal:""; calc();
   $("e-msg").textContent=d?"วันนี้มีข้อมูลอยู่แล้ว กำลังแก้ไข":"วันใหม่ ยังไม่มีข้อมูล";
 }
@@ -1408,11 +1415,11 @@ const pid=(r,i)=>"p-"+r+"-"+i;
 function buildPGrid(){
   let h='<table><thead><tr><th>สี</th>'+SIZES.map(s=>'<th>'+s+'</th>').join("")+'<th>รวม</th></tr></thead><tbody>';
   ALL.forEach((c,r)=>{h+='<tr><td><span class="dot" style="'+dotStyle(c)+';display:inline-block;margin-right:8px;vertical-align:-1px"></span>'+esc(lab(c))+'</td>'+
-    SIZES.map((s,i)=>'<td><input type="number" min="0" step="1" id="'+pid(r,i)+'" aria-label="แผน '+esc(lab(c))+' เบอร์ '+s+'"></td>').join("")+'<td id="pt-'+r+'">–</td></tr>'});
+    SIZES.map((s,i)=>'<td><input type="text" inputmode="numeric" autocomplete="off" id="'+pid(r,i)+'" aria-label="แผน '+esc(lab(c))+' เบอร์ '+s+'"></td>').join("")+'<td id="pt-'+r+'">–</td></tr>'});
   h+='</tbody><tfoot><tr><td>รวม</td>'+SIZES.map((s,i)=>'<td id="pc-'+i+'">–</td>').join("")+'<td id="pg">–</td></tr></tfoot></table>';
   $("p-grid").innerHTML=h; $("p-grid").addEventListener("input",pCalc);
 }
-const readPGrid=()=>ALL.map((c,r)=>SIZES.map((s,i)=>Math.max(0,Math.round(Number($(pid(r,i)).value)||0))));
+const readPGrid=()=>ALL.map((c,r)=>SIZES.map((s,i)=>Math.max(0,Math.round(pn($(pid(r,i)).value)))));
 const planSum=o=>Object.values(o||{}).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0);
 function pCalc(){
   const g=readPGrid(); let all=0;
@@ -1436,7 +1443,7 @@ function pFill(){
   const m=$("p-month").value, v=$("p-rev").value, rs=m?revNum(m):[]; let src={},date="",note="";
   if(m&&v==="new"){ if(rs.length) src=PLANS[m][rs[rs.length-1]].colors; date=todayISO(); }
   else if(m&&PLANS[m]&&PLANS[m][+v]){ const e=PLANS[m][+v]; src=e.colors; date=e.date; note=e.note }
-  ALL.forEach((c,r)=>SIZES.forEach((s,i)=>{const x=src[c]?src[c][i]:0;$(pid(r,i)).value=x?x:""}));
+  ALL.forEach((c,r)=>SIZES.forEach((s,i)=>{const x=src[c]?src[c][i]:0;$(pid(r,i)).value=x?fv(x):""}));
   $("p-date").value=date; $("p-note").value=note; pCalc();
 }
 $("p-month").onchange=()=>pRefreshRev(); $("p-rev").onchange=pFill;
