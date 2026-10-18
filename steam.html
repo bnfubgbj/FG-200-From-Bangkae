@@ -267,7 +267,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 52)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 53)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -1041,10 +1041,19 @@ function renderDash(){
   $("d-b1").innerHTML=h1;$("d-b1").classList.toggle("one",mode!=="m");
   $("d-b2").innerHTML=h2||'<div class="empty">ไม่มีข้อมูล</div>';
   const pa=kP?kA/kP:null,sa=kS?kA/kS:null;
-  const K=(k,v,s)=>'<div class="kpi"><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(s?'<div class="k">'+s+'</div>':'')+'</div>';
-  $("d-kpis").innerHTML=K("ผลิตจริง",fmt(kA),mode==="m"?"ทุกเดือนที่มีข้อมูล":"สะสมถึง "+(lastDoc().slice(0,7)===cur?thLong(lastDoc()):"สิ้นเดือน"))+
-    K(mode==="m"?"แผนผลิตรวม":"แผนผลิตทั้งเดือน",kP?fmt(kP):"–","")+K("ผลิตจริง ÷ แผน",pa==null?"–":'<span class="pc '+(mode==="m"?cls(pa):"")+'">'+Math.round(pa*100)+"%</span>",mode==="m"?"":"ของแผนทั้งเดือน")+
-    K("เป้านึ่งยาง",kS?fmt(kS):"–","ถึงวันที่ผลิตล่าสุด")+K("ผลิตจริง ÷ เป้านึ่ง",sa==null?"–":'<span class="pc '+cls(sa)+'">'+Math.round(sa*100)+"%</span>","")
+  const Z=()=>[0,0,0,0,0,0],MA={},MP={},MS={};ALL.forEach(c=>{MA[c]=Z();MP[c]=Z();MS[c]=Z()});
+  {const L=lastDoc(),sm=mode==="m"?ms:[cur];
+   sm.forEach(m=>{const pm=planMatrix(m+"-01",m+"-01").pm;ALL.forEach(c=>pm[c].forEach((x,i)=>MP[c][i]+=x))});
+   dates().forEach(d=>{if(!sm.includes(d.slice(0,7)))return;ALL.forEach(c=>{const v=docs[d].rows&&docs[d].rows[c];if(v)v.forEach((x,i)=>MA[c][i]+=x||0)})});
+   Object.keys(STM).forEach(d=>{if(!sm.includes(d.slice(0,7))||d>L)return;ALL.forEach(c=>{const v=STM[d][c];if(v)v.forEach((x,i)=>MS[c][i]+=Math.round((x||0)*f))})})}
+  const HR=(g,h)=>ALL.map(c=>({lab:'<span class="dot" style="'+dotOf(c)+';display:inline-block;margin-right:6px"></span>'+esc(lab(c)),v:g(c),p:h?h(c):undefined})),
+    sc=mode==="m"?"ทุกเดือน":mLabel(cur);
+  const K=(k,v,s,hv)=>'<div class="kpi"'+(hv||"")+'><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(s?'<div class="k">'+s+'</div>':'')+'</div>';
+  $("d-kpis").innerHTML=K("ผลิตจริง",fmt(kA),mode==="m"?"ทุกเดือนที่มีข้อมูล":"สะสมถึง "+(lastDoc().slice(0,7)===cur?thLong(lastDoc()):"สิ้นเดือน"),hvK("d1","ผลิตจริง · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MA[c])))+
+    K(mode==="m"?"แผนผลิตรวม":"แผนผลิตทั้งเดือน",kP?fmt(kP):"–","",hvK("d2","แผนผลิต · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MP[c])))+
+    K("ผลิตจริง ÷ แผน",pa==null?"–":'<span class="pc '+(mode==="m"?cls(pa):"")+'">'+Math.round(pa*100)+"%</span>",mode==="m"?"":"ของแผนทั้งเดือน",hvK("d3","ผลิตจริง ÷ แผน · "+sc+" (% ต่อช่อง)",HR(c=>MA[c],c=>MP[c]),{pct:1}))+
+    K("เป้านึ่งยาง",kS?fmt(kS):"–","ถึงวันที่ผลิตล่าสุด",hvK("d4","เป้านึ่งยาง · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MS[c])))+
+    K("ผลิตจริง ÷ เป้านึ่ง",sa==null?"–":'<span class="pc '+cls(sa)+'">'+Math.round(sa*100)+"%</span>","",hvK("d5","ผลิตจริง ÷ เป้านึ่งยาง · "+sc+" (% ต่อช่อง)",HR(c=>MA[c],c=>MS[c]),{pct:1}))
 }
 $("d-month").onchange=e=>{dMonth=e.target.value;render()};
 $("d-rev").onchange=e=>{planSel[dMonth]=+e.target.value;render()};
