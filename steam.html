@@ -267,7 +267,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 53)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 54)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -893,9 +893,12 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
   </div>
 
   <section id="view-e" class="panel" hidden>
-    <div class="head2"><h2>เพิ่มหรือแก้ไขข้อมูลรายวัน</h2></div>
+    <div class="head2"><h2 id="e-h">เพิ่มหรือแก้ไขข้อมูลรายวัน</h2></div>
+    <div class="tabs" id="e-mode" style="align-self:flex-start"><button data-em="d" aria-selected="true">กรอกรายวัน</button><button data-em="m" aria-selected="false">กรอกยอดรวมรายเดือน (ย้อนหลัง)</button></div>
+    <div class="note" id="e-mnote" hidden>ใช้เติมยอดผลิตจริงของเดือนที่ผ่านมาแล้วที่ไม่มีรายวัน: กรอกยอดรวมทั้งเดือนแยกสี × เบอร์ ระบบจะนำไปแสดงในแดชบอร์ดโหมดรายเดือน (ถ้าเดือนนั้นมีข้อมูลรายวันอยู่แล้ว แดชบอร์ดจะใช้ข้อมูลรายวันแทน)</div>
     <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end">
-      <div class="field" style="width:170px"><label for="e-date">วันที่</label><input type="date" id="e-date"></div>
+      <div class="field" style="width:170px" id="e-datef"><label for="e-date">วันที่</label><input type="date" id="e-date"></div>
+      <div class="field" style="width:170px" id="e-monthf" hidden><label for="e-month">เดือน</label><input type="month" id="e-month"></div>
       <div class="field" style="width:170px"><label for="e-key">รหัสบันทึก</label><input type="password" id="e-key" autocomplete="off"></div>
       <div class="field" style="width:170px"><label for="e-printed">ยอดรวมที่พิมพ์ในรายงาน</label><input type="number" id="e-printed" min="0"></div>
     </div>
@@ -958,13 +961,13 @@ let STM={};
 const sumSi=(a,si)=>a?si.reduce((q,i)=>q+(a[i]||0),0):0;
 const ALLSI=[0,1,2,3,4,5];
 let dMode="auto", dMonth="";
-const monthsOf=()=>[...new Set(dates().map(d=>d.slice(0,7)))].sort();
+const monthsOf=()=>[...new Set(dates().map(d=>d.slice(0,7)).concat(Object.keys(MACT)))].sort();
 const lastDay=m=>{const q=m.split("-").map(Number);return new Date(q[0],q[1],0).getDate()};
 const lastDoc=()=>{const ds=dates();return ds.length?ds[ds.length-1]:""};
-const isComplete=m=>{const l=lastDoc();return !!l&&(l.slice(0,7)>m||l>=m+"-"+p2(lastDay(m)))};
+const isComplete=m=>{const l=lastDoc();if(MACT[m]&&!dates().some(d=>d.slice(0,7)===m))return true;return !!l&&(l.slice(0,7)>m||l>=m+"-"+p2(lastDay(m)))};
 function mStat(m,f){const o={},pm=planMatrix(m+"-01",m+"-01").pm,L=lastDoc();
   ALL.forEach(c=>o[c]={A:0,S:0,P:pm[c].reduce((a,b)=>a+b,0)});
-  dates().forEach(d=>{if(d.slice(0,7)!==m)return;ALL.forEach(c=>o[c].A+=sumSi(docs[d].rows&&docs[d].rows[c],ALLSI))});
+  {const ma=monthAct(m);ALL.forEach(c=>o[c].A=ma[c]?ma[c].reduce((a,b)=>a+b,0):0)}
   Object.keys(STM).forEach(d=>{if(d.slice(0,7)!==m||d>L)return;ALL.forEach(c=>o[c].S+=Math.round(sumSi(STM[d][c],ALLSI)*f))});
   return o}
 const cls=p=>p==null?"":p>=.95?"ok":p>=.75?"mid":"bad";
@@ -1044,7 +1047,7 @@ function renderDash(){
   const Z=()=>[0,0,0,0,0,0],MA={},MP={},MS={};ALL.forEach(c=>{MA[c]=Z();MP[c]=Z();MS[c]=Z()});
   {const L=lastDoc(),sm=mode==="m"?ms:[cur];
    sm.forEach(m=>{const pm=planMatrix(m+"-01",m+"-01").pm;ALL.forEach(c=>pm[c].forEach((x,i)=>MP[c][i]+=x))});
-   dates().forEach(d=>{if(!sm.includes(d.slice(0,7)))return;ALL.forEach(c=>{const v=docs[d].rows&&docs[d].rows[c];if(v)v.forEach((x,i)=>MA[c][i]+=x||0)})});
+   sm.forEach(m=>{const ma=monthAct(m);ALL.forEach(c=>{if(ma[c])ma[c].forEach((x,i)=>MA[c][i]+=x||0)})});
    Object.keys(STM).forEach(d=>{if(!sm.includes(d.slice(0,7))||d>L)return;ALL.forEach(c=>{const v=STM[d][c];if(v)v.forEach((x,i)=>MS[c][i]+=Math.round((x||0)*f))})})}
   const HR=(g,h)=>ALL.map(c=>({lab:'<span class="dot" style="'+dotOf(c)+';display:inline-block;margin-right:6px"></span>'+esc(lab(c)),v:g(c),p:h?h(c):undefined})),
     sc=mode==="m"?"ทุกเดือน":mLabel(cur);
@@ -1287,6 +1290,35 @@ $("xl").onclick=async()=>{
   b.disabled=false; back();
 };
 
+/* ---------- monthly actual (backfill) ---------- */
+let MACT={},EM="d";
+function setEM(m){EM=m;document.querySelectorAll("#e-mode button").forEach(x=>x.setAttribute("aria-selected",x.dataset.em===m));
+  $("e-datef").hidden=m==="m";$("e-monthf").hidden=m!=="m";$("e-mnote").hidden=m!=="m";
+  $("e-h").textContent=m==="m"?"เติมยอดผลิตจริงรายเดือน (ย้อนหลัง)":"เพิ่มหรือแก้ไขข้อมูลรายวัน";$("e-save").textContent=m==="m"?"บันทึกยอดรายเดือน":"บันทึกวันนี้";
+  if(m==="m"){if(!$("e-month").value)$("e-month").value=((dates().slice(-1)[0]||todayIso()).slice(0,7));fillMonth($("e-month").value)}
+  else{$("e-date").value?fillGrid($("e-date").value):0}}
+const todayIso=()=>{const t=new Date();return t.getFullYear()+"-"+p2(t.getMonth()+1)+"-"+p2(t.getDate())};
+function fillMonth(m){const d=MACT[m]||{};ALL.forEach((c,r)=>SIZES.forEach((z,i)=>{const v=d[c]?d[c][i]:0;$("g-"+r+"-"+i).value=v?v:""}));$("e-printed").value="";calc();
+  const hasD=dates().some(x=>x.slice(0,7)===m);
+  $("e-msg").textContent=(MACT[m]?"เดือนนี้มียอดรวมรายเดือนอยู่แล้ว กำลังแก้ไข":"เดือนใหม่ ยังไม่มียอดรวมรายเดือน")+(hasD?" · เดือนนี้มีข้อมูลรายวันอยู่แล้ว แดชบอร์ดจะใช้ข้อมูลรายวัน":"")}
+const monthAct=m=>{const o={};if(dates().some(d=>d.slice(0,7)===m)){dates().forEach(d=>{if(d.slice(0,7)!==m)return;const r=docs[d].rows||{};Object.keys(r).forEach(c=>{o[c]=o[c]||[0,0,0,0,0,0];r[c].forEach((x,i)=>o[c][i]+=x||0)})});return o}
+  return MACT[m]||o};
+$("e-mode").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setEM(b.dataset.em)});
+$("e-month").onchange=()=>{if($("e-month").value)fillMonth($("e-month").value)};
+async function saveMonth(){
+  const m=$("e-month").value,msg=$("e-msg");if(!m){msg.textContent="เลือกเดือนก่อน";return}
+  const key=$("e-key").value.trim();if(!key){msg.textContent="ใส่รหัสบันทึกก่อน";return}
+  const g=readGrid(),rows=[];ALL.forEach((c,r)=>{if(g[r].some(x=>x))rows.push(["mact",c].concat(g[r],[""]))});
+  if(!rows.length){msg.textContent="ยังไม่ได้กรอกตัวเลข";return}
+  const tot=g.flat().reduce((a,b)=>a+b,0),pr=$("e-printed").value===""?null:Number($("e-printed").value);
+  if(pr!==null&&pr!==tot){msg.textContent="ยอดรวมที่กรอกไม่ตรงกับตาราง ("+fmt(pr)+" vs "+fmt(tot)+") ลบช่องยอดรวมหรือแก้ตัวเลขก่อน";return}
+  try{localStorage.setItem("fgkey",key)}catch(e){}
+  $("e-save").disabled=true;
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"stock",key,date:m+"-01",by:"",rows})}).then(r=>r.json());
+    if(!r.ok)throw new Error(r.error||"error");msg.textContent="บันทึกยอดรวม "+mLabel(m)+" แล้ว รวม "+fmt(tot)+" คู่";await load()}
+  catch(e){msg.textContent="บันทึกไม่สำเร็จ: "+(e&&e.message||e)}
+  $("e-save").disabled=false}
+
 /* ---------- entry tab ---------- */
 function buildGrid(){
   let h='<table><thead><tr><th>สี</th>'+SIZES.map(s=>'<th>'+s+'</th>').join("")+'<th>รวม</th></tr></thead><tbody>';
@@ -1316,6 +1348,7 @@ $("e-date").onchange=()=>{if($("e-date").value)fillGrid($("e-date").value)};
 $("e-printed").oninput=calc;
 $("e-clear").onclick=()=>{ALL.forEach((c,r)=>SIZES.forEach((s,i)=>$("g-"+r+"-"+i).value=""));$("e-printed").value="";calc()};
 $("e-save").onclick=async()=>{
+  if(EM==="m")return saveMonth();
   const iso=$("e-date").value, m=$("e-msg");
   if(!iso){m.textContent="เลือกวันที่ก่อน";return}
   const key=$("e-key").value.trim(); if(!key){m.textContent="ใส่รหัสบันทึกก่อน";return}
@@ -1548,6 +1581,7 @@ async function load(){
     const r=await fetch(API_URL); const j=await r.json(); const m={};
     (j.rows||[]).forEach(x=>{const d=normD(x[0]); if(!m[d]) m[d]={rows:{},printedTotal:null}; m[d].rows[x[1]]=x.slice(2,8).map(v=>Number(v)||0)});
     docs=m; PLANS=buildPlans(j.plan); loaded=true;
+    MACT={};(j.stock||[]).forEach(x=>{if(x[1]!=="mact")return;const m=normD(x[0]).slice(0,7);MACT[m]=MACT[m]||{};MACT[m][x[2]]=x.slice(3,9).map(v=>Number(v)||0)});
     STM={};(j.steam||[]).forEach(x=>{const d=normD(x[0]),pk=SUPMAP[x[1]];if(!pk)return;STM[d]=STM[d]||{};const a=STM[d][pk]=STM[d][pk]||[0,0,0,0,0,0];x.slice(2,8).forEach((v,i)=>a[i]+=Number(v)||0)});
     const ds=dates();
     if(first&&ds.length){first=false;$("from").value=ds[0];$("to").value=ds[ds.length-1];$("e-date").value=ds[ds.length-1];fillGrid(ds[ds.length-1]);$("p-month").value=ds[ds.length-1].slice(0,7);pRefreshRev()}
