@@ -264,9 +264,10 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-p" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16"/><path d="M17 10l3 2-3 2"/></svg><span>เทียบแผนผลิต</span></button>
     <button role="tab" id="tab-m" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 15l5-5 4 3 7-8"/><path d="M15 5h5v5"/></svg><span>ติดตามผลิตจริง</span></button>
     <button role="tab" id="tab-e" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อกสิ้นเดือน</span></button>
+    <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายสัปดาห์</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 48)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 49)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -418,10 +419,35 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div class="panel" style="display:none"><h2>ส่วนต่างรายแถว (ได้จากแผ่น − แผน) ค่าลบ = ขาด</h2><div class="scroll" id="p-rowdiff"></div></div>
   </div>
 
+  <div id="view-w" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="panel">
+      <div class="head2"><h2 style="font-size:15px">ประเมินสต็อกรายสัปดาห์ · FG ที่คาดว่าจะมีในแต่ละสัปดาห์</h2><button class="btn" id="wxl">ดาวน์โหลด Excel</button></div>
+      <div class="row" style="align-items:flex-end;gap:10px 14px">
+        <div style="min-width:200px"><span class="lbl">สต็อกจริง ณ วันที่</span><select id="w-sd"></select></div>
+        <div style="min-width:170px"><span class="lbl">คิดถึงวันที่ (สิ้นเดือน)</span><input type="date" id="w-end"></div>
+        <div style="min-width:110px"><span class="lbl">หักผลิตออก (%)</span><input type="number" id="w-px" min="0" max="100" step="1"></div>
+      </div>
+      <div class="note" id="w-set" style="margin-top:8px"></div>
+    </div>
+    <div id="w-warn" class="msg warn" hidden></div>
+    <div class="panel" id="e-wkp">
+      <h2>ภาพรวมรายสัปดาห์ (สำหรับทีมซัพพอร์ต)</h2>
+      <div class="note" id="e-wkn"></div>
+      <div class="scroll" id="e-wk1"></div>
+      <div class="t5" style="margin-top:14px">ผลิตเพิ่มรายสัปดาห์ แยกสี (คู่)</div><div class="scroll" id="e-wk2"></div>
+      <div class="t5" style="margin-top:14px">FG คงเหลือสิ้นสัปดาห์ แยกสี (คู่) หลังหักยอดขายคาดการณ์</div><div class="scroll" id="e-wk3"></div>
+    </div>
+    <div class="panel" id="w-dt">
+      <details class="dbox"><summary>ดูรายละเอียดสี × เบอร์ ของแต่ละสัปดาห์</summary><div class="dbody">
+        <div style="max-width:300px"><span class="lbl">เลือกสัปดาห์</span><select id="w-per"></select></div>
+        <div id="w-dtb"></div>
+      </div></details>
+    </div>
+  </div>
   <div id="view-e" hidden style="display:flex;flex-direction:column;gap:16px">
     <div class="panel">
       <div class="head2"><h2 style="font-size:15px">สรุปคงเหลือสิ้นเดือน = สต็อกวันนี้ + ผลิตได้ − โควต้าที่ยังไม่ได้ขาย</h2><button class="btn" id="exl">ดาวน์โหลด Excel</button><input type="password" id="e-key" style="display:none" autocomplete="off"></div>
-      <div class="row" style="align-items:center;gap:10px 14px">
+      <div class="row" style="align-items:center;gap:10px 14px;display:none">
         <span class="lbl" style="margin:0">ดูผลแบบ</span>
         <label class="chip on"><input type="radio" name="e-view" value="m" checked>รายเดือน (ณ สิ้นเดือน)</label>
         <label class="chip"><input type="radio" name="e-view" value="w">รายสัปดาห์</label>
@@ -502,13 +528,6 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
       <div class="kpis" id="e-k5"></div>
       <div class="t5" id="e-h5"></div><div class="scroll" id="e-t5"></div>
       <div class="note" id="e-foot"></div>
-    </div>
-    <div class="panel" id="e-wkp" hidden>
-      <h2>ภาพรวมรายสัปดาห์ · FG ที่คาดว่าจะมี (สำหรับทีมซัพพอร์ต)</h2>
-      <div class="note" id="e-wkn"></div>
-      <div class="scroll" id="e-wk1"></div>
-      <div class="t5" style="margin-top:14px">ผลิตเพิ่มรายสัปดาห์ แยกสี (คู่)</div><div class="scroll" id="e-wk2"></div>
-      <div class="t5" style="margin-top:14px">FG คงเหลือสิ้นสัปดาห์ แยกสี (คู่) หลังหักยอดขายคาดการณ์</div><div class="scroll" id="e-wk3"></div>
     </div>
     <div class="kpis" id="e-kpis" style="display:none"></div>
     <div class="panel" id="e-nx">
@@ -1533,9 +1552,9 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-const PT={q:"แผ่นยางประกอบ",p:"เทียบแผนผลิต",m:"ติดตามผลิตจริง",e:"ประเมินสต็อกสิ้นเดือน",r:"รับเข้าโกดังพี่ชุมพร"};
-function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
-$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};
+const PT={q:"แผ่นยางประกอบ",p:"เทียบแผนผลิต",m:"ติดตามผลิตจริง",e:"ประเมินสต็อกสิ้นเดือน",w:"ประเมินสต็อกรายสัปดาห์",r:"รับเข้าโกดังพี่ชุมพร"};
+function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)})}
+$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-w").onclick=()=>{show("w");initE();renderE()};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
 $("tab-r").onclick=()=>{show("r");window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
 window.addEventListener("message",e=>{if(e.origin===location.origin&&e.data&&e.data.fgh)$("fr").style.height=Math.max(500,e.data.fgh+8)+"px"});
@@ -2370,28 +2389,48 @@ function wkRows(c){
   const s=(o,k)=>SC.reduce((a,x)=>a+T(o[k][x]),0);
   return P.map(o=>({o,start:s(o,"start"),inn:s(o,"inn"),mid:s(o,"mid"),quota:s(o,"quota"),end:s(o,"end"),cv,st:(!cv||o.from>cv)?2:(o.to>cv?1:0)}));
 }
-function renderWk(c){
-  const p=$("e-wkp");if(!p)return;
-  if(EV!=="w"||!c||c.err){p.hidden=true;return}
-  const R=wkRows(c);if(!R.length){p.hidden=true;return}
-  p.hidden=false;
-  const T=a=>a.reduce((x,y)=>x+y,0),r0=v=>Math.round(v),F0=v=>r0(v)?fmt(r0(v)):"–",cv=R[0].cv;
+let PIW=0;
+function renderW(c){
+  if($("view-w").hidden)return;
+  const sd=$("w-sd");if(sd.innerHTML!==$("e-sd").innerHTML)sd.innerHTML=$("e-sd").innerHTML;sd.value=$("e-sd").value;
+  if(document.activeElement!==$("w-end"))$("w-end").value=$("e-end").value;
+  if(document.activeElement!==$("w-px"))$("w-px").value=$("e-px").value;
+  const m=$("w-warn"),p=$("e-wkp"),dt=$("w-dt");
+  if(!c||c.err){m.hidden=false;m.textContent=c?c.err:"";p.hidden=true;dt.hidden=true;$("w-set").textContent="";return}
+  const ew=$("e-warn");m.hidden=ew.hidden;m.innerHTML=ew.innerHTML;
+  $("w-set").textContent=$("e-s2n").textContent+" · ตั้งค่าอื่นๆ (ดีเลย์ ช่วงแผ่นยาง โควต้า) ปรับได้ที่หน้า ประเมินสต็อกสิ้นเดือน"+(c.mul===1?" · ตอนนี้เลือกโหมดเต็ม cap จึงไม่หักผลิตออก":"");
+  const R=wkRows(c);if(!R.length){p.hidden=true;dt.hidden=true;return}
+  p.hidden=false;dt.hidden=false;
+  const T=a=>a.reduce((x,y)=>x+y,0),r0=v=>Math.round(v),F0=v=>r0(v)?fmt(r0(v)):"–",N0=v=>r0(v)<0?"-"+fmt(-r0(v)):F0(v),cv=R[0].cv;
+  const cell=(y,flag)=>'<td class="'+(flag&&r0(y)<0?"neg":(r0(y)?"":"zero"))+'"'+(flag&&r0(y)<0?' style="font-weight:600"':"")+">"+N0(y)+"</td>";
   const stT=["ครบ","แผ่นยางมีถึง "+(cv?thD(cv):""),"ยังไม่มีข้อมูลแผ่นยาง"];
   let a='<table><thead><tr><th>สัปดาห์</th><th>สต็อกต้นสัปดาห์</th><th>+ ผลิตเพิ่ม</th><th>= FG พร้อมขาย</th><th>− คาดขาย (โควต้า)</th><th>= คงเหลือสิ้นสัปดาห์</th><th>ข้อมูลแผ่นยาง</th></tr></thead><tbody>';
-  R.forEach((r,i)=>{a+="<tr><td>"+r.o.label+"</td><td>"+F0(r.start)+"</td><td>"+F0(r.inn)+'</td><td style="font-weight:600">'+F0(r.mid)+"</td><td>"+F0(r.quota)+'</td><td class="'+(r0(r.end)<0?"neg":"")+'" style="font-weight:600">'+(r0(r.end)<0?"-"+fmt(-r0(r.end)):F0(r.end))+'</td><td style="'+(r.st?"color:var(--warn,#b45309)":"")+'">'+stT[r.st]+"</td></tr>"});
-  a+='</tbody><tfoot><tr><td>รวมทุกสัปดาห์</td><td></td><td>'+fmt(r0(R.reduce((x,r)=>x+r.inn,0)))+'</td><td></td><td>'+fmt(r0(R.reduce((x,r)=>x+r.quota,0)))+"</td><td></td><td></td></tr></tfoot></table>";
+  R.forEach(r=>{a+="<tr><td>"+r.o.label+"</td><td>"+F0(r.start)+"</td><td>"+F0(r.inn)+'</td><td style="font-weight:600">'+F0(r.mid)+"</td><td>"+F0(r.quota)+'</td><td class="'+(r0(r.end)<0?"neg":"")+'" style="font-weight:600">'+N0(r.end)+'</td><td style="'+(r.st?"color:var(--warn,#b45309)":"")+'">'+stT[r.st]+"</td></tr>"});
+  a+='</tbody><tfoot><tr><td>รวมทุกสัปดาห์</td><td></td><td>'+F0(R.reduce((x,r)=>x+r.inn,0))+'</td><td></td><td>'+F0(R.reduce((x,r)=>x+r.quota,0))+"</td><td></td><td></td></tr></tfoot></table>";
   $("e-wk1").innerHTML=a;
   const mx=(k,flag)=>{let t='<table><thead><tr><th>สี</th>'+R.map((r,i)=>"<th>ส."+(i+1)+'<br><span style="font-weight:400;font-size:11px">'+r.o.rg+"</span></th>").join("")+(flag?"":"<th>รวม</th>")+"</tr></thead><tbody>";const col=R.map(()=>0);
-    SC.forEach(x=>{const v=R.map(r=>T(r.o[k][x]));v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>'<td class="'+(flag&&r0(y)<0?"neg":(r0(y)?"":"zero"))+'"'+(flag&&r0(y)<0?' style="font-weight:600"':"")+">"+(r0(y)<0?"-"+fmt(-r0(y)):F0(y))+"</td>").join("")+(flag?"":"<td>"+F0(T(v))+"</td>")+"</tr>"});
-    return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>'<td class="'+(flag&&r0(y)<0?"neg":"")+'">'+(r0(y)<0?"-"+fmt(-r0(y)):F0(y))+"</td>").join("")+(flag?"":"<td>"+F0(T(col))+"</td>")+"</tr></tfoot></table>"};
+    SC.forEach(x=>{const v=R.map(r=>T(r.o[k][x]));v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>cell(y,flag)).join("")+(flag?"":"<td>"+F0(T(v))+"</td>")+"</tr>"});
+    return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>cell(y,flag)).join("")+(flag?"":"<td>"+F0(T(col))+"</td>")+"</tr></tfoot></table>"};
   $("e-wk2").innerHTML=mx("inn",false);$("e-wk3").innerHTML=mx("end",true);
   $("e-wkn").innerHTML="สต็อกเริ่มต้น = สต็อกจริง ณ "+thD(c.sd)+" · ผลิตเพิ่ม = แผ่นยางที่จ่ายประกอบ × "+c.f+" คู่"+(c.mul!==1?" (หักผลิตออก "+Math.round((1-c.mul)*100)+"%)":"")+" ตามวันที่คาดว่าจะเข้าโกดัง · FG พร้อมขาย = สต็อกต้นสัปดาห์ + ผลิตเพิ่ม · คาดขาย = โควต้าฝ่ายขายคงเหลือ เฉลี่ยตามจำนวนวัน"+(c.hasQ?"":" (ยังไม่ได้กรอกโควต้า จึงเป็น 0)")+". เป็นตัวเลขคร่าวๆ ไว้ประกอบการคุยกับฝ่ายขาย ไม่ใช่ยอดยืนยันจากโรงงาน"+(R.some(r=>r.st)?' <b style="color:#b45309">สัปดาห์ที่ข้อมูลแผ่นยางยังไม่ถึง ยอดผลิตเพิ่มอาจต่ำกว่าจริง</b>':"");
+  const P=R.map(r=>r.o);if(PIW>=P.length)PIW=0;
+  $("w-per").innerHTML=P.map((o,i)=>'<option value="'+i+'">'+o.label+"</option>").join("");$("w-per").value=PIW;
+  const o=P[PIW],mt=(mm,flag)=>{let t="<table><thead><tr><th>สี</th>"+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",col=Z6();
+    SC.forEach(x=>{const v=mm[x];v.forEach((y,i)=>col[i]+=y);t+="<tr"+tint(x)+"><td>"+(SCN[x]||x)+"</td>"+v.map(y=>cell(y,flag)).join("")+"<td>"+F0(T(v))+"</td></tr>"});
+    return t+"</tbody><tfoot><tr><td>รวมทุกสี</td>"+col.map(y=>cell(y,flag)).join("")+"<td>"+F0(T(col))+"</td></tr></tfoot></table>"};
+  const tt=["1) สต็อกต้นสัปดาห์ (คู่)","2) + ผลิตเพิ่มในสัปดาห์ (คู่)","3) = FG พร้อมขาย (คู่)","4) − คาดขายตามโควต้า (คู่)","5) = คงเหลือสิ้นสัปดาห์ (คู่)"];
+  $("w-dtb").innerHTML=[o.start,o.inn,o.mid,o.quota,o.end].map((mm,i)=>'<div class="t5" style="margin-top:12px">'+tt[i]+'</div><div class="scroll">'+mt(mm,i===4)+"</div>").join("");
 }
+$("w-sd").onchange=()=>{$("e-sd").value=$("w-sd").value;$("e-sd").dispatchEvent(new Event("change"))};
+$("w-end").addEventListener("input",()=>{$("e-end").value=$("w-end").value;$("e-end").dispatchEvent(new Event("input"))});
+$("w-px").addEventListener("input",()=>{$("e-px").value=$("w-px").value;$("e-px").dispatchEvent(new Event("input"))});
+$("w-per").onchange=()=>{PIW=+$("w-per").value;renderE()};
+$("wxl").onclick=async()=>{const b=$("wxl"),old=EV;b.textContent="กำลังสร้างไฟล์…";EV="w";try{await $("exl").onclick()}catch(e){}finally{EV=old}b.textContent="ดาวน์โหลดแล้ว";setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500)};
 function renderE(){
-  if($("view-e").hidden)return;
+  if($("view-e").hidden&&$("view-w").hidden)return;
   rFill();const c=calcE(),W=$("e-warn");
   try{renderNb(c)}catch(err){console.error(err)}
-  if(c.err){try{$("e-wkp").hidden=true}catch(_){}W.hidden=false;W.textContent=c.err;["e-mont","e-k1","e-k2","e-k3","e-k4","e-k5","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-status","e-s2n"].forEach(i=>$(i).innerHTML="");return}
+  if(c.err){try{renderW(c)}catch(err){console.error(err)}W.hidden=false;W.textContent=c.err;["e-mont","e-k1","e-k2","e-k3","e-k4","e-k5","e-t1","e-t2","e-t3","e-t4","e-t5","e-foot","e-status","e-s2n"].forEach(i=>$(i).innerHTML="");return}
   $("e-s2n").textContent="ใช้แผ่นยางที่จ่ายประกอบ "+thD(c.d1)+" – "+thD(c.d2)+" · มีข้อมูล "+c.nd+" วัน · "+(c.mul!==1?"ผลิตจริง หักออก "+Math.round((1-c.mul)*100)+"%":"เต็ม cap ผลิต รง. (ไม่หัก)");
   const T=a=>a.reduce((x,y)=>x+y,0),sum=k=>SC.reduce((a,x)=>a+T(c.res[x][k]),0),w=[];
   if(!c.hasQ)w.push("ยังไม่ได้กรอกโควต้าฝ่ายขาย — ตอนนี้ยอดสิ้นเดือน = สต็อก + ยอดที่จะเข้าเท่านั้น");
@@ -2418,7 +2457,7 @@ function renderE(){
   [o.start,o.inn,o.mid,o.quota,o.end].forEach((m,i)=>{$("e-h"+(i+1)).textContent=H[i];$("e-t"+(i+1)).innerHTML=mat(m,i===4)});
   $("e-h5").style.color="var(--accent)";
   $("e-foot").innerHTML="แผ่นที่นับ: วันจ่าย "+thD(c.d1)+" – "+thD(c.d2)+(c.lag?" (ดีเลย์ "+c.lag+" วัน)":"")+(c.fgLast?" · ใช้ยอดเข้าโกดังพี่ชุมพรจริงถึง "+thD(c.fgLast)+" แทนประมาณการ":"")+" · ขาว/ดำหน้าขาว แบ่งแผ่นขาว: "+c.wsrc+" · ดำปกติ จากแผ่นดำ (ที่เหลือเป็นสีพิเศษ พื้นดำ): "+c.bsrc+" · สีพิเศษอื่น (Xmas, พื้นแดง หูเหลือง ฯลฯ) ไม่มีสต็อกในไฟล์ จึงไม่รวมในตารางนี้";
-  renderMon(c);renderWk(c);window._ec=c;
+  renderMon(c);try{renderW(c)}catch(err){console.error(err)}window._ec=c;
 }
 $("e-per").onchange=()=>{PI=+$("e-per").value;renderE()};
 function rFill(){const r1=$("e-r1"),r2=$("e-r2");if(r1.dataset.man!=="1"&&r2.dataset.man!=="1"){const sd=$("e-sd").value,ed=$("e-end").value,lag=Math.max(0,Math.round(+$("e-lag").value||0));r1.value=sd?addD(sd,-lag):"";r2.value=ed?addD(ed,-lag):""}}
