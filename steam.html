@@ -267,7 +267,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 54)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 55)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -902,6 +902,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
       <div class="field" style="width:170px"><label for="e-key">รหัสบันทึก</label><input type="password" id="e-key" autocomplete="off"></div>
       <div class="field" style="width:170px"><label for="e-printed">ยอดรวมที่พิมพ์ในรายงาน</label><input type="number" id="e-printed" min="0"></div>
     </div>
+    <div class="note">วางจาก Excel ได้: คลิกช่องแรกที่ต้องการ (เช่น เบอร์ 8.5 ของสีนั้น) แล้ว Ctrl+V · copy ทีละแถว (6 ช่องเบอร์) หรือหลายแถวพร้อมกันก็ได้ ถ้า copy คอลัมน์ "รวม" มาด้วยระบบจะข้ามให้</div>
     <div class="scroll entry" id="e-grid"></div>
     <div id="e-check" class="msg">กรอกตัวเลขตามใบรายงาน ช่องว่างถือเป็น 0</div>
     <div class="row"><button class="btn" id="e-save">บันทึกวันนี้</button><button class="btn ghost" id="e-clear">ล้างช่อง</button></div>
@@ -1318,6 +1319,24 @@ async function saveMonth(){
     if(!r.ok)throw new Error(r.error||"error");msg.textContent="บันทึกยอดรวม "+mLabel(m)+" แล้ว รวม "+fmt(tot)+" คู่";await load()}
   catch(e){msg.textContent="บันทึกไม่สำเร็จ: "+(e&&e.message||e)}
   $("e-save").disabled=false}
+
+/* ---------- paste from Excel into grids (g- = entry, p- = plan) ---------- */
+document.addEventListener("paste",e=>{
+  const t=e.target,m=t&&t.id&&t.id.match(/^(g|p)-(\d+)-(\d+)$/);if(!m)return;
+  const txt=(e.clipboardData||window.clipboardData).getData("text");if(!txt)return;
+  const rows=txt.replace(/\r/g,"").split("\n").filter((l,i,a)=>l.trim()!==""||i<a.length-1).map(l=>l.split("\t"));
+  while(rows.length&&rows[rows.length-1].every(c=>c.trim()===""))rows.pop();
+  if(!rows.length||(rows.length===1&&rows[0].length===1))return;   // วางค่าเดียว ใช้ของเดิม
+  e.preventDefault();
+  const pre=m[1],r0=+m[2],c0=+m[3],num=v=>{v=String(v).trim().replace(/,/g,"");if(v===""||v==="-"||v==="–")return 0;const n=Number(v);return isNaN(n)?null:Math.max(0,Math.round(n))};
+  let n=0,skipped=0;
+  rows.forEach((cells,k)=>{
+    let st=c0;if(cells.length>1&&num(cells[0])===null){cells=cells.slice(1);st=0}      // แถวที่ copy มาพร้อมชื่อสี → เริ่มที่เบอร์ 8.5
+    cells.slice(0,SIZES.length-st).forEach((v,j)=>{const el=$(pre+"-"+(r0+k)+"-"+(st+j)),x=num(v);if(!el){skipped++;return}if(x===null){skipped++;return}el.value=x?x:"";n++});
+  });
+  const g=$(pre==="g"?"e-grid":"p-grid");g.dispatchEvent(new Event("input",{bubbles:true}));
+  const msg=$(pre==="g"?"e-msg":"p-msg");if(msg)msg.textContent="วางข้อมูลแล้ว "+n+" ช่อง"+(skipped?" (ข้าม "+skipped+" ช่องที่ไม่ใช่ตัวเลข)":"")+" · ตรวจยอดรวมก่อนกดบันทึก";
+});
 
 /* ---------- entry tab ---------- */
 function buildGrid(){
