@@ -438,7 +438,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 93)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 95)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2325,6 +2325,9 @@ function cmpData(f,t){const o={plan:{},asm:{},act:{}},notes=[],fx=F(),add=(M,k,v
     const days=Math.round((new Date(b)-new Date(a))/864e5)+1,fr=days/dim,rs=xpRevs(m),lr=rs[rs.length-1],cl=PL[m][lr].colors;Object.keys(cl).forEach(k=>add(o.plan,k,cl[k],fr));
     notes.push(thM(m)+" "+revName(lr)+(fr<1?" (สัดส่วน "+days+"/"+dim+" วัน)":""))});
   dates().forEach(d=>{if(d<f||d>t)return;Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;add(o.asm,SUPMAP[k]||k,DATA[d][k],fx)})});
+  (function(){const bk=o.asm["ดำ"],pl=o.plan["เหลือง/ดำ"];if(!bk||!pl)return;const sp=o.asm["เหลือง/ดำ"]=o.asm["เหลือง/ดำ"]||cZ();let cut=0;
+    bk.forEach((x,i)=>{const c=Math.max(0,Math.min(pl[i]||0,x));bk[i]-=c;sp[i]+=c;cut+=c});
+    if(cut)notes.push("หักแผ่นยางดำล้วน "+fmt(Math.round(cut))+" แผ่น ไปทำ พื้นดำ หูเหลือง(โควิด) ตามแผนก่อน ที่เหลือเป็นสีดำ")})();
   const dly=new Set();Object.keys(FGD).forEach(d=>{if(d<f||d>t)return;let any=false;Object.keys(FGD[d]).forEach(k=>{add(o.act,k,FGD[d][k],1);if(FGD[d][k].some(x=>x))any=true});if(any)dly.add(d.slice(0,7))});
   const MA={};(STK||[]).forEach(r=>{if(r[1]!=="mact")return;const m=normD(r[0]).slice(0,7);(MA[m]=MA[m]||{})[r[2]]=r.slice(3,9).map(v=>Number(v)||0)});
   Object.keys(MA).sort().forEach(m=>{if(dly.has(m))return;const[y,mo]=m.split("-").map(Number),dim=new Date(y,mo,0).getDate(),a=f>m+"-01"?f:m+"-01",b=t<m+"-"+cp2(dim)?t:m+"-"+cp2(dim);if(a>b)return;
@@ -3017,6 +3020,15 @@ const bFoot=()=>gFoot("b","bt-",false),qFoot=()=>gFoot("q","qt-",true);
 const gv=id=>nn(($(id).value||"").replace(/,/g,"").trim());
 $("e-grid").addEventListener("input",()=>qFoot());
 $("e-grid").addEventListener("input",e=>{const t=e.target;if(!t||!/^q-/.test(t.id))return;const d=t.value.replace(/[^0-9]/g,"");const f=d?Number(d).toLocaleString("en-US"):"";if(f!==t.value)t.value=f});
+(function(){const nm=(p,r,c)=>c<6?p+"-s-"+r+"-"+c:(c===6?p+"-t-"+r:p+"-g-"+r),
+ pc=id=>{let m=id.match(/^([qb])-s-(\d+)-(\d+)$/);if(m)return[m[1],+m[2],+m[3]];m=id.match(/^([qb])-t-(\d+)$/);if(m)return[m[1],+m[2],6];m=id.match(/^([qb])-g-(\d+)$/);return m?[m[1],+m[2],7]:null};
+ document.addEventListener("keydown",e=>{const t=e.target,x=t&&t.id&&pc(t.id);if(!x||e.ctrlKey||e.metaKey||e.altKey)return;let [p,r,c]=x;const k=e.key;
+  if(k==="ArrowRight")c++;else if(k==="ArrowLeft")c--;else if(k==="ArrowDown"||k==="Enter")r+=(e.shiftKey&&k==="Enter")?-1:1;else if(k==="ArrowUp")r--;else return;
+  e.preventDefault();const n=$(nm(p,r,c));if(n){n.focus();n.select()}});
+ document.addEventListener("paste",e=>{const t=e.target,x=t&&t.id&&pc(t.id);if(!x)return;const txt=(e.clipboardData||window.clipboardData).getData("text");if(!txt||!/[\t\n]/.test(txt.trim()))return;e.preventDefault();
+  const rows=txt.replace(/\r/g,"").split("\n").filter((l,i,a)=>l!==""||i<a.length-1);
+  rows.forEach((l,i)=>l.split("\t").forEach((v,j)=>{const n=$(nm(x[0],x[1]+i,x[2]+j));if(n){const d=v.replace(/[^0-9]/g,"");n.value=d?Number(d).toLocaleString("en-US"):"";}}));
+  qFoot();bFoot()})})();
 function qIn(){const q={};SC.forEach((c,i)=>{q[c]={total:gv("q-t-"+i)||0,sizes:SIZES.map((z,j)=>gv("q-s-"+i+"-"+j)),target:gv("q-g-"+i)||0}});return q}
 function fillGrid(d){
   const Q=stkGet("quota",d),G=stkGet("target",d);
