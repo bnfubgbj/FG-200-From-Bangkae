@@ -271,6 +271,10 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 .csvg{width:100%;height:auto;display:block}.csvg .cg{stroke:var(--line);stroke-width:1}.csvg .ct{font-size:11px;fill:var(--muted)}.csvg .tl{font-size:12px;fill:var(--ink)}.csvg .tv{font-size:11px;font-weight:600;fill:var(--ink)}
 .cleg{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 10px;font-size:13px}.cleg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .cleg .lg-plan,.cleg .lg-asm,.cleg .lg-act{background:#555}.cleg .lg-plan{background:rgba(85,85,85,.28);border:1.4px solid #333}.cleg .lg-asm{background:repeating-linear-gradient(45deg,#555 0 3px,#bbb 3px 6px)}
+.sdk{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0}.sdk>div{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface)}.sdk .k{font-size:12px;color:var(--muted)}.sdk .v{font:600 24px/1.25 var(--f-head,inherit);font-variant-numeric:tabular-nums}.sdk .s{font-size:12.5px;font-weight:600}
+.sdup{color:var(--ok)}.csvg .sdup2{fill:var(--ok)}.sddn{color:var(--bad)}.csvg .sddn2{fill:var(--bad)}.sdz{color:var(--muted)}
+.sdh{border-collapse:separate;border-spacing:2px;width:100%;font-size:13px;font-variant-numeric:tabular-nums}.sdh th{font-weight:600;color:var(--muted);padding:4px 6px;text-align:right;white-space:nowrap}.sdh th:first-child,.sdh td:first-child{text-align:left}.sdh td{padding:6px 5px;text-align:right;border-radius:5px;white-space:nowrap}.sdh td.l{white-space:normal;min-width:150px;font-weight:500;position:sticky;left:0;background:var(--surface)}.sdh td.l i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;border:1px solid rgba(0,0,0,.35);vertical-align:-1px}.sdh tfoot td{font-weight:700;border-top:2px solid var(--line)}
+.sdm{display:flex;gap:8px;align-items:center;font-size:13px;margin:0 0 8px}.sdm button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;font:inherit;cursor:pointer}.sdm button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .cdg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:16px}.ccard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);min-width:0}.ccard h3{margin:0 0 8px;font-size:15px}.ccard.wide{grid-column:1/-1}
 #c-dash[aria-pressed="true"]{background:var(--accent);color:#fff}
 .ttabs{display:flex;gap:6px;margin:0 0 14px;border-bottom:2px solid var(--line);flex-wrap:wrap}
@@ -337,21 +341,44 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 #xp-list .xdn{color:#c2410c;font-weight:600}#xp-list .xup{color:#15803d;font-weight:600}
 #xsl-list .xdn{color:#c2410c;font-weight:600}#xsl-list .xup{color:#15803d;font-weight:600}
 @media (max-width:860px){#xsub,.gsub{flex-direction:row;padding-left:0}}
+/* ===== ธีมสี (ฟ้า = เดิม · เขียวอ่อน · ชมพูอ่อน) ===== */
+:root{--side:#0f6cbd;--side-fg:#eaf2fb;--side-fg2:#cfe4fa;--side-hover:rgba(255,255,255,.15)}
+.side{background:var(--side)}
+.brand b{color:var(--side-fg)}.brand small,.ver,.ver a{color:var(--side-fg2)}
+.smenu button{color:var(--side-fg)}
+.smenu button:hover{color:var(--side-fg);background:var(--side-hover)}
+.smenu button[aria-selected="true"]{background:#fff;color:var(--hdr-ink)}
+.smenu button[aria-selected="true"] svg{color:var(--accent)}
+.brand-en{display:block;margin-top:7px;font-size:11.5px;line-height:1.4;color:var(--side-fg2)}
+.skins{display:flex;gap:9px;align-items:center;margin:0 10px 12px;font-size:12px;color:var(--side-fg2)}
+.skins button{width:22px;height:22px;border-radius:50%;border:2px solid #fff;padding:0;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.25);transition:transform .15s}
+.skins button:hover{transform:scale(1.1)}.skins button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--side-fg)}
+@media (max-width:860px){.skins{display:none}}
+@media (prefers-color-scheme:light){:root[data-skin="green"]:not([data-theme="dark"]){--bg:#f2f8f4;--surface2:#f7fbf8;--line:#dce8e0;--line2:#c3d6ca;--accent:#2e9a69;--accent-ink:#fff;--accent-soft:#e7f5ed;--sel:#cdeedb;--hdr-bg:#e1f3e8;--hdr-ink:#17633f;--gold:#2e9a69;--bar:#2e9a69;--side:#d6efe0;--side-fg:#16442d;--side-fg2:#3f7a5d;--side-hover:rgba(22,68,45,.1)}}
+:root[data-skin="green"][data-theme="light"]{--bg:#f2f8f4;--surface2:#f7fbf8;--line:#dce8e0;--line2:#c3d6ca;--accent:#2e9a69;--accent-ink:#fff;--accent-soft:#e7f5ed;--sel:#cdeedb;--hdr-bg:#e1f3e8;--hdr-ink:#17633f;--gold:#2e9a69;--bar:#2e9a69;--side:#d6efe0;--side-fg:#16442d;--side-fg2:#3f7a5d;--side-hover:rgba(22,68,45,.1)}
+@media (prefers-color-scheme:dark){:root[data-skin="green"]:not([data-theme="light"]){--accent:#52c890;--accent-ink:#06261a;--accent-soft:#16322a;--sel:#164a35;--hdr-bg:#18352b;--hdr-ink:#a6e8c6;--gold:#52c890;--bar:#52c890;--side:#1f5a42;--side-fg:#e6f7ee;--side-fg2:#b8e3cb;--side-hover:rgba(255,255,255,.14)}}
+:root[data-skin="green"][data-theme="dark"]{--accent:#52c890;--accent-ink:#06261a;--accent-soft:#16322a;--sel:#164a35;--hdr-bg:#18352b;--hdr-ink:#a6e8c6;--gold:#52c890;--bar:#52c890;--side:#1f5a42;--side-fg:#e6f7ee;--side-fg2:#b8e3cb;--side-hover:rgba(255,255,255,.14)}
+@media (prefers-color-scheme:light){:root[data-skin="pink"]:not([data-theme="dark"]){--bg:#fbf3f6;--surface2:#fdf7f9;--line:#f0dde5;--line2:#e3c4d2;--accent:#d6568a;--accent-ink:#fff;--accent-soft:#fdeef4;--sel:#fbd3e4;--hdr-bg:#fce6ef;--hdr-ink:#9a2a5c;--gold:#d6568a;--bar:#d6568a;--side:#f9d8e6;--side-fg:#661c40;--side-fg2:#a24a73;--side-hover:rgba(102,28,64,.1)}}
+:root[data-skin="pink"][data-theme="light"]{--bg:#fbf3f6;--surface2:#fdf7f9;--line:#f0dde5;--line2:#e3c4d2;--accent:#d6568a;--accent-ink:#fff;--accent-soft:#fdeef4;--sel:#fbd3e4;--hdr-bg:#fce6ef;--hdr-ink:#9a2a5c;--gold:#d6568a;--bar:#d6568a;--side:#f9d8e6;--side-fg:#661c40;--side-fg2:#a24a73;--side-hover:rgba(102,28,64,.1)}
+@media (prefers-color-scheme:dark){:root[data-skin="pink"]:not([data-theme="light"]){--accent:#f27fae;--accent-ink:#3a0b20;--accent-soft:#3a1a29;--sel:#5c2640;--hdr-bg:#43202f;--hdr-ink:#ffc2da;--gold:#f27fae;--bar:#f27fae;--side:#7a2c52;--side-fg:#fdeaf2;--side-fg2:#f4bcd3;--side-hover:rgba(255,255,255,.14)}}
+:root[data-skin="pink"][data-theme="dark"]{--accent:#f27fae;--accent-ink:#3a0b20;--accent-soft:#3a1a29;--sel:#5c2640;--hdr-bg:#43202f;--hdr-ink:#ffc2da;--gold:#f27fae;--bar:#f27fae;--side:#7a2c52;--side-fg:#fdeaf2;--side-fg2:#f4bcd3;--side-hover:rgba(255,255,255,.14)}
 </style>
+<script>try{var _s=localStorage.getItem("fgskin");if(_s&&_s!=="blue")document.documentElement.setAttribute("data-skin",_s)}catch(e){}</script>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
-  <div class="brand"><b>ฟองน้ำ รุ่น 200</b><small>คาดการณ์การผลิต</small></div>
+  <div class="brand"><b>ฟองน้ำ รุ่น 200</b><small>คาดการณ์การผลิต</small><span class="brand-en">Nanyang production plan and stock management</span></div>
   <div class="sgroup">เมนูหลัก</div>
   <div class="smenu" role="tablist">
     <button role="tab" id="tab-x" aria-selected="false" aria-expanded="false" aria-controls="xsub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span>ข้อมูล</span><span id="x-car" style="margin-left:auto;font-size:11px;opacity:.8">▾</span></button>
-    <div id="xsub" hidden><button role="tab" id="tab-x1" aria-selected="false"><span>แผนผลิต <small>(PDF)</small></span></button><button role="tab" id="tab-x2" aria-selected="false"><span>แผนประกอบยาง <small>(Excel)</small></span></button><button role="tab" id="tab-x3" aria-selected="false"><span>รับเข้าโกดังพี่ชุมพร</span></button><button role="tab" id="tab-x4" aria-selected="false"><span>ยอดขายรายเดือน</span></button></div>
+    <div id="xsub" hidden><button role="tab" id="tab-x1" aria-selected="false"><span>แผนผลิต <small>(PDF)</small></span></button><button role="tab" id="tab-x2" aria-selected="false"><span>แผนประกอบยาง <small>(Excel)</small></span></button><button role="tab" id="tab-x3" aria-selected="false"><span>รับเข้าโกดังพี่ชุมพร</span></button><button role="tab" id="tab-x5" aria-selected="false"><span>อัปเดตสต็อก</span></button><button role="tab" id="tab-x6" aria-selected="false"><span>โควต้าฝ่ายขายที่เหลือ</span></button></div><button role="tab" id="tab-x4" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><rect x="5" y="11" width="3" height="7" rx="1"/><rect x="10.5" y="6" width="3" height="12" rx="1"/><rect x="16" y="9" width="3" height="9" rx="1"/></svg><span>ยอดขายรายเดือน</span></button>
     <button role="tab" id="tab-t" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 15l5-5 4 3 7-8"/><path d="M15 5h5v5"/></svg><span>ติดตามการผลิต</span></button>
     <div id="tsub" hidden style="display:none"><button role="tab" id="tab-p" aria-selected="false"><span>แผนการผลิต</span></button><button role="tab" id="tab-q" aria-selected="true"><span>แผนประกอบ</span></button><button role="tab" id="tab-m" aria-selected="false"><span>รับจริงเข้าสต๊อก</span></button></div>
     <button role="tab" id="tab-s" aria-selected="false" aria-expanded="false" aria-controls="ssub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อก</span><span id="s-car" style="margin-left:auto;font-size:11px;opacity:.8">▾</span></button>
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 85)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="skins" id="skins" role="group" aria-label="ธีมสี"><span>ธีมสี</span><button type="button" data-skin="blue" title="ฟ้า" aria-label="ธีมฟ้า" style="background:#0f6cbd"></button><button type="button" data-skin="green" title="เขียวอ่อน" aria-label="ธีมเขียวอ่อน" style="background:#8fd6ae"></button><button type="button" data-skin="pink" title="ชมพูอ่อน" aria-label="ธีมชมพูอ่อน" style="background:#f6b0cb"></button></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 87)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -440,12 +467,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div class="panel" id="st1">
       <h2>1) สต็อกต้นงวด (น้องสุ)</h2>
       <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">ใช้สต็อก ณ วันที่</span><select id="po-sd"></select></div></div>
-      <span id="e-d1-ph"></span><details class="dbox" id="e-d1"><summary>นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด</summary><div class="dbody">
-      <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่น้องสุนำสต็อกจาก รง. มาตัดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
-      <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button><button class="btn ghost" id="e-fdel" type="button">ลบสต็อกวันที่ที่เลือก</button></div>
-      <div id="e-fprev" class="note"></div>
-      <div id="ps-msg" class="msg" hidden></div>
-    </div></details>
+      <div class="note">นำเข้า / เปลี่ยนไฟล์สต็อกที่ <a href="#" data-go="x5">ข้อมูล › อัปเดตสต็อก</a></div>
       <div id="po-d1"></div>
       
     
@@ -565,8 +587,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div class="panel" id="es1">
       <h2>1) สต็อก ณ วันนี้ (จากไฟล์พี่ชุมพร)</h2>
       <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div></div>
-      <div class="note">ไฟล์สต็อกพี่ชุมพรเปลี่ยนทุกวัน: เลือกไฟล์ใหม่ → ตรวจวันที่ → กดบันทึกสต็อก (วันใหม่ไม่ทับวันเก่า ส่วนวันเดิมจะถูกเขียนทับ)</div>
-      <div id="e-s1imp"></div>
+      <div class="note">อัปเดตไฟล์สต็อกใหม่ได้ที่ <a href="#" data-go="x5">ข้อมูล › อัปเดตสต็อก</a> (ไฟล์เปลี่ยนทุกวัน วันใหม่ไม่ทับวันเก่า)</div>
       <div class="note" id="e-stale"></div>
       <div class="note" id="e-status"></div>
       <div id="e-spec"></div>
@@ -610,19 +631,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     </div>
     <div class="panel" id="es4">
       <h2>4) − โควต้าฝ่ายขายที่ยังไม่ได้ขาย</h2>
-      <details class="dbox" id="e-d2"><summary>โควต้าฝ่ายขายคงเหลือ (นำเข้า / แก้ไข)</summary><div class="dbody">
-      <div class="note">เลือกไฟล์โควต้า Excel (.xlsx) ด้านล่าง ระบบกรอกตารางให้เอง หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
-      <div><span class="lbl" hidden>วางตาราง</span>
-        <textarea id="e-paste" hidden rows="4" placeholder="คลุมตารางโควต้าใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V (หรือวางลงช่องตัวเลขในตารางด้านล่างได้เลย)" style="width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px"></textarea>
-        <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="e-pbtn" type="button" hidden>นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="e-qfile" accept=".xlsx" style="display:none"></label><span id="e-pmsg" class="note"></span></div></div>
-      <div class="scroll" id="e-grid"></div>
-      <div class="row" style="align-items:center">
-        <div style="min-width:170px"><span class="lbl">โควต้า ณ วันที่</span><input type="date" id="e-qdate"></div>
-        <div style="min-width:150px"><span class="lbl">ผู้กรอก</span><input type="text" id="e-by" placeholder="ชื่อน้อง" maxlength="40"></div>
-        <div style="min-width:190px"><span class="lbl">ดูที่บันทึกไว้</span><select id="e-qd"></select></div>
-        <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
-      </div>
-    </div></details>
+      <div class="note">แก้ไข / นำเข้าโควต้าที่ <a href="#" data-go="x6">ข้อมูล › โควต้าฝ่ายขายที่เหลือ</a></div>
       <div class="kpis" id="e-k4"></div>
       <details class="dbox"><summary>ดูตารางสี × เบอร์</summary><div class="dbody"><div class="t5" id="e-h4"></div><div class="scroll" id="e-t4"></div></div></details>
     </div>
@@ -678,9 +687,34 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div class="panel" id="x-plist" hidden><h2>แผนผลิตที่บันทึกไว้</h2><div class="note">แยกตามปี (แสดงเฉพาะปีที่มีแผน) กดที่ปีเพื่อดูแต่ละเดือน กดที่เดือนเพื่อดูรายละเอียดสี × เบอร์ ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="xp-list"></div></div>
     <div class="panel" id="x-steam" hidden><h2>นำเข้าแผนประกอบยาง</h2><div class="note">เลือกไฟล์ Excel "ยอดนึ่งรองเท้าฟองน้ำ ประจำวัน" ที่ได้จากโรงงาน เลือกได้ทีละหลายไฟล์ (1 ไฟล์ = 1 วัน) แล้วตรวจตัวอย่างก่อนกดบันทึก</div><div id="x-steam-slot"></div></div>
     <div class="panel" id="x-sales" hidden><h2>ยอดขายรายเดือน (คู่) แยกสี × เบอร์</h2><div class="note">เลือกเดือน แล้วกรอกยอดขายแต่ละสี × เบอร์ (ช่องว่าง = 0) · วางจาก Excel ได้: คลิกช่องแรกแล้ว Ctrl+V (copy ทีละแถวหรือหลายแถว ถ้ามีคอลัมน์ รวม ระบบข้ามให้) · กดลูกศรหรือ Enter เพื่อเลื่อนช่อง · บันทึกซ้ำเดือนเดิมจะเขียนทับทั้งเดือน</div>
-      <div class="row" style="align-items:flex-end"><div style="min-width:170px"><span class="lbl">เดือน</span><input type="month" id="sl-month"></div><button class="btn" id="sl-save" type="button">บันทึกยอดขายเดือนนี้</button><button class="btn ghost" id="sl-clear" type="button">ล้างช่อง</button><button class="btn ghost" id="sl-imp" type="button">นำเข้าจาก Excel (หลายเดือน)</button><input type="file" id="sl-impf" accept=".xlsx" hidden><button class="btn ghost" id="sl-del" type="button" hidden style="color:var(--bad,#c62828);border-color:var(--bad,#c62828)">ลบข้อมูลเดือนนี้</button></div>
+      <div class="row" style="align-items:flex-end"><div style="min-width:170px"><span class="lbl">เดือน</span><input type="month" id="sl-month"></div><button class="btn" id="sl-save" type="button">บันทึกยอดขายเดือนนี้</button><button class="btn ghost" id="sl-clear" type="button">ล้างช่อง</button><button class="btn ghost" id="sl-imp" type="button">นำเข้าจาก Excel (หลายเดือน)</button><button class="btn ghost" id="sl-dash" type="button" aria-pressed="false">Dashboard เปรียบเทียบ</button><input type="file" id="sl-impf" accept=".xlsx" hidden><button class="btn ghost" id="sl-del" type="button" hidden style="color:var(--bad,#c62828);border-color:var(--bad,#c62828)">ลบข้อมูลเดือนนี้</button></div>
       <div id="sl-msg" class="msg" hidden></div><div class="scroll" id="sl-g"></div>
       <h3 style="margin:8px 0 0">ยอดขายที่บันทึกไว้</h3><div class="note">กดที่ปีเพื่อดูเดือน กดที่เดือนเพื่อดูตาราง สี × เบอร์ · ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="sl-list"></div></div>
+    <div class="panel" id="x-sldash" hidden><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">Dashboard ยอดขายรายเดือน</h2><button class="btn ghost" id="sd-back" type="button">← กลับไปกรอก / ดูรายเดือน</button></div><div class="note">เปรียบเทียบยอดขายทุกเดือนที่บันทึกไว้ (หน่วยคู่) เอาเมาส์ชี้ที่แท่งหรือช่องในตารางเพื่อดูตัวเลข · เลือกสีเดียวเพื่อดูเบอร์ของสีนั้นแทน</div>
+      <div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ตั้งแต่เดือน</span><select id="sd-from"></select></div><div style="min-width:130px"><span class="lbl">ถึงเดือน</span><select id="sd-to"></select></div><div style="min-width:200px"><span class="lbl">สีที่ดู</span><select id="sd-col"></select></div><div style="min-width:130px"><span class="lbl">เทียบเดือน</span><select id="sd-a"></select></div><div style="min-width:130px"><span class="lbl">กับเดือน</span><select id="sd-b"></select></div></div>
+      <div id="sd-body"></div></div>
+    <div class="panel" id="x-stk" hidden><h2>อัปเดตสต็อก</h2><div class="note">ไฟล์สต็อกคงเหลือจากพี่ชุมพร (เปลี่ยนทุกวัน): เลือกไฟล์ → ตรวจวันที่ → กดบันทึก วันใหม่ไม่ทับวันเก่า · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div>
+      <details class="dbox" id="e-d1" open><summary>เลือกไฟล์สต็อก (.xlsx)</summary><div class="dbody">
+      <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่น้องสุนำสต็อกจาก รง. มาตัดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
+      <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
+      <div id="e-fprev" class="note"></div>
+      <div class="row" style="align-items:flex-end;margin-top:6px"><div style="min-width:200px"><span class="lbl">สต็อกที่บันทึกไว้</span><select id="xk-sd"></select></div><button class="btn ghost" id="e-fdel" type="button" style="color:var(--bad);border-color:var(--bad)">ลบสต็อกวันที่ที่เลือก</button></div>
+      <div id="ps-msg" class="msg" hidden></div>
+    </div></details></div>
+    <div class="panel" id="x-quo" hidden><h2>โควต้าฝ่ายขายที่เหลือ</h2><div class="note">ข้อมูลจากน้องสุ: เลือกไฟล์ Excel หรือกรอกในตาราง แล้วเลือกวันที่ → บันทึก · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div><div id="eq-msg" class="msg" hidden></div>
+      <details class="dbox" id="e-d2" open><summary>กรอก / นำเข้าโควต้า</summary><div class="dbody">
+      <div class="note">เลือกไฟล์โควต้า Excel (.xlsx) ด้านล่าง ระบบกรอกตารางให้เอง หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
+      <div><span class="lbl" hidden>วางตาราง</span>
+        <textarea id="e-paste" hidden rows="4" placeholder="คลุมตารางโควต้าใน Excel → Ctrl+C → คลิกช่องนี้ → Ctrl+V (หรือวางลงช่องตัวเลขในตารางด้านล่างได้เลย)" style="width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px"></textarea>
+        <div class="row" style="align-items:center;margin-top:6px"><button class="btn ghost" id="e-pbtn" type="button" hidden>นำไปใส่ตาราง</button><label class="btn ghost" style="cursor:pointer;display:inline-block">เลือกไฟล์ Excel (.xlsx) <input type="file" id="e-qfile" accept=".xlsx" style="display:none"></label><span id="e-pmsg" class="note"></span></div></div>
+      <div class="scroll" id="e-grid"></div>
+      <div class="row" style="align-items:center">
+        <div style="min-width:170px"><span class="lbl">โควต้า ณ วันที่</span><input type="date" id="e-qdate"></div>
+        <div style="min-width:150px"><span class="lbl">ผู้กรอก</span><input type="text" id="e-by" placeholder="ชื่อน้อง" maxlength="40"></div>
+        <div style="min-width:190px"><span class="lbl">ดูที่บันทึกไว้</span><select id="e-qd"></select></div>
+        <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
+      </div>
+    </div></details></div>
     <div class="panel" id="x-slist" hidden><h2>แผ่นยางประกอบที่บันทึกไว้</h2><div class="note">แยกตามปี (แสดงเฉพาะปีที่มีข้อมูล) กดที่ปีเพื่อดูแต่ละเดือน กดที่เดือนเพื่อดูรายละเอียดสี × เบอร์ ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="xsl-list"></div></div>
     <div class="panel" id="x-sdash" hidden><h2>แดชบอร์ดแผ่นยางประกอบที่บันทึกไว้</h2><div class="note">เอาเมาส์ชี้ (หรือกดค้างบนมือถือ) ที่การ์ด แท่งกราฟ หรือแถวในตาราง เพื่อดูตัวเลขแยกสี × เบอร์ · หน่วยคู่ = แผ่น × จำนวนคู่ต่อยาง 1 แผ่น (ตั้งที่หน้าแผ่นยางประกอบ)</div>
       <div class="row" id="xs-ctl" style="align-items:flex-end"><div style="min-width:140px"><span class="lbl">ปี</span><select id="xs-y"></select></div><div style="min-width:170px"><span class="lbl">เดือน</span><select id="xs-m"></select></div></div>
@@ -927,6 +961,10 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 #e-list .chip:hover{border-color:var(--accent)}
 #e-list .chip small{font-size:10px;color:var(--muted)}
 body.only-e header{display:none}
+@media (prefers-color-scheme:light){:root[data-skin="green"]:not([data-theme="dark"]){--bg:#f2f8f4;--surface2:#f7fbf8;--line:#dce8e0;--line2:#c3d6ca;--accent:#2e9a69;--accent-ink:#fff;--accent-soft:#e7f5ed;--sel:#cdeedb;--hdr-bg:#e1f3e8;--hdr-ink:#17633f;--gold:#2e9a69;--bar:#2e9a69;--side:#d6efe0;--side-fg:#16442d;--side-fg2:#3f7a5d;--side-hover:rgba(22,68,45,.1)}}
+@media (prefers-color-scheme:dark){:root[data-skin="green"]:not([data-theme="light"]){--accent:#52c890;--accent-ink:#06261a;--accent-soft:#16322a;--sel:#164a35;--hdr-bg:#18352b;--hdr-ink:#a6e8c6;--gold:#52c890;--bar:#52c890;--side:#1f5a42;--side-fg:#e6f7ee;--side-fg2:#b8e3cb;--side-hover:rgba(255,255,255,.14)}}
+@media (prefers-color-scheme:light){:root[data-skin="pink"]:not([data-theme="dark"]){--bg:#fbf3f6;--surface2:#fdf7f9;--line:#f0dde5;--line2:#e3c4d2;--accent:#d6568a;--accent-ink:#fff;--accent-soft:#fdeef4;--sel:#fbd3e4;--hdr-bg:#fce6ef;--hdr-ink:#9a2a5c;--gold:#d6568a;--bar:#d6568a;--side:#f9d8e6;--side-fg:#661c40;--side-fg2:#a24a73;--side-hover:rgba(102,28,64,.1)}}
+@media (prefers-color-scheme:dark){:root[data-skin="pink"]:not([data-theme="light"]){--accent:#f27fae;--accent-ink:#3a0b20;--accent-soft:#3a1a29;--sel:#5c2640;--hdr-bg:#43202f;--hdr-ink:#ffc2da;--gold:#f27fae;--bar:#f27fae;--side:#7a2c52;--side-fg:#fdeaf2;--side-fg2:#f4bcd3;--side-hover:rgba(255,255,255,.14)}}
 </style>
 
 <div class="wrap">
@@ -1994,7 +2032,7 @@ function load(){
   $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
   return fetch(API_URL).then(r=>r.json()).then(j=>{
     PLANROWS=j.plan||[];STK=j.stock||[];FGD={};(j.rows||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(FGD[d]=FGD[d]||{})[r[1]]=r.slice(2,8).map(v=>Number(v)||0)});DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
-    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw()}catch(e){console.error(e)}if(EINIT){initE();renderE()}poInit();
+    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw();if(SLD)sdDraw()}catch(e){console.error(e)}if(EINIT){initE();renderE()}poInit();
   }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
 }
 const dates=()=>Object.keys(DATA).sort();
@@ -2078,8 +2116,8 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ข้อมูล › ยอดขายรายเดือน"};
-function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=v==="x1"||v==="x2"||v==="x4";$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-steam").hidden=v!=="x2";["x1","x2","x3","x4"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(ix)xOpen(true);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true)}
+var SLD=false;const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ยอดขายรายเดือน",x5:"ข้อมูล › อัปเดตสต็อก",x6:"ข้อมูล › โควต้าฝ่ายขายที่เหลือ"};
+function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=["x1","x2","x4","x5","x6"].includes(v);$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4"||SLD;$("x-sldash").hidden=v!=="x4"||!SLD;$("x-steam").hidden=v!=="x2";$("x-stk").hidden=v!=="x5";$("x-quo").hidden=v!=="x6";["x1","x2","x3","x4","x5","x6"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(v==="x1"||v==="x2"||v==="x5"||v==="x6")xOpen(true);else if(v==="x4")xOpen(false);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true)}
 function xOpen(o){$("xsub").hidden=!o;$("tab-x").setAttribute("aria-expanded",o?"true":"false");$("x-car").textContent=o?"▴":"▾"}
 function gOpen(g,o){const m={t:["tsub","t-car"],s:["ssub","s-car"]}[g];$(m[0]).hidden=!o;$("tab-"+g).setAttribute("aria-expanded",o?"true":"false");$(m[1]).textContent=o?"▴":"▾"}
 $("tab-t").onclick=()=>{show("c");cmpInit()};$("tab-s").onclick=()=>gOpen("s",$("ssub").hidden);
@@ -2436,7 +2474,77 @@ $("sl-list").addEventListener("click",async e=>{
 $("go-x1").onclick=e=>{e.preventDefault();$("tab-x1").click()};$("go-x2").onclick=e=>{e.preventDefault();$("tab-x2").click()};
 $("tab-x1").onclick=()=>{show("x1");xpDraw();initE();renderP();pfInit();poInit();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}};
 $("tab-x2").onclick=()=>{show("x2");xsDraw();xlDraw()};
+$("tab-x5").onclick=()=>{show("x5");initE()};$("tab-x6").onclick=()=>{show("x6");initE()};
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-go]");if(a){e.preventDefault();$("tab-"+a.dataset.go).click()}});
 $("tab-x4").onclick=()=>{show("x4");slBuild();if(!$("sl-month").value){$("sl-month").value=todayS().slice(0,7)}slMonthChanged();slDraw()};
+
+/* ===== Dashboard ยอดขายรายเดือน ===== */
+let SDM="qty";
+const SZC=[22,38,54,70,86,100].map(p=>"color-mix(in srgb,var(--accent) "+p+"%,#fff)"),sdPc=(a,b)=>b?(a-b)/b*100:null,
+sdTag=(p)=>p==null?'<span class="sdz">–</span>':'<span class="'+(p>0.05?"sdup":p<-0.05?"sddn":"sdz")+'">'+(p>0.05?"▲ ":p<-0.05?"▼ ":"")+Math.abs(p).toFixed(1)+"%</span>";
+function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),all=Object.keys(D).sort();
+  if(!all.length){box.innerHTML='<div class="empty">ยังไม่มียอดขายที่บันทึกไว้ — กลับไปกรอกหรือนำเข้าจาก Excel ก่อน</div>';return}
+  const fill=(id,o,d)=>{const e=$(id),v=e.value;e.innerHTML=o.map(x=>'<option value="'+x[0]+'">'+x[1]+"</option>").join("");e.value=o.some(x=>x[0]===v)?v:d};
+  const mo=all.map(m=>[m,thM(m)]);fill("sd-from",mo,all[0]);fill("sd-to",mo,all[all.length-1]);
+  let f=$("sd-from").value,t=$("sd-to").value;if(f>t){const x=f;f=t;t=x}const ms=all.filter(m=>m>=f&&m<=t),n=ms.length;
+  fill("sd-col",[["","ทุกสี"]].concat(PTPL.map(r=>[r[0],r[1]])),"");const fk=$("sd-col").value;
+  const mm=mo.filter(x=>ms.includes(x[0]));fill("sd-a",mm,ms[n-1]);fill("sd-b",mm,ms[n-2]||ms[0]);const ma=$("sd-a").value,mb=$("sd-b").value;
+  const keys=fk?[fk]:PTPL.map(r=>r[0]),lab=cLab;
+  const V=(m,k)=>D[m][k]||cZ();                              /* ยอดสี k เดือน m (6 เบอร์) */
+  const MT=m=>keys.reduce((a,k)=>a+cT(V(m,k)),0);            /* รวมเดือน */
+  const T=ms.map(MT),sum=cT(T),avg=n?sum/n:0,mxI=T.indexOf(Math.max(...T)),last=T[n-1],prev=n>1?T[n-2]:null;
+  /* KPI */
+  let h='<div class="sdk"><div><div class="k">เดือนล่าสุด · '+thM(ms[n-1])+'</div><div class="v">'+fmt(last)+'</div><div class="s">'+(prev==null?"":"เทียบเดือนก่อน "+sdTag(sdPc(last,prev)))+'</div></div>'+
+   '<div><div class="k">รวมทั้งช่วง ('+n+' เดือน)</div><div class="v">'+fmt(sum)+'</div><div class="s sdz">คู่</div></div>'+
+   '<div><div class="k">เฉลี่ยต่อเดือน</div><div class="v">'+fmt(Math.round(avg))+'</div><div class="s">เดือนล่าสุด '+sdTag(sdPc(last,avg))+' จากค่าเฉลี่ย</div></div>'+
+   '<div><div class="k">เดือนขายสูงสุด</div><div class="v">'+thM(ms[mxI])+'</div><div class="s sdz">'+fmt(T[mxI])+' คู่</div></div></div>';
+  /* 1 แนวโน้ม */
+  const W=760,H=290,L=52,R=14,Tp=34,B=32,pw=W-L-R,ph=H-Tp-B,ax=cAxis(Math.max(...T,avg)),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/n,bw=Math.min(54,gw*.62);
+  let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
+  ms.forEach((m,i)=>{const cx=L+gw*i+gw/2,y=Y(T[i]),p=i?sdPc(T[i],T[i-1]):null,hi=i===mxI;
+    g+='<g><title>'+thM(m)+": "+fmt(T[i])+" คู่"+(p==null?"":" ("+(p>0?"+":"")+p.toFixed(1)+"% จากเดือนก่อน)")+'</title><rect x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+Math.max(0,Tp+ph-y)+'" rx="4" style="fill:var(--accent)" fill-opacity="'+(hi?1:.78)+'"/></g>'+
+     '<text x="'+cx+'" y="'+(y-18)+'" class="tv" text-anchor="middle">'+cK(T[i])+"</text>"+(p==null?"":'<text x="'+cx+'" y="'+(y-6)+'" class="ct '+(p>=0?"sdup2":"sddn2")+'" text-anchor="middle" style="font-weight:600">'+(p>=0?"▲":"▼")+Math.abs(p).toFixed(0)+"%</text>")+
+     '<text x="'+cx+'" y="'+(H-10)+'" class="ct" text-anchor="middle">'+MON[+m.slice(5)-1]+" "+String(+m.slice(0,4)+543).slice(2)+"</text>"});
+  g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(avg)+'" y2="'+Y(avg)+'" stroke="#d97706" stroke-width="1.6" stroke-dasharray="6 4"/><text x="'+(L+4)+'" y="'+(Y(avg)-5)+'" class="ct" text-anchor="start" style="fill:#d97706;font-weight:600">เฉลี่ย '+cK(avg)+"</text>";
+  const c1='<div class="ccard wide"><h3>ยอดขายรวมรายเดือน (คู่)'+(fk?" · "+escH(lab(fk)):"")+' · ▲▼ = เทียบเดือนก่อน</h3><svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
+  /* 2 heatmap */
+  const rows=fk?SIZES.map((z,i)=>({k:null,l:"เบอร์ "+z,f:m=>V(m,fk)[i]})):PTPL.map(r=>({k:r[0],l:r[1],f:m=>cT(V(m,r[0]))})).filter(r=>ms.some(m=>r.f(m)>0));
+  const pct=SDM==="pct";let mxc=0;rows.forEach(r=>ms.forEach(m=>{const v=pct?(MT(m)?r.f(m)/MT(m)*100:0):r.f(m);if(v>mxc)mxc=v}));
+  let ht='<div class="sdm"><span>แสดงเป็น</span><button type="button" data-sdm="qty" aria-pressed="'+!pct+'">จำนวนคู่</button><button type="button" data-sdm="pct" aria-pressed="'+pct+'">% ของยอดเดือนนั้น</button></div><div class="scroll"><table class="sdh"><thead><tr><th>'+(fk?"เบอร์":"สี")+"</th>"+ms.map(m=>"<th>"+MON[+m.slice(5)-1]+" "+String(+m.slice(0,4)+543).slice(2)+"</th>").join("")+"<th>รวม</th><th>vs เดือนก่อน</th></tr></thead><tbody>";
+  rows.forEach(r=>{const tt=cT(ms.map(r.f));ht+='<tr><td class="l">'+(r.k?'<i style="background:'+cSw(r.k.split("/")[0])+'"></i>':"")+escH(r.l)+"</td>"+ms.map(m=>{const q=r.f(m),v=pct?(MT(m)?q/MT(m)*100:0):q,a=mxc?v/mxc:0;return '<td title="'+escH(r.l)+" · "+thM(m)+": "+fmt(q)+' คู่" style="background:color-mix(in srgb,var(--accent) '+(v?Math.round(8+a*80):0)+'%,transparent);color:'+(a>.55?"#fff":"inherit")+'">'+(q?(pct?v.toFixed(1)+"%":fmt(q)):"–")+"</td>"}).join("")+"<td><b>"+fmt(tt)+"</b></td><td>"+(n>1?sdTag(sdPc(r.f(ms[n-1]),r.f(ms[n-2]))):"–")+"</td></tr>"});
+  ht+="</tbody><tfoot><tr><td>รวม</td>"+T.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(sum)+"</td><td>"+(n>1?sdTag(sdPc(last,prev)):"–")+"</td></tr></tfoot></table></div>";
+  const c2='<div class="ccard wide"><h3>'+(fk?"เบอร์ × เดือน — "+escH(lab(fk)):"สี × เดือน")+' (ยิ่งเข้ม ยิ่งขายมาก)</h3>'+ht+"</div>";
+  /* 3 สัดส่วนเบอร์ */
+  const sz=ms.map(m=>SIZES.map((z,i)=>keys.reduce((a,k)=>a+V(m,k)[i],0))),W3=520,H3=300,L3=40,pw3=W3-L3-8,ph3=H3-34-10,bw3=Math.min(42,pw3/n*.7);
+  let g3=[0,25,50,75,100].map(v=>{const y=10+ph3-v/100*ph3;return '<line x1="'+L3+'" x2="'+(W3-8)+'" y1="'+y+'" y2="'+y+'" class="cg"/><text x="'+(L3-6)+'" y="'+(y+4)+'" class="ct" text-anchor="end">'+v+"%</text>"}).join("");
+  ms.forEach((m,i)=>{const cx=L3+pw3/n*i+pw3/n/2,tot=cT(sz[i]);let yy=10+ph3;SIZES.forEach((z,j)=>{const p=tot?sz[i][j]/tot*100:0,hh=p/100*ph3;yy-=hh;if(hh>0)g3+='<g><title>'+thM(m)+" · เบอร์ "+z+": "+fmt(sz[i][j])+" คู่ ("+p.toFixed(1)+'%)</title><rect x="'+(cx-bw3/2)+'" y="'+yy+'" width="'+bw3+'" height="'+hh+'" style="fill:'+SZC[j]+'" stroke="var(--surface)" stroke-width="1"/></g>'+(p>=9?'<text x="'+cx+'" y="'+(yy+hh/2+4)+'" class="ct" text-anchor="middle" style="fill:'+(j<3?"#1f2937":"#fff")+'">'+Math.round(p)+"</text>":"")});
+    g3+='<text x="'+cx+'" y="'+(H3-8)+'" class="ct" text-anchor="middle">'+MON[+m.slice(5)-1]+"</text>"});
+  const c3='<div class="ccard"><h3>สัดส่วนเบอร์ในแต่ละเดือน (%)</h3><div class="cleg">'+SIZES.map((z,j)=>'<span><i style="background:'+SZC[j]+'"></i>'+z+"</span>").join("")+'</div><svg viewBox="0 0 '+W3+" "+H3+'" class="csvg" role="img" aria-label="สัดส่วนเบอร์">'+g3+"</svg></div>";
+  /* 4 เปลี่ยนแปลง A vs B */
+  const it=fk?SIZES.map((z,i)=>({k:fk,l:"เบอร์ "+z,a:V(ma,fk)[i],b:V(mb,fk)[i]})):PTPL.map(r=>({k:r[0],l:r[1],a:cT(V(ma,r[0])),b:cT(V(mb,r[0]))})),
+   dl=it.filter(x=>x.a||x.b).map(x=>Object.assign(x,{d:x.a-x.b})).sort((p,q)=>q.d-p.d);let c4;
+  if(!dl.length||ma===mb)c4='<div class="ccard"><h3>เปลี่ยนแปลงเทียบเดือน</h3><div class="empty">เลือกสองเดือนที่ต่างกัน</div></div>';
+  else{const rh=24,L4=120,R4=100,W4=440,H4=dl.length*rh+8,mxd=Math.max(...dl.map(x=>Math.abs(x.d)),1),ax4=cAxis(mxd,2),zx=L4+(W4-L4-R4)/2,sc=(W4-L4-R4)/2/ax4.top,pre="sdc";
+   let g4=cDefs(pre,dl.map(x=>x.k))+'<line x1="'+zx+'" x2="'+zx+'" y1="0" y2="'+H4+'" stroke="var(--muted)" stroke-width="1.2"/>';
+   dl.forEach((x,i)=>{const y=i*rh+4,w=Math.abs(x.d)*sc,xx=x.d>=0?zx:zx-w,p=sdPc(x.a,x.b);
+     g4+=(fk?"":'<rect x="0" y="'+(y+3)+'" width="9" height="14" rx="3" fill="'+cFill(pre,x.k,i)+'" stroke="'+cEdge(x.k)+'" stroke-width=".6"/>')+'<text x="'+(fk?0:15)+'" y="'+(y+14)+'" class="tl" style="font-size:11.5px">'+escH(x.l.length>17?x.l.slice(0,16)+"…":x.l)+"</text>"+
+      '<g><title>'+escH(x.l)+": "+thM(ma)+" "+fmt(x.a)+" · "+thM(mb)+" "+fmt(x.b)+' คู่</title><rect x="'+xx+'" y="'+(y+3)+'" width="'+Math.max(w,1.5)+'" height="15" rx="3" fill="'+(x.d>=0?"#16a34a":"#ea580c")+'"/></g>'+
+      '<text x="'+(W4-R4+8)+'" y="'+(y+14)+'" class="tv '+(x.d>=0?"sdup2":"sddn2")+'">'+(x.d>0?"+":"")+fmt(x.d)+(p==null?"":" ("+(p>0?"+":"")+p.toFixed(0)+"%)")+"</text>"});
+   c4='<div class="ccard"><h3>'+thM(ma)+" เทียบ "+thM(mb)+' — ขึ้น/ลง รายสี (คู่)</h3><svg viewBox="0 0 '+W4+" "+H4+'" class="csvg" role="img" aria-label="เปลี่ยนแปลงรายสี">'+g4+"</svg></div>"}
+  box.innerHTML=h+'<div class="cdg">'+c1+c2+c3+c4+"</div>"}
+$("sd-body").addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-sdm]");if(b){SDM=b.dataset.sdm;sdDraw()}});
+["sd-from","sd-to","sd-col","sd-a","sd-b"].forEach(id=>$(id).onchange=sdDraw);
+function slMode(d){SLD=d;$("sl-dash").setAttribute("aria-pressed",d);$("x-sales").hidden=d||$("view-x").hidden;$("x-sldash").hidden=!d||$("view-x").hidden;if(d)sdDraw();window.scrollTo(0,0)}
+$("sl-dash").onclick=()=>slMode(true);$("sd-back").onclick=()=>slMode(false);
+
+/* ===== ธีมสี ===== */
+let SKIN="blue";try{SKIN=localStorage.getItem("fgskin")||"blue"}catch(e){}
+function applySkin(k,keep){if(!["blue","green","pink"].includes(k))k="blue";SKIN=k;
+  [document.documentElement].concat((()=>{try{return[$("fr").contentDocument.documentElement]}catch(e){return[]}})()).forEach(r=>{if(!r)return;if(k==="blue")r.removeAttribute("data-skin");else r.setAttribute("data-skin",k)});
+  document.querySelectorAll("#skins button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.skin===k));
+  if(!keep){try{localStorage.setItem("fgskin",k)}catch(e){}}}
+document.querySelectorAll("#skins button").forEach(b=>b.onclick=()=>applySkin(b.dataset.skin));
+$("fr").addEventListener("load",()=>applySkin(SKIN,true));applySkin(SKIN,true);
 function frMode(only){const fr=$("fr"),f=()=>{try{const d=fr.contentDocument;d.body.classList.toggle("only-e",only);d.getElementById(only?"tab-e":"tab-d").click()}catch(e){}};
   if(fr.contentDocument&&fr.contentDocument.getElementById("tab-e"))f();else fr.addEventListener("load",f,{once:true})}
 $("tab-x3").onclick=()=>{window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("ptitle").textContent=PT.x3;$("tab-r").setAttribute("aria-selected","false");$("tab-x3").setAttribute("aria-selected","true");xOpen(true)};
@@ -2746,7 +2854,7 @@ async function readStock(file){
 }
 const sumT=o=>Object.values(o||{}).reduce((q,v)=>q+v.reduce((x,y)=>x+y,0),0);
 function sMsg(t,cls){const m=$("ps-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
-function eMsg(t,cls){const m=$("e-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
+function eMsg(t,cls){const q=!$("x-quo").hidden;["e-msg","eq-msg"].forEach(id=>{const m=$(id),on=t&&((id==="eq-msg")===q);m.hidden=!on;m.className="msg "+(cls||"");m.textContent=on?t:""})}
 $("e-file").onchange=async e=>{
   const f=e.target.files[0];EIMP=null;$("e-fsave").disabled=true;$("e-fprev").textContent="";if(!f)return;
   const r=await readStock(f);
@@ -3279,7 +3387,8 @@ let EINIT=false;
 function initE(){
   if(!EINIT){buildGrid();buildBGrid();EINIT=true;try{$("e-key").value=localStorage.getItem("fgkey")||""}catch(e){}$("e-qdate").value=todayS()}
   const sdv=$("e-sd").value,qdv=$("e-qd").value;
-  const sds=stkDates(["net","stock"]);$("e-sd").innerHTML=sds.length?sds.slice().reverse().map((d,i)=>'<option value="'+d+'">'+thD(d)+(i===0?" (ล่าสุด)":"")+"</option>").join(""):'<option value="">ยังไม่มีสต็อก</option>';
+  const sds=stkDates(["net","stock"]);{const xv=$("xk-sd").value;$("xk-sd").innerHTML=sds.length?sds.slice().reverse().map((d,i)=>'<option value="'+d+'">'+thD(d)+(i===0?" (ล่าสุด)":"")+"</option>").join(""):'<option value="">ยังไม่มีสต็อก</option>';if(xv&&sds.includes(xv))$("xk-sd").value=xv}
+  $("e-sd").innerHTML=sds.length?sds.slice().reverse().map((d,i)=>'<option value="'+d+'">'+thD(d)+(i===0?" (ล่าสุด)":"")+"</option>").join(""):'<option value="">ยังไม่มีสต็อก</option>';
   if(sdv&&sds.includes(sdv))$("e-sd").value=sdv;
   {const st=$("e-stale");if(st){const l=sds[sds.length-1];if(!l)st.textContent="";else{const n=Math.round((new Date(todayS()+"T00:00:00")-new Date(l+"T00:00:00"))/864e5);st.innerHTML=n>0?'<span style="color:var(--warn)">สต็อกล่าสุดในระบบเป็นของ '+thD(l)+" (ผ่านมา "+n+" วัน) — ถ้ามีไฟล์ใหม่ของวันนี้ เติมด้านบน</span>":"สต็อกล่าสุดเป็นของวันนี้แล้ว"}}}
   if(!$("e-end").value||!sdv)$("e-end").value=$("e-sd").value?monEnd($("e-sd").value):"";
@@ -3949,7 +4058,7 @@ async function fgClear(body,label,okMsg,done){
     else okMsg((r.error||"ลบไม่สำเร็จ")+(/Object\.keys|undefined|วันที่/.test(r.error||"")?" — ต้องอัปเดต Code.gs ใน Apps Script แล้ว Deploy เวอร์ชันใหม่ก่อน":""),"warn")}
   catch(err){okMsg("ลบไม่สำเร็จ: "+err,"warn")}
 }
-$("e-fdel").onclick=()=>{const d=$("po-sd").value;if(!d){sMsg("ยังไม่มีสต็อกให้ลบ","warn");return}
+$("e-fdel").onclick=()=>{const d=$("xk-sd").value||$("po-sd").value;if(!d){sMsg("ยังไม่มีสต็อกให้ลบ","warn");return}
   fgClear({scope:"stock",date:d,kinds:["stock","booked","net","special"]},"สต็อกต้นงวดวันที่ "+thD(d),sMsg)};
 $("pf-del").onclick=()=>{const m=$("pf-month").value,v=$("pf-rev").value,pm=$("pf-msg");
   const say=(t,k)=>{pm.hidden=false;pm.className="msg "+k;pm.textContent=t};
