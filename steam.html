@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th" translate="no"><head><meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>คาดการณ์จากยอดนึ่งยาง</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <style>
 /* Concept: warehouse ledger. Calm grey-blue paper, deep teal for the one active thing, real rubber colours only as swatches. */
@@ -9,7 +9,7 @@
   --bg:#eef1f3; --surface:#ffffff; --surface2:#f6f8f9; --line:#d9e0e4; --ink:#14212b; --muted:#5d6e7a;
   --accent:#0b6b6b; --accent-ink:#ffffff; --accent-soft:#d8eeee; --warn:#a14b00; --warn-soft:#fbe9d6;
   --bar:#7fb7b7; --ok:#2f7d4f; --mid:#b7791f; --bad:#c0392b;
-  --f-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif; --f-head:"Prompt","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"Segoe UI","Leelawadee UI","Sarabun","Noto Sans Thai",system-ui,sans-serif; --f-head:"Segoe UI","Leelawadee UI","Sarabun","Noto Sans Thai",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
@@ -341,29 +341,39 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 #xp-list .xdn{color:#c2410c;font-weight:600}#xp-list .xup{color:#15803d;font-weight:600}
 #xsl-list .xdn{color:#c2410c;font-weight:600}#xsl-list .xup{color:#15803d;font-weight:600}
 @media (max-width:860px){#xsub,.gsub{flex-direction:row;padding-left:0}}
-/* ===== ธีมสี (ฟ้า = เดิม · เขียวอ่อน · ชมพูอ่อน) ===== */
-:root{--side:#0f6cbd;--side-fg:#eaf2fb;--side-fg2:#cfe4fa;--side-hover:rgba(255,255,255,.15)}
-.side{background:var(--side)}
-.brand b{color:var(--side-fg)}.brand small,.ver,.ver a{color:var(--side-fg2)}
-.smenu button{color:var(--side-fg)}
-.smenu button:hover{color:var(--side-fg);background:var(--side-hover)}
-.smenu button[aria-selected="true"]{background:#fff;color:var(--hdr-ink)}
-.smenu button[aria-selected="true"] svg{color:var(--accent)}
+/* ===== ธีมพาสเทล (ม่วงฟ้า) + ฟอนต์แบบ Nanyang WMS ===== */
+:root{--bg:#f6f6fc;--surface:#ffffff;--surface2:#faf9fe;--line:#e6e6f4;--line2:#d2d3ea;--ink:#2d2f4a;--muted:#6d6f8c;
+ --accent:#6770dc;--accent-ink:#ffffff;--accent-soft:#eeeffd;--sel:#dfe2fb;--hdr-bg:#eceefd;--hdr-ink:#3f46a6;--gold:#6770dc;--bar:#7f86e6;
+ --warn:#b45309;--warn-soft:#fdf0d5;--ok:#1f9d6b;--mid:#c58b12;--bad:#d6456b;--teal:#1f9d6b;
+ --side:linear-gradient(180deg,#cfd8fb 0%,#dcd0f6 55%,#ecd0ee 100%);--side-fg:#34396b;--side-fg2:#6a6fa0;--side-hover:rgba(255,255,255,.5)}
+body{font-weight:400;letter-spacing:0}
+.side{background:var(--side);border-right:0;box-shadow:2px 0 18px rgba(103,112,220,.12)}
+.brand b{color:var(--side-fg);font-weight:700;font-size:16px}
+.brand small{color:var(--side-fg2)}
 .brand-en{display:block;margin-top:7px;font-size:11.5px;line-height:1.4;color:var(--side-fg2)}
-.skins{display:flex;gap:9px;align-items:center;margin:0 10px 12px;font-size:12px;color:var(--side-fg2)}
-.skins button{width:22px;height:22px;border-radius:50%;border:2px solid #fff;padding:0;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.25);transition:transform .15s}
-.skins button:hover{transform:scale(1.1)}.skins button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--side-fg)}
-@media (max-width:860px){.skins{display:none}}
-@media (prefers-color-scheme:light){:root[data-skin="green"]:not([data-theme="dark"]){--bg:#f2f8f4;--surface2:#f7fbf8;--line:#dce8e0;--line2:#c3d6ca;--accent:#2e9a69;--accent-ink:#fff;--accent-soft:#e7f5ed;--sel:#cdeedb;--hdr-bg:#e1f3e8;--hdr-ink:#17633f;--gold:#2e9a69;--bar:#2e9a69;--side:#d6efe0;--side-fg:#16442d;--side-fg2:#3f7a5d;--side-hover:rgba(22,68,45,.1)}}
-:root[data-skin="green"][data-theme="light"]{--bg:#f2f8f4;--surface2:#f7fbf8;--line:#dce8e0;--line2:#c3d6ca;--accent:#2e9a69;--accent-ink:#fff;--accent-soft:#e7f5ed;--sel:#cdeedb;--hdr-bg:#e1f3e8;--hdr-ink:#17633f;--gold:#2e9a69;--bar:#2e9a69;--side:#d6efe0;--side-fg:#16442d;--side-fg2:#3f7a5d;--side-hover:rgba(22,68,45,.1)}
-@media (prefers-color-scheme:dark){:root[data-skin="green"]:not([data-theme="light"]){--accent:#52c890;--accent-ink:#06261a;--accent-soft:#16322a;--sel:#164a35;--hdr-bg:#18352b;--hdr-ink:#a6e8c6;--gold:#52c890;--bar:#52c890;--side:#1f5a42;--side-fg:#e6f7ee;--side-fg2:#b8e3cb;--side-hover:rgba(255,255,255,.14)}}
-:root[data-skin="green"][data-theme="dark"]{--accent:#52c890;--accent-ink:#06261a;--accent-soft:#16322a;--sel:#164a35;--hdr-bg:#18352b;--hdr-ink:#a6e8c6;--gold:#52c890;--bar:#52c890;--side:#1f5a42;--side-fg:#e6f7ee;--side-fg2:#b8e3cb;--side-hover:rgba(255,255,255,.14)}
-@media (prefers-color-scheme:light){:root[data-skin="pink"]:not([data-theme="dark"]){--bg:#fbf3f6;--surface2:#fdf7f9;--line:#f0dde5;--line2:#e3c4d2;--accent:#d6568a;--accent-ink:#fff;--accent-soft:#fdeef4;--sel:#fbd3e4;--hdr-bg:#fce6ef;--hdr-ink:#9a2a5c;--gold:#d6568a;--bar:#d6568a;--side:#f9d8e6;--side-fg:#661c40;--side-fg2:#a24a73;--side-hover:rgba(102,28,64,.1)}}
-:root[data-skin="pink"][data-theme="light"]{--bg:#fbf3f6;--surface2:#fdf7f9;--line:#f0dde5;--line2:#e3c4d2;--accent:#d6568a;--accent-ink:#fff;--accent-soft:#fdeef4;--sel:#fbd3e4;--hdr-bg:#fce6ef;--hdr-ink:#9a2a5c;--gold:#d6568a;--bar:#d6568a;--side:#f9d8e6;--side-fg:#661c40;--side-fg2:#a24a73;--side-hover:rgba(102,28,64,.1)}
-@media (prefers-color-scheme:dark){:root[data-skin="pink"]:not([data-theme="light"]){--accent:#f27fae;--accent-ink:#3a0b20;--accent-soft:#3a1a29;--sel:#5c2640;--hdr-bg:#43202f;--hdr-ink:#ffc2da;--gold:#f27fae;--bar:#f27fae;--side:#7a2c52;--side-fg:#fdeaf2;--side-fg2:#f4bcd3;--side-hover:rgba(255,255,255,.14)}}
-:root[data-skin="pink"][data-theme="dark"]{--accent:#f27fae;--accent-ink:#3a0b20;--accent-soft:#3a1a29;--sel:#5c2640;--hdr-bg:#43202f;--hdr-ink:#ffc2da;--gold:#f27fae;--bar:#f27fae;--side:#7a2c52;--side-fg:#fdeaf2;--side-fg2:#f4bcd3;--side-hover:rgba(255,255,255,.14)}
+.ver,.ver a{color:var(--side-fg2)}
+.smenu button{color:var(--side-fg);border-radius:12px;font-weight:500}
+.smenu button:hover{color:var(--side-fg);background:var(--side-hover)}
+.smenu button[aria-selected="true"]{background:rgba(255,255,255,.82);color:var(--hdr-ink);font-weight:600;box-shadow:0 2px 10px rgba(103,112,220,.18)}
+.smenu button[aria-selected="true"] svg{color:var(--accent)}
+.panel:not(.toolbar){border-radius:16px;border-color:var(--line);box-shadow:0 4px 18px rgba(103,112,220,.08);overflow:hidden}
+.panel:not(.toolbar)>h2:first-child,.panel:not(.toolbar)>.head2:first-child{background:linear-gradient(90deg,#eceefd,#f4ecfb);color:var(--hdr-ink);font-weight:600}
+.btn{border-radius:999px;font-weight:600}
+.btn:not(.ghost),.panel:not(.toolbar)>.head2:first-child .btn{background:linear-gradient(135deg,#7c86ec,#9a78dc);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(124,134,236,.35)}
+.btn.ghost{background:#fff;border-color:var(--line2);color:var(--hdr-ink)}
+input,select,textarea{border-radius:10px}
+.dbox{border-radius:12px}
+thead th{background:var(--hdr-bg);color:var(--hdr-ink);font-weight:600}
+.kpis{border-radius:14px}
+.kpi.main{background:var(--sel);box-shadow:inset 0 -3px 0 var(--accent)}
+.ccard{border-radius:14px;box-shadow:0 2px 10px rgba(103,112,220,.06)}
+.sdk>div{border-radius:14px;border-left:4px solid var(--accent);box-shadow:0 2px 10px rgba(103,112,220,.07)}
+.sdk>div:nth-child(2){border-left-color:#e9a23b}.sdk>div:nth-child(3){border-left-color:#3dbb8a}.sdk>div:nth-child(4){border-left-color:#e26d9a}
+.chip.on{background:var(--sel);border-color:var(--accent);color:var(--hdr-ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--side:linear-gradient(180deg,#2c3166,#3a2f66);--side-fg:#e8e9fb;--side-fg2:#b4b8e6;--side-hover:rgba(255,255,255,.12)}
+ .smenu button[aria-selected="true"]{background:rgba(255,255,255,.18);color:#fff}
+ .btn.ghost{background:transparent;color:var(--ink)}.panel:not(.toolbar)>h2:first-child,.panel:not(.toolbar)>.head2:first-child{background:var(--hdr-bg)}}
 </style>
-<script>try{var _s=localStorage.getItem("fgskin");if(_s&&_s!=="blue")document.documentElement.setAttribute("data-skin",_s)}catch(e){}</script>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
   <div class="brand"><b>ฟองน้ำ รุ่น 200</b><small>คาดการณ์การผลิต</small><span class="brand-en">Nanyang production plan and stock management</span></div>
@@ -377,8 +387,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="skins" id="skins" role="group" aria-label="ธีมสี"><span>ธีมสี</span><button type="button" data-skin="blue" title="ฟ้า" aria-label="ธีมฟ้า" style="background:#0f6cbd"></button><button type="button" data-skin="green" title="เขียวอ่อน" aria-label="ธีมเขียวอ่อน" style="background:#8fd6ae"></button><button type="button" data-skin="pink" title="ชมพูอ่อน" aria-label="ธีมชมพูอ่อน" style="background:#f6b0cb"></button></div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 87)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 88)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -726,7 +735,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 <script type="text/plain" id="fg-src"><!doctype html>
 <html lang="th" translate="no"><head><meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>FG เข้าโกดังพี่ชุมพร</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"><\/script>
 <style>
 /* Concept: warehouse ledger. Calm grey-blue paper, deep teal for the one active thing, real rubber colours only as swatches. */
@@ -734,7 +743,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
   --bg:#eef1f3; --surface:#ffffff; --surface2:#f6f8f9; --line:#d9e0e4; --ink:#14212b; --muted:#5d6e7a;
   --accent:#0b6b6b; --accent-ink:#ffffff; --accent-soft:#d8eeee; --warn:#a14b00; --warn-soft:#fbe9d6;
   --bar:#7fb7b7; --ok:#2f7d4f; --mid:#b7791f; --bad:#c0392b;
-  --f-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif; --f-head:"Prompt","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"Segoe UI","Leelawadee UI","Sarabun","Noto Sans Thai",system-ui,sans-serif; --f-head:"Segoe UI","Leelawadee UI","Sarabun","Noto Sans Thai",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f171d; --surface:#17222a; --surface2:#1c2a33; --line:#2b3b46; --ink:#e6eef2; --muted:#93a6b2;
@@ -961,10 +970,10 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 #e-list .chip:hover{border-color:var(--accent)}
 #e-list .chip small{font-size:10px;color:var(--muted)}
 body.only-e header{display:none}
-@media (prefers-color-scheme:light){:root[data-skin="green"]:not([data-theme="dark"]){--bg:#f2f8f4;--surface2:#f7fbf8;--line:#dce8e0;--line2:#c3d6ca;--accent:#2e9a69;--accent-ink:#fff;--accent-soft:#e7f5ed;--sel:#cdeedb;--hdr-bg:#e1f3e8;--hdr-ink:#17633f;--gold:#2e9a69;--bar:#2e9a69;--side:#d6efe0;--side-fg:#16442d;--side-fg2:#3f7a5d;--side-hover:rgba(22,68,45,.1)}}
-@media (prefers-color-scheme:dark){:root[data-skin="green"]:not([data-theme="light"]){--accent:#52c890;--accent-ink:#06261a;--accent-soft:#16322a;--sel:#164a35;--hdr-bg:#18352b;--hdr-ink:#a6e8c6;--gold:#52c890;--bar:#52c890;--side:#1f5a42;--side-fg:#e6f7ee;--side-fg2:#b8e3cb;--side-hover:rgba(255,255,255,.14)}}
-@media (prefers-color-scheme:light){:root[data-skin="pink"]:not([data-theme="dark"]){--bg:#fbf3f6;--surface2:#fdf7f9;--line:#f0dde5;--line2:#e3c4d2;--accent:#d6568a;--accent-ink:#fff;--accent-soft:#fdeef4;--sel:#fbd3e4;--hdr-bg:#fce6ef;--hdr-ink:#9a2a5c;--gold:#d6568a;--bar:#d6568a;--side:#f9d8e6;--side-fg:#661c40;--side-fg2:#a24a73;--side-hover:rgba(102,28,64,.1)}}
-@media (prefers-color-scheme:dark){:root[data-skin="pink"]:not([data-theme="light"]){--accent:#f27fae;--accent-ink:#3a0b20;--accent-soft:#3a1a29;--sel:#5c2640;--hdr-bg:#43202f;--hdr-ink:#ffc2da;--gold:#f27fae;--bar:#f27fae;--side:#7a2c52;--side-fg:#fdeaf2;--side-fg2:#f4bcd3;--side-hover:rgba(255,255,255,.14)}}
+/* pastel */
+:root{--bg:#f6f6fc;--surface:#fff;--surface2:#faf9fe;--line:#e6e6f4;--line2:#d2d3ea;--ink:#2d2f4a;--muted:#6d6f8c;--accent:#6770dc;--accent-ink:#fff;--accent-soft:#eeeffd;--sel:#dfe2fb;--hdr-bg:#eceefd;--hdr-ink:#3f46a6;--gold:#6770dc;--bar:#7f86e6}
+.btn:not(.ghost){background:linear-gradient(135deg,#7c86ec,#9a78dc);border-color:transparent;color:#fff;border-radius:999px;font-weight:600}
+.panel{border-radius:16px}
 </style>
 
 <div class="wrap">
@@ -2537,14 +2546,6 @@ $("sd-body").addEventListener("click",e=>{const b=e.target.closest&&e.target.clo
 function slMode(d){SLD=d;$("sl-dash").setAttribute("aria-pressed",d);$("x-sales").hidden=d||$("view-x").hidden;$("x-sldash").hidden=!d||$("view-x").hidden;if(d)sdDraw();window.scrollTo(0,0)}
 $("sl-dash").onclick=()=>slMode(true);$("sd-back").onclick=()=>slMode(false);
 
-/* ===== ธีมสี ===== */
-let SKIN="blue";try{SKIN=localStorage.getItem("fgskin")||"blue"}catch(e){}
-function applySkin(k,keep){if(!["blue","green","pink"].includes(k))k="blue";SKIN=k;
-  [document.documentElement].concat((()=>{try{return[$("fr").contentDocument.documentElement]}catch(e){return[]}})()).forEach(r=>{if(!r)return;if(k==="blue")r.removeAttribute("data-skin");else r.setAttribute("data-skin",k)});
-  document.querySelectorAll("#skins button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.skin===k));
-  if(!keep){try{localStorage.setItem("fgskin",k)}catch(e){}}}
-document.querySelectorAll("#skins button").forEach(b=>b.onclick=()=>applySkin(b.dataset.skin));
-$("fr").addEventListener("load",()=>applySkin(SKIN,true));applySkin(SKIN,true);
 function frMode(only){const fr=$("fr"),f=()=>{try{const d=fr.contentDocument;d.body.classList.toggle("only-e",only);d.getElementById(only?"tab-e":"tab-d").click()}catch(e){}};
   if(fr.contentDocument&&fr.contentDocument.getElementById("tab-e"))f();else fr.addEventListener("load",f,{once:true})}
 $("tab-x3").onclick=()=>{window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("ptitle").textContent=PT.x3;$("tab-r").setAttribute("aria-selected","false");$("tab-x3").setAttribute("aria-selected","true");xOpen(true)};
