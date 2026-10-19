@@ -270,6 +270,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 .cup{color:#15803d;font-weight:600}.cdn{color:#c2410c;font-weight:600}
 .csvg{width:100%;height:auto;display:block}.csvg .cg{stroke:var(--line);stroke-width:1}.csvg .ct{font-size:11px;fill:var(--muted)}.csvg .tl{font-size:12px;fill:var(--ink)}.csvg .tv{font-size:11px;font-weight:600;fill:var(--ink)}
 .cleg{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 10px;font-size:13px}.cleg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.cleg .lg-plan,.cleg .lg-asm,.cleg .lg-act{background:#555}.cleg .lg-plan{background:rgba(85,85,85,.28);border:1.4px solid #333}.cleg .lg-asm{background:repeating-linear-gradient(45deg,#555 0 3px,#bbb 3px 6px)}
 .cdg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:16px}.ccard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);min-width:0}.ccard h3{margin:0 0 8px;font-size:15px}.ccard.wide{grid-column:1/-1}
 #c-dash[aria-pressed="true"]{background:var(--accent);color:#fff}
 .ttabs{display:flex;gap:6px;margin:0 0 14px;border-bottom:2px solid var(--line);flex-wrap:wrap}
@@ -350,7 +351,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 80)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 82)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2168,10 +2169,12 @@ function xsDraw(){
 
 /* ===== ข้อมูล › แผนประกอบยาง: รายการที่บันทึกไว้ (ปี → เดือน, Excel, ล้างเดือน) ===== */
 const xlDays=m=>dates().filter(d=>d.slice(0,7)===m);
-function xlTable(m){const A=xsAgg(xlDays(m)),f=F(),T=a=>a.reduce((x,y)=>x+y,0),tot=[0,0,0,0,0,0];
-  const ks=PTPL.map(r=>r[0]).filter(k=>A.mat[k]&&A.mat[k].some(x=>x)).concat(Object.keys(A.mat).filter(k=>!PTPL.some(r=>r[0]===k)&&A.mat[k].some(x=>x)));
-  let h='<div class="note" style="margin-bottom:8px">หน่วย: แผ่น · '+A.n+' วัน · รวม '+fmt(A.tot)+' แผ่น ≈ '+fmt(A.tot*f)+' คู่</div><div class="scroll"><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
-  ks.forEach(k=>{const v=A.mat[k];v.forEach((x,i)=>tot[i]+=x);h+="<tr"+tint(k)+"><td>"+escH(DN(k))+"</td>"+v.map(x=>'<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+fmt(T(v))+"</b></td></tr>"});
+const xlRemap=mat=>{const o={};Object.keys(mat).forEach(k=>{const pk=SUPMAP[k]||k,a=o[pk]=o[pk]||[0,0,0,0,0,0];mat[k].forEach((x,i)=>a[i]+=x)});return o};
+const xlKeys=m=>PTPL.map(r=>r[0]).concat(Object.keys(m).filter(k=>!PTPL.some(r=>r[0]===k)&&m[k].some(x=>x)));
+const xlLab=k=>(PTPL.find(r=>r[0]===k)||[0,DN(k)])[1];
+function xlTable(m){const A=xsAgg(xlDays(m)),f=F(),T=a=>a.reduce((x,y)=>x+y,0),tot=[0,0,0,0,0,0],M=xlRemap(A.mat);
+  let h='<div class="note" style="margin-bottom:8px">หน่วย: แผ่น · '+A.n+' วัน · รวม '+fmt(A.tot)+' แผ่น ≈ '+fmt(A.tot*f)+' คู่ · แถวที่เป็น - คือไม่มีการจ่ายยาง</div><div class="scroll"><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+  xlKeys(M).forEach(k=>{const v=M[k]||[0,0,0,0,0,0];v.forEach((x,i)=>tot[i]+=x);h+="<tr"+tint(k)+"><td>"+escH(xlLab(k))+"</td>"+v.map(x=>'<td class="'+(x?"":"zero")+'">'+(x?fmt(x):"-")+"</td>").join("")+"<td><b>"+(T(v)?fmt(T(v)):"-")+"</b></td></tr>"});
   return h+"</tbody><tfoot><tr><td>รวม</td>"+tot.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(T(tot))+"</td></tr></tfoot></table></div>"}
 function xlDraw(){const L=$("xsl-list");if(!L)return;const ds=dates(),ys=[...new Set(ds.map(d=>d.slice(0,4)))].sort().reverse();
   if(!ys.length){L.innerHTML='<div class="empty">ยังไม่มีข้อมูลแผ่นยางประกอบ นำเข้าไฟล์ Excel ด้านบนก่อน</div>';return}
@@ -2183,17 +2186,17 @@ function xlDraw(){const L=$("xsl-list");if(!L)return;const ds=dates(),ys=[...new
 async function xlExcel(ms,name){const wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},T=a=>a.reduce((x,y)=>x+y,0),F0="#,##0;-#,##0;-",f=F();
   const head=(ws,a)=>{const h=ws.addRow(a);h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center"};x.border=B})};
   const cols=ws=>{ws.columns=[{width:40}].concat(SIZES.map(()=>({width:11})),[{width:15}])};
-  ms.forEach(m=>{const ws=wb.addWorksheet(thM(m));cols(ws);const days=xlDays(m),A=xsAgg(days);
+  ms.forEach(m=>{const ws=wb.addWorksheet(thM(m));cols(ws);const days=xlDays(m),A0=xsAgg(days),A={mat:xlRemap(A0.mat),tot:A0.tot,n:A0.n};
     const t0=ws.addRow(["แผ่นยางจ่ายประกอบ "+thM(m)+" (หน่วย: แผ่น) · "+A.n+" วัน · 1 แผ่น = "+f+" คู่"]);ws.mergeCells(t0.number,1,t0.number,8);t0.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};
-    head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]));const r1=ws.rowCount+1,keys=PTPL.map(r=>r[0]).concat(Object.keys(A.mat).filter(k=>!PTPL.some(r=>r[0]===k)));
-    keys.forEach(k=>{const v=A.mat[k]||[0,0,0,0,0,0],n=ws.rowCount+1,cl=colOf(k),row=ws.addRow([(PTPL.find(r=>r[0]===k)||[0,DN(k)])[1]].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));
+    head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]));const r1=ws.rowCount+1,keys=xlKeys(A.mat);
+    keys.forEach(k=>{const v=A.mat[k]||[0,0,0,0,0,0],n=ws.rowCount+1,cl=colOf(k),row=ws.addRow([xlLab(k)].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));
       row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===8){q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
     const r2=ws.rowCount,tot=[0,0,0,0,0,0];Object.values(A.mat).forEach(v=>v.forEach((x,i)=>tot[i]+=x));
     const tr=ws.addRow(["รวม (แผ่น)"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tot[j-2]:T(tot)}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt="#,##0"});
     const n2=ws.rowCount,pr=ws.addRow(["รวม (คู่ ≈ แผ่น × "+f+")"].concat([2,3,4,5,6,7,8].map(j=>({formula:String.fromCharCode(64+j)+n2+"*"+f,result:(j<8?tot[j-2]:T(tot))*f}))));pr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("FFF2CC");if(j>1)q.numFmt="#,##0"});
     ws.addRow([]);const t1=ws.addRow(["รายวัน (แผ่น)"]);t1.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};head(ws,["วันที่ / สี"].concat(SIZES,["รวม"]));
     days.forEach(d=>{const dr=ws.addRow([thD(d)]);dr.eachCell(x=>{x.font={bold:true};x.fill=fill("EEF2FF");x.border=B});ws.mergeCells(dr.number,1,dr.number,8);
-      PTPL.map(r=>r[0]).concat(Object.keys(DATA[d]).filter(k=>k!=="_s"&&!PTPL.some(r=>r[0]===k))).forEach(k=>{const v=DATA[d][k];if(!v||!v.some(x=>x))return;const n=ws.rowCount+1,cl=colOf(k),row=ws.addRow(["   "+DN(k)].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={color:{argb:"FF"+cl[1]}}})})})});
+      {const dm=xlRemap(Object.fromEntries(Object.keys(DATA[d]).filter(k=>k!=="_s").map(k=>[k,DATA[d][k]])));xlKeys(dm).forEach(k=>{const v=dm[k];if(!v||!v.some(x=>x))return;const n=ws.rowCount+1,cl=colOf(k),row=ws.addRow(["   "+xlLab(k)].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={color:{argb:"FF"+cl[1]}}})})}})});
   await saveBook(wb,name)}
 $("xsl-list").addEventListener("click",async e=>{
   const c=e.target.closest&&e.target.closest("[data-xc]");
@@ -2279,12 +2282,23 @@ function cChLine(src,f,t){const D=cmpDaily(f,t),n=D.days.length,W=760,H=300,L=52
     a.map((v,i)=>'<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="'+(n>45?0:3)+'" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · "+thD(D.days[i])+": สะสม "+fmt(Math.round(v))+" คู่</title></circle>").join("")+
     '<text x="'+(X(n-1)+6)+'" y="'+(Y(a[n-1])+4)+'" class="tv" fill="'+cCol[s[0]]+'">'+cK(a[n-1])+"</text>"});
   return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดสะสมรายวัน">'+g+"</svg>"}
+const cBase={"น้ำเงิน":"#1f4fd8","เขียว":"#1e9e4a","แดง":"#d62828","เหลือง":"#f2c200","ขาว":"#f1f1f1","ดำ":"#1b1b1b","เทา":"#8a8f98"};
+const cPair=k=>{if(k==="โกโก้ล้วน")return["#8b5a3c"];const ps=k.replace(/\(.*?\)/g,"").split("/").map(x=>cBase[x]||"#888");return ps.length===1||ps[0]===ps[1]?[ps[0]]:ps};
+const cDefs=(pre,keys)=>'<defs><pattern id="'+pre+'st" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2.6" height="6" fill="#fff" fill-opacity=".65"/></pattern>'+keys.map((k,i)=>{const p=cPair(k);return p.length>1?'<linearGradient id="'+pre+i+'"><stop offset="50%" stop-color="'+p[0]+'"/><stop offset="50%" stop-color="'+p[1]+'"/></linearGradient>':""}).join("")+"</defs>";
+const cFill=(pre,k,i)=>{const p=cPair(k);return p.length>1?"url(#"+pre+i+")":p[0]};
+const cEdge=k=>{const p=cPair(k);return p[0]==="#f1f1f1"||p[p.length-1]==="#f1f1f1"?"#6b7280":"#333"};
+function cBar(pre,k,i,sc,x,y,w,h,tt){const fl=cFill(pre,k,i),ed=cEdge(k);let b;
+  if(sc==="plan")b='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="'+fl+'" fill-opacity=".28" stroke="'+ed+'" stroke-width="1.4"/>';
+  else if(sc==="asm")b='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="'+fl+'"/><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="url(#'+pre+'st)" stroke="'+ed+'" stroke-width=".8"/>';
+  else b='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="'+fl+'" stroke="'+ed+'" stroke-width=".8"/>';
+  return "<g><title>"+tt+"</title>"+b+"</g>"}
+const cLegC=src=>'<div class="cleg">'+src.map(s=>'<span><i class="lg-'+s[0]+'"></i>'+s[1]+(s[0]==="plan"?" (โปร่ง ขอบทึบ)":s[0]==="asm"?" (ลายทแยง)":" (สีทึบ)")+"</span>").join("")+"</div>";
 function cChColor(src,o){const keys=cmpKeys(...src.map(s=>o[s[0]])).filter(k=>src.some(s=>cT(o[s[0]][k]||cZ())>0));if(!keys.length)return'<div class="empty">ไม่มีข้อมูล</div>';
-  const bh=13,gap=12,rh=src.length*bh+gap,L=176,R=64,W=760,H=keys.length*rh+30;let mx=0;keys.forEach(k=>src.forEach(s=>mx=Math.max(mx,cT(o[s[0]][k]||cZ()))));const ax=cAxis(mx),pw=W-L-R;
-  let g=ax.ticks.map(v=>{const x=L+v/ax.top*pw;return '<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(H-24)+'" class="cg"/><text x="'+x+'" y="'+(H-8)+'" class="ct" text-anchor="middle">'+cK(v)+"</text>"}).join("");
-  keys.forEach((k,i)=>{const y=i*rh+gap/2;g+='<rect x="0" y="'+y+'" width="9" height="'+(rh-gap)+'" rx="3" fill="'+cSw(k)+'" stroke="#999" stroke-width=".5"/><text x="16" y="'+(y+(rh-gap)/2+4)+'" class="tl">'+escH(cLab(k))+"</text>";
-    src.forEach((s,j)=>{const v=cT(o[s[0]][k]||cZ()),w=v/ax.top*pw;g+='<rect x="'+L+'" y="'+(y+j*bh)+'" width="'+(v?Math.max(w,2):0)+'" height="'+(bh-2)+'" rx="3" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · "+escH(cLab(k))+": "+fmt(v)+" คู่</title></rect>"+(v?'<text x="'+(L+w+5)+'" y="'+(y+j*bh+10)+'" class="tv">'+cK(v)+"</text>":"")})});
-  return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปรียบเทียบรายสี">'+g+"</svg>"}
+  const bh=13,gap=12,rh=src.length*bh+gap,L=176,R=64,W=760,H=keys.length*rh+30,pre="cc";let mx=0;keys.forEach(k=>src.forEach(s=>mx=Math.max(mx,cT(o[s[0]][k]||cZ()))));const ax=cAxis(mx),pw=W-L-R;
+  let g=cDefs(pre,keys)+ax.ticks.map(v=>{const x=L+v/ax.top*pw;return '<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(H-24)+'" class="cg"/><text x="'+x+'" y="'+(H-8)+'" class="ct" text-anchor="middle">'+cK(v)+"</text>"}).join("");
+  keys.forEach((k,i)=>{const y=i*rh+gap/2;g+='<rect x="0" y="'+y+'" width="10" height="'+(rh-gap)+'" rx="3" fill="'+cFill(pre,k,i)+'" stroke="'+cEdge(k)+'" stroke-width=".6"/><text x="17" y="'+(y+(rh-gap)/2+4)+'" class="tl">'+escH(cLab(k))+"</text>";
+    src.forEach((s,j)=>{const v=cT(o[s[0]][k]||cZ()),w=v/ax.top*pw;if(v)g+=cBar(pre,k,i,s[0],L,y+j*bh,Math.max(w,2),bh-2,s[1]+" · "+escH(cLab(k))+": "+fmt(v)+" คู่")+'<text x="'+(L+w+5)+'" y="'+(y+j*bh+10)+'" class="tv">'+cK(v)+"</text>"})});
+  return cLegC(src)+'<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปรียบเทียบรายสี">'+g+"</svg>"}
 function cChSize(src,o){const W=520,H=300,L=46,R=10,Tp=14,B=34,pw=W-L-R,ph=H-Tp-B;
   const V=src.map(s=>SIZES.map((z,i)=>Object.values(o[s[0]]).reduce((a,v)=>a+v[i],0)));let mx=0;V.forEach(a=>a.forEach(v=>mx=Math.max(mx,v)));const ax=cAxis(mx),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/6,bw=Math.min(22,(gw-12)/src.length);
   let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
@@ -2292,14 +2306,14 @@ function cChSize(src,o){const W=520,H=300,L=46,R=10,Tp=14,B=34,pw=W-L-R,ph=H-Tp-
     src.forEach((s,j)=>{const v=V[j][i],x=cx-src.length*bw/2+j*bw,y=Y(v);g+='<rect x="'+x+'" y="'+y+'" width="'+(bw-2)+'" height="'+(Tp+ph-y)+'" rx="3" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · เบอร์ "+z+": "+fmt(v)+" คู่</title></rect>"})});
   return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปรียบเทียบรายเบอร์">'+g+"</svg>"}
 function cChPct(src,o){const oth=src.filter(s=>s[0]!=="plan"),keys=cmpKeys(o.plan).filter(k=>cT(o.plan[k]||cZ())>0);if(!keys.length||!oth.length)return'<div class="empty">ต้องเลือกแผนผลิต และรายการอื่นอย่างน้อย 1 อย่าง และแผนต้องมีข้อมูลในช่วงนี้</div>';
-  const bh=13,gap=12,rh=oth.length*bh+gap,L=176,R=52,W=520,H=keys.length*rh+30,pct=(s,k)=>cT(o.plan[k])?cT(o[s[0]][k]||cZ())/cT(o.plan[k])*100:0;let mx=100;keys.forEach(k=>oth.forEach(s=>mx=Math.max(mx,pct(s,k))));const ax=cAxis(mx,4),pw=W-L-R;
-  let g=ax.ticks.map(v=>{const x=L+v/ax.top*pw;return '<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(H-24)+'" class="cg"/><text x="'+x+'" y="'+(H-8)+'" class="ct" text-anchor="middle">'+Math.round(v)+"%</text>"}).join("");
-  const x100=L+100/ax.top*pw;g+='<line x1="'+x100+'" x2="'+x100+'" y1="0" y2="'+(H-24)+'" stroke="'+cCol.plan+'" stroke-width="2" stroke-dasharray="5 4"/>';
-  keys.forEach((k,i)=>{const y=i*rh+gap/2;g+='<rect x="0" y="'+y+'" width="9" height="'+(rh-gap)+'" rx="3" fill="'+cSw(k)+'" stroke="#999" stroke-width=".5"/><text x="16" y="'+(y+(rh-gap)/2+4)+'" class="tl">'+escH(cLab(k))+"</text>";
-    oth.forEach((s,j)=>{const v=pct(s,k),w=v/ax.top*pw;g+='<rect x="'+L+'" y="'+(y+j*bh)+'" width="'+(v?Math.max(w,2):0)+'" height="'+(bh-2)+'" rx="3" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · "+escH(cLab(k))+": "+Math.round(v)+"% ของแผน ("+fmt(cT(o[s[0]][k]||cZ()))+" / "+fmt(cT(o.plan[k]))+" คู่)</title></rect>"+(v?'<text x="'+(L+w+5)+'" y="'+(y+j*bh+10)+'" class="tv">'+Math.round(v)+"%</text>":"")})});
-  return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปอร์เซ็นต์ของแผน">'+g+"</svg>"}
+  const bh=13,gap=12,rh=oth.length*bh+gap,L=176,R=52,W=520,H=keys.length*rh+30,pre="cq",pct=(s,k)=>cT(o.plan[k])?cT(o[s[0]][k]||cZ())/cT(o.plan[k])*100:0;let mx=100;keys.forEach(k=>oth.forEach(s=>mx=Math.max(mx,pct(s,k))));const ax=cAxis(mx,4),pw=W-L-R;
+  let g=cDefs(pre,keys)+ax.ticks.map(v=>{const x=L+v/ax.top*pw;return '<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(H-24)+'" class="cg"/><text x="'+x+'" y="'+(H-8)+'" class="ct" text-anchor="middle">'+Math.round(v)+"%</text>"}).join("");
+  const x100=L+100/ax.top*pw;g+='<line x1="'+x100+'" x2="'+x100+'" y1="0" y2="'+(H-24)+'" stroke="#444" stroke-width="2" stroke-dasharray="5 4"/>';
+  keys.forEach((k,i)=>{const y=i*rh+gap/2;g+='<rect x="0" y="'+y+'" width="10" height="'+(rh-gap)+'" rx="3" fill="'+cFill(pre,k,i)+'" stroke="'+cEdge(k)+'" stroke-width=".6"/><text x="17" y="'+(y+(rh-gap)/2+4)+'" class="tl">'+escH(cLab(k))+"</text>";
+    oth.forEach((s,j)=>{const v=pct(s,k),w=v/ax.top*pw;if(v)g+=cBar(pre,k,i,s[0],L,y+j*bh,Math.max(w,2),bh-2,s[1]+" · "+escH(cLab(k))+": "+Math.round(v)+"% ของแผน ("+fmt(cT(o[s[0]][k]||cZ()))+" / "+fmt(cT(o.plan[k]))+" คู่)")+'<text x="'+(L+w+5)+'" y="'+(y+j*bh+10)+'" class="tv">'+Math.round(v)+"%</text>"})});
+  return cLegC(oth)+'<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปอร์เซ็นต์ของแผน">'+g+"</svg>"}
 function cmpDash(src,o,f,t){const leg='<div class="cleg">'+src.map(s=>'<span><i style="background:'+cCol[s[0]]+'"></i>'+s[1]+(s[0]==="plan"?" (เส้นประ)":"")+"</span>").join("")+"</div>";
-  return '<div class="panel"><h2>Dashboard เปรียบเทียบ</h2>'+leg+'<div class="cdg"><div class="ccard wide"><h3>ยอดสะสมรายวัน (คู่) — แผนผลิตเฉลี่ยรายวันตามจำนวนวันของเดือน</h3>'+cChLine(src,f,t)+'</div><div class="ccard"><h3>รายเบอร์ (คู่)</h3>'+cChSize(src,o)+'</div><div class="ccard"><h3>% ของแผนผลิต รายสี (เส้นประ = 100%)</h3>'+cChPct(src,o)+'</div><div class="ccard wide"><h3>รายสี (คู่)</h3>'+cChColor(src,o)+"</div></div></div>"}
+  return '<div class="panel"><h2>Dashboard เปรียบเทียบ</h2><div class="cdg"><div class="ccard wide"><h3>ยอดสะสมรายวัน (คู่) — แผนผลิตเฉลี่ยรายวันตามจำนวนวันของเดือน</h3>'+leg+cChLine(src,f,t)+'</div><div class="ccard"><h3>รายเบอร์ (คู่)</h3>'+leg+cChSize(src,o)+'</div><div class="ccard"><h3>% ของแผนผลิต รายสี (เส้นประ = 100%) · แท่งใช้สีรองเท้าจริง</h3>'+cChPct(src,o)+'</div><div class="ccard wide"><h3>รายสี (คู่) · แท่งใช้สีรองเท้าจริง</h3>'+cChColor(src,o)+"</div></div></div>"}
 $("c-dash").onclick=()=>{cDash=!cDash;$("c-dash").setAttribute("aria-pressed",cDash);cmpDraw()};
 /* ----- Excel ----- */
 async function cmpExcel(){const f=$("c-from").value,t=$("c-to").value,src=CSRC.filter(s=>$("c-s-"+s[0]).checked);if(!f||!t||f>t||!src.length)return"ไม่มีข้อมูลให้ดาวน์โหลด";
