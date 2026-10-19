@@ -393,6 +393,37 @@ table{font-size:14.5px}
 .brand .brand-en2{color:#0a2540;font-size:18px}
 .brand .brand-th{color:#0a2540;font-weight:700;font-size:16px;margin-top:4px}
 .side{box-shadow:2px 0 18px rgba(31,155,240,.14)}
+/* ===== ธีมสดใส (ฟ้าสด → เขียวมิ้นต์) ===== */
+:root{--bg:#eef6ff;--surface:#ffffff;--surface2:#f5faff;--line:#d3e5f7;--line2:#b4d1ee;--ink:#10243a;--muted:#46607a;
+ --accent:#1677ff;--accent-ink:#ffffff;--accent-soft:#e3f0ff;--sel:#cfe4ff;--hdr-bg:#dcecff;--hdr-ink:#0a47a8;--gold:#1677ff;--bar:#1677ff;
+ --ok:#0f9f6e;--bad:#e5384f;--teal:#0f9f6e;
+ --side:linear-gradient(180deg,#1677ff 0%,#12a8d8 55%,#12c9a0 100%);--side-fg:#ffffff;--side-fg2:#d8f1ff;--side-hover:rgba(255,255,255,.22)}
+.side{box-shadow:2px 0 20px rgba(22,119,255,.28)}
+.brand .brand-en2,.brand .brand-th{color:#fff}.brand .brand-th{opacity:.95}
+.ver,.ver a{color:var(--side-fg2)}
+.smenu button[aria-selected="true"]{background:#fff;color:#0a47a8;box-shadow:0 3px 12px rgba(0,40,120,.25)}
+.smenu button[aria-selected="true"] svg{color:#1677ff}
+.panel:not(.toolbar)>h2:first-child,.panel:not(.toolbar)>.head2:first-child{background:linear-gradient(90deg,#1677ff,#12b5cf 60%,#12c9a0);color:#fff;border-bottom:0}
+.panel:not(.toolbar)>.head2:first-child .btn{background:#fff;color:#0a47a8;box-shadow:none}
+.panel:not(.toolbar){box-shadow:0 5px 20px rgba(22,119,255,.12)}
+.btn:not(.ghost){background:linear-gradient(135deg,#1677ff,#12b5cf);box-shadow:0 3px 10px rgba(22,119,255,.4)}
+.btn.ghost{color:#0a47a8;border-color:#9cc3f0}
+thead th{background:#dcecff;color:#0a47a8}
+.kpi.main{background:#cfe4ff}
+.sdk>div{border-left-width:5px}
+.sdmid{color:#d97706}.csvg .sdmid2{fill:#d97706}
+.sdh td b{font-weight:700}
+.hintbtn{align-self:flex-start;margin:6px 16px 2px;border:1px solid #9cc3f0;background:#fff;color:#0a47a8;border-radius:999px;padding:3px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.hintbtn.on{background:#e3f0ff}
+.panel>.hintbtn{display:inline-block;margin-top:10px}
+#xsub,#ssub{max-height:340px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--side:linear-gradient(180deg,#0f3d99,#0d6f8f 55%,#0d8c72);}}
+.panel.acc>h2:first-child,.panel.acc>.head2:first-child{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;user-select:none}
+.panel.acc>h2:first-child::after,.panel.acc>.head2:first-child::after{content:"";flex:none;margin-left:auto;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:8px solid currentColor}
+.panel.acc.shut>h2:first-child::after,.panel.acc.shut>.head2:first-child::after{border-bottom:0;border-top:8px solid currentColor}
+.panel.acc.shut>*:not(:first-child){display:none!important}
+.panel.acc.shut>h2:first-child,.panel.acc.shut>.head2:first-child{margin-bottom:0}
+.panel.acc>.head2:first-child .btn{margin-left:auto;margin-right:8px}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -400,14 +431,14 @@ table{font-size:14.5px}
   <div class="sgroup">เมนูหลัก</div>
   <div class="smenu" role="tablist">
     <button role="tab" id="tab-x" aria-selected="false" aria-expanded="false" aria-controls="xsub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span>ข้อมูล</span><span id="x-car" style="margin-left:auto;font-size:11px;opacity:.8"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M1 3h10L6 9z" fill="currentColor"/></svg></span></button>
-    <div id="xsub" hidden><button role="tab" id="tab-x1" aria-selected="false"><span>แผนผลิต <small>(PDF)</small></span></button><button role="tab" id="tab-x2" aria-selected="false"><span>แผนประกอบยาง <small>(Excel)</small></span></button><button role="tab" id="tab-x3" aria-selected="false"><span>รับเข้าโกดังพี่ชุมพร</span></button><button role="tab" id="tab-x5" aria-selected="false"><span>อัปเดตสต็อก</span></button><button role="tab" id="tab-x6" aria-selected="false"><span>โควต้าฝ่ายขายที่เหลือ</span></button></div><button role="tab" id="tab-x4" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><rect x="5" y="11" width="3" height="7" rx="1"/><rect x="10.5" y="6" width="3" height="12" rx="1"/><rect x="16" y="9" width="3" height="9" rx="1"/></svg><span>ยอดขายรายเดือน</span></button>
-    <button role="tab" id="tab-t" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 15l5-5 4 3 7-8"/><path d="M15 5h5v5"/></svg><span>ติดตามการผลิต</span></button>
+    <div id="xsub" hidden><button role="tab" id="tab-x1" aria-selected="false"><span>แผนผลิต <small>(PDF)</small></span></button><button role="tab" id="tab-x2" aria-selected="false"><span>แผนประกอบยาง <small>(Excel)</small></span></button><button role="tab" id="tab-x3" aria-selected="false"><span>รับเข้าโกดังพี่ชุมพร</span></button><button role="tab" id="tab-x5" aria-selected="false"><span>อัปเดตสต็อก</span></button><button role="tab" id="tab-x6" aria-selected="false"><span>โควต้าฝ่ายขายที่เหลือ</span></button><button role="tab" id="tab-x7" aria-selected="false"><span>เป้าการขาย</span></button></div><button role="tab" id="tab-x4" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><rect x="5" y="11" width="3" height="7" rx="1"/><rect x="10.5" y="6" width="3" height="12" rx="1"/><rect x="16" y="9" width="3" height="9" rx="1"/></svg><span>ยอดขายรายเดือน</span></button>
+    <button role="tab" id="tab-d" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v9h9"/><path d="M20.5 15A9 9 0 1 1 9 3.5"/></svg><span>Dashboard</span></button><button role="tab" id="tab-t" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 15l5-5 4 3 7-8"/><path d="M15 5h5v5"/></svg><span>ติดตามการผลิต</span></button>
     <div id="tsub" hidden style="display:none"><button role="tab" id="tab-p" aria-selected="false"><span>แผนการผลิต</span></button><button role="tab" id="tab-q" aria-selected="true"><span>แผนประกอบ</span></button><button role="tab" id="tab-m" aria-selected="false"><span>รับจริงเข้าสต๊อก</span></button></div>
     <button role="tab" id="tab-s" aria-selected="false" aria-expanded="false" aria-controls="ssub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อก</span><span id="s-car" style="margin-left:auto;font-size:11px;opacity:.8"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M1 3h10L6 9z" fill="currentColor"/></svg></span></button>
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 91)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 93)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -716,10 +747,10 @@ table{font-size:14.5px}
     <div class="panel" id="x-plist" hidden><h2>แผนผลิตที่บันทึกไว้</h2><div class="note">แยกตามปี (แสดงเฉพาะปีที่มีแผน) กดที่ปีเพื่อดูแต่ละเดือน กดที่เดือนเพื่อดูรายละเอียดสี × เบอร์ ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="xp-list"></div></div>
     <div class="panel" id="x-steam" hidden><h2>นำเข้าแผนประกอบยาง</h2><div class="note">เลือกไฟล์ Excel "ยอดนึ่งรองเท้าฟองน้ำ ประจำวัน" ที่ได้จากโรงงาน เลือกได้ทีละหลายไฟล์ (1 ไฟล์ = 1 วัน) แล้วตรวจตัวอย่างก่อนกดบันทึก</div><div id="x-steam-slot"></div></div>
     <div class="panel" id="x-sales" hidden><h2>ยอดขายรายเดือน (คู่) แยกสี × เบอร์</h2><div class="note">เลือกเดือน แล้วกรอกยอดขายแต่ละสี × เบอร์ (ช่องว่าง = 0) · วางจาก Excel ได้: คลิกช่องแรกแล้ว Ctrl+V (copy ทีละแถวหรือหลายแถว ถ้ามีคอลัมน์ รวม ระบบข้ามให้) · กดลูกศรหรือ Enter เพื่อเลื่อนช่อง · บันทึกซ้ำเดือนเดิมจะเขียนทับทั้งเดือน</div>
-      <div class="row" style="align-items:flex-end"><div style="min-width:170px"><span class="lbl">เดือน</span><input type="month" id="sl-month"></div><button class="btn" id="sl-save" type="button">บันทึกยอดขายเดือนนี้</button><button class="btn ghost" id="sl-clear" type="button">ล้างช่อง</button><button class="btn ghost" id="sl-imp" type="button">นำเข้าจาก Excel (หลายเดือน)</button><button class="btn ghost" id="sl-dash" type="button" aria-pressed="false">Dashboard เปรียบเทียบ</button><input type="file" id="sl-impf" accept=".xlsx" hidden><button class="btn ghost" id="sl-del" type="button" hidden style="color:var(--bad,#c62828);border-color:var(--bad,#c62828)">ลบข้อมูลเดือนนี้</button></div>
+      <div class="row" style="align-items:flex-end"><div style="min-width:170px"><span class="lbl">เดือน</span><input type="month" id="sl-month"></div><button class="btn" id="sl-save" type="button">บันทึกยอดขายเดือนนี้</button><button class="btn ghost" id="sl-clear" type="button">ล้างช่อง</button><button class="btn ghost" id="sl-imp" type="button">นำเข้าจาก Excel (หลายเดือน)</button><button class="btn ghost" id="sl-dash" type="button">ดู Dashboard</button><input type="file" id="sl-impf" accept=".xlsx" hidden><button class="btn ghost" id="sl-del" type="button" hidden style="color:var(--bad,#c62828);border-color:var(--bad,#c62828)">ลบข้อมูลเดือนนี้</button></div>
       <div id="sl-msg" class="msg" hidden></div><div class="scroll" id="sl-g"></div>
       <h3 style="margin:8px 0 0">ยอดขายที่บันทึกไว้</h3><div class="note">กดที่ปีเพื่อดูเดือน กดที่เดือนเพื่อดูตาราง สี × เบอร์ · ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="sl-list"></div></div>
-    <div class="panel" id="x-sldash" hidden><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">Dashboard ยอดขายรายเดือน</h2><button class="btn ghost" id="sd-back" type="button">← กลับไปกรอก / ดูรายเดือน</button></div><div class="note">เปรียบเทียบยอดขายทุกเดือนที่บันทึกไว้ (หน่วยคู่) เอาเมาส์ชี้ที่แท่งหรือช่องในตารางเพื่อดูตัวเลข · เลือกสีเดียวเพื่อดูเบอร์ของสีนั้นแทน</div>
+    <div class="panel" id="x-sldash" hidden><h2>Dashboard · ยอดขายเทียบเป้า</h2><div class="note">เปรียบเทียบยอดขายรายเดือนกับเป้าการขาย (ใส่เป้าที่ ข้อมูล › เป้าการขาย) · เอาเมาส์ชี้ที่แท่งหรือช่องในตารางเพื่อดูตัวเลข · เลือกสีเดียวเพื่อดูเบอร์ของสีนั้นแทน</div>
       <div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ตั้งแต่เดือน</span><select id="sd-from"></select></div><div style="min-width:130px"><span class="lbl">ถึงเดือน</span><select id="sd-to"></select></div><div style="min-width:200px"><span class="lbl">สีที่ดู</span><select id="sd-col"></select></div><div style="min-width:130px"><span class="lbl">เทียบเดือน</span><select id="sd-a"></select></div><div style="min-width:130px"><span class="lbl">กับเดือน</span><select id="sd-b"></select></div></div>
       <div id="sd-body"></div></div>
     <div class="panel" id="x-stk" hidden><h2>อัปเดตสต็อก</h2><div class="note">ไฟล์สต็อกคงเหลือจากพี่ชุมพร (เปลี่ยนทุกวัน): เลือกไฟล์ → ตรวจวันที่ → กดบันทึก วันใหม่ไม่ทับวันเก่า · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div>
@@ -744,6 +775,9 @@ table{font-size:14.5px}
         <button class="btn" id="e-qsave" style="align-self:flex-end">บันทึกโควต้า</button>
       </div>
     </div></details></div>
+    <div class="panel" id="x-tgt" hidden><h2>เป้าการขาย</h2><div class="note">ใส่เป้าการขายรายเดือน (คู่) แยกตามสี ทั้งปีในตารางเดียว ช่องว่าง = ไม่มีเป้า · ถ้าไม่แยกสี ใส่แถว "รวมทั้งเดือน" แถวเดียวได้ · วางจาก Excel ได้: คลิกช่องแรกแล้ว Ctrl+V (หลายแถว หลายเดือนพร้อมกันได้) · บันทึกซ้ำปีเดิมจะเขียนทับ · ดูผลที่เมนู Dashboard</div>
+      <div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ปี</span><select id="xt-y"></select></div><button class="btn" id="xt-save" type="button">บันทึกเป้าทั้งปี</button><button class="btn ghost" id="xt-clear" type="button">ล้างช่อง</button></div>
+      <div id="xt-msg" class="msg" hidden></div><div class="scroll" id="xt-g"></div></div>
     <div class="panel" id="x-slist" hidden><h2>แผ่นยางประกอบที่บันทึกไว้</h2><div class="note">แยกตามปี (แสดงเฉพาะปีที่มีข้อมูล) กดที่ปีเพื่อดูแต่ละเดือน กดที่เดือนเพื่อดูรายละเอียดสี × เบอร์ ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="xsl-list"></div></div>
     <div class="panel" id="x-sdash" hidden><h2>แดชบอร์ดแผ่นยางประกอบที่บันทึกไว้</h2><div class="note">เอาเมาส์ชี้ (หรือกดค้างบนมือถือ) ที่การ์ด แท่งกราฟ หรือแถวในตาราง เพื่อดูตัวเลขแยกสี × เบอร์ · หน่วยคู่ = แผ่น × จำนวนคู่ต่อยาง 1 แผ่น (ตั้งที่หน้าแผ่นยางประกอบ)</div>
       <div class="row" id="xs-ctl" style="align-items:flex-end"><div style="min-width:140px"><span class="lbl">ปี</span><select id="xs-y"></select></div><div style="min-width:170px"><span class="lbl">เดือน</span><select id="xs-m"></select></div></div>
@@ -2061,7 +2095,7 @@ function load(){
   $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
   return fetch(API_URL).then(r=>r.json()).then(j=>{
     PLANROWS=j.plan||[];STK=j.stock||[];FGD={};(j.rows||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(FGD[d]=FGD[d]||{})[r[1]]=r.slice(2,8).map(v=>Number(v)||0)});DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
-    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw();if(SLD)sdDraw()}catch(e){console.error(e)}if(EINIT){initE();renderE()}poInit();
+    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw();sdDraw();tgFill()}catch(e){console.error(e)}if(EINIT){initE();renderE()}poInit();
   }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
 }
 const dates=()=>Object.keys(DATA).sort();
@@ -2145,8 +2179,8 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-var SLD=false;const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ยอดขายรายเดือน",x5:"ข้อมูล › อัปเดตสต็อก",x6:"ข้อมูล › โควต้าฝ่ายขายที่เหลือ"};
-function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=["x1","x2","x4","x5","x6"].includes(v);$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4"||SLD;$("x-sldash").hidden=v!=="x4"||!SLD;$("x-steam").hidden=v!=="x2";$("x-stk").hidden=v!=="x5";$("x-quo").hidden=v!=="x6";["x1","x2","x3","x4","x5","x6"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(v==="x1"||v==="x2"||v==="x5"||v==="x6")xOpen(true);else if(v==="x4")xOpen(false);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true)}
+var SLD=false;const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ยอดขายรายเดือน",x5:"ข้อมูล › อัปเดตสต็อก",x6:"ข้อมูล › โควต้าฝ่ายขายที่เหลือ",x7:"ข้อมูล › เป้าการขาย",d:"Dashboard · ยอดขายเทียบเป้า"};
+function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=["x1","x2","x4","x5","x6","x7","d"].includes(v);$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-sldash").hidden=v!=="d";$("x-tgt").hidden=v!=="x7";$("x-steam").hidden=v!=="x2";$("x-stk").hidden=v!=="x5";$("x-quo").hidden=v!=="x6";["x1","x2","x3","x4","x5","x6","x7","d"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(["x1","x2","x5","x6","x7"].includes(v))xOpen(true);else if(v==="x4"||v==="d")xOpen(false);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true);accView()}
 const CARET=o=>'<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="'+(o?"M1 9h10L6 3z":"M1 3h10L6 9z")+'" fill="currentColor"/></svg>';
 function xOpen(o){$("xsub").hidden=!o;$("tab-x").setAttribute("aria-expanded",o?"true":"false");$("x-car").innerHTML=CARET(o)}
 function gOpen(g,o){const m={t:["tsub","t-car"],s:["ssub","s-car"]}[g];$(m[0]).hidden=!o;$("tab-"+g).setAttribute("aria-expanded",o?"true":"false");$(m[1]).innerHTML=CARET(o)}
@@ -2512,44 +2546,69 @@ $("tab-x4").onclick=()=>{show("x4");slBuild();if(!$("sl-month").value){$("sl-mon
 let SDM="qty";
 const SZC=[22,38,54,70,86,100].map(p=>"color-mix(in srgb,var(--accent) "+p+"%,#fff)"),sdPc=(a,b)=>b?(a-b)/b*100:null,
 sdTag=(p)=>p==null?'<span class="sdz">–</span>':'<span class="'+(p>0.05?"sdup":p<-0.05?"sddn":"sdz")+'">'+(p>0.05?"▲ ":p<-0.05?"▼ ":"")+Math.abs(p).toFixed(1)+"%</span>";
-function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),all=Object.keys(D).sort();
-  if(!all.length){box.innerHTML='<div class="empty">ยังไม่มียอดขายที่บันทึกไว้ — กลับไปกรอกหรือนำเข้าจาก Excel ก่อน</div>';return}
+function tgData(){const o={};(STK||[]).forEach(r=>{if(r[1]!=="stgt")return;const m=normD(r[0]).slice(0,7);(o[m]=o[m]||{})[r[2]]=Number(r[9])||0});return o}
+const sdCl=p=>p>=100?"sdup":p>=80?"sdmid":"sddn",sdBg=p=>p>=100?"rgba(25,195,139,.38)":p>=80?"rgba(255,176,32,.38)":"rgba(255,77,106,.24)";
+function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),TG=tgData(),all=Object.keys(D).sort();
+  if(!all.length){box.innerHTML='<div class="empty">ยังไม่มียอดขายที่บันทึกไว้ — ใส่ที่เมนู ยอดขายรายเดือน ก่อน</div>';return}
   const fill=(id,o,d)=>{const e=$(id),v=e.value;e.innerHTML=o.map(x=>'<option value="'+x[0]+'">'+x[1]+"</option>").join("");e.value=o.some(x=>x[0]===v)?v:d};
   const mo=all.map(m=>[m,thM(m)]);fill("sd-from",mo,all[0]);fill("sd-to",mo,all[all.length-1]);
   let f=$("sd-from").value,t=$("sd-to").value;if(f>t){const x=f;f=t;t=x}const ms=all.filter(m=>m>=f&&m<=t),n=ms.length;
   fill("sd-col",[["","ทุกสี"]].concat(PTPL.map(r=>[r[0],r[1]])),"");const fk=$("sd-col").value;
   const mm=mo.filter(x=>ms.includes(x[0]));fill("sd-a",mm,ms[n-1]);fill("sd-b",mm,ms[n-2]||ms[0]);const ma=$("sd-a").value,mb=$("sd-b").value;
-  const keys=fk?[fk]:PTPL.map(r=>r[0]),lab=cLab;
-  const V=(m,k)=>D[m][k]||cZ();                              /* ยอดสี k เดือน m (6 เบอร์) */
-  const MT=m=>keys.reduce((a,k)=>a+cT(V(m,k)),0);            /* รวมเดือน */
-  const T=ms.map(MT),sum=cT(T),avg=n?sum/n:0,mxI=T.indexOf(Math.max(...T)),last=T[n-1],prev=n>1?T[n-2]:null;
-  /* KPI */
-  let h='<div class="sdk"><div><div class="k">เดือนล่าสุด · '+thM(ms[n-1])+'</div><div class="v">'+fmt(last)+'</div><div class="s">'+(prev==null?"":"เทียบเดือนก่อน "+sdTag(sdPc(last,prev)))+'</div></div>'+
-   '<div><div class="k">รวมทั้งช่วง ('+n+' เดือน)</div><div class="v">'+fmt(sum)+'</div><div class="s sdz">คู่</div></div>'+
-   '<div><div class="k">เฉลี่ยต่อเดือน</div><div class="v">'+fmt(Math.round(avg))+'</div><div class="s">เดือนล่าสุด '+sdTag(sdPc(last,avg))+' จากค่าเฉลี่ย</div></div>'+
-   '<div><div class="k">เดือนขายสูงสุด</div><div class="v">'+thM(ms[mxI])+'</div><div class="s sdz">'+fmt(T[mxI])+' คู่</div></div></div>';
-  /* 1 แนวโน้ม */
-  const W=760,H=290,L=52,R=14,Tp=34,B=32,pw=W-L-R,ph=H-Tp-B,ax=cAxis(Math.max(...T,avg)),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/n,bw=Math.min(54,gw*.62);
+  const keys=fk?[fk]:PTPL.map(r=>r[0]),lab=cLab,V=(m,k)=>D[m][k]||cZ(),MT=m=>keys.reduce((a,k)=>a+cT(V(m,k)),0);
+  const tgC=(m,k)=>(TG[m]&&TG[m][k])||0,tgM=m=>{if(!TG[m])return 0;const a=keys.reduce((x,k)=>x+tgC(m,k),0);return a||(fk?0:(TG[m]._all||0))};
+  const T=ms.map(MT),TT=ms.map(tgM),hasT=TT.some(x=>x>0),sum=cT(T),avg=n?sum/n:0,mxI=T.indexOf(Math.max(...T)),last=T[n-1],prev=n>1?T[n-2]:null;
+  const sT=cT(TT),sS=cT(T.filter((x,i)=>TT[i]>0)),pAll=sT?sS/sT*100:null,pLast=TT[n-1]?last/TT[n-1]*100:null,hit=T.filter((x,i)=>TT[i]>0&&x>=TT[i]).length,nT=TT.filter(x=>x>0).length;
+  if(SDM==="tgt"&&(!hasT||fk))SDM="qty";
+  let h=hasT?"":'<div class="msg" style="margin-top:12px">ยังไม่มีเป้าการขายของช่วงนี้ — ใส่ได้ที่ <a href="#" data-go="x7">ข้อมูล › เป้าการขาย</a> แล้วกราฟเทียบเป้าจะขึ้นอัตโนมัติ</div>';
+  const card=(c,k,v,sub)=>'<div style="border-left-color:'+c+'"><div class="k">'+k+'</div><div class="v">'+v+'</div><div class="s">'+sub+"</div></div>";
+  h+='<div class="sdk">'+card("#1677ff","เดือนล่าสุด · "+thM(ms[n-1]),fmt(last),prev==null?"":"เทียบเดือนก่อน "+sdTag(sdPc(last,prev)))+card("#ffb020","รวมทั้งช่วง ("+n+" เดือน)",fmt(sum),'<span class="sdz">เฉลี่ย '+fmt(Math.round(avg))+" คู่/เดือน</span>");
+  if(hasT)h+=card("#19c38b","ถึงเป้า · "+thM(ms[n-1]),pLast==null?"–":'<span class="'+sdCl(pLast)+'">'+pLast.toFixed(1)+"%</span>",TT[n-1]?'<span class="sdz">เป้า '+fmt(TT[n-1])+" · "+(last>=TT[n-1]?"เกิน +":"ขาด ")+fmt(Math.abs(last-TT[n-1]))+"</span>":"ไม่มีเป้าเดือนนี้")+
+    card("#ff4d7a","ถึงเป้าทั้งช่วง",pAll==null?"–":'<span class="'+sdCl(pAll)+'">'+pAll.toFixed(1)+"%</span>",'<span class="sdz">เป้า '+fmt(sT)+" · "+(sS>=sT?"เกิน +":"ขาด ")+fmt(Math.abs(sS-sT))+" · ถึงเป้า "+hit+"/"+nT+" เดือน</span>");
+  else h+=card("#19c38b","เดือนขายสูงสุด",thM(ms[mxI]),'<span class="sdz">'+fmt(T[mxI])+" คู่</span>");
+  h+="</div>";
+  const mlab=m=>MON[+m.slice(5)-1]+" "+String(+m.slice(0,4)+543).slice(2);
+  /* 1 แนวโน้ม + เป้า */
+  const W=760,H=330,L=52,R=14,Tp=34,B=62,pw=W-L-R,ph=H-Tp-B,ax=cAxis(Math.max(...T,...TT,avg)),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/n,bw=Math.min(54,gw*.6);
   let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
-  ms.forEach((m,i)=>{const cx=L+gw*i+gw/2,y=Y(T[i]),p=i?sdPc(T[i],T[i-1]):null,hi=i===mxI;
-    g+='<g><title>'+thM(m)+": "+fmt(T[i])+" คู่"+(p==null?"":" ("+(p>0?"+":"")+p.toFixed(1)+"% จากเดือนก่อน)")+'</title><rect x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+Math.max(0,Tp+ph-y)+'" rx="4" style="fill:var(--accent)" fill-opacity="'+(hi?1:.78)+'"/></g>'+
-     '<text x="'+cx+'" y="'+(y-18)+'" class="tv" text-anchor="middle">'+cK(T[i])+"</text>"+(p==null?"":'<text x="'+cx+'" y="'+(y-6)+'" class="ct '+(p>=0?"sdup2":"sddn2")+'" text-anchor="middle" style="font-weight:600">'+(p>=0?"▲":"▼")+Math.abs(p).toFixed(0)+"%</text>")+
-     '<text x="'+cx+'" y="'+(H-10)+'" class="ct" text-anchor="middle">'+MON[+m.slice(5)-1]+" "+String(+m.slice(0,4)+543).slice(2)+"</text>"});
-  g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(avg)+'" y2="'+Y(avg)+'" stroke="#d97706" stroke-width="1.6" stroke-dasharray="6 4"/><text x="'+(L+4)+'" y="'+(Y(avg)-5)+'" class="ct" text-anchor="start" style="fill:#d97706;font-weight:600">เฉลี่ย '+cK(avg)+"</text>";
-  const c1='<div class="ccard wide"><h3>ยอดขายรวมรายเดือน (คู่)'+(fk?" · "+escH(lab(fk)):"")+' · ▲▼ = เทียบเดือนก่อน</h3><svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
+  const pts=[];
+  ms.forEach((m,i)=>{const cx=L+gw*i+gw/2,y=Y(T[i]),p=i?sdPc(T[i],T[i-1]):null,ok=TT[i]>0&&T[i]>=TT[i],top=TT[i]>0?Math.min(y,Y(TT[i])):y;
+    g+='<g><title>'+thM(m)+": ขาย "+fmt(T[i])+" คู่"+(TT[i]?" · เป้า "+fmt(TT[i])+" ("+(T[i]/TT[i]*100).toFixed(1)+"%)":"")+(p==null?"":" · "+(p>0?"+":"")+p.toFixed(1)+"% จากเดือนก่อน")+'</title><rect x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+Math.max(0,Tp+ph-y)+'" rx="5" style="fill:'+(ok?"#19c38b":"var(--accent)")+'" fill-opacity="'+(m===ms[mxI]?1:.85)+'"/></g>'+
+     '<text x="'+cx+'" y="'+(top-18)+'" class="tv" text-anchor="middle">'+cK(T[i])+"</text>"+(p==null?"":'<text x="'+cx+'" y="'+(top-6)+'" class="ct '+(p>=0?"sdup2":"sddn2")+'" text-anchor="middle" style="font-weight:600">'+(p>=0?"▲":"▼")+Math.abs(p).toFixed(0)+"%</text>")+
+     '<text x="'+cx+'" y="'+(H-30)+'" class="ct" text-anchor="middle">'+mlab(m)+"</text>";
+    if(TT[i]>0){pts.push([cx,Y(TT[i])]);const pc=T[i]/TT[i]*100;g+='<text x="'+cx+'" y="'+(H-10)+'" class="tv '+(pc>=100?"sdup2":pc>=80?"sdmid2":"sddn2")+'" text-anchor="middle">'+Math.round(pc)+"%</text>"}});
+  if(hasT){if(pts.length>1)g+='<polyline points="'+pts.map(q=>q.join(",")).join(" ")+'" fill="none" stroke="#ff4d7a" stroke-width="1.6" stroke-dasharray="5 4"/>';
+    pts.forEach(q=>g+='<line x1="'+(q[0]-bw/2-7)+'" x2="'+(q[0]+bw/2+7)+'" y1="'+q[1]+'" y2="'+q[1]+'" stroke="#ff4d7a" stroke-width="3.5" stroke-linecap="round"/>')}
+  else g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(avg)+'" y2="'+Y(avg)+'" stroke="#ff8a00" stroke-width="1.6" stroke-dasharray="6 4"/><text x="'+(L+4)+'" y="'+(Y(avg)-5)+'" class="ct" style="fill:#d97706;font-weight:600">เฉลี่ย '+cK(avg)+"</text>";
+  const leg='<div class="cleg"><span><i style="background:var(--accent)"></i>ยอดขาย</span>'+(hasT?'<span><i style="background:#19c38b"></i>ถึงเป้าแล้ว</span><span><i style="background:#ff4d7a;height:4px;vertical-align:3px"></i>เป้าการขาย</span><span class="sdz">ตัวเลขใต้ชื่อเดือน = % ของเป้า</span>':"")+"</div>";
+  const c1='<div class="ccard wide"><h3>ยอดขายรายเดือน'+(hasT?" เทียบเป้า":"")+" (คู่)"+(fk?" · "+escH(lab(fk)):"")+"</h3>"+leg+'<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดขายเทียบเป้า">'+g+"</svg></div>";
   /* 2 heatmap */
-  const rows=fk?SIZES.map((z,i)=>({k:null,l:"เบอร์ "+z,f:m=>V(m,fk)[i]})):PTPL.map(r=>({k:r[0],l:r[1],f:m=>cT(V(m,r[0]))})).filter(r=>ms.some(m=>r.f(m)>0));
-  const pct=SDM==="pct";let mxc=0;rows.forEach(r=>ms.forEach(m=>{const v=pct?(MT(m)?r.f(m)/MT(m)*100:0):r.f(m);if(v>mxc)mxc=v}));
-  let ht='<div class="sdm"><span>แสดงเป็น</span><button type="button" data-sdm="qty" aria-pressed="'+!pct+'">จำนวนคู่</button><button type="button" data-sdm="pct" aria-pressed="'+pct+'">% ของยอดเดือนนั้น</button></div><div class="scroll"><table class="sdh"><thead><tr><th>'+(fk?"เบอร์":"สี")+"</th>"+ms.map(m=>"<th>"+MON[+m.slice(5)-1]+" "+String(+m.slice(0,4)+543).slice(2)+"</th>").join("")+"<th>รวม</th><th>vs เดือนก่อน</th></tr></thead><tbody>";
-  rows.forEach(r=>{const tt=cT(ms.map(r.f));ht+='<tr><td class="l">'+(r.k?'<i style="background:'+cSw(r.k.split("/")[0])+'"></i>':"")+escH(r.l)+"</td>"+ms.map(m=>{const q=r.f(m),v=pct?(MT(m)?q/MT(m)*100:0):q,a=mxc?v/mxc:0;return '<td title="'+escH(r.l)+" · "+thM(m)+": "+fmt(q)+' คู่" style="background:color-mix(in srgb,var(--accent) '+(v?Math.round(8+a*80):0)+'%,transparent);color:'+(a>.55?"#fff":"inherit")+'">'+(q?(pct?v.toFixed(1)+"%":fmt(q)):"–")+"</td>"}).join("")+"<td><b>"+fmt(tt)+"</b></td><td>"+(n>1?sdTag(sdPc(r.f(ms[n-1]),r.f(ms[n-2]))):"–")+"</td></tr>"});
-  ht+="</tbody><tfoot><tr><td>รวม</td>"+T.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(sum)+"</td><td>"+(n>1?sdTag(sdPc(last,prev)):"–")+"</td></tr></tfoot></table></div>";
-  const c2='<div class="ccard wide"><h3>'+(fk?"เบอร์ × เดือน — "+escH(lab(fk)):"สี × เดือน")+' (ยิ่งเข้ม ยิ่งขายมาก)</h3>'+ht+"</div>";
+  const rows=fk?SIZES.map((z,i)=>({k:null,l:"เบอร์ "+z,f:m=>V(m,fk)[i]})):PTPL.map(r=>({k:r[0],l:r[1],f:m=>cT(V(m,r[0]))})).filter(r=>ms.some(m=>r.f(m)>0||tgC(m,r.k)>0));
+  const md=SDM,pct=md==="pct";let mxc=0;if(md!=="tgt")rows.forEach(r=>ms.forEach(m=>{const v=pct?(MT(m)?r.f(m)/MT(m)*100:0):r.f(m);if(v>mxc)mxc=v}));
+  const mbtn=(k,t)=>'<button type="button" data-sdm="'+k+'" aria-pressed="'+(md===k)+'">'+t+"</button>";
+  let ht='<div class="sdm"><span>แสดงเป็น</span>'+mbtn("qty","จำนวนคู่")+mbtn("pct","% ของยอดเดือนนั้น")+(hasT&&!fk?mbtn("tgt","% ของเป้า"):"")+'</div><div class="scroll"><table class="sdh"><thead><tr><th>'+(fk?"เบอร์":"สี")+"</th>"+ms.map(m=>"<th>"+mlab(m)+"</th>").join("")+"<th>รวม</th><th>vs เดือนก่อน</th></tr></thead><tbody>";
+  rows.forEach(r=>{const tt=cT(ms.map(r.f));let cells,rt,tr;
+    if(md==="tgt"){cells=ms.map(m=>{const q=r.f(m),tg=tgC(m,r.k);if(!tg)return '<td title="'+escH(r.l)+" · "+thM(m)+': ยังไม่มีเป้า" class="sdz">–</td>';const pc=q/tg*100;return '<td title="'+escH(r.l)+" · "+thM(m)+": ขาย "+fmt(q)+" / เป้า "+fmt(tg)+' คู่" style="background:'+sdBg(pc)+'"><b>'+Math.round(pc)+"%</b></td>"}).join("");
+      const sq=cT(ms.map(m=>tgC(m,r.k)?r.f(m):0)),st=cT(ms.map(m=>tgC(m,r.k)));rt=st?'<b class="'+sdCl(sq/st*100)+'">'+Math.round(sq/st*100)+"%</b>":"–";tr="–"}
+    else{cells=ms.map(m=>{const q=r.f(m),v=pct?(MT(m)?q/MT(m)*100:0):q,a=mxc?v/mxc:0;return '<td title="'+escH(r.l)+" · "+thM(m)+": "+fmt(q)+' คู่" style="background:color-mix(in srgb,var(--accent) '+(v?Math.round(8+a*80):0)+'%,transparent);color:'+(a>.55?"#fff":"inherit")+'">'+(q?(pct?v.toFixed(1)+"%":fmt(q)):"–")+"</td>"}).join("");rt="<b>"+fmt(tt)+"</b>";tr=n>1?sdTag(sdPc(r.f(ms[n-1]),r.f(ms[n-2]))):"–"}
+    ht+='<tr><td class="l">'+(r.k?'<i style="background:'+cSw(r.k.split("/")[0])+'"></i>':"")+escH(r.l)+"</td>"+cells+"<td>"+rt+"</td><td>"+tr+"</td></tr>"});
+  ht+="</tbody><tfoot><tr><td>รวม</td>"+(md==="tgt"?T.map((x,i)=>"<td>"+(TT[i]?'<span class="'+sdCl(x/TT[i]*100)+'">'+Math.round(x/TT[i]*100)+"%</span>":"–")+"</td>").join("")+"<td>"+(pAll==null?"–":Math.round(pAll)+"%")+"</td><td>–</td>":T.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(sum)+"</td><td>"+(n>1?sdTag(sdPc(last,prev)):"–")+"</td>")+"</tr></tfoot></table></div>";
+  const c2='<div class="ccard wide"><h3>'+(fk?"เบอร์ × เดือน — "+escH(lab(fk)):"สี × เดือน")+(md==="tgt"?" · % ของเป้า (เขียว ≥100% · เหลือง 80–99% · แดง &lt;80%)":" (ยิ่งเข้ม ยิ่งขายมาก)")+"</h3>"+ht+"</div>";
   /* 3 สัดส่วนเบอร์ */
   const sz=ms.map(m=>SIZES.map((z,i)=>keys.reduce((a,k)=>a+V(m,k)[i],0))),W3=520,H3=300,L3=40,pw3=W3-L3-8,ph3=H3-34-10,bw3=Math.min(42,pw3/n*.7);
   let g3=[0,25,50,75,100].map(v=>{const y=10+ph3-v/100*ph3;return '<line x1="'+L3+'" x2="'+(W3-8)+'" y1="'+y+'" y2="'+y+'" class="cg"/><text x="'+(L3-6)+'" y="'+(y+4)+'" class="ct" text-anchor="end">'+v+"%</text>"}).join("");
   ms.forEach((m,i)=>{const cx=L3+pw3/n*i+pw3/n/2,tot=cT(sz[i]);let yy=10+ph3;SIZES.forEach((z,j)=>{const p=tot?sz[i][j]/tot*100:0,hh=p/100*ph3;yy-=hh;if(hh>0)g3+='<g><title>'+thM(m)+" · เบอร์ "+z+": "+fmt(sz[i][j])+" คู่ ("+p.toFixed(1)+'%)</title><rect x="'+(cx-bw3/2)+'" y="'+yy+'" width="'+bw3+'" height="'+hh+'" style="fill:'+SZC[j]+'" stroke="var(--surface)" stroke-width="1"/></g>'+(p>=9?'<text x="'+cx+'" y="'+(yy+hh/2+4)+'" class="ct" text-anchor="middle" style="fill:'+(j<3?"#1f2937":"#fff")+'">'+Math.round(p)+"</text>":"")});
     g3+='<text x="'+cx+'" y="'+(H3-8)+'" class="ct" text-anchor="middle">'+MON[+m.slice(5)-1]+"</text>"});
   const c3='<div class="ccard"><h3>สัดส่วนเบอร์ในแต่ละเดือน (%)</h3><div class="cleg">'+SIZES.map((z,j)=>'<span><i style="background:'+SZC[j]+'"></i>'+z+"</span>").join("")+'</div><svg viewBox="0 0 '+W3+" "+H3+'" class="csvg" role="img" aria-label="สัดส่วนเบอร์">'+g3+"</svg></div>";
+  /* 3b ถึงเป้ารายสี เดือน A */
+  let c3b="";
+  if(hasT&&!fk){const it=PTPL.map(r=>({k:r[0],l:r[1],q:cT(V(ma,r[0])),tg:tgC(ma,r[0])})).filter(x=>x.tg>0);
+    if(it.length){const rh=26,L5=150,R5=70,W5=480,H5=it.length*rh+30,mx5=Math.max(120,...it.map(x=>x.q/x.tg*100)),a5=cAxis(mx5,4),pw5=W5-L5-R5,pre="sdt";
+      let g5=cDefs(pre,it.map(x=>x.k))+a5.ticks.map(v=>{const x=L5+v/a5.top*pw5;return '<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(H5-22)+'" class="cg"/><text x="'+x+'" y="'+(H5-6)+'" class="ct" text-anchor="middle">'+Math.round(v)+"%</text>"}).join("");
+      const x100=L5+100/a5.top*pw5;g5+='<line x1="'+x100+'" x2="'+x100+'" y1="0" y2="'+(H5-22)+'" stroke="#ff4d7a" stroke-width="2" stroke-dasharray="5 4"/>';
+      it.forEach((x,i)=>{const y=i*rh+4,pc=x.q/x.tg*100,w=pc/a5.top*pw5;g5+='<rect x="0" y="'+(y+3)+'" width="9" height="15" rx="3" fill="'+cFill(pre,x.k,i)+'" stroke="'+cEdge(x.k)+'" stroke-width=".6"/><text x="15" y="'+(y+15)+'" class="tl" style="font-size:12px">'+escH(x.l.length>17?x.l.slice(0,16)+"…":x.l)+"</text>"+
+        '<g><title>'+escH(x.l)+": ขาย "+fmt(x.q)+" / เป้า "+fmt(x.tg)+' คู่</title><rect x="'+L5+'" y="'+(y+3)+'" width="'+Math.max(w,2)+'" height="16" rx="4" fill="'+(pc>=100?"#19c38b":pc>=80?"#ffb020":"#ff4d6a")+'"/></g><text x="'+(L5+Math.max(w,2)+5)+'" y="'+(y+15)+'" class="tv">'+Math.round(pc)+"%</text>"});
+      c3b='<div class="ccard"><h3>ถึงเป้ารายสี · '+thM(ma)+' (เส้นประ = 100% ของเป้า)</h3><svg viewBox="0 0 '+W5+" "+H5+'" class="csvg" role="img" aria-label="ถึงเป้ารายสี">'+g5+"</svg></div>"}}
   /* 4 เปลี่ยนแปลง A vs B */
   const it=fk?SIZES.map((z,i)=>({k:fk,l:"เบอร์ "+z,a:V(ma,fk)[i],b:V(mb,fk)[i]})):PTPL.map(r=>({k:r[0],l:r[1],a:cT(V(ma,r[0])),b:cT(V(mb,r[0]))})),
    dl=it.filter(x=>x.a||x.b).map(x=>Object.assign(x,{d:x.a-x.b})).sort((p,q)=>q.d-p.d);let c4;
@@ -2561,12 +2620,60 @@ function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),all=Obj
       '<g><title>'+escH(x.l)+": "+thM(ma)+" "+fmt(x.a)+" · "+thM(mb)+" "+fmt(x.b)+' คู่</title><rect x="'+xx+'" y="'+(y+3)+'" width="'+Math.max(w,1.5)+'" height="15" rx="3" fill="'+(x.d>=0?"#16a34a":"#ea580c")+'"/></g>'+
       '<text x="'+(W4-R4+8)+'" y="'+(y+14)+'" class="tv '+(x.d>=0?"sdup2":"sddn2")+'">'+(x.d>0?"+":"")+fmt(x.d)+(p==null?"":" ("+(p>0?"+":"")+p.toFixed(0)+"%)")+"</text>"});
    c4='<div class="ccard"><h3>'+thM(ma)+" เทียบ "+thM(mb)+' — ขึ้น/ลง รายสี (คู่)</h3><svg viewBox="0 0 '+W4+" "+H4+'" class="csvg" role="img" aria-label="เปลี่ยนแปลงรายสี">'+g4+"</svg></div>"}
-  box.innerHTML=h+'<div class="cdg">'+c1+c2+c3+c4+"</div>"}
+  box.innerHTML=h+'<div class="cdg">'+c1+c2+c3b+c3+c4+"</div>"}
 $("sd-body").addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-sdm]");if(b){SDM=b.dataset.sdm;sdDraw()}});
 ["sd-from","sd-to","sd-col","sd-a","sd-b"].forEach(id=>$(id).onchange=sdDraw);
-function slMode(d){SLD=d;$("sl-dash").setAttribute("aria-pressed",d);$("x-sales").hidden=d||$("view-x").hidden;$("x-sldash").hidden=!d||$("view-x").hidden;if(d)sdDraw();window.scrollTo(0,0)}
-$("sl-dash").onclick=()=>slMode(true);$("sd-back").onclick=()=>slMode(false);
+$("tab-d").onclick=()=>{show("d");sdDraw()};
+$("sl-dash").onclick=()=>$("tab-d").click();
 
+
+/* ===== ข้อมูล › เป้าการขาย (kind "stgt": แถวละสี, ยอดเป้าเก็บในคอลัมน์ total) ===== */
+const tgR=()=>[["_all","รวมทั้งเดือน (ไม่แยกสี)"]].concat(PTPL),tgMsg=(t,c)=>{const m=$("xt-msg");m.hidden=!t;m.className="msg "+(c||"");m.textContent=t||""};
+const tgI=(r,c)=>$("xt-g").querySelector('input[data-r="'+r+'"][data-c="'+c+'"]');
+function tgBuild(){const g=$("xt-g");if(g.firstChild)return;
+  g.innerHTML='<table class="tpl"><thead><tr><th>สี (คู่)</th>'+MON.map(x=>"<th>"+x+"</th>").join("")+"<th>รวมปี</th></tr></thead><tbody>"+
+   tgR().map((r,i)=>"<tr"+(i?tint(r[0]):' style="--c:#6b7280"')+"><td>"+(i?"":"<b>")+escH(r[1])+(i?"":"</b>")+"</td>"+MON.map((z,j)=>'<td><input class="sl-i tg-i" type="text" inputmode="numeric" autocomplete="off" data-r="'+i+'" data-c="'+j+'" aria-label="'+escH(r[1])+" "+z+'"></td>').join("")+'<td class="tg-rt"><b>–</b></td></tr>').join("")+
+   '</tbody><tfoot><tr><td>รวมทุกสี</td>'+MON.map(()=>'<td class="tg-ct">–</td>').join("")+'<td class="tg-gt">–</td></tr></tfoot></table>';
+  g.addEventListener("input",e=>{if(e.target.classList.contains("tg-i"))tgSum()});
+  g.addEventListener("keydown",e=>{const i=e.target;if(!i.classList||!i.classList.contains("tg-i"))return;let r=+i.dataset.r,c=+i.dataset.c,d=null;
+    if(e.key==="Enter"||e.key==="ArrowDown")d=[1,0];else if(e.key==="ArrowUp")d=[-1,0];else if(e.key==="ArrowRight"&&i.selectionStart===i.value.length)d=[0,1];else if(e.key==="ArrowLeft"&&i.selectionStart===0)d=[0,-1];
+    if(d){const t=tgI(r+d[0],c+d[1]);if(t){e.preventDefault();t.focus();t.select()}}});
+  g.addEventListener("paste",e=>{const i=e.target;if(!i.classList||!i.classList.contains("tg-i"))return;const tx=(e.clipboardData||window.clipboardData).getData("text");if(!/[\t\n]/.test(tx.trim()))return;
+    e.preventDefault();const rs=tx.replace(/\r/g,"").split("\n").filter(x=>x.trim()!==""),r0=+i.dataset.r,c0=+i.dataset.c;
+    rs.forEach((ln,a)=>ln.split("\t").forEach((v,b)=>{const t=tgI(r0+a,c0+b);if(t){const n=slPn(v);t.value=n?slFv(n):""}}));tgSum()})}
+function tgSum(){const rt=[...$("xt-g").querySelectorAll(".tg-rt b")],ct=[...$("xt-g").querySelectorAll(".tg-ct")];let gt=0;const cs=MON.map(()=>0);
+  tgR().forEach((r,i)=>{let s=0;MON.forEach((z,j)=>{const v=slPn(tgI(i,j).value);s+=v;if(i)cs[j]+=v});rt[i].textContent=s?fmt(s):"–"});
+  cs.forEach((v,j)=>{ct[j].textContent=v?fmt(v):"–";gt+=v});$("xt-g").querySelector(".tg-gt").textContent=gt?fmt(gt):"–"}
+function tgFill(){const sel=$("xt-y");if(!sel||!$("xt-g"))return;tgBuild();
+  if(!sel.firstChild){const y0=new Date().getFullYear();sel.innerHTML=[y0-1,y0,y0+1].map(y=>'<option value="'+y+'">'+(y+543)+"</option>").join("");sel.value=y0}
+  const T=tgData(),y=sel.value;tgR().forEach((r,i)=>MON.forEach((z,j)=>{const m=y+"-"+p2(j+1),v=T[m]&&T[m][r[0]];tgI(i,j).value=v?slFv(v):""}));tgSum()}
+$("xt-y").onchange=()=>{tgFill();tgMsg("")};
+$("xt-clear").onclick=()=>{$("xt-g").querySelectorAll(".tg-i").forEach(i=>i.value="");tgSum();tgMsg("ล้างช่องแล้ว (ยังไม่ได้บันทึก)","warn")};
+$("xt-save").onclick=async()=>{const y=$("xt-y").value,key=($("pf-key").value||"").trim()||fgKeySet(true);if(!key){tgMsg("ใส่รหัสบันทึกก่อน","warn");return}
+  const T=tgData();$("xt-save").disabled=true;let nm=0,tot=0;
+  try{for(let j=0;j<12;j++){const m=y+"-"+p2(j+1),d=m+"-01",rows=[];tgR().forEach((r,i)=>{const v=slPn(tgI(i,j).value);if(v){rows.push(["stgt",r[0],0,0,0,0,0,0,v]);if(i)tot+=v}});
+      if(rows.length){const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by:"",rows})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ");nm++}
+      else if(T[m]){const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"clear",key,scope:"stock",date:d,kinds:["stgt"]})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"ลบไม่สำเร็จ")}}
+    await load();tgFill();tgMsg("บันทึกเป้าการขายปี "+(+y+543)+" แล้ว "+nm+" เดือน","ok")}
+  catch(err){tgMsg("บันทึกไม่สำเร็จ: "+(err&&err.message||err),"warn")}
+  $("xt-save").disabled=false};
+$("tab-x7").onclick=()=>{show("x7");tgFill()};
+/* คำอธิบายใต้หัวข้อ: พับไว้ กดปุ่มเพื่อดู */
+document.querySelectorAll(".panel>.note:not([id])").forEach(n=>{const p=n.previousElementSibling;if(!p||!(p.tagName==="H2"||p.classList.contains("head2")))return;
+  n.hidden=true;const b=document.createElement("button");b.type="button";b.className="hintbtn";b.textContent="ℹ︎ คำอธิบาย";b.setAttribute("aria-expanded","false");
+  b.onclick=()=>{n.hidden=!n.hidden;b.setAttribute("aria-expanded",String(!n.hidden));b.classList.toggle("on",!n.hidden)};n.before(b)});
+
+/* ===== ทุกหัวข้อพับ/คลี่ได้: หน้าที่มีหลายหัวข้อพับไว้ก่อน กดที่หัวข้อเพื่อดู · หน้าที่มีหัวข้อเดียวเปิดให้เลย ===== */
+const ACC_OFF=(()=>{try{return localStorage.getItem("fgnoacc")==="1"}catch(e){return false}})();
+function accInit(){if(ACC_OFF)return;document.querySelectorAll(".panel:not(.toolbar)").forEach(p=>{if(p.dataset.acc||p.closest("#view-c"))return;const h=p.firstElementChild;if(!h||!(h.tagName==="H2"||h.classList.contains("head2")))return;
+  p.dataset.acc="1";p.classList.add("acc","shut");h.setAttribute("role","button");h.tabIndex=0;h.setAttribute("aria-expanded","false");
+  const tg=()=>{p.classList.toggle("shut");p.dataset.touched="1";h.setAttribute("aria-expanded",String(!p.classList.contains("shut")))};
+  h.addEventListener("click",e=>{if(e.target.closest("button,a,select,input,label"))return;tg()});
+  h.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target===h){e.preventDefault();tg()}})})}
+function accView(){if(ACC_OFF)return;accInit();const vis=[...document.querySelectorAll(".panel.acc")].filter(p=>p.offsetParent!==null);
+  vis.forEach(p=>{if(p.dataset.touched||p.dataset.init)return;p.dataset.init="1";const sh=vis.length>1;p.classList.toggle("shut",sh);const h=p.firstElementChild;if(h)h.setAttribute("aria-expanded",String(!sh))})}
+try{new MutationObserver(()=>{clearTimeout(window._accT);window._accT=setTimeout(()=>{accInit();accView()},30)}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+accView();
 function frMode(only){const fr=$("fr"),f=()=>{try{const d=fr.contentDocument;d.body.classList.toggle("only-e",only);d.getElementById(only?"tab-e":"tab-d").click()}catch(e){}};
   if(fr.contentDocument&&fr.contentDocument.getElementById("tab-e"))f();else fr.addEventListener("load",f,{once:true})}
 $("tab-x3").onclick=()=>{window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("ptitle").textContent=PT.x3;$("tab-r").setAttribute("aria-selected","false");$("tab-x3").setAttribute("aria-selected","true");xOpen(true)};
