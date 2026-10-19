@@ -267,7 +267,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 58)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 59)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -939,6 +939,8 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
       <div class="field" style="width:170px"><label for="p-date">วันที่แจ้งโรงงาน</label><input type="date" id="p-date"></div>
       <div class="field" style="width:170px"><label for="p-key">รหัสบันทึก</label><input type="password" id="p-key" autocomplete="off"></div>
     </div>
+    <div class="row" style="align-items:center"><label class="btn ghost" style="cursor:pointer">นำเข้าแผนจากไฟล์ PDF<input type="file" id="p-pdf" accept=".pdf,application/pdf" hidden></label><span class="note">ไฟล์ PDF ที่ฝ่ายผลิตส่งมา (ที่ export จาก Excel) · ระบบอ่านแล้วเติมลงตารางให้ตรวจก่อน แล้วกดบันทึกเอง</span></div>
+    <div id="p-pdfmsg" class="note" hidden></div>
     <div class="field"><label for="p-note">หมายเหตุ (เช่น เหตุผลที่ revise)</label><input type="text" id="p-note"></div>
     <div class="scroll entry" id="p-grid"></div>
     <div id="p-check" class="msg">เลือกเดือนและฉบับ แล้วกรอกแผนเป็นคู่ ช่องว่างถือเป็น 0</div>
@@ -1447,6 +1449,72 @@ function confirm_ok(){ // no dialogs in the viewer: first click warns, second cl
 function tab(n){ ["d","q","e","p","i"].forEach(k=>{$("view-"+k).hidden=(k!==n);$("tab-"+k).setAttribute("aria-selected",k===n)});
   try{localStorage.setItem("fgtab",n)}catch(e){} }
 $("tab-d").onclick=()=>tab("d"); $("tab-q").onclick=()=>tab("q"); $("tab-e").onclick=()=>tab("e"); $("tab-p").onclick=()=>tab("p"); $("tab-i").onclick=()=>tab("i");
+
+/* ---------- import plan from PDF ---------- */
+const PDFJS_VER="3.11.174",PDFJS_BASE="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/"+PDFJS_VER+"/";
+let PDFJS_P=null;
+function loadPdfJs(){
+  if(window.pdfjsLib&&window.pdfjsLib.getDocument)return Promise.resolve(window.pdfjsLib);
+  return PDFJS_P||(PDFJS_P=new Promise((ok,no)=>{const sc=document.createElement("script");sc.src=PDFJS_BASE+"pdf.min.js";
+    sc.onload=async()=>{try{const t=await fetch(PDFJS_BASE+"pdf.worker.min.js").then(r=>r.text());pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([t],{type:"text/javascript"}))}catch(e){pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_BASE+"pdf.worker.min.js"}ok(window.pdfjsLib)};
+    sc.onerror=()=>{PDFJS_P=null;no(new Error("โหลดตัวอ่าน PDF ไม่ได้ (ต้องต่ออินเทอร์เน็ต)"))};document.head.appendChild(sc)}));
+}
+const TM=/[่-์]/g,thn=t=>String(t).replace(/\s+/g,"").replace(/ํา/g,"า").replace(/ำ/g,"า").replace(TM,"");
+const PMONTHS=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"].map(thn);
+const PDFMAP=[[/^นาเงินลวน/,"น้ำเงิน/น้ำเงิน"],[/^แดงลวน/,"แดง/แดง"],[/^โกโกลวน/,"โกโก้ล้วน"],[/^ดาลวน/,"ดำ"],[/^ดา\(|หนาขาว/,"ดำ/ขาว"],
+  [/^Xmasหูเขียว/i,"เขียว/แดง"],[/^Xmasหูแดง/i,"แดง/เขียว"],[/โควิด/,"เหลือง/แดง"],
+  [/^พิเศษหูนาเงิน/,"น้ำเงิน/ดำ"],[/^พิเศษหูเขียว/,"เขียว/ดำ"],[/^พิเศษหูแดง/,"แดง/ดำ"],[/^พิเศษหูขาว/,"ขาว/ดำ"],[/^พิเศษหูเทา/,"เทา/ดำ"],
+  [/^พิเศษหูเหลือง/,"?เหลือง"],[/^พิเศษหูส/,"?น้ำตาล"],
+  [/^นาเงิน$/,"น้ำเงิน"],[/^เขียว$/,"เขียว"],[/^แดง$/,"แดง"],[/^เหลือง$/,"เหลือง"],[/^ขาว$/,"ขาว"],[/^เทา$/,"เทา"]];
+const nm=v=>{v=String(v).trim().replace(/,/g,"");if(v==="-"||v==="–")return 0;return /^\d+(\.\d+)?$/.test(v)?Math.round(Number(v)):null};
+async function readPlanPdf(file){
+  const lib=await loadPdfJs(),doc=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise,out={rows:{},unmapped:[],warn:[],month:"",date:"",note:"",revise:false,total:0,raw:0};
+  const lines=[];
+  for(let pn=1;pn<=Math.min(doc.numPages,3);pn++){const tc=await (await doc.getPage(pn)).getTextContent(),its=tc.items.filter(i=>i.str&&i.str.trim()!=="").map(i=>({s:i.str,x:i.transform[4],y:i.transform[5]+(pn-1)*-2000}));
+    its.sort((a,b)=>b.y-a.y||a.x-b.x);let cur=null;its.forEach(i=>{if(cur&&Math.abs(cur.y-i.y)<=3)cur.it.push(i);else{cur={y:i.y,it:[i]};lines.push(cur)}});}
+  lines.forEach(l=>l.it.sort((a,b)=>a.x-b.x));
+  const txt=l=>l.it.map(i=>i.s).join(" ");
+  const full=lines.map(txt).join("\n"),fn=thn(full);
+  const mo=PMONTHS.findIndex(m=>fn.includes("เดือน"+m));const yr=(fn.match(new RegExp("เดือน"+PMONTHS[mo>=0?mo:0]+"(25\\d\\d|20\\d\\d)"))||[])[1];
+  if(mo>=0&&yr){let y=+yr;if(y>2400)y-=543;out.month=y+"-"+p2(mo+1)}else out.warn.push("อ่านเดือนจากหัวใบไม่ได้ — เลือกเดือนเอง");
+  const dm=full.match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{2,4})/);if(dm){let y=+dm[3];if(y<100)y+=2500;if(y>2400)y-=543;out.date=y+"-"+p2(+dm[2])+"-"+p2(+dm[1])}
+  out.revise=/แก.?ไข/.test(fn.slice(0,fn.indexOf("รองเท")>0?fn.indexOf("รองเท"):600));
+  const note=[];for(const l of lines){const t=thn(txt(l));if(/ปร.?บ(ลด|เพิ)/.test(t)||(/แก.?ไข/.test(t)&&/ขอเรียน/.test(t)&&0))note.push(txt(l).replace(/\s+/g," ").replace(/\s([ัิ-ฺ็-๎])/g,"$1").replace(/สีดา\b/g,"สีดำ").trim())}
+  out.note=(out.revise?"แก้ไข · ":"")+note.join(" ; ").replace(/(\d)\s*([,.])\s*(\d)/g,"$1$2$3").replace(/\s+,/g,",").replace(/สีดา(?=\s|$)/g,"สีดำ");
+  const data=[];let totRow=null,hdr=false;
+  lines.forEach(l=>{const toks=l.it.filter(i=>nm(i.s)!==null);if(toks.length<7)return;const vals=toks.map(i=>nm(i.s));
+    if(vals[0]===9&&vals[1]===9&&0)return;const fx=toks[0].x,lab=l.it.filter(i=>i.x<fx-4&&nm(i.s)===null).map(i=>i.s).join("");
+    if(/^8\.?5/.test(toks[0].s.trim())&&toks[1].s.trim()==="9")return;
+    if(/ปร.?บ(ลด|เพิ)|เบอร์|ขอเรียน/.test(thn(l.it.map(i=>i.s).join(""))))return;                // บรรทัดหมายเหตุ ไม่ใช่แถวตาราง
+    if(Math.abs(toks[toks.length-1].x-toks[0].x)<40)return;
+    const six=vals.slice(-7,-1),tot=vals[vals.length-1];
+    if(!lab.trim()){totRow={six,tot};return}
+    data.push({lab,six,tot})});
+  if(!data.length){out.warn.push("ไม่พบตารางตัวเลขใน PDF นี้ (ถ้าเป็นไฟล์สแกน/รูปภาพ อ่านไม่ได้ ให้ใช้ไฟล์ Excel ต้นฉบับ)");return out}
+  data.forEach(r=>{const k=thn(r.lab);const hit=PDFMAP.find(q=>q[0].test(k)),key=hit?hit[1]:null;
+    if(r.six.reduce((a,b)=>a+b,0)!==r.tot)out.warn.push("แถว \""+r.lab.replace(/\s+/g," ")+"\" ยอดรวมแถวไม่ตรง ("+fmt(r.six.reduce((a,b)=>a+b,0))+" vs "+fmt(r.tot)+")");
+    if(!key||key[0]==="?"||!ALL.includes(key)){if(r.tot)out.unmapped.push(r.lab.replace(/\s+/g," ")+" = "+fmt(r.tot));return}
+    out.rows[key]=r.six;out.raw+=r.tot});
+  out.total=ALL.reduce((a,c)=>a+(out.rows[c]||[]).reduce((x,y)=>x+y,0),0);
+  if(totRow){const cs=SIZES.map((z,i)=>data.reduce((a,r)=>a+r.six[i],0));
+    if(cs.some((v,i)=>v!==totRow.six[i])||data.reduce((a,r)=>a+r.tot,0)!==totRow.tot)out.warn.push("ยอดรวมรายเบอร์/ทั้งหมดที่คำนวณไม่ตรงกับแถวรวมท้ายตารางใน PDF ("+fmt(data.reduce((a,r)=>a+r.tot,0))+" vs "+fmt(totRow.tot)+") — ตรวจตัวเลขทุกแถว");
+    else out.okSum=totRow.tot}
+  else out.warn.push("ไม่พบแถวรวมท้ายตารางใน PDF จึงตรวจยอดรวมไม่ได้");
+  return out;
+}
+$("p-pdf").onchange=async e=>{
+  const f=e.target.files[0],m=$("p-pdfmsg");if(!f)return;m.hidden=false;m.className="msg";m.textContent="กำลังอ่าน PDF…";
+  try{const r=await readPlanPdf(f);e.target.value="";
+    if(!Object.keys(r.rows).length){m.className="msg warn";m.textContent=r.warn.join(" · ")||"ไม่พบข้อมูลแผน";return}
+    if(r.month){$("p-month").value=r.month;pRefreshRev();$("p-rev").value="new"}
+    ALL.forEach((c,ri)=>SIZES.forEach((z,i)=>{const x=r.rows[c]?r.rows[c][i]:0;$(pid(ri,i)).value=x?fv(x):""}));
+    if(r.date)$("p-date").value=r.date;$("p-note").value=r.note||"";pCalc();
+    const bad=r.warn.length||r.unmapped.length;
+    m.className="msg "+(bad?"warn":"ok");
+    m.innerHTML="อ่านจาก PDF แล้ว: "+esc(r.month?mLabel(r.month):"(ไม่ทราบเดือน)")+" · รวม <b>"+fmt(r.total)+"</b> คู่"+(r.okSum?" · ตรงกับยอดรวมท้ายตารางใน PDF ("+fmt(r.okSum)+")":"")+(r.revise?" · เอกสารระบุ (แก้ไข) จะบันทึกเป็นฉบับใหม่":"")+
+      (r.unmapped.length?"<br>⚠ แถวที่จับคู่กับสีในระบบไม่ได้ (ไม่ได้เติมให้ ใส่เองในตาราง): "+esc(r.unmapped.join(" ; ")):"")+(r.warn.length?"<br>⚠ "+r.warn.map(esc).join("<br>⚠ "):"")+"<br>ตรวจตารางด้านล่างให้ตรงกับใบ แล้วใส่รหัสและกดบันทึก";
+  }catch(err){m.className="msg warn";m.textContent="อ่านไฟล์ไม่สำเร็จ: "+(err&&err.message||err)}
+};
 
 /* ---------- plan tab ---------- */
 const pid=(r,i)=>"p-"+r+"-"+i;
