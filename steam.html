@@ -288,7 +288,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 68)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 69)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -826,6 +826,18 @@ tbody tr:hover td{background:var(--accent-soft)}
 .kpi.main[data-hk] .v,.kpi.main[data-hv] .v{border-bottom-color:var(--accent)}
 thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid var(--line2)}
 .dbox>summary{color:var(--ink)}
+.mut{color:var(--muted);font-size:12px;font-weight:400}
+#e-list details.ly{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--surface)}
+#e-list details.ly>summary{padding:10px 12px;cursor:pointer;font-weight:600;display:flex;gap:10px;align-items:center}
+#e-list details.lm{border-top:1px solid var(--line);margin:0 12px}
+#e-list details.lm>summary{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:9px 0;cursor:pointer}
+#e-list .ls{margin-left:auto;display:flex;gap:8px}
+#e-list .ls .btn{padding:4px 10px;font-size:13px}
+#e-list .chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 12px}
+#e-list .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:4px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:56px;font:inherit}
+#e-list .chip:hover{border-color:var(--accent)}
+#e-list .chip small{font-size:10px;color:var(--muted)}
+body.only-e header{display:none}
 </style>
 
 <div class="wrap">
@@ -959,6 +971,10 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div id="e-check" class="msg">กรอกตัวเลขตามใบรายงาน ช่องว่างถือเป็น 0</div>
     <div class="row"><button class="btn" id="e-save">บันทึกวันนี้</button><button class="btn ghost" id="e-clear">ล้างช่อง</button><button class="btn ghost" id="e-del" type="button" hidden style="color:#c62828;border-color:#c62828">ลบข้อมูลวันที่นี้</button></div>
     <div id="e-msg" class="note"></div>
+    <div style="border-top:1px solid var(--line);margin-top:8px;padding-top:12px;display:flex;flex-direction:column;gap:10px"><h3 style="margin:0">ข้อมูลที่บันทึกไว้</h3>
+      <div class="note">กดที่ปีเพื่อดูเดือน กดที่เดือนเพื่อดูวันที่ที่มีข้อมูล · กดที่วันที่เพื่อเปิดมาแก้ไขหรือลบ · ดาวน์โหลด Excel เป็นรายเดือน หรือกำหนดช่วงวันที่เอง (ใส่วันเดียวกันทั้งสองช่องถ้าต้องการวันเดียว)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end"><div class="field" style="width:170px"><label for="e-xf">ตั้งแต่วันที่</label><input type="date" id="e-xf"></div><div class="field" style="width:170px"><label for="e-xt">ถึงวันที่</label><input type="date" id="e-xt"></div><button class="btn" id="e-xgo" type="button">ดาวน์โหลด Excel ช่วงนี้</button></div>
+      <div id="e-lmsg" class="note"></div><div id="e-list"></div></div>
   </section>
 <section id="view-i" class="panel" hidden>
     <div class="head2"><h2>นำเข้าจาก Excel</h2></div>
@@ -1487,6 +1503,55 @@ $("e-del").onclick=async()=>{const m=$("e-msg"),key=$("e-key").value.trim(),id=E
     await load();EM==="m"?fillMonth(id):fillGrid(id);m.textContent="ลบข้อมูล "+nm+" แล้ว"}
   catch(e){m.textContent="ลบไม่สำเร็จ: "+(e&&e.message||e)}
   $("e-del").disabled=false;updDel()};
+
+/* ---------- รายการข้อมูลที่บันทึกไว้ (ปี → เดือน → วัน) + Excel ช่วงวันที่ + ลบทั้งเดือน ---------- */
+let lArm="";
+const dTot=d=>{let t=0;Object.values((docs[d]&&docs[d].rows)||{}).forEach(v=>v.forEach(x=>t+=x||0));return t};
+function lstDraw(){const L=$("e-list");if(!L)return;
+  const ds=dates(),ms=[...new Set(ds.map(d=>d.slice(0,7)).concat(Object.keys(MACT)))].sort(),ys=[...new Set(ms.map(m=>m.slice(0,4)))].sort().reverse();
+  if(ds.length){if(!$("e-xf").value)$("e-xf").value=ds[0];if(!$("e-xt").value)$("e-xt").value=ds[ds.length-1]}
+  if(!ms.length){L.innerHTML='<div class="empty">ยังไม่มีข้อมูลที่บันทึกไว้</div>';return}
+  const open=new Set([...L.querySelectorAll("details[open]")].map(d=>d.dataset.k));
+  L.innerHTML=ys.map(y=>{const mm=ms.filter(m=>m.slice(0,4)===y).reverse(),nd=ds.filter(d=>d.slice(0,4)===y).length;
+    return '<details class="ly" data-k="y'+y+'"'+(open.has("y"+y)?" open":"")+'><summary>ปี '+(+y+543)+' <span class="mut">('+nd+' วันที่มีข้อมูล · '+mm.length+' เดือน)</span></summary>'+
+    mm.map(m=>{const dm=ds.filter(d=>d.slice(0,7)===m),tot=dm.reduce((a,d)=>a+dTot(d),0);
+      return '<details class="lm" data-k="m'+m+'"'+(open.has("m"+m)?" open":"")+'><summary><b>'+mLabel(m)+'</b><span class="mut">'+(dm.length?dm.length+" วัน · รวม "+fmt(tot)+" คู่":"")+(MACT[m]?(dm.length?" · ":"")+"มียอดรวมรายเดือน (ย้อนหลัง)":"")+'</span><span class="ls"><button class="btn ghost" type="button" data-xl="'+m+'">ดาวน์โหลด Excel</button><button class="btn ghost" type="button" data-dm="'+m+'" style="color:#c62828;border-color:#c62828">ลบทั้งเดือน</button></span></summary><div class="chips">'+
+        dm.map(d=>'<button type="button" class="chip" data-d="'+d+'" title="'+thLong(d)+' · '+fmt(dTot(d))+' คู่">'+(+d.slice(8))+'<small>'+fmt(dTot(d))+'</small></button>').join("")+(dm.length?"":'<span class="mut">ไม่มีข้อมูลรายวัน</span>')+'</div></details>'}).join("")+'</details>'}).join("")}
+async function xlRange(f,t,name,b){const msg=$("e-lmsg");
+  if(typeof ExcelJS==="undefined"){msg.textContent="โหลดตัวสร้าง Excel ไม่ได้";return}
+  if(!f||!t||f>t){msg.textContent="เลือกช่วงวันที่ให้ถูกต้อง (ตั้งแต่ ต้องไม่เกิน ถึง)";return}
+  const ds=dates().filter(d=>d>=f&&d<=t),mk=Object.keys(MACT).filter(m=>m>=f.slice(0,7)&&m<=t.slice(0,7)).sort();
+  if(!ds.length&&!mk.length){msg.textContent="ไม่มีข้อมูลในช่วงที่เลือก";return}
+  const old=b?b.textContent:"";if(b){b.disabled=true;b.textContent="กำลังสร้างไฟล์…"}
+  try{const wb=new ExcelJS.Workbook(),hd=ws=>{ws.getRow(1).font={bold:true}},col=ws=>{ws.columns=[{width:16}].concat(SIZES.length?[{width:30}]:[],SIZES.map(()=>({width:11})),[{width:13}])};
+    const w1=wb.addWorksheet("รวมรายวัน");w1.columns=[{width:16}].concat(SIZES.map(()=>({width:11})),[{width:13}]);w1.addRow(["วันที่"].concat(SIZES,["รวม (คู่)"]));hd(w1);
+    ds.forEach(d=>{const t=SIZES.map((z,i)=>ALL.reduce((a,c)=>a+(((docs[d].rows||{})[c]||[])[i]||0),0)),r=w1.rowCount+1;w1.addRow([d].concat(t,[{formula:"SUM(B"+r+":G"+r+")",result:t.reduce((a,b)=>a+b,0)}]))});
+    if(ds.length){const n=w1.rowCount;w1.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+"2:"+String.fromCharCode(64+j)+n+")"})))).font={bold:true}}
+    w1.eachRow(r=>r.eachCell((c,j)=>{if(j>1)c.numFmt="#,##0"}));
+    const w2=wb.addWorksheet("วัน-สี-เบอร์");w2.columns=[{width:14},{width:30}].concat(SIZES.map(()=>({width:11})),[{width:13}]);w2.addRow(["วันที่","สี"].concat(SIZES,["รวม (คู่)"]));hd(w2);
+    ds.forEach(d=>ALL.forEach(c=>{const v=(docs[d].rows||{})[c];if(!v||!v.some(x=>x))return;const r=w2.rowCount+1;w2.addRow([d,lab(c)].concat(SIZES.map((z,i)=>v[i]||0),[{formula:"SUM(C"+r+":H"+r+")",result:v.reduce((a,b)=>a+(b||0),0)}]))}));
+    w2.eachRow(r=>r.eachCell((c,j)=>{if(j>2)c.numFmt="#,##0"}));
+    if(mk.length){const w3=wb.addWorksheet("ยอดรวมรายเดือน");w3.columns=[{width:14},{width:30}].concat(SIZES.map(()=>({width:11})),[{width:13}]);w3.addRow(["เดือน","สี"].concat(SIZES,["รวม (คู่)"]));hd(w3);
+      mk.forEach(m=>ALL.forEach(c=>{const v=MACT[m][c];if(!v||!v.some(x=>x))return;const r=w3.rowCount+1;w3.addRow([m,lab(c)].concat(SIZES.map((z,i)=>v[i]||0),[{formula:"SUM(C"+r+":H"+r+")",result:v.reduce((a,b)=>a+(b||0),0)}]))}));w3.eachRow(r=>r.eachCell((c,j)=>{if(j>2)c.numFmt="#,##0"}))}
+    const buf=await wb.xlsx.writeBuffer(),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    msg.textContent="ดาวน์โหลด "+name+" แล้ว ("+ds.length+" วัน"+(mk.length?" + ยอดรวมรายเดือน "+mk.length+" เดือน":"")+")"}
+  catch(e){msg.textContent="สร้างไฟล์ไม่สำเร็จ: "+(e&&e.message||e)}
+  if(b){b.disabled=false;b.textContent=old}}
+$("e-xgo").onclick=()=>{const f=$("e-xf").value,t=$("e-xt").value;xlRange(f,t,"FG200_รับเข้าโกดัง_"+f+(f===t?"":"_ถึง_"+t)+".xlsx",$("e-xgo"))};
+$("e-list").addEventListener("click",async e=>{
+  const c=e.target.closest&&e.target.closest(".chip");
+  if(c){const d=c.dataset.d;setEM("d");$("e-date").value=d;fillGrid(d);updDel();$("e-msg").textContent="เปิด "+thLong(d)+" แล้ว — แก้ตัวเลขแล้วกดบันทึก หรือกดปุ่ม ลบข้อมูลวันที่นี้ ด้านบน";$("e-date").scrollIntoView({block:"center"});return}
+  const x=e.target.closest&&e.target.closest("[data-xl]");
+  if(x){e.preventDefault();e.stopPropagation();const m=x.dataset.xl;await xlRange(m+"-01",m+"-"+p2(lastDay(m)),"FG200_รับเข้าโกดัง_"+m+".xlsx",x);return}
+  const b=e.target.closest&&e.target.closest("[data-dm]");
+  if(b){e.preventDefault();e.stopPropagation();const m=b.dataset.dm,msg=$("e-lmsg"),key=$("e-key").value.trim();
+    if(!key){msg.textContent="ใส่รหัสบันทึกในช่อง รหัสบันทึก ด้านบนก่อน";return}
+    if(lArm!==m){lArm=m;b.textContent="กดอีกครั้งเพื่อยืนยันลบ";setTimeout(()=>{if(lArm===m){lArm="";b.textContent="ลบทั้งเดือน"}},5000);return}
+    lArm="";b.disabled=true;const days=dates().filter(d=>d.slice(0,7)===m);let n=0;
+    try{for(const d of days){const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key,date:d,rows:{}})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"error");n++;msg.textContent="กำลังลบ "+mLabel(m)+" … "+n+"/"+days.length}
+      if(MACT[m]){const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"clear",key,scope:"stock",date:m+"-01",kinds:["mact"]})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"error")}
+      await load();msg.textContent="ลบข้อมูล "+mLabel(m)+" แล้ว ("+n+" วัน"+")"}
+    catch(err){msg.textContent="ลบไม่สำเร็จ: "+(err&&err.message||err);await load()}}});
 $("e-clear").onclick=()=>{ALL.forEach((c,r)=>SIZES.forEach((s,i)=>$("g-"+r+"-"+i).value=""));$("e-printed").value="";calc()};
 $("e-save").onclick=async()=>{
   if(EM==="m")return saveMonth();
@@ -1803,7 +1868,7 @@ async function load(){
     STM={};(j.steam||[]).forEach(x=>{const d=normD(x[0]),pk=SUPMAP[x[1]];if(!pk)return;STM[d]=STM[d]||{};const a=STM[d][pk]=STM[d][pk]||[0,0,0,0,0,0];x.slice(2,8).forEach((v,i)=>a[i]+=Number(v)||0)});
     const ds=dates();
     if(first&&ds.length){first=false;$("from").value=ds[0];$("to").value=ds[ds.length-1];$("e-date").value=ds[ds.length-1];fillGrid(ds[ds.length-1]);$("p-month").value=ds[ds.length-1].slice(0,7);pRefreshRev()}
-    render();try{updDel()}catch(e){}
+    render();try{updDel();lstDraw()}catch(e){console.error(e)}
   }catch(e){loaded=true;$("matrix").innerHTML='<div class="empty">อ่านข้อมูลไม่ได้ ตรวจ API_URL และการ Deploy</div>'}
 }
 try{$("e-key").value=localStorage.getItem("fgkey")||"";$("p-key").value=$("e-key").value;$("i-key").value=$("e-key").value}catch(e){}
@@ -2014,10 +2079,10 @@ $("xs-y").onchange=()=>{$("xs-m").value="all";xsDraw()};$("xs-m").onchange=xsDra
 $("go-x1").onclick=e=>{e.preventDefault();$("tab-x1").click()};$("go-x2").onclick=e=>{e.preventDefault();$("tab-x2").click()};
 $("tab-x1").onclick=()=>{show("x1");xpDraw();initE();renderP();pfInit();poInit();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}};
 $("tab-x2").onclick=()=>{show("x2");xsDraw()};
-$("tab-x3").onclick=()=>{$("tab-r").click();$("ptitle").textContent=PT.x3;$("tab-r").setAttribute("aria-selected","false");$("tab-x3").setAttribute("aria-selected","true");xOpen(true);
-  const fr=$("fr"),go=()=>{try{fr.contentDocument.getElementById("tab-e").click()}catch(e){}};
-  if(fr.contentDocument&&fr.contentDocument.getElementById("tab-e"))go();else fr.addEventListener("load",go,{once:true})};
-$("tab-r").onclick=()=>{show("r");window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
+function frMode(only){const fr=$("fr"),f=()=>{try{const d=fr.contentDocument;d.body.classList.toggle("only-e",only);d.getElementById(only?"tab-e":"tab-d").click()}catch(e){}};
+  if(fr.contentDocument&&fr.contentDocument.getElementById("tab-e"))f();else fr.addEventListener("load",f,{once:true})}
+$("tab-x3").onclick=()=>{window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("ptitle").textContent=PT.x3;$("tab-r").setAttribute("aria-selected","false");$("tab-x3").setAttribute("aria-selected","true");xOpen(true)};
+$("tab-r").onclick=()=>{show("r");if(!window._x3go){try{if($("fr").contentDocument.body.classList.contains("only-e"))frMode(false)}catch(e){}}window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
 window.addEventListener("message",e=>{if(e.origin===location.origin&&e.data&&e.data.fgh)$("fr").style.height=Math.max(500,e.data.fgh+8)+"px"});
 try{$("i-key").value=localStorage.getItem("fgkey")||""}catch(e){}
 /* ---------- Excel export ---------- */
