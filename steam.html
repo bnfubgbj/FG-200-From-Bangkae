@@ -346,7 +346,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 78)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 79)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2215,7 +2215,10 @@ function cmpData(f,t){const o={plan:{},asm:{},act:{}},notes=[],fx=F(),add=(M,k,v
     const days=Math.round((new Date(b)-new Date(a))/864e5)+1,fr=days/dim,rs=xpRevs(m),lr=rs[rs.length-1],cl=PL[m][lr].colors;Object.keys(cl).forEach(k=>add(o.plan,k,cl[k],fr));
     notes.push(thM(m)+" "+revName(lr)+(fr<1?" (สัดส่วน "+days+"/"+dim+" วัน)":""))});
   dates().forEach(d=>{if(d<f||d>t)return;Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;add(o.asm,SUPMAP[k]||k,DATA[d][k],fx)})});
-  Object.keys(FGD).forEach(d=>{if(d<f||d>t)return;Object.keys(FGD[d]).forEach(k=>add(o.act,k,FGD[d][k],1))});
+  const dly=new Set();Object.keys(FGD).forEach(d=>{if(d<f||d>t)return;let any=false;Object.keys(FGD[d]).forEach(k=>{add(o.act,k,FGD[d][k],1);if(FGD[d][k].some(x=>x))any=true});if(any)dly.add(d.slice(0,7))});
+  const MA={};(STK||[]).forEach(r=>{if(r[1]!=="mact")return;const m=normD(r[0]).slice(0,7);(MA[m]=MA[m]||{})[r[2]]=r.slice(3,9).map(v=>Number(v)||0)});
+  Object.keys(MA).sort().forEach(m=>{if(dly.has(m))return;const[y,mo]=m.split("-").map(Number),dim=new Date(y,mo,0).getDate(),a=f>m+"-01"?f:m+"-01",b=t<m+"-"+cp2(dim)?t:m+"-"+cp2(dim);if(a>b)return;
+    const days=Math.round((new Date(b)-new Date(a))/864e5)+1,fr=days/dim;Object.keys(MA[m]).forEach(k=>add(o.act,k,MA[m][k],fr));notes.push("รับจริง "+thM(m)+": ยอดรวมรายเดือน"+(fr<1?" (สัดส่วน "+days+"/"+dim+" วัน)":""))});
   ["plan","asm","act"].forEach(s=>Object.keys(o[s]).forEach(k=>o[s][k]=o[s][k].map(Math.round)));
   return{o,notes}}
 const cSum=M=>cT(Object.values(M).map(cT));
@@ -2231,7 +2234,7 @@ function cmpDraw(){const out=$("c-out");if(!out)return;const f=$("c-from").value
   if(!src.length){out.innerHTML='<div class="empty">ติ๊กเลือกอย่างน้อย 1 รายการที่จะเปรียบเทียบ</div>';return}
   if(!q&&!dt){out.innerHTML='<div class="empty">ติ๊กเลือกหัวข้อการเปรียบเทียบอย่างน้อย 1 หัวข้อ</div>';return}
   const {o,notes}=cmpData(f,t),tot={};CSRC.forEach(s=>tot[s[0]]=cSum(o[s[0]]));
-  nt.textContent="ช่วง "+thD(f)+" – "+thD(t)+" · หน่วย: คู่ (แผนประกอบ = แผ่น × "+F()+" คู่ต่อแผ่น)"+(notes.length&&$("c-s-plan").checked?" · แผนผลิตใช้: "+notes.join(", "):"");
+  nt.textContent="ช่วง "+thD(f)+" – "+thD(t)+" · หน่วย: คู่ (แผนประกอบ = แผ่น × "+F()+" คู่ต่อแผ่น)"+(notes.length?" · ที่มา: "+notes.filter(n=>/^รับจริง/.test(n)?$("c-s-act").checked:$("c-s-plan").checked).join(", "):"");
   let h="";
   if(q){const mx=Math.max(1,...src.map(s=>tot[s[0]])),pl=$("c-s-plan").checked?tot.plan:0;
     h+='<div class="panel"><h2>ปริมาณการผลิต (คู่)</h2><div class="cgrid">'+src.map(s=>{const v=tot[s[0]],has=Object.keys(o[s[0]]).length>0;let d="";
