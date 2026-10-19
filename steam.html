@@ -288,7 +288,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 69)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 70)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2006,7 +2006,7 @@ function xpTable(m,r){const c=xpC(m,r),pv=planView(c),T=a=>a.reduce((x,y)=>x+y,0
   let h='<div class="note" style="margin-bottom:8px">'+revName(r)+(c.P.date?" · แจ้ง "+thD(c.P.date):"")+(c.P.note?" · "+escH(c.P.note):"")+"</div>";
   if(pv.prevRev!=null)h+='<div class="note" style="margin-bottom:8px"><span class="sw dn"></span> ปรับลดจาก '+revName(pv.prevRev)+' &nbsp; <span class="sw up"></span> ปรับเพิ่มจาก '+revName(pv.prevRev)+"</div>";
   h+='<div class="scroll"><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
-  pv.rows.filter(x=>T(x.v)>0).forEach(x=>{h+="<tr"+tint(x.k)+"><td>"+escH(x.label)+"</td>"+x.v.map((q,i)=>'<td class="'+x.st[i]+(q?"":" zero")+'">'+(q?fmt(q):"-")+"</td>").join("")+"<td><b>"+(T(x.v)?fmt(T(x.v)):"-")+"</b></td></tr>"});
+  pv.rows.forEach(x=>{h+="<tr"+tint(x.k)+"><td>"+escH(x.label)+"</td>"+x.v.map((q,i)=>'<td class="'+x.st[i]+(q?"":" zero")+'">'+(q?fmt(q):"-")+"</td>").join("")+"<td><b>"+(T(x.v)?fmt(T(x.v)):"-")+"</b></td></tr>"});
   return h+"</tbody><tfoot><tr><td>รวม</td>"+pv.tot.map(q=>"<td>"+fmt(q)+"</td>").join("")+"<td>"+fmt(g)+"</td></tr></tfoot></table></div>"}
 function xpDraw(){const L=$("xp-list");if(!L)return;const ys=xpYears();
   if(!ys.length){L.innerHTML='<div class="empty">ยังไม่มีแผนผลิตที่บันทึกไว้ นำเข้าไฟล์ PDF ด้านบนก่อน</div>';return}
@@ -2037,7 +2037,7 @@ async function xpExcel(ms,name){
   const title=(ws,t,o)=>{const r=ws.addRow([t]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={bold:true,size:o||12,color:{argb:"FF1A56DB"}}};
   const note=(ws,t)=>{if(!t)return;const r=ws.addRow([t]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};r.getCell(1).alignment={wrapText:true}};
   const table=(ws,m,r)=>{const c=xpC(m,r),pv=planView(c);title(ws,thM(m)+" — "+revName(r)+(c.P.date?" (แจ้ง "+thD(c.P.date)+")":""));note(ws,c.P.note);head(ws,"สี (หน่วย: คู่)");const r1=ws.rowCount+1;
-    pv.rows.filter(x=>T(x.v)>0).forEach(x=>{const n=ws.rowCount+1,cl=colOf(x.k),row=ws.addRow([x.label].concat(x.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(x.v)}]));
+    pv.rows.forEach(x=>{const n=ws.rowCount+1,cl=colOf(x.k),row=ws.addRow([x.label].concat(x.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(x.v)}]));
       row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===8){q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
     const r2=ws.rowCount,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?pv.tot[j-2]:T(pv.tot)}))));
     tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt="#,##0"});ws.addRow([])};
