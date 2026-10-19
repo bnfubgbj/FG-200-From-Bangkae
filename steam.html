@@ -267,7 +267,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 60)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 61)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -360,7 +360,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
         <div style="min-width:150px"><span class="lbl">เดือนของแผน</span><input type="month" id="pf-month"></div>
         <div style="min-width:190px"><span class="lbl">บันทึกเป็นฉบับ</span><select id="pf-rev"></select></div>
         <input type="password" id="pf-key" style="display:none" autocomplete="off">
-        <button class="btn" id="pf-save" disabled>บันทึกแผน</button><button class="btn ghost" id="pf-del" type="button">ลบแผนที่เลือกด้านบน</button>
+        <button class="btn" id="pf-save" disabled>บันทึกแผน</button><button class="btn ghost" id="pf-cancel" type="button" hidden>ยกเลิกไฟล์ที่เลือก</button><button class="btn ghost" id="pf-del" type="button">ลบแผนที่เลือกด้านบน</button>
       </div>
       <div id="pf-prev" class="scroll"></div>
       <div id="pf-msg" class="msg" hidden></div>
@@ -2450,6 +2450,7 @@ function pfRevs(){
   if([...$("pf-rev").options].some(o=>o.value===cv0))$("pf-rev").value=cv0;
 }
 function pfDraw(){
+  $("pf-cancel").hidden=!PFIMP;
   if(!PFIMP){$("pf-prev").innerHTML="";$("pf-save").disabled=true;return}
   const T=a=>a.reduce((x,y)=>x+y,0);let tot=Z6(),h='<table><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
   PTPL.forEach(r=>{const v=PFIMP.rows[r[0]];if(!v)return;v.forEach((x,i)=>tot[i]+=x);h+="<tr"+tint(r[0])+"><td>"+r[1]+"</td>"+v.map(x=>"<td>"+(x?fmt(x):'<span class="zero">–</span>')+"</td>").join("")+"<td><b>"+fmt(T(v))+"</b></td></tr>"});
@@ -2474,6 +2475,7 @@ $("pf-file").onchange=async e=>{const f=e.target.files[0];if(!f)return;const m=$
     pfDraw()}catch(err){PFIMP=null;pfDraw();m.className="msg warn";m.textContent="อ่านไฟล์ไม่ได้: "+(err&&err.message||"error")}
   e.target.value=""};
 $("pf-month").onchange=pfRevs;
+$("pf-cancel").onclick=()=>{PFIMP=null;$("pf-file").value="";pfDraw();const m=$("pf-msg");m.hidden=false;m.className="msg";m.textContent="ยกเลิกไฟล์ที่เลือกแล้ว เลือกไฟล์ใหม่ได้เลย"};
 $("pf-save").onclick=async()=>{
   const m=$("pf-msg"),mo=$("pf-month").value,key=$("pf-key").value.trim();m.hidden=false;
   if(!PFIMP){return} if(!mo){m.className="msg warn";m.textContent="เลือกเดือนของแผน";return} if(!key){m.className="msg warn";m.textContent="ใส่รหัสบันทึกก่อน";return}
