@@ -268,6 +268,10 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 .ckpi .k{font-size:13px;color:var(--muted)}.ckpi .v{font:700 26px var(--f-body);margin:2px 0}.ckpi .d{font-size:13px}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .cup{color:#15803d;font-weight:600}.cdn{color:#c2410c;font-weight:600}
+.csvg{width:100%;height:auto;display:block}.csvg .cg{stroke:var(--line);stroke-width:1}.csvg .ct{font-size:11px;fill:var(--muted)}.csvg .tl{font-size:12px;fill:var(--ink)}.csvg .tv{font-size:11px;font-weight:600;fill:var(--ink)}
+.cleg{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 10px;font-size:13px}.cleg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.cdg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:16px}.ccard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);min-width:0}.ccard h3{margin:0 0 8px;font-size:15px}.ccard.wide{grid-column:1/-1}
+#c-dash[aria-pressed="true"]{background:var(--accent);color:#fff}
 .ttabs{display:flex;gap:6px;margin:0 0 14px;border-bottom:2px solid var(--line);flex-wrap:wrap}
 .ttabs[hidden]{display:none}
 .ttabs button{font:600 15px var(--f-body);padding:10px 22px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:var(--surface2);color:var(--muted);cursor:pointer;margin-bottom:-2px;box-shadow:none}
@@ -346,7 +350,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 79)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 80)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -370,6 +374,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
           <label class="cck"><input type="checkbox" id="c-t-qty" checked> ปริมาณการผลิต</label>
           <label class="cck"><input type="checkbox" id="c-t-det" checked> รายละเอียดสี × เบอร์ ที่ผลิตได้</label></div>
       </div>
+      <div class="row" style="margin-top:12px;gap:10px"><button class="btn" type="button" id="c-dash" aria-pressed="false">Dashboard กราฟเปรียบเทียบ</button><button class="btn ghost" type="button" id="c-xl">ดาวน์โหลด Excel</button></div>
       <div class="note" id="c-note" style="margin-top:10px"></div>
     </div>
     <div id="c-out" style="display:flex;flex-direction:column;gap:16px"></div>
@@ -2235,7 +2240,7 @@ function cmpDraw(){const out=$("c-out");if(!out)return;const f=$("c-from").value
   if(!q&&!dt){out.innerHTML='<div class="empty">ติ๊กเลือกหัวข้อการเปรียบเทียบอย่างน้อย 1 หัวข้อ</div>';return}
   const {o,notes}=cmpData(f,t),tot={};CSRC.forEach(s=>tot[s[0]]=cSum(o[s[0]]));
   nt.textContent="ช่วง "+thD(f)+" – "+thD(t)+" · หน่วย: คู่ (แผนประกอบ = แผ่น × "+F()+" คู่ต่อแผ่น)"+(notes.length?" · ที่มา: "+notes.filter(n=>/^รับจริง/.test(n)?$("c-s-act").checked:$("c-s-plan").checked).join(", "):"");
-  let h="";
+  let h=cDash?cmpDash(src,o,f,t):"";
   if(q){const mx=Math.max(1,...src.map(s=>tot[s[0]])),pl=$("c-s-plan").checked?tot.plan:0;
     h+='<div class="panel"><h2>ปริมาณการผลิต (คู่)</h2><div class="cgrid">'+src.map(s=>{const v=tot[s[0]],has=Object.keys(o[s[0]]).length>0;let d="";
       if(!has)d='<span class="note">ไม่มีข้อมูลในช่วงนี้</span>';else if(pl&&s[0]!=="plan"){const df=v-pl;d=(pl?fmt(Math.round(v/pl*1000)/10)+"% ของแผน · ":"")+'<span class="'+(df<0?"cdn":"cup")+'">'+(df>0?"+":"")+fmt(df)+" จากแผนผลิต</span>"}
@@ -2252,6 +2257,72 @@ $("c-m0").onclick=()=>cmpMonth(todayS().slice(0,7));
 $("c-m1").onclick=()=>{const t=new Date();t.setDate(1);t.setMonth(t.getMonth()-1);cmpMonth(t.getFullYear()+"-"+cp2(t.getMonth()+1))};
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-cgo]");if(!a)return;e.preventDefault();$("tab-"+a.dataset.cgo).click()});
 $("tt-back").onclick=()=>$("tab-t").click();
+
+/* ----- Dashboard กราฟ (SVG) ----- */
+let cDash=false;const cCol={plan:"#1f5fbf",asm:"#d97706",act:"#15803d"};
+const cK=n=>{const a=Math.abs(n);return a>=1e6?(n/1e6).toFixed(a>=1e7?0:1).replace(/\.0$/,"")+"M":a>=1e3?Math.round(n/1e3)+"k":String(Math.round(n))};
+function cAxis(mx,st){st=st||4;if(mx<=0)mx=1;const p=Math.pow(10,Math.floor(Math.log10(mx))),r=mx/p,n=r<=1?1:r<=2?2:r<=2.5?2.5:r<=5?5:10,top=n*p;return{top,ticks:Array.from({length:st+1},(_,i)=>top/st*i)}}
+const cSw=k=>HEX[k]||colOf(k)[1];
+function cmpDaily(f,t){const days=[],[y1,m1,d1]=f.split("-").map(Number),[y2,m2,d2]=t.split("-").map(Number),e=new Date(y2,m2-1,d2);for(let d=new Date(y1,m1-1,d1);d<=e&&days.length<400;d.setDate(d.getDate()+1))days.push(d.getFullYear()+"-"+cp2(d.getMonth()+1)+"-"+cp2(d.getDate()));
+  const fx=F(),P=days.map(()=>0),A=P.slice(),C=P.slice(),dly=new Set();
+  Object.keys(FGD).forEach(d=>{if(d>=f&&d<=t&&Object.values(FGD[d]).some(v=>v.some(x=>x)))dly.add(d.slice(0,7))});
+  const MA={};(STK||[]).forEach(r=>{if(r[1]!=="mact")return;const m=normD(r[0]).slice(0,7);MA[m]=(MA[m]||0)+cT(r.slice(3,9).map(v=>Number(v)||0))});
+  days.forEach((d,i)=>{const m=d.slice(0,7),[y,mo]=m.split("-").map(Number),dim=new Date(y,mo,0).getDate();
+    if(PL[m]){const rs=xpRevs(m);P[i]=xpTot(m,rs[rs.length-1])/dim}
+    if(DATA[d])A[i]=Object.keys(DATA[d]).reduce((a,k)=>k==="_s"?a:a+cT(DATA[d][k]),0)*fx;
+    if(FGD[d])C[i]=cT(Object.values(FGD[d]).map(cT));if(!dly.has(m)&&MA[m])C[i]+=MA[m]/dim});
+  const cum=a=>{let s=0;return a.map(x=>s+=x)};return{days,plan:cum(P),asm:cum(A),act:cum(C)}}
+function cChLine(src,f,t){const D=cmpDaily(f,t),n=D.days.length,W=760,H=300,L=52,R=84,Tp=14,B=34,pw=W-L-R,ph=H-Tp-B;let mx=0;src.forEach(s=>mx=Math.max(mx,D[s[0]][n-1]||0));const ax=cAxis(mx),X=i=>L+(n>1?i/(n-1):.5)*pw,Y=v=>Tp+ph-v/ax.top*ph;
+  let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
+  const nt=Math.min(6,n);for(let j=0;j<nt;j++){const i=nt>1?Math.round(j*(n-1)/(nt-1)):0,d=D.days[i];g+='<text x="'+X(i)+'" y="'+(H-12)+'" class="ct" text-anchor="middle">'+(+d.slice(8))+"/"+(+d.slice(5,7))+"</text>"}
+  src.forEach(s=>{const a=D[s[0]],pts=a.map((v,i)=>X(i)+","+Y(v)).join(" ");g+='<polyline points="'+pts+'" fill="none" stroke="'+cCol[s[0]]+'" stroke-width="'+(s[0]==="plan"?2.5:3)+'"'+(s[0]==="plan"?' stroke-dasharray="7 5"':"")+' stroke-linejoin="round" stroke-linecap="round"/>'+
+    a.map((v,i)=>'<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="'+(n>45?0:3)+'" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · "+thD(D.days[i])+": สะสม "+fmt(Math.round(v))+" คู่</title></circle>").join("")+
+    '<text x="'+(X(n-1)+6)+'" y="'+(Y(a[n-1])+4)+'" class="tv" fill="'+cCol[s[0]]+'">'+cK(a[n-1])+"</text>"});
+  return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดสะสมรายวัน">'+g+"</svg>"}
+function cChColor(src,o){const keys=cmpKeys(...src.map(s=>o[s[0]])).filter(k=>src.some(s=>cT(o[s[0]][k]||cZ())>0));if(!keys.length)return'<div class="empty">ไม่มีข้อมูล</div>';
+  const bh=13,gap=12,rh=src.length*bh+gap,L=176,R=64,W=760,H=keys.length*rh+30;let mx=0;keys.forEach(k=>src.forEach(s=>mx=Math.max(mx,cT(o[s[0]][k]||cZ()))));const ax=cAxis(mx),pw=W-L-R;
+  let g=ax.ticks.map(v=>{const x=L+v/ax.top*pw;return '<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(H-24)+'" class="cg"/><text x="'+x+'" y="'+(H-8)+'" class="ct" text-anchor="middle">'+cK(v)+"</text>"}).join("");
+  keys.forEach((k,i)=>{const y=i*rh+gap/2;g+='<rect x="0" y="'+y+'" width="9" height="'+(rh-gap)+'" rx="3" fill="'+cSw(k)+'" stroke="#999" stroke-width=".5"/><text x="16" y="'+(y+(rh-gap)/2+4)+'" class="tl">'+escH(cLab(k))+"</text>";
+    src.forEach((s,j)=>{const v=cT(o[s[0]][k]||cZ()),w=v/ax.top*pw;g+='<rect x="'+L+'" y="'+(y+j*bh)+'" width="'+(v?Math.max(w,2):0)+'" height="'+(bh-2)+'" rx="3" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · "+escH(cLab(k))+": "+fmt(v)+" คู่</title></rect>"+(v?'<text x="'+(L+w+5)+'" y="'+(y+j*bh+10)+'" class="tv">'+cK(v)+"</text>":"")})});
+  return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปรียบเทียบรายสี">'+g+"</svg>"}
+function cChSize(src,o){const W=520,H=300,L=46,R=10,Tp=14,B=34,pw=W-L-R,ph=H-Tp-B;
+  const V=src.map(s=>SIZES.map((z,i)=>Object.values(o[s[0]]).reduce((a,v)=>a+v[i],0)));let mx=0;V.forEach(a=>a.forEach(v=>mx=Math.max(mx,v)));const ax=cAxis(mx),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/6,bw=Math.min(22,(gw-12)/src.length);
+  let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
+  SIZES.forEach((z,i)=>{const cx=L+gw*i+gw/2;g+='<text x="'+cx+'" y="'+(H-12)+'" class="tl" text-anchor="middle">'+z+"</text>";
+    src.forEach((s,j)=>{const v=V[j][i],x=cx-src.length*bw/2+j*bw,y=Y(v);g+='<rect x="'+x+'" y="'+y+'" width="'+(bw-2)+'" height="'+(Tp+ph-y)+'" rx="3" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · เบอร์ "+z+": "+fmt(v)+" คู่</title></rect>"})});
+  return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปรียบเทียบรายเบอร์">'+g+"</svg>"}
+function cChPct(src,o){const oth=src.filter(s=>s[0]!=="plan"),keys=cmpKeys(o.plan).filter(k=>cT(o.plan[k]||cZ())>0);if(!keys.length||!oth.length)return'<div class="empty">ต้องเลือกแผนผลิต และรายการอื่นอย่างน้อย 1 อย่าง และแผนต้องมีข้อมูลในช่วงนี้</div>';
+  const bh=13,gap=12,rh=oth.length*bh+gap,L=176,R=52,W=520,H=keys.length*rh+30,pct=(s,k)=>cT(o.plan[k])?cT(o[s[0]][k]||cZ())/cT(o.plan[k])*100:0;let mx=100;keys.forEach(k=>oth.forEach(s=>mx=Math.max(mx,pct(s,k))));const ax=cAxis(mx,4),pw=W-L-R;
+  let g=ax.ticks.map(v=>{const x=L+v/ax.top*pw;return '<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(H-24)+'" class="cg"/><text x="'+x+'" y="'+(H-8)+'" class="ct" text-anchor="middle">'+Math.round(v)+"%</text>"}).join("");
+  const x100=L+100/ax.top*pw;g+='<line x1="'+x100+'" x2="'+x100+'" y1="0" y2="'+(H-24)+'" stroke="'+cCol.plan+'" stroke-width="2" stroke-dasharray="5 4"/>';
+  keys.forEach((k,i)=>{const y=i*rh+gap/2;g+='<rect x="0" y="'+y+'" width="9" height="'+(rh-gap)+'" rx="3" fill="'+cSw(k)+'" stroke="#999" stroke-width=".5"/><text x="16" y="'+(y+(rh-gap)/2+4)+'" class="tl">'+escH(cLab(k))+"</text>";
+    oth.forEach((s,j)=>{const v=pct(s,k),w=v/ax.top*pw;g+='<rect x="'+L+'" y="'+(y+j*bh)+'" width="'+(v?Math.max(w,2):0)+'" height="'+(bh-2)+'" rx="3" fill="'+cCol[s[0]]+'"><title>'+s[1]+" · "+escH(cLab(k))+": "+Math.round(v)+"% ของแผน ("+fmt(cT(o[s[0]][k]||cZ()))+" / "+fmt(cT(o.plan[k]))+" คู่)</title></rect>"+(v?'<text x="'+(L+w+5)+'" y="'+(y+j*bh+10)+'" class="tv">'+Math.round(v)+"%</text>":"")})});
+  return '<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="เปอร์เซ็นต์ของแผน">'+g+"</svg>"}
+function cmpDash(src,o,f,t){const leg='<div class="cleg">'+src.map(s=>'<span><i style="background:'+cCol[s[0]]+'"></i>'+s[1]+(s[0]==="plan"?" (เส้นประ)":"")+"</span>").join("")+"</div>";
+  return '<div class="panel"><h2>Dashboard เปรียบเทียบ</h2>'+leg+'<div class="cdg"><div class="ccard wide"><h3>ยอดสะสมรายวัน (คู่) — แผนผลิตเฉลี่ยรายวันตามจำนวนวันของเดือน</h3>'+cChLine(src,f,t)+'</div><div class="ccard"><h3>รายเบอร์ (คู่)</h3>'+cChSize(src,o)+'</div><div class="ccard"><h3>% ของแผนผลิต รายสี (เส้นประ = 100%)</h3>'+cChPct(src,o)+'</div><div class="ccard wide"><h3>รายสี (คู่)</h3>'+cChColor(src,o)+"</div></div></div>"}
+$("c-dash").onclick=()=>{cDash=!cDash;$("c-dash").setAttribute("aria-pressed",cDash);cmpDraw()};
+/* ----- Excel ----- */
+async function cmpExcel(){const f=$("c-from").value,t=$("c-to").value,src=CSRC.filter(s=>$("c-s-"+s[0]).checked);if(!f||!t||f>t||!src.length)return"ไม่มีข้อมูลให้ดาวน์โหลด";
+  const {o,notes}=cmpData(f,t),tot={};CSRC.forEach(s=>tot[s[0]]=cSum(o[s[0]]));const wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},F0="#,##0;-#,##0;-",FD="+#,##0;-#,##0;-",HC={plan:"1F5FBF",asm:"D97706",act:"15803D"};
+  const keys=cmpKeys(...src.map(s=>o[s[0]])),head=(ws,a,c)=>{const h=ws.addRow(a);h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill(c||"1A56DB");x.alignment={horizontal:"center"};x.border=B})};
+  const title=(ws,txt,c,w)=>{const r=ws.addRow([txt]);ws.mergeCells(r.number,1,r.number,w||8);r.getCell(1).font={bold:true,size:13,color:{argb:"FF"+(c||"1A56DB")}};r.height=22};
+  const cols=ws=>{ws.columns=[{width:40}].concat(SIZES.map(()=>({width:11})),[{width:15}])};
+  const per="ช่วง "+thD(f)+" – "+thD(t)+" · หน่วย: คู่";
+  if($("c-t-qty").checked){const ws=wb.addWorksheet("สรุปปริมาณ");ws.columns=[{width:26},{width:18},{width:16},{width:22}];title(ws,"ติดตามการผลิต — สรุปปริมาณ",null,4);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,4);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};
+    if(notes.length){const q=ws.addRow(["ที่มา: "+notes.join(", ")]);ws.mergeCells(q.number,1,q.number,4);q.getCell(1).font={size:10,color:{argb:"FF888888"}}}ws.addRow([]);head(ws,["รายการ","ปริมาณ (คู่)","% ของแผน","ส่วนต่างจากแผน (คู่)"]);
+    const r0=ws.rowCount+1,pi=src.findIndex(x=>x[0]==="plan"),pr=pi>=0?r0+pi:0;
+    src.forEach(s=>{const n=ws.rowCount+1,isP=s[0]==="plan",no=isP||!pr,r=ws.addRow([s[1],tot[s[0]],no?"":{formula:"IF($B$"+pr+"=0,\"\",B"+n+"/$B$"+pr+")",result:tot.plan?tot[s[0]]/tot.plan:""},no?"":{formula:"B"+n+"-$B$"+pr,result:tot[s[0]]-tot.plan}]);
+      r.eachCell((q,j)=>{q.border=B;if(j===1){q.font={bold:true,color:{argb:"FFFFFFFF"}};q.fill=fill(HC[s[0]])}if(j===2)q.numFmt="#,##0";if(j===3)q.numFmt="0.0%";if(j===4)q.numFmt=FD})})}
+  if($("c-t-det").checked){const mk=(name,M,ref,c,ttl)=>{const ws=wb.addWorksheet(name.slice(0,31));cols(ws);title(ws,ttl,c);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]),c);const r1=ws.rowCount+1;
+      keys.forEach(k=>{const v=ref?(M[k]||cZ()).map((x,i)=>x-(ref[k]||cZ())[i]):(M[k]||cZ()),n=ws.rowCount+1,cl=colOf(k),row=ws.addRow([cLab(k)].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:cT(v)}]));
+        row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=ref?FD:F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j>1&&ref){const x=j===8?cT(v):v[j-2];q.font={bold:j===8,color:{argb:x>0?"FF15803D":x<0?"FFC2410C":"FF999999"}}}if(j===8){if(!ref)q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
+      const r2=ws.rowCount,tv=cZ();keys.forEach(k=>(ref?(M[k]||cZ()).map((x,i)=>x-(ref[k]||cZ())[i]):(M[k]||cZ())).forEach((x,i)=>tv[i]+=x));
+      const tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tv[j-2]:cT(tv)}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt=ref?FD:"#,##0"})};
+    src.forEach(s=>mk(s[1],o[s[0]],null,HC[s[0]],s[1]+" — สี × เบอร์ (คู่)"));
+    if($("c-s-plan").checked)src.filter(s=>s[0]!=="plan").forEach(s=>mk("ส่วนต่าง "+s[1],o[s[0]],o.plan,HC[s[0]],"ส่วนต่าง: "+s[1]+" − แผนผลิต (คู่)  เขียว = เกินแผน · ส้มแดง = ต่ำกว่าแผน"))}
+  await saveBook(wb,"ติดตามการผลิต_"+f+"_ถึง_"+t+".xlsx");return""}
+$("c-xl").onclick=async()=>{const b=$("c-xl"),old="ดาวน์โหลด Excel";if(typeof ExcelJS==="undefined"){b.textContent="โหลดตัวสร้าง Excel ไม่ได้";setTimeout(()=>b.textContent=old,2500);return}
+  b.disabled=true;b.textContent="กำลังสร้างไฟล์…";try{const m=await cmpExcel();b.textContent=m||"ดาวน์โหลดแล้ว"}catch(err){b.textContent="สร้างไฟล์ไม่ได้"}setTimeout(()=>{b.textContent=old;b.disabled=false},2500)};
 $("xs-y").onchange=()=>{$("xs-m").value="all";xsDraw()};$("xs-m").onchange=xsDraw;
 
 /* ===== ข้อมูล › ยอดขายรายเดือน (kind "sales" ในแผ่น 3_สต๊อกและยอดจอง) ===== */
