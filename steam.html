@@ -351,7 +351,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 82)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 83)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2325,15 +2325,15 @@ async function cmpExcel(){const f=$("c-from").value,t=$("c-to").value,src=CSRC.f
   if($("c-t-qty").checked){const ws=wb.addWorksheet("สรุปปริมาณ");ws.columns=[{width:26},{width:18},{width:16},{width:22}];title(ws,"ติดตามการผลิต — สรุปปริมาณ",null,4);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,4);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};
     if(notes.length){const q=ws.addRow(["ที่มา: "+notes.join(", ")]);ws.mergeCells(q.number,1,q.number,4);q.getCell(1).font={size:10,color:{argb:"FF888888"}}}ws.addRow([]);head(ws,["รายการ","ปริมาณ (คู่)","% ของแผน","ส่วนต่างจากแผน (คู่)"]);
     const r0=ws.rowCount+1,pi=src.findIndex(x=>x[0]==="plan"),pr=pi>=0?r0+pi:0;
-    src.forEach(s=>{const n=ws.rowCount+1,isP=s[0]==="plan",no=isP||!pr,r=ws.addRow([s[1],tot[s[0]],no?"":{formula:"IF($B$"+pr+"=0,\"\",B"+n+"/$B$"+pr+")",result:tot.plan?tot[s[0]]/tot.plan:""},no?"":{formula:"B"+n+"-$B$"+pr,result:tot[s[0]]-tot.plan}]);
+    src.forEach(s=>{const n=ws.rowCount+1,isP=s[0]==="plan",no=isP||!pr,r=ws.addRow([s[1],$("c-t-det").checked?{formula:"'"+s[1].slice(0,31)+"'!H"+(4+keys.length),result:tot[s[0]]}:tot[s[0]],no?"":{formula:"IF($B$"+pr+"=0,\"\",B"+n+"/$B$"+pr+")",result:tot.plan?tot[s[0]]/tot.plan:""},no?"":{formula:"B"+n+"-$B$"+pr,result:tot[s[0]]-tot.plan}]);
       r.eachCell((q,j)=>{q.border=B;if(j===1){q.font={bold:true,color:{argb:"FFFFFFFF"}};q.fill=fill(HC[s[0]])}if(j===2)q.numFmt="#,##0";if(j===3)q.numFmt="0.0%";if(j===4)q.numFmt=FD})})}
-  if($("c-t-det").checked){const mk=(name,M,ref,c,ttl)=>{const ws=wb.addWorksheet(name.slice(0,31));cols(ws);title(ws,ttl,c);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]),c);const r1=ws.rowCount+1;
-      keys.forEach(k=>{const v=ref?(M[k]||cZ()).map((x,i)=>x-(ref[k]||cZ())[i]):(M[k]||cZ()),n=ws.rowCount+1,cl=colOf(k),row=ws.addRow([cLab(k)].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:cT(v)}]));
+  if($("c-t-det").checked){const mk=(name,M,ref,c,ttl,srcN,refN)=>{const ws=wb.addWorksheet(name.slice(0,31));cols(ws);title(ws,ttl,c);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]),c);const r1=ws.rowCount+1;
+      keys.forEach(k=>{const v=ref?(M[k]||cZ()).map((x,i)=>x-(ref[k]||cZ())[i]):(M[k]||cZ()),n=ws.rowCount+1,cl=colOf(k),row=ws.addRow([cLab(k)].concat(ref?v.map((x,i)=>({formula:"'"+srcN+"'!"+String.fromCharCode(66+i)+n+"-'"+refN+"'!"+String.fromCharCode(66+i)+n,result:x})):v,[{formula:"SUM(B"+n+":G"+n+")",result:cT(v)}]));
         row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=ref?FD:F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j>1&&ref){const x=j===8?cT(v):v[j-2];q.font={bold:j===8,color:{argb:x>0?"FF15803D":x<0?"FFC2410C":"FF999999"}}}if(j===8){if(!ref)q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
       const r2=ws.rowCount,tv=cZ();keys.forEach(k=>(ref?(M[k]||cZ()).map((x,i)=>x-(ref[k]||cZ())[i]):(M[k]||cZ())).forEach((x,i)=>tv[i]+=x));
       const tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tv[j-2]:cT(tv)}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt=ref?FD:"#,##0"})};
     src.forEach(s=>mk(s[1],o[s[0]],null,HC[s[0]],s[1]+" — สี × เบอร์ (คู่)"));
-    if($("c-s-plan").checked)src.filter(s=>s[0]!=="plan").forEach(s=>mk("ส่วนต่าง "+s[1],o[s[0]],o.plan,HC[s[0]],"ส่วนต่าง: "+s[1]+" − แผนผลิต (คู่)  เขียว = เกินแผน · ส้มแดง = ต่ำกว่าแผน"))}
+    if($("c-s-plan").checked)src.filter(s=>s[0]!=="plan").forEach(s=>mk("ส่วนต่าง "+s[1],o[s[0]],o.plan,HC[s[0]],"ส่วนต่าง: "+s[1]+" − แผนผลิต (คู่)  เขียว = เกินแผน · ส้มแดง = ต่ำกว่าแผน (สูตรลิงก์จากแท็บ "+s[1]+" และ แผนผลิต)",s[1].slice(0,31),"แผนผลิต"))}
   await saveBook(wb,"ติดตามการผลิต_"+f+"_ถึง_"+t+".xlsx");return""}
 $("c-xl").onclick=async()=>{const b=$("c-xl"),old="ดาวน์โหลด Excel";if(typeof ExcelJS==="undefined"){b.textContent="โหลดตัวสร้าง Excel ไม่ได้";setTimeout(()=>b.textContent=old,2500);return}
   b.disabled=true;b.textContent="กำลังสร้างไฟล์…";try{const m=await cmpExcel();b.textContent=m||"ดาวน์โหลดแล้ว"}catch(err){b.textContent="สร้างไฟล์ไม่ได้"}setTimeout(()=>{b.textContent=old;b.disabled=false},2500)};
