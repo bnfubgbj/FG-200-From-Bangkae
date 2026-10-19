@@ -258,6 +258,13 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 #xsub[hidden]{display:none}
 #xsub button small{opacity:.75;font-size:12px}
 #view-x .dbox>summary{display:none}
+#xs-chart{display:flex;align-items:flex-end;gap:6px;height:230px;padding:8px 4px 0;overflow-x:auto;border-bottom:1px solid var(--line)}
+.xsb{flex:1 0 38px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;cursor:pointer;outline:none}
+.xsb i{display:block;width:100%;max-width:48px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}
+.xsb:hover i,.xsb:focus i{filter:brightness(1.2);box-shadow:0 0 0 2px var(--accent-soft,#cde)}
+.xsb b{font-size:11px;font-weight:600;margin-bottom:3px}
+.xsb em{font-style:normal;font-size:11px;color:var(--muted);margin-top:4px;white-space:nowrap}
+#xs-tbl tr[data-hk]{cursor:pointer}
 #xp-list details.xy{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--surface)}
 #xp-list details.xy>summary{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;font-weight:600}
 #xp-list details.xm{border-top:1px solid var(--line);margin:0 12px}
@@ -281,7 +288,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 64)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 65)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -586,6 +593,9 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div class="panel" id="x-plan" hidden><h2>นำเข้าแผนผลิต</h2><div class="note">เลือกไฟล์ PDF แผนผลิตที่ได้จากโรงงาน ระบบอ่านตารางสี × เบอร์ เดือน วันที่ และหมายเหตุให้เอง แล้วตรวจยอดรวมกับท้ายตารางก่อนให้กดบันทึก (ถ้ามีไฟล์ Excel ให้เปลี่ยนชนิดไฟล์เป็น Excel)</div><div id="x-plan-slot"></div></div>
     <div class="panel" id="x-plist" hidden><h2>แผนผลิตที่บันทึกไว้</h2><div class="note">แยกตามปี (แสดงเฉพาะปีที่มีแผน) กดที่ปีเพื่อดูแต่ละเดือน กดที่เดือนเพื่อดูรายละเอียดสี × เบอร์ ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="xp-list"></div></div>
     <div class="panel" id="x-steam" hidden><h2>นำเข้าแผนประกอบยาง</h2><div class="note">เลือกไฟล์ Excel "ยอดนึ่งรองเท้าฟองน้ำ ประจำวัน" ที่ได้จากโรงงาน เลือกได้ทีละหลายไฟล์ (1 ไฟล์ = 1 วัน) แล้วตรวจตัวอย่างก่อนกดบันทึก</div><div id="x-steam-slot"></div></div>
+    <div class="panel" id="x-sdash" hidden><h2>แดชบอร์ดแผ่นยางประกอบที่บันทึกไว้</h2><div class="note">เอาเมาส์ชี้ (หรือกดค้างบนมือถือ) ที่การ์ด แท่งกราฟ หรือแถวในตาราง เพื่อดูตัวเลขแยกสี × เบอร์ · หน่วยคู่ = แผ่น × จำนวนคู่ต่อยาง 1 แผ่น (ตั้งที่หน้าแผ่นยางประกอบ)</div>
+      <div class="row" id="xs-ctl" style="align-items:flex-end"><div style="min-width:140px"><span class="lbl">ปี</span><select id="xs-y"></select></div><div style="min-width:170px"><span class="lbl">เดือน</span><select id="xs-m"></select></div></div>
+      <div id="xs-body"></div></div>
   </div>
   <div id="view-r" hidden><iframe id="fr" title="รับเข้าโกดังพี่ชุมพร" style="width:100%;height:900px;border:0;display:block;background:transparent"></iframe></div>
 </div>
@@ -1807,7 +1817,7 @@ function load(){
   $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
   return fetch(API_URL).then(r=>r.json()).then(j=>{
     PLANROWS=j.plan||[];STK=j.stock||[];FGD={};(j.rows||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(FGD[d]=FGD[d]||{})[r[1]]=r.slice(2,8).map(v=>Number(v)||0)});DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
-    $("status").hidden=true;buildPlans();init();render();if(EINIT){initE();renderE()}poInit();
+    $("status").hidden=true;buildPlans();init();render();try{xsDraw()}catch(e){console.error(e)}if(EINIT){initE();renderE()}poInit();
   }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
 }
 const dates=()=>Object.keys(DATA).sort();
@@ -1892,7 +1902,7 @@ $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>se
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 const PT={q:"แผ่นยางประกอบ",p:"เทียบแผนผลิต",m:"ติดตามผลิตจริง",e:"ประเมินสต็อกสิ้นเดือน",w:"ประเมินสต็อกรายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง"};
-function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=v==="x1"||v==="x2";$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-steam").hidden=v!=="x2";["x1","x2"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(ix)xOpen(true)}
+function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=v==="x1"||v==="x2";$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-steam").hidden=v!=="x2";["x1","x2"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(ix)xOpen(true)}
 function xOpen(o){$("xsub").hidden=!o;$("tab-x").setAttribute("aria-expanded",o?"true":"false");$("x-car").textContent=o?"▴":"▾"}
 $("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-w").onclick=()=>{show("w");initE();renderE()};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
@@ -1942,9 +1952,38 @@ async function xpExcel(ms,name){
     const r2=ws.rowCount,tr=ws.addRow(["รวมทุกเดือน"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")"}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt="#,##0"})}
   ms.forEach(m=>{const ws=wb.addWorksheet(thM(m).replace(/[\\\/\?\*\[\]:]/g,""));cols(ws);xpRevs(m).slice().reverse().forEach(r=>table(ws,m,r))});
   await saveBook(wb,name)}
+
+/* ===== ข้อมูล › แผนประกอบยาง: แดชบอร์ดตัวเลข (ชี้/กดเพื่อดูสี × เบอร์) ===== */
+function xsAgg(list){const mat={};let tot=0;list.forEach(d=>Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const a=(mat[k]=mat[k]||[0,0,0,0,0,0]);DATA[d][k].forEach((x,i)=>{a[i]+=x;tot+=x})}));return{mat,tot,n:list.length}}
+function xsDraw(){
+  const ds=dates(),box=$("xs-body");if(!box)return;
+  if(!ds.length){$("xs-ctl").hidden=true;box.innerHTML='<div class="empty">ยังไม่มีข้อมูลแผ่นยางประกอบ นำเข้าไฟล์ Excel ด้านบนก่อน</div>';return}
+  $("xs-ctl").hidden=false;
+  const ys=[...new Set(ds.map(d=>d.slice(0,4)))].sort().reverse(),yv=$("xs-y").value;
+  $("xs-y").innerHTML=ys.map(y=>'<option value="'+y+'">'+(+y+543)+"</option>").join("");$("xs-y").value=ys.includes(yv)?yv:ys[0];
+  const y=$("xs-y").value,ms=[...new Set(ds.filter(d=>d.slice(0,4)===y).map(d=>d.slice(0,7)))].sort(),mv=$("xs-m").value;
+  $("xs-m").innerHTML='<option value="all">ทั้งปี '+(+y+543)+"</option>"+ms.map(m=>'<option value="'+m+'">'+thM(m)+"</option>").join("");$("xs-m").value=(mv==="all"||ms.includes(mv))?mv:"all";
+  const m=$("xs-m").value,list=ds.filter(d=>d.slice(0,4)===y&&(m==="all"||d.slice(0,7)===m)),f=F(),A=xsAgg(list);
+  const rowsOf=(mat,mul)=>Object.keys(mat).filter(k=>mat[k].some(x=>x)).map(k=>({tr:' style="--c:'+(HEX[k]||"#999")+'"',lab:DN(k),v:mat[k].map(x=>x*mul)}));
+  const per=(m==="all"?ms.map(q=>({id:q,lab:MON[+q.slice(5,7)-1],ttl:thM(q),list:ds.filter(d=>d.slice(0,7)===q)})):list.map(d=>({id:d,lab:String(+d.slice(8)),ttl:thD(d),list:[d]}))).map(q=>Object.assign(q,xsAgg(q.list)));
+  const best=per.reduce((a,x)=>x.tot>a.tot?x:a,{tot:0,n:0}),days=A.n,nn=days||1;
+  const bestD=list.map(d=>({d,t:xsAgg([d])})).reduce((a,x)=>x.t.tot>a.t.tot?x:a,{d:"",t:{tot:0,mat:{}}});
+  let h='<div class="kpis">'+
+   '<div class="kpi main"'+hvK("xs1","คาดการณ์ (คู่) แยกสี × เบอร์",rowsOf(A.mat,f))+'><div class="k">คาดการณ์ (คู่)</div><div class="v">'+fmt(A.tot*f)+'</div></div>'+
+   '<div class="kpi"'+hvK("xs2","ยางที่จ่ายประกอบ (แผ่น) แยกสี × เบอร์",rowsOf(A.mat,1))+'><div class="k">ยางที่จ่ายประกอบ (แผ่น)</div><div class="v">'+fmt(A.tot)+'</div></div>'+
+   '<div class="kpi"><div class="k">จำนวนวันที่มีข้อมูล</div><div class="v">'+days+'</div></div>'+
+   '<div class="kpi"'+hvK("xs3","เฉลี่ยต่อวัน (คู่) แยกสี × เบอร์",rowsOf(A.mat,f/nn))+'><div class="k">เฉลี่ยต่อวัน (คู่)</div><div class="v">'+fmt(days?A.tot*f/days:0)+'</div></div>'+
+   '<div class="kpi"'+(bestD.d?hvK("xs4","สูงสุดใน 1 วัน ("+thD(bestD.d)+") (คู่)",rowsOf(bestD.t.mat,f)):"")+'><div class="k">สูงสุดใน 1 วัน (คู่)</div><div class="v">'+fmt(bestD.t.tot*f)+'</div><div class="k">'+(bestD.d?thD(bestD.d):"")+"</div></div></div>";
+  const mx=Math.max(1,...per.map(q=>q.tot));
+  h+='<div style="font-weight:600;margin:6px 0 4px">'+(m==="all"?"ยอดรายเดือน (คู่)":"ยอดรายวัน (คู่) · "+thM(m))+'</div><div id="xs-chart">'+per.map(q=>'<div class="xsb"'+hvK("xb"+q.id,q.ttl+" (คู่) แยกสี × เบอร์",rowsOf(q.mat,f))+'><b>'+(q.tot?fmt(Math.round(q.tot*f)):"")+'</b><i style="height:'+Math.max(2,Math.round(q.tot/mx*150))+'px"></i><em>'+q.lab+"</em></div>").join("")+"</div>";
+  h+='<div class="scroll" id="xs-tbl"><table><thead><tr><th>'+(m==="all"?"เดือน":"วันที่จ่ายไปประกอบ")+"</th>"+(m==="all"?"<th>วันที่มีข้อมูล</th>":"<th>วันที่นึ่ง</th>")+"<th>แผ่น</th><th>คู่ (คาดการณ์)</th></tr></thead><tbody>"+
+   per.slice().reverse().map(q=>"<tr"+hvK("xt"+q.id,q.ttl+" (คู่) แยกสี × เบอร์",rowsOf(q.mat,f))+"><td>"+q.ttl+"</td><td>"+(m==="all"?q.n:((DATA[q.id]||{})._s||"–"))+"</td><td>"+fmt(q.tot)+"</td><td><b>"+fmt(q.tot*f)+"</b></td></tr>").join("")+
+   '</tbody><tfoot><tr><td>รวม</td><td>'+(m==="all"?days:"")+"</td><td>"+fmt(A.tot)+"</td><td>"+fmt(A.tot*f)+"</td></tr></tfoot></table></div>";
+  box.innerHTML=h}
+$("xs-y").onchange=()=>{$("xs-m").value="all";xsDraw()};$("xs-m").onchange=xsDraw;
 $("go-x1").onclick=e=>{e.preventDefault();$("tab-x1").click()};$("go-x2").onclick=e=>{e.preventDefault();$("tab-x2").click()};
 $("tab-x1").onclick=()=>{show("x1");xpDraw();initE();renderP();pfInit();poInit();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}};
-$("tab-x2").onclick=()=>show("x2");
+$("tab-x2").onclick=()=>{show("x2");xsDraw()};
 $("tab-r").onclick=()=>{show("r");window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
 window.addEventListener("message",e=>{if(e.origin===location.origin&&e.data&&e.data.fgh)$("fr").style.height=Math.max(500,e.data.fgh+8)+"px"});
 try{$("i-key").value=localStorage.getItem("fgkey")||""}catch(e){}
