@@ -267,7 +267,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <button role="tab" id="tab-w" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>ประเมินสต็อกรายวัน</span></button>
     <button role="tab" id="tab-r" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-7h6v7"/></svg><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 61)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 62)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -821,13 +821,20 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
         <div class="tabs" id="d-mode"><button data-m="auto" aria-selected="true">อัตโนมัติ</button><button data-m="d" aria-selected="false">รายวัน</button><button data-m="m" aria-selected="false">รายเดือน</button></div>
         <label>คู่ต่อแผ่น <input type="number" id="fct" value="2" min="0.1" step="0.01" style="width:72px"></label>
       </div>
+      <div class="dctl">
+        <label>ช่วงเดือน ตั้งแต่ <select id="d-from"></select></label><label>ถึง <select id="d-to"></select></label>
+        <div class="tabs" id="d-qr"><button data-q="3">3 เดือนล่าสุด</button><button data-q="6">6 เดือน</button><button data-q="0">ทั้งหมด</button></div>
+      </div>
+      <div class="dctl"><span class="note" style="margin:0">แผนผลิตที่ใช้เทียบ</span>
+        <div class="tabs" id="d-plan"><button data-p="latest" aria-selected="true">ฉบับล่าสุด (revise ล่าสุด)</button><button data-p="init" aria-selected="false">แผนตั้งต้น</button><button data-p="both" aria-selected="false">เทียบทั้งสองแบบ</button></div>
+      </div>
       <div class="note" id="d-note"></div>
       <div class="kpis" id="d-kpis"></div>
     </section>
     <section class="panel">
       <div class="head2"><h2>ภาพรวมรายเดือน ผลิตจริง เทียบแผนผลิต</h2><span class="note" id="d-ovn"></span></div>
       <div id="d-ov"></div>
-      <div class="blg"><span><i style="background:var(--accent);opacity:1"></i>ผลิตจริง</span><span><i style="background:var(--muted);opacity:.45"></i>แผนผลิต</span><span><i style="background:var(--ink);opacity:1;height:3px;vertical-align:3px"></i>% ผลิตจริง ÷ แผน (แกนขวา)</span></div>
+      <div class="blg" id="d-ovlg"></div>
     </section>
     <section class="panel">
       <div class="head2"><h2 id="d-h1">1) ผลิตจริง เทียบแผนผลิต</h2></div>
@@ -977,13 +984,15 @@ const SUPMAP={"น้ำเงิน":"น้ำเงิน","เขียว":
 let STM={};
 const sumSi=(a,si)=>a?si.reduce((q,i)=>q+(a[i]||0),0):0;
 const ALLSI=[0,1,2,3,4,5];
-let dMode="auto", dMonth="";
+let dMode="auto", dMonth="", dFrom="", dTo="", dPlan="latest", dQ=0;
 const monthsOf=()=>[...new Set(dates().map(d=>d.slice(0,7)).concat(Object.keys(MACT)))].sort();
 const lastDay=m=>{const q=m.split("-").map(Number);return new Date(q[0],q[1],0).getDate()};
 const lastDoc=()=>{const ds=dates();return ds.length?ds[ds.length-1]:""};
 const isComplete=m=>{const l=lastDoc();if(MACT[m]&&!dates().some(d=>d.slice(0,7)===m))return true;return !!l&&(l.slice(0,7)>m||l>=m+"-"+p2(lastDay(m)))};
-function mStat(m,f){const o={},pm=planMatrix(m+"-01",m+"-01").pm,L=lastDoc();
-  ALL.forEach(c=>o[c]={A:0,S:0,P:pm[c].reduce((a,b)=>a+b,0)});
+function planRev(m,which){const rs=revNum(m);if(!rs.length)return null;if(which==="init")return rs[0];return (planSel[m]!=null&&PLANS[m][planSel[m]])?planSel[m]:rs[rs.length-1]}
+function pmOf(m,which){const r=planRev(m,which),o={};ALL.forEach(c=>o[c]=[0,0,0,0,0,0]);if(r==null)return o;const p=PLANS[m][r].colors;ALL.forEach(c=>{if(p[c])p[c].forEach((x,i)=>o[c][i]+=x||0)});return o}
+function mStat(m,f,which){which=which||(dPlan==="init"?"init":"latest");const o={},pm=pmOf(m,which),p0=pmOf(m,"init"),pl=pmOf(m,"latest"),L=lastDoc();
+  ALL.forEach(c=>o[c]={A:0,S:0,P:pm[c].reduce((a,b)=>a+b,0),P0:p0[c].reduce((a,b)=>a+b,0),PL:pl[c].reduce((a,b)=>a+b,0)});
   {const ma=monthAct(m);ALL.forEach(c=>o[c].A=ma[c]?ma[c].reduce((a,b)=>a+b,0):0)}
   Object.keys(STM).forEach(d=>{if(d.slice(0,7)!==m||d>L)return;ALL.forEach(c=>o[c].S+=Math.round(sumSi(STM[d][c],ALLSI)*f))});
   return o}
@@ -1011,38 +1020,46 @@ const ICO={a:'<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><pat
  e:'<path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/><circle cx="12" cy="16" r="1.2"/>'};
 const icoSvg=k=>'<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICO[k]+'</svg></span>';
 function overview(ms,f){
-  const M=ms.slice(-12),st=M.map(m=>mStat(m,f)),A=st.map(o=>ALL.reduce((a,c)=>a+o[c].A,0)),P=st.map(o=>ALL.reduce((a,c)=>a+o[c].P,0));
-  if(!M.length||!A.some(x=>x))return '<div class="empty">ยังไม่มีข้อมูล</div>';
-  const W=720,H=270,l=54,r=44,t=14,b=34,n=M.length,gw=(W-l-r)/n,bw=Math.min(30,gw*.34),mx=Math.max(1,...A,...P)*1.08,Y=v=>t+(H-t-b)*(1-v/mx),
+  const M=ms.slice(-12),both=dPlan==="both",st=M.map(m=>mStat(m,f,dPlan==="init"?"init":"latest")),A=st.map(o=>ALL.reduce((a,c)=>a+o[c].A,0)),P=st.map(o=>ALL.reduce((a,c)=>a+(both?o[c].PL:o[c].P),0)),P0=st.map(o=>ALL.reduce((a,c)=>a+o[c].P0,0));
+  if(!M.length||!A.some(x=>x))return '<div class="empty">ยังไม่มีข้อมูลในช่วงที่เลือก</div>';
+  const W=720,H=270,l=54,r=44,t=14,b=34,n=M.length,gw=(W-l-r)/n,k=both?3:2,bw=Math.min(both?22:30,gw*(both?.26:.34)),mx=Math.max(1,...A,...P,...(both?P0:[]))*1.08,Y=v=>t+(H-t-b)*(1-v/mx),
     pct=A.map((a,i)=>P[i]?a/P[i]:null),pm=Math.max(1.2,...pct.filter(x=>x!=null)),Y2=v=>t+(H-t-b)*(1-v/pm),fk=v=>v>=1e6?(v/1e6).toFixed(1)+"M":v>=1000?Math.round(v/1000)+"k":Math.round(v);
-  let g="";for(let k=0;k<=4;k++){const v=mx*k/4,y=Y(v);g+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/><text x="'+(l-6)+'" y="'+(y+3)+'" text-anchor="end">'+fk(v)+'</text><text x="'+(W-r+6)+'" y="'+(y+3)+'">'+Math.round(pm*k/4*100)+'%</text>'}
+  let g="";for(let q=0;q<=4;q++){const v=mx*q/4,y=Y(v);g+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/><text x="'+(l-6)+'" y="'+(y+3)+'" text-anchor="end">'+fk(v)+'</text><text x="'+(W-r+6)+'" y="'+(y+3)+'">'+Math.round(pm*q/4*100)+'%</text>'}
   let bars="",pts=[];
-  M.forEach((m,i)=>{const cx=l+gw*(i+.5),done=isComplete(m);
-    bars+='<rect x="'+(cx-bw-1)+'" y="'+Y(A[i])+'" width="'+bw+'" height="'+(H-b-Y(A[i]))+'" rx="2" fill="var(--accent)" opacity="'+(done?1:.6)+'"><title>'+mLabel(m)+' ผลิตจริง '+fmt(A[i])+'</title></rect>'+
-      '<rect x="'+(cx+1)+'" y="'+Y(P[i])+'" width="'+bw+'" height="'+(H-b-Y(P[i]))+'" rx="2" fill="var(--muted)" opacity=".45"><title>'+mLabel(m)+' แผน '+fmt(P[i])+'</title></rect>'+
-      '<text x="'+cx+'" y="'+(H-b+14)+'" text-anchor="middle">'+MON[+m.slice(5)-1]+(done?"":"*")+'</text><text x="'+cx+'" y="'+(H-b+26)+'" text-anchor="middle" style="font-size:9px">'+String(+m.slice(0,4)+543).slice(2)+'</text>';
-    if(A[i])bars+='<text x="'+(cx-bw/2-1)+'" y="'+(Y(A[i])-3)+'" text-anchor="middle" style="font-size:9px">'+fk(A[i])+'</text>';
+  M.forEach((m,i)=>{const cx=l+gw*(i+.5),done=isComplete(m),x0=cx-bw*k/2;
+    const bar=(j,v,fill,op,tt)=>'<rect x="'+(x0+j*bw+j)+'" y="'+Y(v)+'" width="'+bw+'" height="'+Math.max(0,H-b-Y(v))+'" rx="2" fill="'+fill+'" opacity="'+op+'"><title>'+mLabel(m)+' '+tt+' '+fmt(v)+'</title></rect>';
+    bars+=bar(0,A[i],"var(--accent)",done?1:.6,"ผลิตจริง");
+    if(both){bars+=bar(1,P0[i],"var(--muted)",.3,"แผนตั้งต้น")+bar(2,P[i],"var(--muted)",.6,"แผนฉบับล่าสุด")}else bars+=bar(1,P[i],"var(--muted)",.45,"แผน");
+    bars+='<text x="'+cx+'" y="'+(H-b+14)+'" text-anchor="middle">'+MON[+m.slice(5)-1]+(done?"":"*")+'</text><text x="'+cx+'" y="'+(H-b+26)+'" text-anchor="middle" style="font-size:9px">'+String(+m.slice(0,4)+543).slice(2)+'</text>';
+    if(A[i]&&n<=8)bars+='<text x="'+(x0+bw/2)+'" y="'+(Y(A[i])-3)+'" text-anchor="middle" style="font-size:9px">'+fk(A[i])+'</text>';
     if(pct[i]!=null)pts.push([cx,Y2(pct[i]),pct[i],m])});
   const line=pts.length>1?'<path d="'+pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ")+'" fill="none" stroke="var(--ink)" stroke-width="2"/>':'';
   const dots=pts.map(q=>'<circle cx="'+q[0]+'" cy="'+q[1]+'" r="3.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"><title>'+mLabel(q[3])+' '+Math.round(q[2]*100)+'% ของแผน</title></circle><text x="'+q[0]+'" y="'+(q[1]-8)+'" text-anchor="middle" style="fill:var(--ink);font-weight:600">'+Math.round(q[2]*100)+'%</text>').join("");
-  return '<svg class="ov" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="ผลิตจริงเทียบแผนรายเดือน">'+g+bars+line+dots+'</svg>'+(M.some(m=>!isComplete(m))?'':'');
+  return '<svg class="ov" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="ผลิตจริงเทียบแผนรายเดือน">'+g+bars+line+dots+'</svg>';
 }
 function renderDash(){
   if(!$("view-d"))return;
-  const f=Math.max(.1,Number($("fct").value)||2),ms=monthsOf();
+  const f=Math.max(.1,Number($("fct").value)||2),msAll=monthsOf();
   if(!loaded){["d-kpis","d-line","d-prog","d-b1","d-b2"].forEach(i=>$(i).innerHTML="");$("d-note").textContent="กำลังโหลดข้อมูล…";return}
-  if(!ms.length){$("d-kpis").innerHTML="";["d-line","d-prog","d-b1","d-b2"].forEach(i=>$(i).innerHTML="");$("d-lg1").innerHTML="";$("d-note").textContent="";$("d-b1").innerHTML='<div class="empty">ยังไม่มีข้อมูลในระบบ ไปที่แท็บ เพิ่ม / แก้ไขรายวัน</div>';return}
-  const sel=$("d-month"),cur=ms.includes(dMonth)?dMonth:ms[ms.length-1];dMonth=cur;
-  sel.innerHTML=ms.map(m=>'<option value="'+m+'"'+(m===cur?' selected':'')+'>'+esc(mLabel(m))+(isComplete(m)?'':' (กำลังผลิต)')+'</option>').join("");
+  if(!msAll.length){$("d-kpis").innerHTML="";["d-line","d-prog","d-b1","d-b2"].forEach(i=>$(i).innerHTML="");$("d-lg1").innerHTML="";$("d-note").textContent="";$("d-b1").innerHTML='<div class="empty">ยังไม่มีข้อมูลในระบบ ไปที่แท็บ เพิ่ม / แก้ไขรายวัน</div>';return}
+  if(dQ>0){dFrom=msAll[Math.max(0,msAll.length-dQ)];dTo=msAll[msAll.length-1]}else if(dQ===0){dFrom=msAll[0];dTo=msAll[msAll.length-1]}
+  if(!msAll.includes(dFrom))dFrom=msAll[0];if(!msAll.includes(dTo))dTo=msAll[msAll.length-1];if(dFrom>dTo){const q=dFrom;dFrom=dTo;dTo=q}
+  const ms=msAll.filter(m=>m>=dFrom&&m<=dTo),opt=(v)=>msAll.map(m=>'<option value="'+m+'"'+(m===v?' selected':'')+'>'+esc(mLabel(m))+'</option>').join("");
+  $("d-from").innerHTML=opt(dFrom);$("d-to").innerHTML=opt(dTo);
+  document.querySelectorAll("#d-qr button").forEach(x=>x.setAttribute("aria-selected",dQ>0&&+x.dataset.q===dQ||(dQ===0&&+x.dataset.q===0&&dFrom===msAll[0]&&dTo===msAll[msAll.length-1])));
+  document.querySelectorAll("#d-plan button").forEach(x=>x.setAttribute("aria-selected",x.dataset.p===dPlan));
+  const sel=$("d-month"),cur=msAll.includes(dMonth)?dMonth:msAll[msAll.length-1];dMonth=cur;
+  sel.innerHTML=msAll.map(m=>'<option value="'+m+'"'+(m===cur?' selected':'')+'>'+esc(mLabel(m))+(isComplete(m)?'':' (กำลังผลิต)')+'</option>').join("");
   const pi=planMatrix(cur+"-01",cur+"-01"),z=pi.sel[0],rs=$("d-rev");
   rs.innerHTML=z?z.revs.map(r=>'<option value="'+r+'"'+(r===z.rev?' selected':'')+'>'+esc(r===0?"แผนเริ่มต้น":"revise ครั้งที่ "+r)+'</option>').join(""):'<option>ยังไม่มีแผน</option>';
-  rs.disabled=!z||z.revs.length<2;
+  rs.disabled=!z||z.revs.length<2||dPlan!=="latest";
   const comp=isComplete(cur),mode=dMode==="auto"?(comp?"m":"d"):dMode;
   document.querySelectorAll("#d-mode button").forEach(x=>x.setAttribute("aria-selected",x.dataset.m===dMode));
   $("d-note").textContent=(dMode==="auto"?"โหมดอัตโนมัติ: ":"")+(mode==="m"?"แสดงเปรียบเทียบเป็นรายเดือน"+(dMode==="auto"?" (เดือน "+mLabel(cur)+" ผลิตครบแล้ว)":""):"แสดงเปรียบเทียบรายวันของเดือน "+mLabel(cur)+(comp?"":" (ยังผลิตไม่ครบเดือน)"))+(Object.keys(STM).length?"":" · ยังไม่มีข้อมูลแผ่นนึ่งยาง นำเข้าไฟล์นึ่งยางที่เมนู แผ่นยางประกอบ ก่อน");
   $("bnote").textContent="";
   const dotOf=c=>dotStyle(c);
-  $("d-ov").innerHTML=overview(ms,f);$("d-ovn").textContent=ms.some(m=>!isComplete(m))?"* = เดือนที่ยังผลิตไม่ครบ":"";
+  $("d-ov").innerHTML=overview(ms,f);$("d-ovn").textContent=(ms.some(m=>!isComplete(m))?"* = เดือนที่ยังผลิตไม่ครบ · ":"")+"ช่วง "+mLabel(dFrom)+" – "+mLabel(dTo);
+  $("d-ovlg").innerHTML='<span><i style="background:var(--accent);opacity:1"></i>ผลิตจริง</span>'+(dPlan==="both"?'<span><i style="background:var(--muted);opacity:.3"></i>แผนตั้งต้น</span><span><i style="background:var(--muted);opacity:.6"></i>แผนฉบับล่าสุด</span>':'<span><i style="background:var(--muted);opacity:.45"></i>'+(dPlan==="init"?"แผนตั้งต้น":"แผนฉบับล่าสุด")+'</span>')+'<span><i style="background:var(--ink);opacity:1;height:3px;vertical-align:3px"></i>% ผลิตจริง ÷ '+(dPlan==="init"?"แผนตั้งต้น":"แผนล่าสุด")+' (แกนขวา)</span>';
   let kA=0,kP=0,kS=0,h1="",h2="",lg="";
   if(mode==="m"){
     const st=ms.map(m=>mStat(m,f)),labels=ms.map(m=>({x:MON[+m.slice(5)-1],t:mLabel(m)+(isComplete(m)?"":" (ยังไม่ครบ)")}));
@@ -1051,6 +1068,7 @@ function renderDash(){
     lg='<span><i></i>ผลิตจริง</span><span><i class="t"></i>แผนผลิตของเดือนนั้น (ฉบับล่าสุดหรือที่เลือก)</span>';
     const tot=k=>st.map(o=>ALL.reduce((a,c)=>a+o[c][k],0));
     const TP=tot("P"),TA=tot("A"),TS=tot("S");kA=TA.reduce((a,b)=>a+b,0);kP=TP.reduce((a,b)=>a+b,0);kS=TS.reduce((a,b)=>a+b,0);
+    window._dAP=TA.reduce((a,x,i)=>a+(TP[i]>0?x:0),0);window._dAS=TA.reduce((a,x,i)=>a+(TS[i]>0?x:0),0);window._nP=TP.filter(x=>x>0).length;window._nS=TS.filter(x=>x>0).length;
     h1=barCard("รวมทุกสี","",labels,TP,TA,"แผน");h2=barCard("รวมทุกสี","",labels,TS,TA,"เป้า");
     ALL.forEach(c=>{h1+=barCard(lab(c),dotOf(c),labels,st.map(o=>o[c].P),st.map(o=>o[c].A),"แผน");h2+=barCard(lab(c),dotOf(c),labels,st.map(o=>o[c].S),st.map(o=>o[c].A),"เป้า")});
     let t='<table><thead><tr><th>เดือน</th><th>ผลิตจริง</th><th>แผนผลิต</th><th>% ของแผน</th><th>เป้านึ่งยาง</th><th>% ของเป้านึ่ง</th><th>สถานะ</th></tr></thead><tbody>';
@@ -1061,7 +1079,7 @@ function renderDash(){
     const act=[],stm=[];let ca=0,cs=0;
     for(let d=1;d<=N;d++){const k=cur+"-"+p2(d);ca+=ALL.reduce((a,c)=>a+sumSi(docs[k]&&docs[k].rows&&docs[k].rows[c],ALLSI),0);
       cs+=ALL.reduce((a,c)=>a+Math.round(sumSi(STM[k]&&STM[k][c],ALLSI)*f),0);act.push(ca);stm.push(cs)}
-    const o=mStat(cur,f);kP=ALL.reduce((a,c)=>a+o[c].P,0);kA=ca;kS=up?stm[up-1]:0;
+    const o=mStat(cur,f);kP=ALL.reduce((a,c)=>a+o[c].P,0);kA=ca;kS=up?stm[up-1]:0;window._dAP=kA;window._dAS=kA;window._nP=kP?1:0;window._nS=kS?1:0;
     const pace=up?up/N:0;
     $("d-h1").textContent="1) ผลิตจริง เทียบแผนผลิต · "+mLabel(cur);$("d-h2").textContent="2) ผลิตจริง เทียบแผนนึ่งยาง รายวัน · "+mLabel(cur);
     $("d-tbl-wrap").hidden=true;
@@ -1084,23 +1102,26 @@ function renderDash(){
   $("d-lg1").innerHTML=lg;
   $("d-b1").innerHTML=h1;$("d-b1").classList.toggle("one",mode!=="m");
   $("d-b2").innerHTML=h2||'<div class="empty">ไม่มีข้อมูล</div>';
-  const pa=kP?kA/kP:null,sa=kS?kA/kS:null;
-  const Z=()=>[0,0,0,0,0,0],MA={},MP={},MS={};ALL.forEach(c=>{MA[c]=Z();MP[c]=Z();MS[c]=Z()});
-  {const L=lastDoc(),sm=mode==="m"?ms:[cur];
-   sm.forEach(m=>{const pm=planMatrix(m+"-01",m+"-01").pm;ALL.forEach(c=>pm[c].forEach((x,i)=>MP[c][i]+=x))});
-   sm.forEach(m=>{const ma=monthAct(m);ALL.forEach(c=>{if(ma[c])ma[c].forEach((x,i)=>MA[c][i]+=x||0)})});
-   Object.keys(STM).forEach(d=>{if(!sm.includes(d.slice(0,7))||d>L)return;ALL.forEach(c=>{const v=STM[d][c];if(v)v.forEach((x,i)=>MS[c][i]+=Math.round((x||0)*f))})})}
+  const pa=kP?window._dAP/kP:null,sa=kS?window._dAS/kS:null;
+  const Z=()=>[0,0,0,0,0,0],MA={},MAp={},MAs={},MP={},MS={};ALL.forEach(c=>{MA[c]=Z();MAp[c]=Z();MAs[c]=Z();MP[c]=Z();MS[c]=Z()});
+  {const L=lastDoc(),sm=mode==="m"?ms:[cur],hasP={},hasS={};
+   sm.forEach(m=>{const o=mStat(m,f),pm=pmOf(m,dPlan==="init"?"init":"latest"),ma=monthAct(m);hasP[m]=ALL.some(c=>o[c].P>0);hasS[m]=ALL.some(c=>o[c].S>0);
+     ALL.forEach(c=>{if(hasP[m])pm[c].forEach((x,i)=>MP[c][i]+=x);if(ma[c])ma[c].forEach((x,i)=>{MA[c][i]+=x||0;if(hasP[m])MAp[c][i]+=x||0;if(hasS[m])MAs[c][i]+=x||0})})});
+   Object.keys(STM).forEach(d=>{const m=d.slice(0,7);if(!sm.includes(m)||d>L)return;ALL.forEach(c=>{const v=STM[d][c];if(v)v.forEach((x,i)=>MS[c][i]+=Math.round((x||0)*f))})})}
   const HR=(g,h)=>ALL.map(c=>({lab:'<span class="dot" style="'+dotOf(c)+';display:inline-block;margin-right:6px"></span>'+esc(lab(c)),v:g(c),p:h?h(c):undefined})),
     sc=mode==="m"?"ทุกเดือน":mLabel(cur);
   const K=(k,v,s,hv,ic,cl)=>'<div class="kpi ic '+(cl||"")+'"'+(hv||"")+'>'+icoSvg(ic)+'<div class="k">'+k+'</div><div class="v">'+v+'</div><div class="k">'+(s||"&nbsp;")+'</div></div>';
   const pc=(p,show)=>p==null?"–":Math.round(p*100)+"%",rc=p=>p==null?"":(p>=.95?"ok":p>=.75?"mid":"bad");
-  $("d-kpis").innerHTML=K("ผลิตจริง",fmt(kA),mode==="m"?"ทุกเดือนที่มีข้อมูล":"สะสมถึง "+(lastDoc().slice(0,7)===cur?thLong(lastDoc()):"สิ้นเดือน"),hvK("d1","ผลิตจริง · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MA[c])),"a")+
-    K(mode==="m"?"แผนผลิตรวม":"แผนผลิตทั้งเดือน",kP?fmt(kP):"–","",hvK("d2","แผนผลิต · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MP[c])),"b")+
-    K("ผลิตจริง ÷ แผน",pc(pa),mode==="m"?"ทุกเดือนที่มีข้อมูล":"ของแผนทั้งเดือน",hvK("d3","ผลิตจริง ÷ แผน · "+sc+" (% ต่อช่อง)",HR(c=>MA[c],c=>MP[c]),{pct:1}),"c",mode==="m"?rc(pa):"")+
+  $("d-kpis").innerHTML=K("ผลิตจริง",fmt(kA),mode==="m"?mLabel(dFrom)+" – "+mLabel(dTo):"สะสมถึง "+(lastDoc().slice(0,7)===cur?thLong(lastDoc()):"สิ้นเดือน"),hvK("d1","ผลิตจริง · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MA[c])),"a")+
+    K(mode==="m"?"แผนผลิตรวม":"แผนผลิตทั้งเดือน",kP?fmt(kP):"–",dPlan==="init"?"แผนตั้งต้น":"แผนฉบับล่าสุด",hvK("d2","แผนผลิต · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MP[c])),"b")+
+    K("ผลิตจริง ÷ แผน",pc(pa),mode==="m"?(window._nP?"เฉพาะ "+window._nP+" เดือนที่มีแผน":"ยังไม่มีแผน"):"ของแผนทั้งเดือน",hvK("d3","ผลิตจริง ÷ แผน · "+sc+" (% ต่อช่อง)",HR(c=>MAp[c],c=>MP[c]),{pct:1}),"c",mode==="m"?rc(pa):"")+
     K("เป้านึ่งยาง",kS?fmt(kS):"–","ถึงวันที่ผลิตล่าสุด",hvK("d4","เป้านึ่งยาง · "+sc+" (คู่) แยกสี × เบอร์",HR(c=>MS[c])),"d")+
-    K("ผลิตจริง ÷ เป้านึ่ง",pc(sa),"",hvK("d5","ผลิตจริง ÷ เป้านึ่งยาง · "+sc+" (% ต่อช่อง)",HR(c=>MA[c],c=>MS[c]),{pct:1}),"e",rc(sa))
+    K("ผลิตจริง ÷ เป้านึ่ง",pc(sa),mode==="m"?(window._nS?"เฉพาะ "+window._nS+" เดือนที่มีข้อมูลนึ่ง":"ยังไม่มีข้อมูลนึ่ง"):"",hvK("d5","ผลิตจริง ÷ เป้านึ่งยาง · "+sc+" (% ต่อช่อง)",HR(c=>MAs[c],c=>MS[c]),{pct:1}),"e",rc(sa))
 }
 $("d-month").onchange=e=>{dMonth=e.target.value;render()};
+$("d-from").onchange=e=>{dFrom=e.target.value;dQ=-1;render()};$("d-to").onchange=e=>{dTo=e.target.value;dQ=-1;render()};
+$("d-qr").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;dQ=+b.dataset.q;if(dQ===0){const ms=monthsOf();dFrom=ms[0];dTo=ms[ms.length-1]}render()});
+$("d-plan").addEventListener("click",e=>{const b=e.target.closest("button");if(b){dPlan=b.dataset.p;render()}});
 $("d-rev").onchange=e=>{planSel[dMonth]=+e.target.value;render()};
 $("d-mode").addEventListener("click",e=>{const b=e.target.closest("button");if(b){dMode=b.dataset.m;render()}});
 $("fct").oninput=()=>render();
