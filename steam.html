@@ -438,7 +438,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 95)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 96)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -3018,7 +3018,9 @@ function gFoot(px,fp,hasG){if(!$(fp+"t"))return;const S=Z6();let tot=0,g=0;
   SIZES.forEach((z,j)=>{$(fp+"s-"+j).textContent=fmt(S[j])});$(fp+"t").textContent=fmt(tot);if(hasG)$(fp+"g").textContent=fmt(g)}
 const bFoot=()=>gFoot("b","bt-",false),qFoot=()=>gFoot("q","qt-",true);
 const gv=id=>nn(($(id).value||"").replace(/,/g,"").trim());
-$("e-grid").addEventListener("input",()=>qFoot());
+function qRowSum(i){let any=false,sm=0;SIZES.forEach((z,j)=>{const v=gv("q-s-"+i+"-"+j);if(v!=null){sm+=v;any=true}});if(any)$("q-t-"+i).value=sm?sm.toLocaleString("en-US"):""}
+$("e-grid").addEventListener("input",e=>{const m=e.target&&e.target.id&&e.target.id.match(/^q-s-(\d+)-\d+$/);if(m){const d=e.target.value.replace(/[^0-9]/g,"");e.target.value=d?Number(d).toLocaleString("en-US"):"";qRowSum(+m[1])}qFoot()});
+
 $("e-grid").addEventListener("input",e=>{const t=e.target;if(!t||!/^q-/.test(t.id))return;const d=t.value.replace(/[^0-9]/g,"");const f=d?Number(d).toLocaleString("en-US"):"";if(f!==t.value)t.value=f});
 (function(){const nm=(p,r,c)=>c<6?p+"-s-"+r+"-"+c:(c===6?p+"-t-"+r:p+"-g-"+r),
  pc=id=>{let m=id.match(/^([qb])-s-(\d+)-(\d+)$/);if(m)return[m[1],+m[2],+m[3]];m=id.match(/^([qb])-t-(\d+)$/);if(m)return[m[1],+m[2],6];m=id.match(/^([qb])-g-(\d+)$/);return m?[m[1],+m[2],7]:null};
@@ -3028,7 +3030,7 @@ $("e-grid").addEventListener("input",e=>{const t=e.target;if(!t||!/^q-/.test(t.i
  document.addEventListener("paste",e=>{const t=e.target,x=t&&t.id&&pc(t.id);if(!x)return;const txt=(e.clipboardData||window.clipboardData).getData("text");if(!txt||!/[\t\n]/.test(txt.trim()))return;e.preventDefault();
   const rows=txt.replace(/\r/g,"").split("\n").filter((l,i,a)=>l!==""||i<a.length-1);
   rows.forEach((l,i)=>l.split("\t").forEach((v,j)=>{const n=$(nm(x[0],x[1]+i,x[2]+j));if(n){const d=v.replace(/[^0-9]/g,"");n.value=d?Number(d).toLocaleString("en-US"):"";}}));
-  qFoot();bFoot()})})();
+  SC.forEach((c,i)=>{if($("q-s-"+i+"-0"))qRowSum(i)});qFoot();bFoot()})})();
 function qIn(){const q={};SC.forEach((c,i)=>{q[c]={total:gv("q-t-"+i)||0,sizes:SIZES.map((z,j)=>gv("q-s-"+i+"-"+j)),target:gv("q-g-"+i)||0}});return q}
 function fillGrid(d){
   const Q=stkGet("quota",d),G=stkGet("target",d);
