@@ -291,9 +291,9 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 #sl-list .ss{margin-left:auto;display:flex;gap:8px}
 #sl-list .btn{padding:4px 10px;font-size:13px}
 #sl-list .sb{padding:4px 0 12px}
-#xs-chart{display:flex;align-items:flex-end;gap:6px;height:230px;padding:8px 4px 0;overflow-x:auto;border-bottom:1px solid var(--line)}
-.xsb{flex:1 0 38px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;cursor:pointer;outline:none}
-.xsb i{display:block;width:100%;max-width:48px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}
+#xs-chart{display:flex;align-items:flex-end;justify-content:flex-start;gap:6px;height:230px;padding:8px 4px 0;overflow-x:auto;border-bottom:1px solid var(--line)}
+.xsb{flex:0 1 54px;min-width:26px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;cursor:pointer;outline:none}
+.xsb i{display:block;width:100%;max-width:40px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}
 .xsb:hover i,.xsb:focus i{filter:brightness(1.2);box-shadow:0 0 0 2px var(--accent-soft,#cde)}
 .xsb b{font-size:11px;font-weight:600;margin-bottom:3px}
 .xsb em{font-style:normal;font-size:11px;color:var(--muted);margin-top:4px;white-space:nowrap}
@@ -351,7 +351,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 83)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 85)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2337,6 +2337,7 @@ async function cmpExcel(){const f=$("c-from").value,t=$("c-to").value,src=CSRC.f
   await saveBook(wb,"ติดตามการผลิต_"+f+"_ถึง_"+t+".xlsx");return""}
 $("c-xl").onclick=async()=>{const b=$("c-xl"),old="ดาวน์โหลด Excel";if(typeof ExcelJS==="undefined"){b.textContent="โหลดตัวสร้าง Excel ไม่ได้";setTimeout(()=>b.textContent=old,2500);return}
   b.disabled=true;b.textContent="กำลังสร้างไฟล์…";try{const m=await cmpExcel();b.textContent=m||"ดาวน์โหลดแล้ว"}catch(err){b.textContent="สร้างไฟล์ไม่ได้"}setTimeout(()=>{b.textContent=old;b.disabled=false},2500)};
+
 $("xs-y").onchange=()=>{$("xs-m").value="all";xsDraw()};$("xs-m").onchange=xsDraw;
 
 /* ===== ข้อมูล › ยอดขายรายเดือน (kind "sales" ในแผ่น 3_สต๊อกและยอดจอง) ===== */
