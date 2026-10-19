@@ -254,6 +254,11 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
 @media(max-width:1399px){.qpair{grid-template-columns:minmax(0,1fr)}}
 
 .flash{animation:flashbg 1.6s ease-out}@keyframes flashbg{0%,40%{background:var(--sel)}100%{background:transparent}}
+.ttabs{display:flex;gap:6px;margin:0 0 14px;border-bottom:2px solid var(--line);flex-wrap:wrap}
+.ttabs[hidden]{display:none}
+.ttabs button{font:600 15px var(--f-body);padding:10px 22px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:var(--surface2);color:var(--muted);cursor:pointer;margin-bottom:-2px;box-shadow:none}
+.ttabs button:hover{color:var(--ink)}
+.ttabs button[aria-selected="true"]{background:var(--surface);color:var(--accent);border-bottom:2px solid var(--surface)}
 #xsub,.gsub{display:flex;flex-direction:column;gap:2px;padding-left:29px}
 #xsub[hidden],.gsub[hidden]{display:none}
 #xsub button small{opacity:.75;font-size:12px}
@@ -321,13 +326,13 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
   <div class="smenu" role="tablist">
     <button role="tab" id="tab-x" aria-selected="false" aria-expanded="false" aria-controls="xsub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span>ข้อมูล</span><span id="x-car" style="margin-left:auto;font-size:11px;opacity:.8">▾</span></button>
     <div id="xsub" hidden><button role="tab" id="tab-x1" aria-selected="false"><span>แผนผลิต <small>(PDF)</small></span></button><button role="tab" id="tab-x2" aria-selected="false"><span>แผนประกอบยาง <small>(Excel)</small></span></button><button role="tab" id="tab-x3" aria-selected="false"><span>รับเข้าโกดังพี่ชุมพร</span></button><button role="tab" id="tab-x4" aria-selected="false"><span>ยอดขายรายเดือน</span></button></div>
-    <button role="tab" id="tab-t" aria-selected="false" aria-expanded="false" aria-controls="tsub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 15l5-5 4 3 7-8"/><path d="M15 5h5v5"/></svg><span>ติดตามการผลิต</span><span id="t-car" style="margin-left:auto;font-size:11px;opacity:.8">▾</span></button>
-    <div id="tsub" class="gsub" hidden><button role="tab" id="tab-p" aria-selected="false"><span>แผนการผลิต</span></button><button role="tab" id="tab-q" aria-selected="true"><span>แผนประกอบ</span></button><button role="tab" id="tab-m" aria-selected="false"><span>รับจริงเข้าสต๊อก</span></button></div>
+    <button role="tab" id="tab-t" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 15l5-5 4 3 7-8"/><path d="M15 5h5v5"/></svg><span>ติดตามการผลิต</span></button>
+    <div id="tsub" hidden style="display:none"><button role="tab" id="tab-p" aria-selected="false"><span>แผนการผลิต</span></button><button role="tab" id="tab-q" aria-selected="true"><span>แผนประกอบ</span></button><button role="tab" id="tab-m" aria-selected="false"><span>รับจริงเข้าสต๊อก</span></button></div>
     <button role="tab" id="tab-s" aria-selected="false" aria-expanded="false" aria-controls="ssub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อก</span><span id="s-car" style="margin-left:auto;font-size:11px;opacity:.8">▾</span></button>
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 75)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+  <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 76)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -335,6 +340,7 @@ thead th{background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid v
       <h1 id="ptitle">แผ่นยางประกอบ</h1>
     </div>
   </header>
+  <div id="ttabs" class="ttabs" role="tablist" aria-label="ติดตามการผลิต"><button type="button" role="tab" id="tt-p">แผนผลิต</button><button type="button" role="tab" id="tt-q">แผนประกอบ</button><button type="button" role="tab" id="tt-m">รับจริงเข้าโกดัง</button></div>
 
   <div id="view-q" class="layout">
   <div class="note" style="grid-column:1/-1">จะนำเข้าไฟล์นึ่งยาง ให้ไปที่เมนู <a href="#" id="go-x2">ข้อมูล › แผนประกอบยาง</a></div>
@@ -2033,11 +2039,11 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-const PT={q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนการผลิต",m:"ติดตามการผลิต › รับจริงเข้าสต๊อก",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ข้อมูล › ยอดขายรายเดือน"};
-function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=v==="x1"||v==="x2"||v==="x4";$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-steam").hidden=v!=="x2";["x1","x2","x3","x4"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(ix)xOpen(true);if("pqm".includes(v))gOpen("t",true);if(v==="e"||v==="w")gOpen("s",true)}
+const PT={q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ข้อมูล › ยอดขายรายเดือน"};
+function show(v){$("ptitle").textContent=PT[v];{const d=$("e-d1"),h=$("e-s1imp"),ph=$("e-d1-ph");if(d&&h&&ph){const sm=d.querySelector("summary");if(v==="e"){h.appendChild(d);d.open=true;sm.textContent="เติมไฟล์สต็อกของวันนี้ (จากพี่ชุมพร)"}else{ph.after(d);sm.textContent="นำเข้า / เปลี่ยนไฟล์สต็อกต้นงวด"}}}if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=v==="x1"||v==="x2"||v==="x4";$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-steam").hidden=v!=="x2";["x1","x2","x3","x4"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(ix)xOpen(true);const tt="pqm".includes(v);$("ttabs").hidden=!tt;if(tt){window._lt=v;["p","q","m"].forEach(k=>$("tt-"+k).setAttribute("aria-selected",v===k));$("tab-t").setAttribute("aria-selected","true")}else $("tab-t").setAttribute("aria-selected","false");if(v==="e"||v==="w")gOpen("s",true)}
 function xOpen(o){$("xsub").hidden=!o;$("tab-x").setAttribute("aria-expanded",o?"true":"false");$("x-car").textContent=o?"▴":"▾"}
 function gOpen(g,o){const m={t:["tsub","t-car"],s:["ssub","s-car"]}[g];$(m[0]).hidden=!o;$("tab-"+g).setAttribute("aria-expanded",o?"true":"false");$(m[1]).textContent=o?"▴":"▾"}
-gOpen("t",true);$("tab-t").onclick=()=>gOpen("t",$("tsub").hidden);$("tab-s").onclick=()=>gOpen("s",$("ssub").hidden);
+$("tab-t").onclick=()=>$("tab-"+(window._lt||"p")).click();["p","q","m"].forEach(k=>$("tt-"+k).onclick=()=>$("tab-"+k).click());$("tab-s").onclick=()=>gOpen("s",$("ssub").hidden);
 $("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-w").onclick=()=>{show("w");initE();renderE()};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
 $("x-plan-slot").appendChild($("p-imp"));$("x-steam-slot").appendChild($("q-imp"));$("p-imp").open=true;$("q-imp").open=true;
