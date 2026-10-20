@@ -457,7 +457,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 120)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 122)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -544,9 +544,9 @@ thead th{background:#dcecff;color:#0a47a8}
 
   <div id="view-p" hidden style="display:flex;flex-direction:column;gap:16px">
     <div class="panel" id="st1">
-      <h2>1) สต็อกต้นงวด (น้องสุ)</h2>
+      <h2>1) สต็อกต้นงวด</h2>
       <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">ใช้สต็อก ณ วันที่</span><select id="po-sd"></select></div></div>
-      <div class="note">นำเข้า / เปลี่ยนไฟล์สต็อกที่ <a href="#" data-go="x5">สต๊อก › อัปเดตสต็อก</a></div>
+      <div class="note">นำเข้า / เปลี่ยนไฟล์สต็อกที่ <a href="#" data-go="x5">สต๊อก › สต๊อก Update รายวัน</a></div>
       <div id="po-d1"></div>
       
     
@@ -682,7 +682,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <div class="panel" id="es1">
       <h2>1) สต็อก ณ วันนี้ (จากไฟล์พี่ชุมพร)</h2>
       <div class="row" style="align-items:flex-end"><div style="min-width:200px"><span class="lbl">สต็อกจริง ณ วันที่</span><select id="e-sd"></select></div></div>
-      <div class="note">อัปเดตไฟล์สต็อกใหม่ได้ที่ <a href="#" data-go="x5">สต๊อก › อัปเดตสต็อก</a> (ไฟล์เปลี่ยนทุกวัน วันใหม่ไม่ทับวันเก่า)</div>
+      <div class="note">อัปเดตไฟล์สต็อกใหม่ได้ที่ <a href="#" data-go="x5">สต๊อก › สต๊อก Update รายวัน</a> (ไฟล์เปลี่ยนทุกวัน วันใหม่ไม่ทับวันเก่า)</div>
       <div class="note" id="e-stale"></div>
       <div class="note" id="e-status"></div>
       <div id="e-spec"></div>
@@ -798,15 +798,15 @@ thead th{background:#dcecff;color:#0a47a8}
     <div class="panel" id="x-cvsum" hidden><h2>ผ้าใบ 205 › สรุปรับเข้าประจำเดือน</h2><div class="note">รวมยอดรับเข้าโกดังรายวันของรองเท้าผ้าใบสำเร็จรูป 205-S / 205-R / 121.Z (หน่วย: คู่) · เอาเมาส์ชี้ที่แท่งเพื่อดูตัวเลข</div>
       <div class="row" style="align-items:flex-end"><div style="min-width:180px"><span class="lbl">เดือน</span><select id="cv-sm"></select></div></div>
       <div id="cv-sb"></div></div>
-    <div class="panel" id="x-stk" hidden><h2>อัปเดตสต็อก</h2><div class="note">ไฟล์สต็อกคงเหลือจากพี่ชุมพร (เปลี่ยนทุกวัน): เลือกไฟล์ → ตรวจวันที่ → กดบันทึก วันใหม่ไม่ทับวันเก่า · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div>
+    <div class="panel" id="x-stk" hidden><h2>สต๊อก Update รายวัน</h2><div class="note">ไฟล์สต็อกคงเหลือจากพี่ชุมพร (เปลี่ยนทุกวัน): เลือกไฟล์ → ตรวจวันที่ → กดบันทึก วันใหม่ไม่ทับวันเก่า · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div>
       <details class="dbox" id="e-d1" open><summary>เลือกไฟล์สต็อก (.xlsx)</summary><div class="dbody">
-      <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่น้องสุนำสต็อกจาก รง. มาตัดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
+      <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่ตัดยอดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
       <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
       <div id="e-fprev" class="note"></div>
       <div class="row" style="align-items:flex-end;margin-top:6px"><div style="min-width:200px"><span class="lbl">สต็อกที่บันทึกไว้</span><select id="xk-sd"></select></div><button class="btn ghost" id="e-fdel" type="button" style="color:var(--bad);border-color:var(--bad)">ลบสต็อกวันที่ที่เลือก</button></div>
       <div id="ps-msg" class="msg" hidden></div>
     </div></details></div>
-    <div class="panel" id="x-quo" hidden><h2>โควต้าฝ่ายขายที่เหลือ</h2><div class="note">ข้อมูลจากน้องสุ: เลือกไฟล์ Excel หรือกรอกในตาราง แล้วเลือกวันที่ → บันทึก · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div><div id="eq-msg" class="msg" hidden></div>
+    <div class="panel" id="x-quo" hidden><h2>โควต้าฝ่ายขายที่เหลือ</h2><div class="note">เลือกไฟล์ Excel หรือกรอกในตาราง แล้วเลือกวันที่ → บันทึก · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div><div id="eq-msg" class="msg" hidden></div>
       <details class="dbox" id="e-d2" open><summary>กรอก / นำเข้าโควต้า</summary><div class="dbody">
       <div class="note">เลือกไฟล์โควต้า Excel (.xlsx) ด้านล่าง ระบบกรอกตารางให้เอง หรือพิมพ์เอง: ใส่ "รวมต่อสี" ช่องเดียว (ระบบกระจายเป็นเบอร์ตามสัดส่วนสต็อก) หรือใส่รายเบอร์ ถ้ากรอกรายเบอร์จะใช้ค่ารายเบอร์ · "เป้าสต็อกสิ้นเดือน" ไม่บังคับ ใช้คำนวณว่าเดือนหน้าควรผลิตเพิ่มเท่าไร</div>
       <div><span class="lbl" hidden>วางตาราง</span>
@@ -4209,7 +4209,8 @@ function stkRepData(){const sel=$("sr-d"),es=$("e-sd");if(!es)return{err:"ยั
   if(sel.value&&es.value!==sel.value&&[...es.options].some(o=>o.value===sel.value)){es.value=sel.value;try{es.dispatchEvent(new Event("input"))}catch(e){}}else sel.value=es.value;
   return calcE()}
 function stkRepCols(c){const Z=()=>[0,0,0,0,0,0],L=SC.map(k=>({k,n:SCN[k]||k,sp:0,start:c.res[k].start,inn:c.res[k].inn,mid:c.res[k].mid,quota:c.res[k].quota,end:c.res[k].end})),sp=stkGet("special",c.sd)||{};
-  Object.keys(sp).forEach(k=>{const a=sp[k].slice(0,6).map(x=>x||0);L.push({k,n:k,sp:1,start:a,inn:Z(),mid:a.slice(),quota:Z(),end:a.slice()})});return L}
+  const add=(k,n,k2)=>{const a=(sp[k]||sp[k2]||Z()).slice(0,6).map(x=>x||0);L.push({k,n,sp:1,start:a,inn:Z(),mid:a.slice(),quota:Z(),end:a.slice()})};
+  PTPL.forEach(r=>{if(!SC.includes(r[0]))add(r[0],r[1],r[1])});Object.keys(sp).forEach(k=>{if(!PTPL.some(r=>r[0]===k||r[1]===k))add(k,k)});return L}
 const SRROWS=[["","สต๊อก ณ วันนี้","start"],["บวก","แผ่นยางที่จะผลิตถึงสิ้นเดือน","inn"],["เท่ากับ","ยอด FG ที่จะมีถึงสิ้นเดือน","mid"],["หัก","ยอดโควต้าคงเหลือ","quota"],["","คงเหลือ ณ สิ้นเดือน","end"]];
 function stkRepDraw(){const box=$("sr-body"),msg=$("sr-msg");if(!box)return;let c;try{c=stkRepData()}catch(e){c={err:String(e&&e.message||e)}}
   if(!c||c.err){box.innerHTML="";msg.hidden=false;msg.className="msg warn";msg.textContent=(c&&c.err)||"คำนวณไม่ได้";return}
@@ -4228,7 +4229,7 @@ cgXlBtn($("x-stkrep"),"xl-sr",async()=>{stkRepDraw();const c=window._src;if(!c)c
   const V=[["start","ฟองน้ำ รุ่น 200 · สต๊อก ณ "+thD(c.sd)+" (หน่วย: คู่)"],["inn","+ แผ่นยางที่จะผลิตถึง "+thD(c.ed)],["mid","= ยอด FG ที่จะมีถึง "+thD(c.ed)+" (ก่อนหักโควต้า)"],["quota","− ยอดโควต้าคงเหลือที่ยังไม่ได้ขาย"],["end","= คงเหลือ ณ สิ้นเดือน "+thD(c.ed)+" (สต๊อกสุทธิที่ส่งได้จริง)"]];
   V.forEach(b=>{const key=b[0];tot.push(rows.length);rows.push([b[1]]);hdr.push(rows.length);rows.push(["สี/เบอร์","8 1/2","9","9 1/2","10","10 1/2","11","รวม","% สี"]);
     const r1=rows.length+1,rt=r1+cols.length;
-    cols.forEach((x,ci)=>{const R=rows.length+1,row=[x.n];SIZES.forEach((z,j)=>row.push(FX(L(3+ci*6+j)+rn[key],get(x,key,j))));const rs=T(SIZES.map((z,j)=>get(x,key,j)));row.push(FX("SUM(B"+R+":G"+R+")",rs));row.push(FX("IF(H"+rt+"<>0,H"+R+"/H"+rt+',"")',null,true));rows.push(row)});
+    const gtot=T(cols.map(x=>T(SIZES.map((z,j)=>get(x,key,j)))));cols.forEach((x,ci)=>{const R=rows.length+1,row=[x.n];SIZES.forEach((z,j)=>row.push(FX(L(3+ci*6+j)+rn[key],get(x,key,j))));const rs=T(SIZES.map((z,j)=>get(x,key,j)));row.push(FX("SUM(B"+R+":G"+R+")",rs));row.push(FX("IF(H"+rt+"<>0,H"+R+"/H"+rt+',"")',gtot?rs/gtot:"",true));rows.push(row)});
     const sums=SIZES.map((z,j)=>T(cols.map(x=>get(x,key,j))));tot.push(rows.length);rows.push(["รวม"].concat(sums.map((q,j)=>FX("SUM("+L(2+j)+r1+":"+L(2+j)+(rt-1)+")",q)),[FX("SUM(H"+r1+":H"+(rt-1)+")",T(sums)),FX("SUM(I"+r1+":I"+(rt-1)+")",1,true)]));rows.push([])});
   const sh={name:"สต๊อก",rows,hdr,tot,merge,w1:38,w:9};await cgXlBook([sh],"สต๊อก_คงเหลือสิ้นเดือน_"+c.sd+".xlsx")});
 /* ---------- ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน (ฟองน้ำ) ---------- */
