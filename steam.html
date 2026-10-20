@@ -457,7 +457,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 118)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 119)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -488,7 +488,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <div class="note">หน้าเดิม (ข้อมูลละเอียดและกรอกผลิตจริง): <a href="#" data-cgo="p">เทียบแผนผลิต</a> · <a href="#" data-cgo="m">ผลิตจริง เทียบแผน</a> · <a href="#" data-cgo="q">แผ่นยางประกอบ</a></div>
   </div>
   <div id="view-q" class="layout">
-  <div class="note" style="grid-column:1/-1">จะนำเข้าไฟล์นึ่งยาง ให้ไปที่ <a href="#" id="go-x2">แผนผลิต › นำเข้าและดูข้อมูลที่บันทึกไว้</a></div>
+  <div class="note" style="grid-column:1/-1">จะนำเข้าไฟล์นึ่งยาง ให้ไปที่ <a href="#" id="go-x2">แผ่นยางประกอบ › นำเข้าไฟล์นึ่งยาง</a></div>
   <details class="dbox" id="q-imp" open><summary>นำเข้าไฟล์นึ่งยาง (จากฝ่ายวางแผน)</summary><div class="dbody">
 
     <div class="note">เลือกไฟล์ Excel "ยอดนึ่งรองเท้าฟองน้ำ ประจำวัน" ได้ทีละหลายไฟล์ (1 ไฟล์ = 1 วัน ใช้ไฟล์ตามเดิมได้เลย ไม่ต้องแก้) แอปอ่านวันที่จ่ายไปประกอบจากช่อง C2 และตรวจยอดรวมให้</div>
@@ -553,7 +553,7 @@ thead th{background:#dcecff;color:#0a47a8}
     </div>
     <div class="panel" id="st2">
       <h2>2) แผนผลิต (หักออก % เฉพาะ 8 สีหลัก · สีพิเศษไม่หัก)</h2>
-      <div class="note">จะนำเข้าแผนผลิตใหม่ ให้ไปที่ <a href="#" id="go-x1">แผนผลิต › นำเข้าและดูข้อมูลที่บันทึกไว้</a></div>
+      <div class="note">จะนำเข้าแผนผลิตใหม่ ให้ไปที่ <a href="#" id="go-x1">แผนผลิต › นำเข้าแผนผลิต (PDF)</a></div>
       <div class="row" style="align-items:flex-end">
         <div style="min-width:150px"><span class="lbl">เดือนของแผน</span><select id="p-month"></select></div>
         <div style="min-width:190px"><span class="lbl">ฉบับแผน</span><select id="p-rev"></select></div>
@@ -2227,8 +2227,8 @@ $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>se
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 var CVP="S";const CVT={cgdash:"Dashboard",cgstk:"สต๊อกรายวัน",cgplan:"แผนผลิต",cv1:"ผลิตจริงเข้าโกดังพี่ชุมพร",cgsale:"ยอดขาย-เป้าขาย"};
-const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["prod","ผลิตจริงเข้าโกดัง"],["sale","ยอดขาย-เป้าขาย"],["ord","ออกแผนผลิต"]],
-  FGMAP={d:"d",e:"stk",w:"stk",x5:"stk",x6:"stk",q:"plan",p:"plan",x1:"plan",x2:"plan",c:"prod",m:"prod",r:"prod",x3:"prod",x8:"prod",x4:"sale",x7:"sale",o:"ord"};
+const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["asm","แผ่นยางประกอบ"],["prod","ผลิตจริงเข้าโกดัง"],["sale","ยอดขาย-เป้าขาย"],["ord","ออกแผนผลิต"]],
+  FGMAP={d:"d",e:"stk",w:"stk",x5:"stk",x6:"stk",q:"asm",p:"plan",x1:"plan",x2:"asm",c:"prod",m:"prod",r:"prod",x3:"prod",x8:"prod",x4:"sale",x7:"sale",o:"ord"};
 function tbOrd(key){try{return JSON.parse(localStorage.getItem("tbo_"+key)||"[]")}catch(e){return[]}}
 function tbSort(list,key,idf){const o=tbOrd(key);return list.slice().sort((a,b)=>{const x=o.indexOf(idf(a)),y=o.indexOf(idf(b));return(x<0?99:x)-(y<0?99:y)})}
 function tbDnD(bar,attr){let drag=null;
@@ -2244,7 +2244,8 @@ function fgReveal(views,panels,title,code,groups){document.querySelectorAll(".fg
 const FGPG={
   d:()=>{$("tab-d").click();fgBar(null,"d")},
   stk:()=>{show("x5");initE();fgReveal([],["x-stkrep","x-stk","x-quo"],"สต๊อก","stk",[[0,"โควต้าฝ่ายขายที่เหลือ (ใช้คำนวณแถว \"หัก\")",["x-quo"],0]]);stkRepDraw();["x-stkrep","x-stk"].forEach(id=>{const p=$(id);if(!p)return;p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")})},
-  plan:()=>{show("p");initE();renderP();pfInit();poInit();xpDraw();xsDraw();xlDraw();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}fgReveal(["q"],["x-plan","x-plist","x-steam","x-slist","x-sdash"],"แผนผลิต","plan",[[0,"แผนประกอบยาง",["view-q"],0],[0,"แผนผลิต · คำนวณสต็อกคงเหลือ",["view-p"],1],[0,"นำเข้าและดูข้อมูลที่บันทึกไว้ (แผนผลิต PDF · แผนประกอบยาง Excel)",["x-plan","x-plist","x-steam","x-slist","x-sdash"],0]])},
+  plan:()=>{show("p");initE();renderP();pfInit();poInit();xpDraw();xsDraw();xlDraw();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}fgReveal([],["x-plan","x-plist"],"แผนผลิต","plan",[[0,"แผนผลิต · คำนวณสต็อกคงเหลือ",["view-p"],1],[0,"นำเข้าแผนผลิต (PDF) และแผนผลิตที่บันทึกไว้",["x-plan","x-plist"],0]]);$("view-p").hidden=false},
+  asm:()=>{show("x2");xsDraw();xlDraw();fgReveal(["q"],["x-steam","x-slist","x-sdash"],"แผ่นยางประกอบ","asm",[[0,"แผ่นยางประกอบ · ภาพรวม",["view-q"],1],[0,"นำเข้าไฟล์นึ่งยาง (Excel)",["x-steam"],1],[0,"แผ่นยางที่บันทึกไว้ และแดชบอร์ด",["x-slist","x-sdash"],0]])},
   prod:()=>{window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("tab-r").setAttribute("aria-selected","false");cmpInit();initM();renderM();rcMonDraw();fgReveal(["c","m","r"],["x-rcmon"],"ผลิตจริงเข้าโกดัง","prod",[[0,"เปรียบเทียบกับแผน (แผนผลิต · แผนประกอบ · รับจริง)",["view-c","view-m"],0]])},
   sale:()=>{show("x4");slBuild();if(!$("sl-month").value){$("sl-month").value=todayS().slice(0,7)}slMonthChanged();slDraw();tgFill();fgReveal([],["x-sales","x-tgt"],"ยอดขาย-เป้าขาย","sale")},
   ord:()=>{$("tab-o").click();fgBar(null,"ord")}};
@@ -2616,11 +2617,11 @@ $("sl-list").addEventListener("click",async e=>{
   if(ed){e.preventDefault();e.stopPropagation();$("sl-month").value=ed.dataset.se;slMonthChanged();$("sl-month").scrollIntoView({block:"center"});return}
   const dl=e.target.closest&&e.target.closest("[data-sd]");
   if(dl){e.preventDefault();e.stopPropagation();await slDelete(dl.dataset.sd,dl)}});
-$("go-x1").onclick=e=>{e.preventDefault();fgPage("plan")};$("go-x2").onclick=e=>{e.preventDefault();fgPage("plan")};
+$("go-x1").onclick=e=>{e.preventDefault();fgPage("plan")};$("go-x2").onclick=e=>{e.preventDefault();fgPage("asm")};
 $("tab-x1").onclick=()=>{show("x1");xpDraw();initE();renderP();pfInit();poInit();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}};
 $("tab-x2").onclick=()=>{show("x2");xsDraw();xlDraw()};
 $("tab-x5").onclick=()=>{show("x5");initE()};$("tab-x6").onclick=()=>{show("x6");initE()};
-document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-go]");if(a){e.preventDefault();const pg={x1:"plan",x2:"plan",x5:"stk",x6:"stk",x7:"sale",x4:"sale"}[a.dataset.go];if(pg)fgPage(pg);else $("tab-"+a.dataset.go).click()}});
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-go]");if(a){e.preventDefault();const pg={x1:"plan",x2:"asm",x5:"stk",x6:"stk",x7:"sale",x4:"sale"}[a.dataset.go];if(pg)fgPage(pg);else $("tab-"+a.dataset.go).click()}});
 $("tab-x4").onclick=()=>{show("x4");slBuild();if(!$("sl-month").value){$("sl-month").value=todayS().slice(0,7)}slMonthChanged();slDraw()};
 
 /* ===== Dashboard ยอดขายรายเดือน ===== */
