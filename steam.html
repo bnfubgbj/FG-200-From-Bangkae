@@ -432,6 +432,9 @@ thead th{background:#dcecff;color:#0a47a8}
 #o-body .o-sz td:first-child{padding-left:26px;opacity:.85}
 #o-body table td:first-child,#o-body table th:first-child{position:sticky;left:0;z-index:2;background:var(--surface)}#o-body thead th:first-child{background:var(--accent);z-index:3}#o-body .o-cr td:first-child{background:var(--hdr-bg,#dbeafe)}
 #o-body .o-ok{color:#1b6b43;font-weight:700}#o-body .o-bad{color:#b42318;font-weight:700}#o-body .o-mid{color:#9a6700;font-weight:700}
+.cv-i{width:54px;text-align:right;padding:4px 5px;font-size:13px}
+#cv-grid table td,#cv-grid table th{white-space:nowrap;padding:3px 3px}#cv-grid table td:first-child,#cv-grid table th:first-child{position:sticky;left:0;z-index:2;background:var(--surface);font-weight:600;padding-left:8px;padding-right:8px}#cv-grid thead th:first-child{background:var(--accent)}
+#cv-grid .cv-t{font-weight:700;text-align:right;min-width:62px}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -445,9 +448,11 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" id="tab-s" aria-selected="false" aria-expanded="false" aria-controls="ssub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อก</span><span id="s-car" style="margin-left:auto;font-size:11px;opacity:.8"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M1 3h10L6 9z" fill="currentColor"/></svg></span></button>
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
     <button role="tab" id="tab-o" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M8.5 12h7M8.5 16h5"/></svg><span>ออกแผนผลิต</span></button>
+    <button role="tab" id="tab-cv" aria-selected="false" aria-expanded="false" aria-controls="cvsub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span>ผ้าใบ 205</span><span id="cv-car" style="margin-left:auto;font-size:11px;opacity:.8"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M1 3h10L6 9z" fill="currentColor"/></svg></span></button>
+    <div id="cvsub" class="gsub" hidden><button role="tab" id="tab-cv1" aria-selected="false"><span>รับเข้าประจำวัน</span></button><button role="tab" id="tab-cv2" aria-selected="false"><span>สรุปรับเข้า</span></button></div>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 98)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 99)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -781,6 +786,13 @@ thead th{background:#dcecff;color:#0a47a8}
     <div class="panel" id="x-rcdash" hidden><h2>Dashboard · รับเข้าโกดังพี่ชุมพร เทียบแผ่นยางและแผนผลิต</h2><div class="note">เทียบ 3 ตัวเลขในช่วงวันที่เดียวกัน: แผนผลิตของ รง. (ตามสัดส่วนวัน) · แผ่นยางที่จ่ายประกอบ (× คู่ต่อแผ่น) · ยอดรับเข้าโกดังพี่ชุมพรจริง · เอาเมาส์ชี้ที่แท่งหรือจุดเพื่อดูตัวเลข · เลือกสีเดียวเพื่อดูแยกเบอร์</div>
       <div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ตั้งแต่วันที่</span><input type="date" id="rc-f"></div><div style="min-width:150px"><span class="lbl">ถึงวันที่</span><input type="date" id="rc-t"></div><div style="min-width:220px"><span class="lbl">สีที่ดู</span><select id="rc-c"></select></div><button class="btn ghost" type="button" id="rc-m0">เดือนล่าสุด</button><button class="btn ghost" type="button" id="rc-m1">เดือนก่อน</button></div>
       <div id="rc-body"></div></div>
+    <div class="panel" id="x-cvin" hidden><h2>ผ้าใบ 205 › รับเข้าประจำวัน (รองเท้าผ้าใบสำเร็จรูป)</h2><div class="note">กรอกตามใบรายงานรับสินค้าเข้าประจำวันของพี่ชุมพร: เลือกวันที่ → พิมพ์จำนวนคู่ของแต่ละชนิดตามเบอร์ 28–49 (ลูกศร/Enter เลื่อนช่อง · วางตารางจาก Excel ลงช่องแรกได้) → บันทึก · วันที่เคยบันทึกแล้วเลือกจากช่อง "เปิดวันที่บันทึกไว้" เพื่อแก้ไขได้</div>
+      <div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">วันที่</span><input type="date" id="cv-d"></div><div style="min-width:150px"><span class="lbl">ผู้กรอก</span><input type="text" id="cv-by" placeholder="ชื่อน้อง" autocomplete="off"></div><div style="min-width:200px"><span class="lbl">เปิดวันที่บันทึกไว้</span><select id="cv-sel"></select></div><button class="btn" id="cv-save">บันทึก</button><button class="btn ghost" id="cv-del" type="button" style="color:var(--bad);border-color:var(--bad)">ลบวันนี้</button></div>
+      <div id="cv-msg" class="msg" hidden></div>
+      <div class="scroll" id="cv-grid"></div></div>
+    <div class="panel" id="x-cvsum" hidden><h2>ผ้าใบ 205 › สรุปรับเข้าประจำเดือน</h2><div class="note">รวมยอดรับเข้าโกดังรายวันของรองเท้าผ้าใบสำเร็จรูป 205-S / 205-R / 121.Z (หน่วย: คู่) · เอาเมาส์ชี้ที่แท่งเพื่อดูตัวเลข</div>
+      <div class="row" style="align-items:flex-end"><div style="min-width:180px"><span class="lbl">เดือน</span><select id="cv-sm"></select></div></div>
+      <div id="cv-sb"></div></div>
     <div class="panel" id="x-stk" hidden><h2>อัปเดตสต็อก</h2><div class="note">ไฟล์สต็อกคงเหลือจากพี่ชุมพร (เปลี่ยนทุกวัน): เลือกไฟล์ → ตรวจวันที่ → กดบันทึก วันใหม่ไม่ทับวันเก่า · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div>
       <details class="dbox" id="e-d1" open><summary>เลือกไฟล์สต็อก (.xlsx)</summary><div class="dbody">
       <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่น้องสุนำสต็อกจาก รง. มาตัดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
@@ -2125,7 +2137,7 @@ function load(){
   $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
   return fetch(API_URL).then(r=>r.json()).then(j=>{
     PLANROWS=j.plan||[];STK=j.stock||[];FGD={};(j.rows||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(FGD[d]=FGD[d]||{})[r[1]]=r.slice(2,8).map(v=>Number(v)||0)});DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
-    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw();sdDraw();tgFill();rcDraw()}catch(e){console.error(e)}if(EINIT){initE();renderE();try{renderO()}catch(e){console.error(e)}}poInit();
+    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw();sdDraw();tgFill();rcDraw();cvRefresh()}catch(e){console.error(e)}if(EINIT){initE();renderE();try{renderO()}catch(e){console.error(e)}}poInit();
   }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
 }
 const dates=()=>Object.keys(DATA).sort();
@@ -2209,12 +2221,12 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-var SLD=false;const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",o:"ออกแผนผลิต · แจ้งโรงงาน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ยอดขายรายเดือน",x5:"ข้อมูล › อัปเดตสต็อก",x6:"ข้อมูล › โควต้าฝ่ายขายที่เหลือ",x7:"ข้อมูล › เป้าการขาย",d:"Dashboard · ยอดขายเทียบเป้า"};
-function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r","o"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=["x1","x2","x4","x5","x6","x7","d"].includes(v);$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-sldash").hidden=v!=="d";$("x-rcdash").hidden=v!=="d";$("x-tgt").hidden=v!=="x7";$("x-steam").hidden=v!=="x2";$("x-stk").hidden=v!=="x5";$("x-quo").hidden=v!=="x6";["x1","x2","x3","x4","x5","x6","x7","d"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(["x1","x2","x5","x6","x7"].includes(v))xOpen(true);else if(v==="x4"||v==="d")xOpen(false);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r","o"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true);accView()}
+var SLD=false;const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",o:"ออกแผนผลิต · แจ้งโรงงาน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ยอดขายรายเดือน",x5:"ข้อมูล › อัปเดตสต็อก",x6:"ข้อมูล › โควต้าฝ่ายขายที่เหลือ",x7:"ข้อมูล › เป้าการขาย",cv1:"ผ้าใบ 205 › รับเข้าประจำวัน",cv2:"ผ้าใบ 205 › สรุปรับเข้า",d:"Dashboard · ยอดขายเทียบเป้า"};
+function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r","o"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=["x1","x2","x4","x5","x6","x7","d","cv1","cv2"].includes(v);$("x-cvin").hidden=v!=="cv1";$("x-cvsum").hidden=v!=="cv2";$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-sldash").hidden=v!=="d";$("x-rcdash").hidden=v!=="d";$("x-tgt").hidden=v!=="x7";$("x-steam").hidden=v!=="x2";$("x-stk").hidden=v!=="x5";$("x-quo").hidden=v!=="x6";["x1","x2","x3","x4","x5","x6","x7","d","cv1","cv2"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));if(v==="cv1"||v==="cv2")gOpen("cv",true);$("tab-x").setAttribute("aria-selected","false");if(["x1","x2","x5","x6","x7"].includes(v))xOpen(true);else if(v==="x4"||v==="d")xOpen(false);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r","o"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true);accView()}
 const CARET=o=>'<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="'+(o?"M1 9h10L6 3z":"M1 3h10L6 9z")+'" fill="currentColor"/></svg>';
 function xOpen(o){$("xsub").hidden=!o;$("tab-x").setAttribute("aria-expanded",o?"true":"false");$("x-car").innerHTML=CARET(o)}
-function gOpen(g,o){const m={t:["tsub","t-car"],s:["ssub","s-car"]}[g];$(m[0]).hidden=!o;$("tab-"+g).setAttribute("aria-expanded",o?"true":"false");$(m[1]).innerHTML=CARET(o)}
-$("tab-t").onclick=()=>{show("c");cmpInit()};$("tab-s").onclick=()=>gOpen("s",$("ssub").hidden);
+function gOpen(g,o){const m={t:["tsub","t-car"],s:["ssub","s-car"],cv:["cvsub","cv-car"]}[g];$(m[0]).hidden=!o;$("tab-"+g).setAttribute("aria-expanded",o?"true":"false");$(m[1]).innerHTML=CARET(o)}
+$("tab-t").onclick=()=>{show("c");cmpInit()};$("tab-s").onclick=()=>gOpen("s",$("ssub").hidden);$("tab-cv").onclick=()=>gOpen("cv",$("cvsub").hidden);$("tab-cv1").onclick=()=>{show("cv1");cvInit()};$("tab-cv2").onclick=()=>{show("cv2");cvSum()};
 $("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-w").onclick=()=>{show("w");initE();renderE()};$("tab-o").onclick=()=>{show("o");initE();renderO();setTimeout(()=>{document.querySelectorAll("#view-o .panel").forEach(p=>{if(!p.dataset.touched){p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")}})},80)};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
 $("x-plan-slot").appendChild($("p-imp"));$("x-steam-slot").appendChild($("q-imp"));$("p-imp").open=true;$("q-imp").open=true;
@@ -3746,6 +3758,71 @@ function renderE(){
   renderMon(c);try{renderW(c)}catch(err){console.error(err)}window._ec=c;
 }
 $("e-per").onchange=()=>{PI=+$("e-per").value;renderE()};
+/* ---------- ผ้าใบ 205: รับเข้าประจำวัน ---------- */
+const CVI=[["205S-ขาว","205 S ขาว","205S"],["205S-ดำ","205 S ดำ","205S"],["205S-นด","205 S น.ด.","205S"],["205R-ขาว","205 R. ขาว","205R"],["205R-ดำ","205 R. ดำ","205R"],["205R-นด","205 R. นด","205R"],["121Z-ขาว","121.Z ขาว","121Z"],["121Z-ดำ","121.Z ดำ","121Z"]];
+const CVS=[];for(let i=28;i<=49;i++)CVS.push(i);
+const CVG={"205S":["205-S","#1677ff"],"205R":["205-R","#19c38b"],"121Z":["121.Z","#ffb020"]};
+const cvN=v=>v?Math.round(v).toLocaleString("en-US"):"-",cvSum1=a=>a.reduce((x,y)=>x+y,0);
+function cvAll(){const o={};(STK||[]).forEach(r=>{if(r[1]!=="cvrecv")return;const d=normD(r[0]),m=String(r[2]).match(/^(.+)#(\d)$/);if(!m)return;const day=o[d]=o[d]||{},a=day[m[1]]=day[m[1]]||new Array(CVS.length).fill(0),c=+m[2]-1;for(let j=0;j<6;j++){if(c*6+j<CVS.length)a[c*6+j]=Number(r[3+j])||0}});return o}
+function cvMsg(t,cls){const m=$("cv-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
+let CVB=false;
+function cvBuild(){if(CVB)return;CVB=true;
+  let h='<table><thead><tr><th>ชนิดรองเท้า</th>'+CVS.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+  CVI.forEach((it,r)=>{h+="<tr><td>"+escH(it[1])+"</td>"+CVS.map((z,c)=>'<td><input class="cv-i" inputmode="numeric" autocomplete="off" id="cv-'+r+"-"+c+'" aria-label="'+escH(it[1]+" เบอร์ "+z)+'"></td>').join("")+'<td class="cv-t" id="cv-rt'+r+'">-</td></tr>'});
+  h+="</tbody><tfoot><tr><td>รวมทุกแถว</td>"+CVS.map((z,c)=>'<td class="cv-t" id="cv-ct'+c+'">-</td>').join("")+'<td class="cv-t" id="cv-gt">-</td></tr></tfoot></table>';
+  $("cv-grid").innerHTML=h}
+function cvTot(){let g=0;const ct=new Array(CVS.length).fill(0);
+  CVI.forEach((it,r)=>{let t=0;CVS.forEach((z,c)=>{const v=oNum($("cv-"+r+"-"+c).value);t+=v;ct[c]+=v});$("cv-rt"+r).textContent=cvN(t);g+=t});
+  ct.forEach((v,c)=>{$("cv-ct"+c).textContent=cvN(v)});$("cv-gt").textContent=cvN(g)}
+function cvFill(d){const D=cvAll()[d]||{};CVI.forEach((it,r)=>{const a=D[it[0]]||[];CVS.forEach((z,c)=>{$("cv-"+r+"-"+c).value=a[c]?Math.round(a[c]).toLocaleString("en-US"):""})});cvTot()}
+function cvSel(){const all=cvAll(),ds=Object.keys(all).filter(d=>Object.values(all[d]).some(a=>a.some(x=>x>0))).sort().reverse(),cur=$("cv-sel").value;
+  $("cv-sel").innerHTML='<option value="">— วันใหม่ —</option>'+ds.map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join("");$("cv-sel").value=ds.includes(cur)?cur:""}
+function cvInit(){cvBuild();if(!$("cv-d").value)$("cv-d").value=todayS();try{if(!$("cv-by").value)$("cv-by").value=localStorage.getItem("fgby")||""}catch(e){}cvSel();cvFill($("cv-d").value)}
+function cvRefresh(){if(!CVB)return;cvSel();if($("cv-d").value&&!$("x-cvin").hidden)cvFill($("cv-d").value);if(!$("x-cvsum").hidden)cvSum()}
+$("cv-d").addEventListener("input",()=>{$("cv-sel").value="";cvFill($("cv-d").value);cvMsg("")});
+$("cv-sel").addEventListener("input",()=>{const d=$("cv-sel").value;if(d){$("cv-d").value=d;cvFill(d);cvMsg("")}});
+$("cv-grid").addEventListener("input",e=>{const t=e.target;if(!t.classList||!t.classList.contains("cv-i"))return;const n=oNum(t.value);t.value=n?Math.round(n).toLocaleString("en-US"):"";cvTot()});
+$("cv-grid").addEventListener("keydown",e=>{const t=e.target,m=t.id&&t.id.match(/^cv-(\d+)-(\d+)$/);if(!m||e.ctrlKey||e.metaKey||e.altKey)return;let r=+m[1],c=+m[2];const k=e.key;
+  if(k==="ArrowRight")c++;else if(k==="ArrowLeft")c--;else if(k==="ArrowDown"||k==="Enter")r+=(e.shiftKey&&k==="Enter")?-1:1;else if(k==="ArrowUp")r--;else return;
+  e.preventDefault();if(c>=CVS.length){c=0;r++}else if(c<0){c=CVS.length-1;r--}const n=$("cv-"+r+"-"+c);if(n){n.focus();n.select()}});
+$("cv-grid").addEventListener("paste",e=>{const t=e.target,m=t.id&&t.id.match(/^cv-(\d+)-(\d+)$/);if(!m)return;const txt=(e.clipboardData||window.clipboardData).getData("text");if(!txt||!/[\t\n]/.test(txt.trim()))return;e.preventDefault();
+  const rows=txt.replace(/\r/g,"").split("\n").filter((l,i,a)=>l!==""||i<a.length-1);
+  rows.forEach((l,i)=>l.split("\t").forEach((v,j)=>{const n=$("cv-"+(+m[1]+i)+"-"+(+m[2]+j));if(n){const x=oNum(v);n.value=x?Math.round(x).toLocaleString("en-US"):""}}));cvTot()});
+$("cv-save").onclick=async()=>{const d=$("cv-d").value;if(!d){cvMsg("เลือกวันที่ก่อน","warn");return}
+  const key=($("pf-key").value||"").trim()||fgKeySet(true);if(!key){cvMsg("ใส่รหัสบันทึกก่อน","warn");return}
+  const rows=[];CVI.forEach((it,r)=>{const a=CVS.map((z,c)=>oNum($("cv-"+r+"-"+c).value));for(let c=0;c<4;c++){const v=a.slice(c*6,c*6+6);while(v.length<6)v.push(0);const t=cvSum1(v);if(t>0)rows.push(["cvrecv",it[0]+"#"+(c+1)].concat(v.map(x=>x||""),[t]))}});
+  const by=$("cv-by").value.trim();try{localStorage.setItem("fgby",by)}catch(e){}
+  if(!rows.length){cvMsg("ยังไม่ได้กรอกจำนวน (ถ้าต้องการลบข้อมูลของวันนี้ให้กด ลบวันนี้)","warn");return}
+  $("cv-save").disabled=true;
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by,rows})}).then(x=>x.json());
+    if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ");await load();cvSel();$("cv-sel").value=d;cvFill(d);cvMsg("บันทึกรับเข้าผ้าใบวันที่ "+thD(d)+" แล้ว (รวม "+cvN(cvSum1(CVI.map((it,i)=>cvSum1(CVS.map((z,c)=>oNum($("cv-"+i+"-"+c).value))))))+" คู่)","ok")}
+  catch(err){cvMsg("บันทึกไม่สำเร็จ: "+(err&&err.message||err),"warn")}
+  $("cv-save").disabled=false};
+$("cv-del").onclick=()=>{const d=$("cv-d").value;if(!d){cvMsg("เลือกวันที่ก่อน","warn");return}
+  if(!cvAll()[d]){cvMsg("วันที่ "+thD(d)+" ยังไม่มีข้อมูลที่บันทึกไว้","warn");return}
+  fgClear({scope:"stock",date:d,kinds:["cvrecv"]},"รับเข้าผ้าใบวันที่ "+thD(d),cvMsg,()=>{cvSel();cvFill(d)})};
+function cvSum(){const box=$("cv-sb"),all=cvAll(),ds=Object.keys(all).filter(d=>Object.values(all[d]).some(a=>a.some(x=>x>0))).sort();
+  if(!ds.length){box.innerHTML='<div class="empty">ยังไม่มีข้อมูลรับเข้าผ้าใบ — กรอกที่ ผ้าใบ 205 › รับเข้าประจำวัน</div>';$("cv-sm").innerHTML="";return}
+  const ms=[...new Set(ds.map(d=>d.slice(0,7)))].reverse(),cur=$("cv-sm").value;$("cv-sm").innerHTML=ms.map(m=>'<option value="'+m+'">'+thM(m)+"</option>").join("");$("cv-sm").value=ms.includes(cur)?cur:ms[0];
+  const m=$("cv-sm").value,days=ds.filter(d=>d.slice(0,7)===m);
+  const dayT=days.map(d=>CVI.map(it=>cvSum1((all[d][it[0]]||[]))));          // [day][item]
+  const itT=CVI.map((it,i)=>cvSum1(dayT.map(r=>r[i]))),grp=g=>cvSum1(CVI.map((it,i)=>it[2]===g?itT[i]:0)),G=cvSum1(itT);
+  const szT=CVI.map(it=>CVS.map((z,c)=>cvSum1(days.map(d=>(all[d][it[0]]||[])[c]||0))));
+  const card=(c,k,v,sub)=>'<div style="border-left-color:'+c+'"><div class="k">'+k+'</div><div class="v">'+v+'</div><div class="s">'+sub+"</div></div>";
+  let h='<div class="sdk">'+card("#1677ff","รวมเดือน "+thM(m),cvN(G),'<span class="sdz">'+days.length+" วันที่มีข้อมูล · เฉลี่ย "+cvN(G/days.length)+" คู่/วัน</span>")+Object.keys(CVG).map(g=>card(CVG[g][1],CVG[g][0],cvN(grp(g)),'<span class="sdz">'+(G?(grp(g)/G*100).toFixed(1):0)+"% ของยอดรวม</span>")).join("")+"</div>";
+  const W=860,H=300,L=52,R=14,Tp=24,B=40,pw=W-L-R,ph=H-Tp-B,n=days.length,gw=pw/n,bw=Math.max(6,Math.min(34,gw*.7)),mx=Math.max(...dayT.map(r=>cvSum1(r)),1),ax=cAxis(mx),Y=v=>Tp+ph-v/ax.top*ph;
+  let sv=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
+  days.forEach((d,i)=>{const cx=L+gw*i+gw/2;let yy=Y(0);Object.keys(CVG).forEach(g=>{const v=cvSum1(CVI.map((it,k)=>it[2]===g?dayT[i][k]:0)),hh=v/ax.top*ph;yy-=hh;if(hh>0)sv+='<g><title>'+thD(d)+" · "+CVG[g][0]+": "+cvN(v)+' คู่</title><rect x="'+(cx-bw/2)+'" y="'+yy+'" width="'+bw+'" height="'+hh+'" fill="'+CVG[g][1]+'"/></g>'});
+    sv+='<text x="'+cx+'" y="'+(yy-5)+'" class="tv" text-anchor="middle">'+cK(cvSum1(dayT[i]))+'</text><text x="'+cx+'" y="'+(H-20)+'" class="ct" text-anchor="middle">'+(+d.slice(8))+"</text>"});
+  h+='<div class="ccard wide"><h3>ยอดรับเข้ารายวัน (คู่)</h3><div class="cleg">'+Object.keys(CVG).map(g=>'<span><i style="background:'+CVG[g][1]+'"></i>'+CVG[g][0]+"</span>").join("")+'</div><svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดรับเข้ารายวัน">'+sv+"</svg></div>";
+  h+='<div class="ccard wide"><h3>รายชนิด × รายวัน (คู่)</h3><div class="scroll"><table class="tpl"><thead><tr><th>ชนิด</th>'+days.map(d=>"<th>"+(+d.slice(8))+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>"+
+    CVI.map((it,i)=>"<tr><td>"+escH(it[1])+"</td>"+days.map((d,k)=>"<td>"+cvN(dayT[k][i])+"</td>").join("")+"<td><b>"+cvN(itT[i])+"</b></td></tr>").join("")+"</tbody><tfoot><tr><td>รวม</td>"+dayT.map(r=>"<td>"+cvN(cvSum1(r))+"</td>").join("")+"<td>"+cvN(G)+"</td></tr></tfoot></table></div></div>";
+  const usedS=CVS.map((z,c)=>c).filter(c=>szT.some(r=>r[c]>0));
+  h+='<div class="ccard wide"><h3>รายชนิด × เบอร์ ทั้งเดือน (คู่)</h3><div class="scroll"><table class="tpl"><thead><tr><th>ชนิด</th>'+usedS.map(c=>"<th>"+CVS[c]+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>"+
+    CVI.map((it,i)=>"<tr><td>"+escH(it[1])+"</td>"+usedS.map(c=>"<td>"+cvN(szT[i][c])+"</td>").join("")+"<td><b>"+cvN(itT[i])+"</b></td></tr>").join("")+"</tbody><tfoot><tr><td>รวม</td>"+usedS.map(c=>"<td>"+cvN(cvSum1(szT.map(r=>r[c])))+"</td>").join("")+"<td>"+cvN(G)+"</td></tr></tfoot></table></div></div>";
+  box.innerHTML=h}
+$("cv-sm").addEventListener("input",cvSum);
+
 /* ---------- Dashboard: รับเข้าโกดังจริง เทียบแผ่นยาง และแผนผลิต ---------- */
 const RCC={plan:"#8fa3b8",asm:"#ffb020",act:"#19c38b"};
 function rcLatest(){const a=Object.keys(FGD).filter(d=>Object.values(FGD[d]).some(v=>v.some(x=>x>0))).sort(),b=dates();return a.length?a[a.length-1]:(b.length?b[b.length-1]:todayS())}
