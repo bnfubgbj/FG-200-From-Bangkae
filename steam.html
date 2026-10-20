@@ -457,7 +457,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 109)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 110)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4033,9 +4033,10 @@ async function cgFile(k,file){cgFs(k,"");cgPreview(k,null);if(!file)return;const
 (function(){[["stk",".xlsx","นำเข้าสต๊อกจากไฟล์ Excel Stock 205-S,200 (ดึงตามเซลล์ที่กำหนดให้ทั้ง 205-S และ 205-R ทั้ง 2 โกดัง)"],["plan",".pdf,application/pdf","แนบแผนผลิตที่ส่ง รง. (PDF)"],["sale",".xlsx","นำเข้ายอดขายจากไฟล์ Excel (.xlsx)"],["recv","image/*","แนบรูปรายงานของพี่ชุมพร"]].forEach(a=>{
   const k=a[0],panel=k==="recv"?$("x-cvin"):$("x-cg"+k),row=(k==="recv"?$("cv-d"):$("cg-"+k+"-d")).closest(".row"),d=document.createElement("div");d.className="cgfile";
   d.innerHTML='<div class="row" style="align-items:flex-end"><div style="min-width:280px"><span class="lbl">'+a[2]+'</span><input type="file" id="cg-'+k+'-file" accept="'+a[1]+'"></div>'+(k==="stk"?'<button class="btn" id="cg-stk-imp" type="button" hidden>บันทึกสต๊อกจากไฟล์</button>':"")+'</div><div id="cg-'+k+'-fs" class="note fstat"></div><div id="cg-'+k+'-pv" class="cgpv" hidden></div>';
+  if(k!=="sale"){const q=document.createElement("button");q.type="button";q.className="btn";q.id="cg-"+k+"-qs";q.hidden=true;q.style.marginTop="8px";q.textContent="💾 บันทึกข้อมูลที่อ่านได้ / กรอกไว้";q.onclick=()=>$(k==="recv"?"cv-save":"cg-"+k+"-save").click();d.querySelector("#cg-"+k+"-fs").after(q)}
   row.parentNode.insertBefore(d,row);$("cg-"+k+"-file").addEventListener("change",e=>{const f=e.target.files[0];cgFile(k,f);e.target.value=""});
   if(k!=="sale"){const man=document.createElement("div");man.className="cgman";man.id="cg-"+k+"-man";man.hidden=true;const els=[];for(let n=row;n;n=n.nextElementSibling)els.push(n);const bt=document.createElement("button");bt.type="button";bt.className="btn ghost cgmt";bt.id="cg-"+k+"-mt";bt.textContent="✎ กรอกข้อมูลด้วยมือ (กดเพื่อคลี่ลงมา)";bt.onclick=()=>cgExpand(k,man.hidden);d.after(bt);bt.after(man);els.forEach(e=>man.appendChild(e));man.after($("cg-"+k+"-pv"))}})})();
-function cgExpand(k,o){const m=$("cg-"+k+"-man");if(!m)return;m.hidden=!o;if(o)setTimeout(()=>{try{m.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}},120);$("cg-"+k+"-mt").textContent=o?"▲ พับช่องกรอกมือขึ้น":"✎ กรอกข้อมูลด้วยมือ (กดเพื่อคลี่ลงมา)"}
+function cgExpand(k,o){const m=$("cg-"+k+"-man");if(!m)return;m.hidden=!o;const q=$("cg-"+k+"-qs");if(q)q.hidden=!o;if(o)setTimeout(()=>{try{($("cg-"+k+"-fs").closest(".cgfile")||m).scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}},120);$("cg-"+k+"-mt").textContent=o?"▲ พับช่องกรอกมือขึ้น":"✎ กรอกข้อมูลด้วยมือ (กดเพื่อคลี่ลงมา)"}
 /* ---------- สต๊อกผ้าใบ: นำเข้าจาก Excel ตามเซลล์ที่กำหนด + รายงานสต๊อก ณ วันนั้น ---------- */
 const cvx=c=>{let v=c&&c.value;if(v&&typeof v==="object"){v=v.result!==undefined?v.result:(v.richText?v.richText.map(t=>t.text).join(""):(v.text||""))}return v};
 const cgCol=l=>{const t=String(l||"").replace(/[\s.]/g,"").replace(/ํา/g,"ำ");return /ขาว/.test(t)?"ขาว":/ดำ/.test(t)?"ดำ":/น้ำตาล|นต|นด/.test(t)?"นด":null};
