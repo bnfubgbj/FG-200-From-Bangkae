@@ -424,6 +424,14 @@ thead th{background:#dcecff;color:#0a47a8}
 .panel.acc.shut>*:not(:first-child){display:none!important}
 .panel.acc.shut>h2:first-child,.panel.acc.shut>.head2:first-child{margin-bottom:0}
 .panel.acc>.head2:first-child .btn{margin-left:auto;margin-right:8px}
+.o-i{width:78px;text-align:right;padding:5px 7px}
+#o-body table td,#o-body table th{white-space:nowrap}
+#o-body .o-cr{cursor:pointer;font-weight:700;background:var(--hdr-bg)}
+#o-body .o-cr td:first-child:before{content:"▶ ";font-size:10px;opacity:.7}
+#o-body .o-cr.on td:first-child:before{content:"▼ "}
+#o-body .o-sz td:first-child{padding-left:26px;opacity:.85}
+#o-body table td:first-child,#o-body table th:first-child{position:sticky;left:0;z-index:2;background:var(--surface)}#o-body thead th:first-child{background:var(--accent);z-index:3}#o-body .o-cr td:first-child{background:var(--hdr-bg,#dbeafe)}
+#o-body .o-ok{color:#1b6b43;font-weight:700}#o-body .o-bad{color:#b42318;font-weight:700}#o-body .o-mid{color:#9a6700;font-weight:700}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -436,9 +444,10 @@ thead th{background:#dcecff;color:#0a47a8}
     <div id="tsub" hidden style="display:none"><button role="tab" id="tab-p" aria-selected="false"><span>แผนการผลิต</span></button><button role="tab" id="tab-q" aria-selected="true"><span>แผนประกอบ</span></button><button role="tab" id="tab-m" aria-selected="false"><span>รับจริงเข้าสต๊อก</span></button></div>
     <button role="tab" id="tab-s" aria-selected="false" aria-expanded="false" aria-controls="ssub"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>ประเมินสต็อก</span><span id="s-car" style="margin-left:auto;font-size:11px;opacity:.8"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M1 3h10L6 9z" fill="currentColor"/></svg></span></button>
     <div id="ssub" class="gsub" hidden><button role="tab" id="tab-e" aria-selected="false"><span>สิ้นเดือน</span></button><button role="tab" id="tab-w" aria-selected="false"><span>รายวัน</span></button></div>
+    <button role="tab" id="tab-o" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M8.5 12h7M8.5 16h5"/></svg><span>ออกแผนผลิต</span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 96)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 97)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -609,6 +618,22 @@ thead th{background:#dcecff;color:#0a47a8}
     <div class="panel" style="display:none"><h2>ส่วนต่างรายแถว (ได้จากแผ่น − แผน) ค่าลบ = ขาด</h2><div class="scroll" id="p-rowdiff"></div></div>
   </div>
 
+  <div id="view-o" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="panel">
+      <div class="head2"><h2 style="font-size:15px">ออกแผนผลิต · แจ้งโรงงาน (โฟล 9 ขั้น แยกสี แยกเบอร์)</h2><button class="btn" id="o-xl">ดาวน์โหลด Excel แจ้ง รง.</button></div>
+      <div class="row" style="align-items:flex-end;gap:10px 16px">
+        <div style="min-width:170px"><span class="lbl">ออกแผนของเดือน</span><input type="month" id="o-m"></div>
+        <div style="min-width:170px"><span class="lbl">โรงงานส่งได้จริง (% ของแผน)</span><input type="number" id="o-dr" min="10" max="150" step="1" style="width:110px"></div>
+        <button class="btn" id="o-auto">เสนอแผนอัตโนมัติ</button>
+        <button class="btn" id="o-tg">ขยาย/ยุบ ทุกเบอร์</button>
+      </div>
+      <div class="note" id="o-info"></div>
+    </div>
+    <div class="panel">
+      <h2 style="font-size:15px">ตารางโฟล 9 ขั้น (กรอกแผนที่จะแจ้งในช่อง ⑥ ระดับเบอร์)</h2>
+      <div id="o-body"></div>
+    </div>
+  </div>
   <div id="view-w" hidden style="display:flex;flex-direction:column;gap:16px">
     <div class="panel">
       <div class="head2"><h2 style="font-size:15px">ประเมินสต็อกรายวัน · ไล่ดูทีละวันว่าจะมี FG เท่าไหร่</h2><button class="btn" id="wxl">ดาวน์โหลด Excel</button></div>
@@ -2095,7 +2120,7 @@ function load(){
   $("status").hidden=false;$("status").className="msg";$("status").textContent="กำลังโหลดข้อมูล…";
   return fetch(API_URL).then(r=>r.json()).then(j=>{
     PLANROWS=j.plan||[];STK=j.stock||[];FGD={};(j.rows||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(FGD[d]=FGD[d]||{})[r[1]]=r.slice(2,8).map(v=>Number(v)||0)});DATA={};(j.steam||[]).forEach(r=>{const d=normD(r[0]);if(!d)return;(DATA[d]=DATA[d]||{_s:""})[r[1]]=r.slice(2,8).map(Number);if(r[8])DATA[d]._s=String(r[8]).replace(/^นึ่ง\s*/,"")});
-    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw();sdDraw();tgFill()}catch(e){console.error(e)}if(EINIT){initE();renderE()}poInit();
+    $("status").hidden=true;buildPlans();init();render();try{xsDraw();xlDraw();slDraw();cmpDraw();sdDraw();tgFill()}catch(e){console.error(e)}if(EINIT){initE();renderE();try{renderO()}catch(e){console.error(e)}}poInit();
   }).catch(e=>{$("status").className="msg warn";$("status").textContent="โหลดข้อมูลไม่ได้: "+e})
 }
 const dates=()=>Object.keys(DATA).sort();
@@ -2179,13 +2204,13 @@ function render(){
 $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>selC.add(l.dataset.k));render()};$("c-none").onclick=()=>{selC.clear();render()};
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
-var SLD=false;const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ยอดขายรายเดือน",x5:"ข้อมูล › อัปเดตสต็อก",x6:"ข้อมูล › โควต้าฝ่ายขายที่เหลือ",x7:"ข้อมูล › เป้าการขาย",d:"Dashboard · ยอดขายเทียบเป้า"};
-function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=["x1","x2","x4","x5","x6","x7","d"].includes(v);$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-sldash").hidden=v!=="d";$("x-tgt").hidden=v!=="x7";$("x-steam").hidden=v!=="x2";$("x-stk").hidden=v!=="x5";$("x-quo").hidden=v!=="x6";["x1","x2","x3","x4","x5","x6","x7","d"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(["x1","x2","x5","x6","x7"].includes(v))xOpen(true);else if(v==="x4"||v==="d")xOpen(false);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true);accView()}
+var SLD=false;const PT={c:"ติดตามการผลิต",q:"ติดตามการผลิต › แผนประกอบ",p:"ติดตามการผลิต › แผนผลิต",m:"ติดตามการผลิต › รับจริงเข้าโกดัง",e:"ประเมินสต็อก › สิ้นเดือน",w:"ประเมินสต็อก › รายวัน",o:"ออกแผนผลิต · แจ้งโรงงาน",r:"รับเข้าโกดังพี่ชุมพร",x1:"ข้อมูล › แผนผลิต",x2:"ข้อมูล › แผนประกอบยาง",x3:"ข้อมูล › รับเข้าโกดังพี่ชุมพร",x4:"ยอดขายรายเดือน",x5:"ข้อมูล › อัปเดตสต็อก",x6:"ข้อมูล › โควต้าฝ่ายขายที่เหลือ",x7:"ข้อมูล › เป้าการขาย",d:"Dashboard · ยอดขายเทียบเป้า"};
+function show(v){$("ptitle").textContent=PT[v];if(window._rvis&&v!=="r"){window._rvis=0;load()}["q","p","m","e","w","r","o"].forEach(k=>{$("view-"+k).hidden=v!==k;$("tab-"+k).setAttribute("aria-selected",v===k)});const ix=["x1","x2","x4","x5","x6","x7","d"].includes(v);$("view-x").hidden=!ix;$("x-plan").hidden=v!=="x1";$("x-plist").hidden=v!=="x1";$("x-sdash").hidden=v!=="x2";$("x-slist").hidden=v!=="x2";$("x-sales").hidden=v!=="x4";$("x-sldash").hidden=v!=="d";$("x-tgt").hidden=v!=="x7";$("x-steam").hidden=v!=="x2";$("x-stk").hidden=v!=="x5";$("x-quo").hidden=v!=="x6";["x1","x2","x3","x4","x5","x6","x7","d"].forEach(k=>$("tab-"+k).setAttribute("aria-selected",v===k));$("tab-x").setAttribute("aria-selected","false");if(["x1","x2","x5","x6","x7"].includes(v))xOpen(true);else if(v==="x4"||v==="d")xOpen(false);{const vis=v==="c"?$("view-c"):["q","p","m","e","w","r","o"].includes(v)?$("view-"+v):(v==="x3"?$("view-r"):$("view-x"));if(window._lv!==v){window._lv=v;window.scrollTo(0,0);[vis,$("ttabs")].forEach(el=>{if(!el)return;el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin")})}}$("view-c").hidden=v!=="c";const tt="pqm".includes(v);$("ttabs").hidden=!tt;$("tab-t").setAttribute("aria-selected",(tt||v==="c")?"true":"false");if(v==="e"||v==="w")gOpen("s",true);accView()}
 const CARET=o=>'<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="'+(o?"M1 9h10L6 3z":"M1 3h10L6 9z")+'" fill="currentColor"/></svg>';
 function xOpen(o){$("xsub").hidden=!o;$("tab-x").setAttribute("aria-expanded",o?"true":"false");$("x-car").innerHTML=CARET(o)}
 function gOpen(g,o){const m={t:["tsub","t-car"],s:["ssub","s-car"]}[g];$(m[0]).hidden=!o;$("tab-"+g).setAttribute("aria-expanded",o?"true":"false");$(m[1]).innerHTML=CARET(o)}
 $("tab-t").onclick=()=>{show("c");cmpInit()};$("tab-s").onclick=()=>gOpen("s",$("ssub").hidden);
-$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-w").onclick=()=>{show("w");initE();renderE()};
+$("tab-q").onclick=()=>show("q");$("tab-p").onclick=()=>{show("p");initE();renderP();pfInit();poInit()};$("tab-e").onclick=()=>{show("e");initE();renderE()};$("tab-w").onclick=()=>{show("w");initE();renderE()};$("tab-o").onclick=()=>{show("o");initE();renderO();setTimeout(()=>{document.querySelectorAll("#view-o .panel").forEach(p=>{if(!p.dataset.touched){p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")}})},80)};
 $("tab-m").onclick=()=>{show("m");initM();renderM()};
 $("x-plan-slot").appendChild($("p-imp"));$("x-steam-slot").appendChild($("q-imp"));$("p-imp").open=true;$("q-imp").open=true;
 $("tab-x").onclick=()=>xOpen($("xsub").hidden);
@@ -3716,6 +3741,102 @@ function renderE(){
   renderMon(c);try{renderW(c)}catch(err){console.error(err)}window._ec=c;
 }
 $("e-per").onchange=()=>{PI=+$("e-per").value;renderE()};
+/* ---------- ออกแผนผลิต: โฟล 9 ขั้นแยกสี แยกเบอร์ ---------- */
+const OST={plan:{},tg:{},open:{},m:"",dr:null,auto:true,all:false};
+const oNum=v=>{const n=Number(String(v||"").replace(/[^0-9.]/g,""));return isNaN(n)?0:n};
+const oOn=v=>{v=Math.round(v);return v?v.toLocaleString("en-US"):"-"};
+function oLoadSt(m){OST.plan={};OST.tg={};OST.auto=true;OST.m=m;try{const s=JSON.parse(localStorage.getItem("fgo_"+m)||"null");if(s){OST.plan=s.plan||{};OST.tg=s.tg||{};if(s.dr!=null)OST.dr=s.dr;OST.auto=!Object.keys(OST.plan).length}}catch(e){}}
+function oSave(){try{localStorage.setItem("fgo_"+OST.m,JSON.stringify({plan:OST.plan,tg:OST.tg,dr:OST.dr}))}catch(e){}}
+function oHist(){let P=0,R=0,n=0;const cur=($("e-sd").value||todayS()).slice(0,7);
+  Object.keys(PL).forEach(m=>{if(m>=cur)return;const rv=Object.keys(PL[m]).map(Number).sort((a,b)=>b-a),cl=PL[m][rv[0]].colors,pt=Object.values(cl).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0);let rt=0;
+    Object.keys(FGD).forEach(d=>{if(d.slice(0,7)!==m)return;Object.values(FGD[d]).forEach(v=>{rt+=v.reduce((x,y)=>x+y,0)})});if(pt>0&&rt>0){P+=pt;R+=rt;n++}});
+  return n?{rate:R/P,n}:null}
+function oData(){
+  const c=calcE();if(c.err)return{err:c.err};
+  const m=$("o-m").value;if(!m)return{err:"เลือกเดือนที่จะออกแผนก่อน"};
+  const bk=nbBook(m);if(!bk)return{c,m,nobook:true};
+  const KS=SC.concat(Object.keys(bk.sp||{})),D={};
+  KS.forEach(k=>{const main=SC.includes(k),r=main?c.res[k]:null;
+    D[k]={main,start:r?r.start:Z6(),inn:r?r.inn:Z6(),mid:r?r.mid:Z6(),quota:r?r.quota:Z6(),end:r?r.end:Z6(),book:(main?bk.rows[k]:bk.sp[k])||Z6()}});
+  return{c,m,bk,KS,D};
+}
+function oSuggest(d){const dr=(OST.dr||100)/100;
+  d.KS.forEach(k=>{const x=d.D[k],tg=OST.tg[k]||0,bt=x.book.reduce((a,b)=>a+b,0);
+    OST.plan[k]=x.book.map((b,i)=>{const sh=bt>0?b/bt:1/6,need=x.main?Math.max(0,b+tg*sh-x.end[i]):b;return need>0.5?Math.ceil(need/dr/100)*100:0})})}
+function oVals(d){const dr=(OST.dr||100)/100,V={};
+  d.KS.forEach(k=>{const x=d.D[k],pl=OST.plan[k]||Z6(),p7=x.end.map((v,i)=>v+(pl[i]||0)*dr),p9=p7.map((v,i)=>v-x.book[i]);V[k]={pl,p7,p9}});return V}
+function oStatus(x,v,tg){const T=a=>a.reduce((p,q)=>p+q,0),neg=SIZES.filter((z,i)=>Math.round(v.p9[i])<0);
+  if(!T(x.book)&&!T(v.pl)&&!T(x.start))return"";
+  if(neg.length)return'<span class="o-bad">ขาด เบอร์ '+neg.join(", ")+"</span>";
+  if(Math.round(T(v.p9))<tg)return'<span class="o-mid">ต่ำกว่าเป้า '+fmt(Math.round(tg-T(v.p9)))+"</span>";
+  return'<span class="o-ok">พอ</span>'}
+function renderO(){
+  if(!$("view-o")||$("view-o").hidden)return;
+  const B=$("o-body"),info=$("o-info");
+  if(!$("o-m").value){const c0=calcE(),ref=(!c0.err&&c0.ed)||todayS(),y=+ref.slice(0,4),mo=+ref.slice(5,7);$("o-m").value=mo===12?(y+1)+"-01":y+"-"+p2(mo+1)}
+  const d=oData();
+  if(d.err){B.innerHTML='<div class="note">'+d.err+"</div>";info.textContent="";return}
+  if(d.nobook){B.innerHTML='<div class="note">ยังไม่มียอดจองฝ่ายขายของ '+thM(d.m)+' — นำเข้าที่ ประเมินสต็อก › สิ้นเดือน ส่วน "เดือนถัดไป ขั้น 5–9" (เลือกไฟล์ยอดจอง แล้วบันทึก) จากนั้นกลับมาหน้านี้</div>';info.textContent="";return}
+  if(OST.m!==d.m)oLoadSt(d.m);
+  const h=oHist();
+  if(OST.dr==null){OST.dr=h?Math.max(30,Math.min(100,Math.round(h.rate*100))):100}
+  $("o-dr").value=OST.dr;
+  if(OST.auto){oSuggest(d);OST.auto=false}
+  const c=d.c,V=oVals(d),T=a=>a.reduce((x,y)=>x+y,0),nm=k=>SCN[k]||(SXS.find(q=>q[0]===k)||[0,k])[1];
+  info.innerHTML="สต็อกจริง ณ <b>"+thD(c.sd)+"</b> → คิดถึงสิ้น "+thD(c.ed)+" (ขั้น ①–⑤ มาจากหน้า ประเมินสต็อก › สิ้นเดือน: สต็อกจริง + แผ่นยางที่ผลิตได้ + รับเข้าจริง − โควต้าฝ่ายขายที่เหลือ) · ⑧ ยอดจองเดือน "+thM(d.m)+" ("+d.bk.src+")<br>อัตราส่งจริงของโรงงาน: "+(h?"ย้อนหลัง "+h.n+" เดือน เฉลี่ย "+Math.round(h.rate*100)+"%"+(h.rate>1?" (เกิน 100% ข้อมูลรับจริงอาจรวมสีที่ไม่อยู่ในแผน ใช้ 100%)":""):"ยังไม่มีข้อมูลย้อนหลังพอ (ใช้ 100% ปรับเองได้)")+" · ⑦ = ⑤ + ⑥ × ส่งได้จริง% · สีพิเศษถือว่าไม่มีสต็อก ผลิตตามจอง";
+  const H=["สี / เบอร์","① สต็อกจริง","② ผลิตได้+รับเข้า","③ = ①+②","④ โควต้าขาย","⑤ คาดสิ้นเดือนนี้","⑥ แผนที่จะแจ้ง","⑦ = ⑤+⑥×ส่ง%","⑧ ยอดจองเดือนหน้า","⑨ คาดสิ้นเดือนหน้า","เป้าสต็อก (รวม)","ผล"];
+  let t='<div class="scroll"><table><thead><tr>'+H.map((x,i)=>'<th'+(i>5&&i<7?' style="background:var(--accent);color:#fff"':"")+">"+x+"</th>").join("")+"</tr></thead><tbody>";
+  const cell=(v,neg)=>'<td'+(neg&&Math.round(v)<0?' class="neg" style="font-weight:600"':"")+">"+oOn(v)+"</td>";
+  const keys=PTPL.map(r=>r[0]).filter(k=>d.KS.includes(k));
+  const G={st:Z6(),inn:Z6(),mid:Z6(),qt:Z6(),en:Z6(),pl:Z6(),p7:Z6(),bk:Z6(),p9:Z6()};
+  keys.forEach(k=>{const ki=d.KS.indexOf(k),x=d.D[k],v=V[k],op=!!(OST.open[k]||OST.all),tg=OST.tg[k]||0;
+    const sums=[T(x.start),T(x.inn),T(x.mid),T(x.quota),T(x.end),T(v.pl),T(v.p7),T(x.book),T(v.p9)];
+    ["st","inn","mid","qt","en","pl","p7","bk","p9"].forEach((q,j)=>{SIZES.forEach((z,i)=>{G[q][i]+=[x.start,x.inn,x.mid,x.quota,x.end,v.pl,v.p7,x.book,v.p9][j][i]||0})});
+    t+='<tr class="o-cr'+(op?" on":"")+'" data-k="'+escH(k)+'"'+tint(k)+"><td>"+escH(nm(k))+"</td>"+sums.map((y,j)=>'<td id="o-s'+j+"-"+ki+'"'+((j===4||j===6||j===8)&&Math.round(y)<0?' class="neg"':"")+">"+oOn(y)+"</td>").join("")+'<td><input class="o-i" inputmode="numeric" autocomplete="off" data-tg="'+escH(k)+'" value="'+(tg?tg.toLocaleString("en-US"):"")+'"></td><td id="o-r'+ki+'">'+oStatus(x,v,tg)+"</td></tr>";
+    SIZES.forEach((z,i)=>{t+='<tr class="o-sz" data-r="'+escH(k)+'"'+(op?"":" hidden")+"><td>เบอร์ "+z+"</td>"+cell(x.start[i])+cell(x.inn[i])+cell(x.mid[i],1)+cell(x.quota[i])+cell(x.end[i],1)+'<td><input class="o-i" inputmode="numeric" autocomplete="off" data-k="'+escH(k)+'" data-i="'+i+'" value="'+(v.pl[i]?Math.round(v.pl[i]).toLocaleString("en-US"):"")+'"></td><td id="o-p7-'+ki+"-"+i+'"'+(Math.round(v.p7[i])<0?' class="neg" style="font-weight:600"':"")+">"+oOn(v.p7[i])+"</td>"+cell(x.book[i])+'<td id="o-p9-'+ki+"-"+i+'"'+(Math.round(v.p9[i])<0?' class="neg" style="font-weight:600"':"")+">"+oOn(v.p9[i])+"</td><td></td><td></td></tr>"})});
+  const gs=["st","inn","mid","qt","en","pl","p7","bk","p9"].map(q=>T(G[q]));
+  t+='</tbody><tfoot><tr><td>รวมทุกสี</td>'+gs.map((y,j)=>'<td id="o-g'+j+'">'+oOn(y)+"</td>").join("")+"<td></td><td></td></tr></tfoot></table></div>";
+  B.innerHTML=t;B._d=d;
+}
+function oRefresh(){const d=$("o-body")._d;if(!d)return;const V=oVals(d),T=a=>a.reduce((x,y)=>x+y,0),G=[0,0,0,0,0,0,0,0,0];
+  const setN=(el,v,neg)=>{if(!el)return;el.textContent=oOn(v);if(neg){el.classList.toggle("neg",Math.round(v)<0);el.style.fontWeight=Math.round(v)<0?"600":""}};
+  d.KS.forEach((k,ki)=>{const x=d.D[k],v=V[k];
+    setN($("o-s5-"+ki),T(v.pl));setN($("o-s6-"+ki),T(v.p7),1);setN($("o-s8-"+ki),T(v.p9),1);
+    SIZES.forEach((z,i)=>{setN($("o-p7-"+ki+"-"+i),v.p7[i],1);setN($("o-p9-"+ki+"-"+i),v.p9[i],1)});
+    const r=$("o-r"+ki);if(r)r.innerHTML=oStatus(x,v,OST.tg[k]||0);
+    [T(x.start),T(x.inn),T(x.mid),T(x.quota),T(x.end),T(v.pl),T(v.p7),T(x.book),T(v.p9)].forEach((y,j)=>G[j]+=y)});
+  G.forEach((y,j)=>setN($("o-g"+j),y,j===4||j===6||j===8))}
+$("o-body").addEventListener("input",e=>{const t=e.target;if(!t.classList||!t.classList.contains("o-i"))return;const n=oNum(t.value);t.value=n?Math.round(n).toLocaleString("en-US"):"";
+  if(t.dataset.tg!==undefined)OST.tg[t.dataset.tg]=n;else{const k=t.dataset.k;OST.plan[k]=(OST.plan[k]||Z6()).slice();OST.plan[k][+t.dataset.i]=n}
+  oSave();oRefresh()});
+$("o-body").addEventListener("keydown",e=>{const t=e.target;if(!t.classList||!t.classList.contains("o-i")||t.dataset.k===undefined)return;
+  const rows=[...$("o-body").querySelectorAll("input.o-i[data-k]")].filter(x=>x.offsetParent!==null),ix=rows.indexOf(t);let n=null;
+  if(e.key==="ArrowDown"||e.key==="Enter")n=rows[ix+1];else if(e.key==="ArrowUp")n=rows[ix-1];else return;e.preventDefault();if(n){n.focus();n.select()}});
+$("o-body").addEventListener("click",e=>{if(e.target.closest("input"))return;const tr=e.target.closest("tr.o-cr");if(!tr)return;const k=tr.dataset.k,on=!tr.classList.contains("on");OST.open[k]=on;tr.classList.toggle("on",on);
+  [...$("o-body").querySelectorAll("tr.o-sz")].filter(x=>x.dataset.r===k).forEach(x=>{x.hidden=!on})});
+$("o-tg").onclick=()=>{OST.all=!OST.all;if(!OST.all)OST.open={};renderO()};
+$("o-m").addEventListener("input",()=>{OST.m="";renderO()});
+$("o-dr").addEventListener("input",()=>{OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSave();oRefresh()});
+$("o-auto").onclick=()=>{const d=$("o-body")._d;if(!d)return;OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSuggest(d);oSave();renderO()};
+$("o-xl").onclick=async()=>{const b=$("o-xl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel แจ้ง รง.",2500),d=$("o-body")._d;
+  if(!d||typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้ (ยังไม่มีข้อมูล)";back();return}
+  const V=oVals(d),T=a=>a.reduce((x,y)=>x+y,0),wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF999999"}},BR={top:bd,left:bd,bottom:bd,right:bd};
+  const keys=PTPL.map(r=>r[0]).filter(k=>d.KS.includes(k)),nf="#,##0;[Red]-#,##0;-",hd=(ws,a)=>{const r=ws.addRow(a);r.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center",vertical:"middle",wrapText:true};x.border=BR})};
+  const w1=wb.addWorksheet("แผนที่แจ้ง รง.");w1.columns=[{width:34}].concat(Array(7).fill({width:13}));
+  w1.addRow(["แจ้งผลิตฟองน้ำ 200 เดือน "+thM(d.m)+" (หน่วย: คู่)"]).getCell(1).font={bold:true,size:14};
+  w1.addRow(["คิดจากสต็อกจริง ณ "+thD(d.c.sd)+" · โรงงานส่งได้จริง "+OST.dr+"% ของแผน"]).getCell(1).font={color:{argb:"FF555555"}};w1.addRow([]);
+  hd(w1,["สี"].concat(SIZES.map(z=>"เบอร์ "+z),["รวม"]));
+  const tot=Z6();keys.forEach(k=>{const v=V[k].pl.map(Math.round);v.forEach((y,i)=>tot[i]+=y);const r=w1.addRow([cLab(k)].concat(v,[T(v)]));const cl=PCOL[k]||["FFFFFF","000000"];r.eachCell((cell,i)=>{cell.border=BR;cell.fill=fill(cl[0]);if(i>1)cell.numFmt=nf;else cell.font={bold:true,color:{argb:"FF"+cl[1]}}})});
+  {const r=w1.addRow(["รวม"].concat(tot,[T(tot)]));r.eachCell((cell,i)=>{cell.font={bold:true};cell.fill=fill("DCE6FA");cell.border=BR;if(i>1)cell.numFmt=nf})}
+  const w2=wb.addWorksheet("โฟล 9 ขั้น");w2.columns=[{width:30},{width:9}].concat(Array(11).fill({width:14}));
+  w2.addRow(["โฟล 9 ขั้น แยกสี แยกเบอร์ · ณ "+thD(d.c.sd)+" → ออกแผน "+thM(d.m)]).getCell(1).font={bold:true,size:14};w2.addRow([]);
+  hd(w2,["สี","เบอร์","① สต็อกจริง","② ผลิตได้+รับเข้า","③ = ①+②","④ โควต้าขาย","⑤ คาดสิ้นเดือนนี้","⑥ แผนที่จะแจ้ง","⑦ = ⑤+⑥×ส่ง%","⑧ ยอดจองเดือนหน้า","⑨ คาดสิ้นเดือนหน้า","เป้าสต็อก"]);
+  keys.forEach(k=>{const x=d.D[k],v=V[k],cl=PCOL[k]||["FFFFFF","000000"],row=(lab,z,a,tg,bold)=>{const r=w2.addRow([lab,z].concat(a.map(Math.round),[tg]));r.eachCell((cell,i)=>{cell.border=BR;if(i>2)cell.numFmt=nf;if(bold){cell.font={bold:true};cell.fill=fill(cl[0])}});return r};
+    const ar=i=>[x.start[i],x.inn[i],x.mid[i],x.quota[i],x.end[i],v.pl[i],v.p7[i],x.book[i],v.p9[i]];
+    row(cLab(k),"รวม",[x.start,x.inn,x.mid,x.quota,x.end,v.pl,v.p7,x.book,v.p9].map(T),OST.tg[k]||"",true);
+    SIZES.forEach((z,i)=>{const r=row(cLab(k),z,ar(i),"");r.getCell(1).font={color:{argb:"FF999999"}}})});
+  try{await saveBook(wb,"แจ้งผลิต_"+d.m+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(err){b.textContent="สร้างไฟล์ไม่ได้"}back()};
+
 function rFill(){const r1=$("e-r1"),r2=$("e-r2");if(r1.dataset.man!=="1"&&r2.dataset.man!=="1"){const sd=$("e-sd").value,ed=$("e-end").value,lag=Math.max(0,Math.round(+$("e-lag").value||0));r1.value=sd?addD(sd,-lag):"";r2.value=ed?addD(ed,-lag):""}}
 ["e-r1","e-r2"].forEach(i=>$(i).addEventListener("input",()=>{$("e-r1").dataset.man="1";$("e-r2").dataset.man="1";renderE()}));
 $("e-rauto").onclick=()=>{$("e-r1").dataset.man="0";$("e-r2").dataset.man="0";renderE()};
