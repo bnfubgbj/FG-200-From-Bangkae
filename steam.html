@@ -458,7 +458,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 129)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 130)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4123,14 +4123,14 @@ function cgRepDates(){const F=cvF(),s=new Set();["cvstkB","cvstkK"].forEach(kd=>
 function cgRepFill(pick){const sel=$("cgr-d"),ds=cgRepDates(),cur=pick||sel.value;sel.innerHTML=ds.length?ds.map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join(""):'<option value="">— ยังไม่มีข้อมูล —</option>';if(ds.length)sel.value=ds.includes(cur)?cur:ds[0];cgRepDraw()}
 /* ข้อมูล 3 ตาราง: บางหว้า / บางแค / รวม — เบอร์ x [ขาว,ดำ,น้ำตาล] */
 function cgThree(pf,K,B){const C=["ขาว","ดำ","นด"],g=(M,c,i)=>((M[pf+"-"+c]||[])[i]||0),vB=C.map(c=>CVS.map((z,i)=>g(B,c,i))),vK=C.map(c=>CVS.map((z,i)=>g(K,c,i))),vS=vB.map((a,j)=>a.map((x,i)=>x+vK[j][i])),nz=CVS.map((z,i)=>i).filter(i=>vS.some(c=>c[i])||vB.some(c=>c[i])||vK.some(c=>c[i])),idx=nz.length?CVS.map((z,i)=>i).filter(i=>i>=nz[0]&&i<=nz[nz.length-1]):[],tt=v=>cvSum1(v.map(c=>cvSum1(c)));
-  return{v:[vB,vK,vS],idx,tot:[tt(vB),tt(vK),tt(vS)]}}
+  return{v:[vK,vB,vS],idx,tot:[tt(vK),tt(vB),tt(vS)]}}
 function cgRepDraw(){const box=$("cgr-body"),d=$("cgr-d").value;cgTitle("stk");cgGoalDraw();
   if(!d){box.innerHTML='<div class="empty">ยังไม่มีข้อมูลสต๊อกของ '+cvPN()+' — นำเข้าจากไฟล์ Excel หรือกรอกมือด้านล่าง</div>';return}
-  const pf=CVPG[CVP][0],K=cvAll("cvstkK")[d]||{},B=cvAll("cvstkB")[d]||{},T=cgThree(pf,K,B),sK=T.tot[1],sB=T.tot[0],has=a=>a!==0,
+  const pf=CVPG[CVP][0],K=cvAll("cvstkK")[d]||{},B=cvAll("cvstkB")[d]||{},T=cgThree(pf,K,B),sK=T.tot[0],sB=T.tot[1],has=a=>a!==0,
     dd=d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
   let h='<div class="sdk">'+cgCard("#8a5a3c","สต๊อกบางแค (เก็บที่ รง.)",cvN(sK),'<span class="sdz">คู่</span>')+cgCard("#1677ff","สต๊อกบางหว้า (โกดังเรา)",cvN(sB),'<span class="sdz">คู่</span>')+cgCard("#19c38b","รวมทั้ง 2 ที่",cvN(sK+sB),'<span class="sdz">ณ '+thD(d)+(has(sK)&&has(sB)?"":" · <b>ยังไม่มีข้อมูลของบางแค/บางหว้าในวันนี้ครบ</b>")+"</span>")+"</div>";
-  const HC=[["#e9eef3","#1f2d3a"],["#262626","#fff"],["#8a5a3c","#fff"],["#d6dde6","#1f2d3a"]],TT=[["สต๊อค 02 บางหว้า",0],["สต๊อค บางแค",1],["รวมสต๊อค 2 ที่",2]],fmt=v=>v<0?'<span style="color:#d93025">'+cvN(v)+"</span>":cvN(v);
-  h+='<div class="cgthree">'+TT.map(t=>{const k=t[1];let x='<div class="cgt3"><table class="cgrep"><thead><tr><th style="background:#c6e0b4;color:#1f2933">'+cvPN()+'</th><th colspan="3" style="background:#ffff00;color:#1f2933;text-align:left">'+t[0]+'</th><th style="background:#fff;color:#1f2933;font-weight:500">'+dd+'</th></tr><tr><th>เบอร์</th>'+["ขาว","ดำ","น้ำตาล"].map((c,j)=>'<th style="background:'+HC[j][0]+";color:"+HC[j][1]+'">'+c+"</th>").join("")+'<th style="background:'+HC[3][0]+";color:"+HC[3][1]+'">รวมผลิต</th></tr></thead><tbody>';
+  const HC=[["#e9eef3","#1f2d3a"],["#262626","#fff"],["#8a5a3c","#fff"],["#d6dde6","#1f2d3a"]],TT=[["สต๊อค บางแค",0],["สต๊อค 02 บางหว้า",1],["รวมสต๊อค 2 ที่",2]],fmt=v=>v<0?'<span style="color:#d93025">'+cvN(v)+"</span>":cvN(v);
+  h+='<div class="cgthree">'+TT.map(t=>{const k=t[1];let x='<div class="cgt3"><table class="cgrep"><thead><tr><th style="background:#c6e0b4;color:#1f2933">'+cvPN()+'</th><th colspan="3" style="background:#ffff00;color:#1f2933;text-align:left">'+t[0]+'</th><th style="background:#fff;color:#1f2933;font-weight:500">'+dd+'</th></tr><tr><th>เบอร์</th>'+["ขาว","ดำ","น้ำตาล"].map((c,j)=>'<th style="background:'+HC[j][0]+";color:"+HC[j][1]+'">'+c+"</th>").join("")+'<th style="background:'+HC[3][0]+";color:"+HC[3][1]+'">รวม</th></tr></thead><tbody>';
     T.idx.forEach(i=>{const v=T.v[k].map(c=>c[i]);x+="<tr><th>"+CVS[i]+"</th>"+v.map(n=>"<td>"+fmt(n)+"</td>").join("")+'<td class="tt">'+fmt(cvSum1(v))+"</td></tr>"});
     return x+'</tbody><tfoot><tr style="background:#ffff00;color:#1f2933"><th style="background:#ffff00;color:#1f2933">รวม</th>'+T.v[k].map(c=>'<td style="background:#ffff00">'+fmt(cvSum1(c))+"</td>").join("")+'<td style="background:#ffff00">'+fmt(T.tot[k===2?2:k])+"</td></tr></tfoot></table></div>"}).join("")+"</div>";
   box.innerHTML=h}
@@ -4201,9 +4201,9 @@ function cgPlanSheet(P,ms){const it=cgFP(P),A=cvAll("cvplan"),n=it.length,mm=ms.
   return{name:cgPN(P),rows,hdr,tot,w1:22,w:12}}
 const cgNone=()=>{throw new Error("ยังไม่มีข้อมูลให้ดาวน์โหลดในช่วงที่เลือก")};
 cgXlBtn($("x-cgstk"),"xl-stk",async()=>{const d=$("cgr-d").value;if(!d)cgNone();
-  const dd=d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543),L=colL,TN=["สต๊อค 02 บางหว้า","สต๊อค บางแค","รวมสต๊อค 2 ที่"];
+  const dd=d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543),L=colL,TN=["สต๊อค บางแค","สต๊อค 02 บางหว้า","รวมสต๊อค 2 ที่"];
   const sh=["S","R"].map(P=>{const pf=CVPG[P][0],T=cgThree(pf,cvAll("cvstkK")[d]||{},cvAll("cvstkB")[d]||{}),n=T.idx.length,W=18,rows=[["ผ้าใบ "+cgPN(P)+" รายงานสต๊อก ณ "+thD(d)+" (หน่วย: คู่)"],[],new Array(W).fill(""),new Array(W).fill("")],r1=5,rl=4+n,TR=rl+1,PR=rl+2;
-    for(let k=0;k<3;k++){const c0=k*6;rows[2][c0]=cgPN(P);rows[2][c0+1]=TN[k];rows[2][c0+4]=dd;["เบอร์","ขาว","ดำ","น้ำตาล","รวมผลิต "+cgPN(P).replace("205-","")].forEach((t,j)=>rows[3][c0+j]=t)}
+    for(let k=0;k<3;k++){const c0=k*6;rows[2][c0]=cgPN(P);rows[2][c0+1]=TN[k];rows[2][c0+4]=dd;["เบอร์","ขาว","ดำ","น้ำตาล","รวม"].forEach((t,j)=>rows[3][c0+j]=t)}
     for(let i=0;i<=n+1;i++)rows.push(new Array(W).fill(""));
     T.idx.forEach((zi,q)=>{const R=r1+q,row=rows[4+q];for(let k=0;k<3;k++){const c0=k*6;row[c0]=CVS[zi];for(let j=0;j<3;j++){const v=T.v[k][j][zi];row[c0+1+j]=k<2?v:FX(L(2+j)+R+"+"+L(8+j)+R,v)}
       const tv=cvSum1(T.v[k].map(c=>c[zi]));row[c0+4]=FX("SUM("+L(c0+2)+R+":"+L(c0+4)+R+")",tv)}});
