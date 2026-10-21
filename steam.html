@@ -458,7 +458,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 130)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 131)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -3817,8 +3817,8 @@ function cvApplyP(){document.querySelectorAll("#cv-grid tbody tr").forEach((tr,r
 function cvFill(d){const D=cvAll()[d]||{};CVI.forEach((it,r)=>{const a=D[it[0]]||[];CVS.forEach((z,c)=>{$("cv-"+r+"-"+c).value=a[c]?Math.round(a[c]).toLocaleString("en-US"):""})});cvTot()}
 function cvSel(){const all=cvAll(),ds=Object.keys(all).filter(d=>cvF().some(it=>(all[d][it[0]]||[]).some(x=>x>0))).sort().reverse(),cur=$("cv-sel").value;
   $("cv-sel").innerHTML='<option value="">— วันใหม่ —</option>'+ds.map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join("");$("cv-sel").value=ds.includes(cur)?cur:""}
-function cvInit(){cvBuild();cvApplyP();if(!$("cv-d").value)$("cv-d").value=todayS();try{if(!$("cv-by").value)$("cv-by").value=localStorage.getItem("fgby")||""}catch(e){}cvSel();cvFill($("cv-d").value)}
-function cvRefresh(){if(!CVB)return;cvSel();if($("cv-d").value&&!$("x-cvin").hidden)cvFill($("cv-d").value);if(!$("x-cvsum").hidden)cvSum()}
+function cvInit(){cvBuild();cvApplyP();if(!$("cv-d").value)$("cv-d").value=todayS();try{if(!$("cv-by").value)$("cv-by").value=localStorage.getItem("fgby")||""}catch(e){}cvSel();cvFill($("cv-d").value);cvmDraw()}
+function cvRefresh(){cvmDraw();if(!CVB)return;cvSel();if($("cv-d").value&&!$("x-cvin").hidden)cvFill($("cv-d").value);if(!$("x-cvsum").hidden)cvSum()}
 $("cv-d").addEventListener("input",()=>{$("cv-sel").value="";cvFill($("cv-d").value);cvMsg("")});
 $("cv-sel").addEventListener("input",()=>{const d=$("cv-sel").value;if(d){$("cv-d").value=d;cvFill(d);cvMsg("")}});
 $("cv-grid").addEventListener("input",e=>{const t=e.target;if(!t.classList||!t.classList.contains("cv-i"))return;const n=oNum(t.value);t.value=n?Math.round(n).toLocaleString("en-US"):"";cvTot()});
@@ -4118,6 +4118,71 @@ $("cg-stk-imp").onclick=async()=>{if(!CGIMP)return;const d=CGIMP.date||$("cg-stk
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by,rows})}).then(x=>x.json());
     if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ");await load();CGIMP=null;$("cg-stk-imp").hidden=true;$("cg-stk-d").value=d;cgRepFill(d);cgFs("stk","บันทึกสต๊อก ณ "+thD(d)+" แล้ว (205-S และ 205-R ทั้ง 2 โกดัง) — ดูรายงานด้านบน","ok")}
   catch(err){cgFs("stk","บันทึกไม่สำเร็จ: "+(err&&err.message||err),"warn")}$("cg-stk-imp").disabled=false};
+/* ---------- ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน: 2 ตาราง + เฉลี่ยต่อวัน + นำเข้า Excel ---------- */
+const CVMC=["ขาว","ดำ","นด"],CVMN=["ขาว","ดำ","น้ำตาล"],cvmDmy=d=>d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
+function cvmWD(m,set){const k="cvwd_"+m;if(set!==undefined){try{localStorage.setItem(k,String(set))}catch(e){}return set}try{const v=+localStorage.getItem(k);if(v>0)return v}catch(e){}
+  if(m==="2026-10")return 26;const y=+m.slice(0,4),mo=+m.slice(5,7),n=new Date(y,mo,0).getDate();let c=0;for(let d=1;d<=n;d++)if(new Date(y,mo-1,d).getDay()!==0)c++;return c}
+function cvmData(m,pf){const A=cvAll(),days=Object.keys(A).filter(d=>d.slice(0,7)===m).sort(),dl=[];days.forEach(d=>{const v=CVMC.map(c=>cvSum1(A[d][pf+"-"+c]||[]));if(v.some(x=>x))dl.push([d,v])});
+  const sz=CVS.map((z,i)=>CVMC.map(c=>days.reduce((a,d)=>a+((A[d][pf+"-"+c]||[])[i]||0),0))),nz=CVS.map((z,i)=>i).filter(i=>sz[i].some(x=>x)),idx=nz.length?CVS.map((z,i)=>i).filter(i=>i>=nz[0]&&i<=nz[nz.length-1]):[];
+  const col=CVMC.map((c,j)=>cvSum1(dl.map(r=>r[1][j])));return{dl,sz,idx,col,tot:cvSum1(col)}}
+function cvmMonths(pf){const A=cvAll(),s=new Set();Object.keys(A).forEach(d=>{if(CVMC.some(c=>cvSum1(A[d][pf+"-"+c]||[])))s.add(d.slice(0,7))});return[...s].sort().reverse()}
+function cvmDraw(){const box=$("cvm-body");if(!box)return;const pf=CVPG[CVP][0],ms=cvmMonths(pf),sel=$("cvm-m"),cur=sel.value;sel.innerHTML=ms.length?ms.map(m=>'<option value="'+m+'">'+thM(m)+"</option>").join(""):'<option value="">— ยังไม่มีข้อมูล —</option>';
+  if(!ms.length){box.innerHTML='<div class="empty">ยังไม่มีข้อมูลผลิตจริงของ '+cvPN()+' — นำเข้าจากไฟล์ Excel ด้านล่าง หรือกรอกรายวัน</div>';return}
+  sel.value=ms.includes(cur)?cur:ms[0];const m=sel.value,D=cvmData(m,pf),N=cvmWD(m);$("cvm-wd").value=N;
+  const k=D.dl.length,avg=k?D.tot/k:0,HC=[["#e9eef3","#1f2d3a"],["#262626","#fff"],["#8a5a3c","#fff"],["#d6dde6","#1f2d3a"]],fmt=v=>cvN(v);
+  const card=(c,t,v,sub)=>cgCard(c,t,v,'<span class="sdz">'+sub+"</span>");
+  let h='<div class="sdk">'+card("#1677ff","ผลิตรวมเดือน "+thM(m),fmt(D.tot),"คู่")+card("#19c38b","ผลิตเฉลี่ยวันละ",fmt(avg),"คู่ · "+fmt(D.tot)+" ÷ "+k+" วันที่ผลิตแล้ว")+card("#ffb020","ประมาณการทั้งเดือน",fmt(avg*N),"คู่ · เฉลี่ย × "+N+" วันทำงาน")+card("#ff6b8a","วันทำงานที่เหลือ",String(Math.max(0,N-k)),"วัน จาก "+N+" วันทำงาน (ผลิตแล้ว "+k+" วัน)")+"</div>";
+  const th=(j)=>'<th style="background:'+HC[j][0]+";color:"+HC[j][1]+'">';
+  const head=(t,l)=>'<thead><tr><th style="background:#c6e0b4;color:#1f2933">'+cvPN()+'</th><th colspan="4" style="background:#ffff00;color:#1f2933;text-align:left">'+t+'</th></tr><tr><th>'+l+"</th>"+CVMN.map((c,j)=>th(j)+c+"</th>").join("")+th(3)+"รวม</th></tr></thead>";
+  const yel=(label,v)=>'<tfoot><tr><th style="background:#ffff00;color:#1f2933">รวม</th>'+v.map(x=>'<td style="background:#ffff00">'+fmt(x)+"</td>").join("")+'<td style="background:#ffff00">'+fmt(D.tot)+"</td></tr></tfoot>";
+  const t1='<div class="cgt3"><table class="cgrep">'+head("ผลิตจริงเข้าโกดังพี่ชุมพร "+thM(m),"วันที่")+"<tbody>"+D.dl.map(r=>"<tr><th>"+cvmDmy(r[0])+"</th>"+r[1].map(x=>"<td>"+fmt(x)+"</td>").join("")+'<td class="tt">'+fmt(cvSum1(r[1]))+"</td></tr>").join("")+"</tbody>"+yel("",D.col)+"</table></div>";
+  const t2='<div class="cgt3"><table class="cgrep">'+head("ผลิตจริงรายเบอร์ "+thM(m),"เบอร์")+"<tbody>"+D.idx.map(i=>"<tr><th>"+CVS[i]+"</th>"+D.sz[i].map(x=>"<td>"+fmt(x)+"</td>").join("")+'<td class="tt">'+fmt(cvSum1(D.sz[i]))+"</td></tr>").join("")+"</tbody>"+yel("",D.col)+"</table></div>";
+  box.innerHTML=h+'<div class="cgthree">'+t1+t2+"</div>"}
+function cvmSheet(P,m,N){const pf=CVPG[P][0],D=cvmData(m,pf),L=colL,nL=D.dl.length,nR=D.idx.length,n=Math.max(nL,nR,1),W=11,T=5+n,rows=[["ผ้าใบ "+cgPN(P)+" ผลิตจริงเข้าโกดังพี่ชุมพร "+thM(m)+" (หน่วย: คู่)"],[],new Array(W).fill(""),new Array(W).fill("")];
+  rows[2][0]=cgPN(P);rows[2][1]="ผลิตจริงเข้าโกดังพี่ชุมพร "+thM(m);rows[2][6]=cgPN(P);rows[2][7]="ผลิตจริงรายเบอร์ "+thM(m);["วันที่","ขาว","ดำ","น้ำตาล","รวม"].forEach((t,j)=>rows[3][j]=t);["เบอร์","ขาว","ดำ","น้ำตาล","รวม"].forEach((t,j)=>rows[3][6+j]=t);
+  for(let i=0;i<n;i++){const R=5+i,r=new Array(W).fill("");if(i<nL){const q=D.dl[i];r[0]=cvmDmy(q[0]);for(let j=0;j<3;j++)r[1+j]=q[1][j];r[4]=FX("SUM(B"+R+":D"+R+")",cvSum1(q[1]))}
+    if(i<nR){const zi=D.idx[i],v=D.sz[zi];r[6]=CVS[zi];for(let j=0;j<3;j++)r[7+j]=v[j];r[10]=FX("SUM(H"+R+":J"+R+")",cvSum1(v))}rows.push(r)}
+  const tr=new Array(W).fill("");tr[0]="รวม";tr[6]="รวม";for(let j=0;j<4;j++){const v=j<3?D.col[j]:D.tot;tr[1+j]=FX("SUM("+L(2+j)+"5:"+L(2+j)+(T-1)+")",v);tr[7+j]=FX("SUM("+L(8+j)+"5:"+L(8+j)+(T-1)+")",v)}rows.push(tr);rows.push(new Array(W).fill(""));
+  const k=nL,avg=k?D.tot/k:0,S=T+2,sm=[["ผลิตรวมเดือน (คู่)",FX("E"+T,D.tot)],["วันที่ผลิตแล้ว (วัน)",FX('COUNTIF(E5:E'+(T-1)+',">0")',k)],["ผลิตเฉลี่ยวันละ (คู่)",FX("IF(E"+(S+1)+">0,E"+S+"/E"+(S+1)+",0)",avg)],["วันทำงานทั้งเดือน (วัน) — แก้ได้",N],["ประมาณการทั้งเดือน (คู่)",FX("E"+(S+2)+"*E"+(S+3),avg*N)],["วันทำงานที่เหลือ (วัน)",FX("MAX(0,E"+(S+3)+"-E"+(S+1)+")",Math.max(0,N-k))]];
+  sm.forEach(a=>{const r=new Array(W).fill("");r[0]=a[0];r[4]=a[1];rows.push(r)});
+  const post=ws=>{const thin={style:"thin",color:{argb:"FF8A94A0"}},med={style:"medium",color:{argb:"FF1F2933"}},fl=h=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+h}}),HC=[["FFFFFF","1F2933"],["262626","FFFFFF"],["8B5E3C","FFFFFF"],["D6DDE6","1F2933"]],NF='#,##0;[Red]-#,##0;"-"';
+    [1,7].forEach(c0=>{ws.getColumn(c0).width=13;for(let j=1;j<5;j++)ws.getColumn(c0+j).width=13;for(let r=3;r<=T;r++)for(let j=0;j<5;j++){const cell=ws.getCell(r,c0+j);cell.border={top:thin,bottom:thin,left:thin,right:thin};cell.font={name:"Tahoma",size:11,color:{argb:"FF1F2933"}};
+      if(r===3){cell.fill=fl(j===0?"C6E0B4":"FFFF00");cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1F2933"}}}
+      else if(r===4){const hc=HC[Math.max(0,j-1)];cell.fill=fl(j===0?"E3E8EE":hc[0]);cell.font={name:"Tahoma",size:11,bold:true,color:{argb:"FF"+(j===0?"1F2933":hc[1])}};cell.alignment={horizontal:"center"}}
+      else if(r<T){cell.numFmt=NF;cell.alignment={horizontal:j===0?"center":"right"};if(j===0||j===4)cell.font={name:"Tahoma",size:11,bold:true};if(j===4)cell.fill=fl("EAF2FF")}
+      else{cell.fill=fl("FFFF00");cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1F2933"}};cell.numFmt=NF;cell.border={top:med,bottom:med,left:thin,right:thin};cell.alignment={horizontal:j===0?"center":"right"}}}
+      ws.mergeCells(3,c0+1,3,c0+4)});ws.getColumn(6).width=4;
+    for(let i=0;i<6;i++){const r=S+i;ws.mergeCells(r,1,r,4);const a=ws.getCell(r,1),b=ws.getCell(r,5);a.font={name:"Tahoma",size:11,bold:true};a.fill=fl("F5F7F9");b.fill=fl(i===3?"FFF2CC":"EAF2FF");b.font={name:"Tahoma",size:12,bold:true,color:{argb:i===3?"FF0000FF":"FF1F2933"}};b.numFmt="#,##0";[a,b].forEach(c=>c.border={top:thin,bottom:thin,left:thin,right:thin});b.alignment={horizontal:"right"}}
+    ws.getRow(4).height=22;ws.views=[{state:"frozen",ySplit:4}]};
+  return{name:cgPN(P),rows,hdr:[],tot:[],post}}
+(function(){const panel=$("x-cvin"),n=panel.querySelector(".note"),d=document.createElement("div");d.id="cvm-box";
+  d.innerHTML='<div class="cgsec">ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน</div><div class="row" style="align-items:flex-end"><div style="min-width:170px"><span class="lbl">เดือน</span><select id="cvm-m"></select></div><div style="min-width:150px"><span class="lbl">วันทำงานทั้งเดือน (วัน)</span><input type="number" id="cvm-wd" min="1" max="31" style="width:110px"></div><div><button class="btn ghost" type="button" id="cvm-xl">⬇ ดาวน์โหลด Excel (205-S + 205-R)</button> <span class="fstat" id="cvm-xm"></span></div></div><div id="cvm-body"></div>'+
+   '<div class="cgsec" style="margin-top:22px">นำเข้าจากไฟล์ Excel (ชีท "ข้อมูลรายวัน": วันที่ · รุ่น · สี · เบอร์ · จำนวน)</div><div class="row" style="align-items:flex-end"><div style="min-width:260px"><span class="lbl">เลือกไฟล์ .xlsx</span><input type="file" id="cvm-file" accept=".xlsx"></div><div style="min-width:170px"><span class="lbl">เดือนของข้อมูลในไฟล์</span><input type="month" id="cvm-im"></div><button class="btn" id="cvm-imp" type="button" hidden>บันทึกเข้าระบบ</button></div><div id="cvm-fs" class="note fstat"></div>';
+  n.after(d);
+  $("cvm-m").addEventListener("input",cvmDraw);$("cvm-wd").addEventListener("change",()=>{const m=$("cvm-m").value,v=Math.max(1,Math.min(31,Math.round(+$("cvm-wd").value||0)));if(m){cvmWD(m,v);cvmDraw()}});
+  $("cvm-xl").onclick=async()=>{const msg=$("cvm-xm");msg.textContent="";try{const m=$("cvm-m").value;if(!m)cgNone();const N=cvmWD(m);await cgXlBook(["S","R"].map(P=>cvmSheet(P,m,N)),"ผลิตจริงเข้าโกดังพี่ชุมพร_"+m+".xlsx");msg.textContent="ดาวน์โหลดแล้ว";msg.className="fstat ok"}catch(e){msg.textContent=(e&&e.message)||String(e);msg.className="fstat warn"}};
+  let IMP=null;const fs=(t,c)=>{const e=$("cvm-fs");e.textContent=t||"";e.className="note fstat "+(c||"")};
+  const MONS=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+  function prep(){if(!IMP)return;const mo=$("cvm-im").value;$("cvm-imp").hidden=true;if(!/^\d{4}-\d{2}$/.test(mo)){fs("เลือกเดือนของข้อมูลก่อน","warn");return}
+    const by={};let bad=0;IMP.rows.forEach(r=>{if(!(r.day>=1&&r.day<=31)){bad++;return}const ci=CVS.indexOf(r.size),c=cgCol(r.color),pm=/R/i.test(String(r.model).replace(/205/,""))?"205R":/S/i.test(String(r.model).replace(/205/,""))?"205S":null;if(ci<0||!c||!pm){bad++;return}
+      const d=mo+"-"+p2(r.day),k=pm+"-"+c;(by[d]=by[d]||{})[k]=by[d][k]||new Array(CVS.length).fill(0);by[d][k][ci]+=r.qty});
+    const ds=Object.keys(by).sort(),A=cvAll(),old=ds.filter(d=>A[d]&&Object.keys(A[d]).some(k=>/^205[SR]-/.test(k)&&cvSum1(A[d][k])>0)),tS=cvSum1(ds.map(d=>cvSum1(Object.keys(by[d]).filter(k=>k.startsWith("205S")).map(k=>cvSum1(by[d][k]))))),tR=cvSum1(ds.map(d=>cvSum1(Object.keys(by[d]).filter(k=>k.startsWith("205R")).map(k=>cvSum1(by[d][k])))));
+    IMP.by=by;IMP.ds=ds;fs("อ่านได้ "+ds.length+" วัน ของ "+thM(mo)+" · 205-S "+cvN(tS)+" คู่ · 205-R "+cvN(tR)+" คู่"+(old.length?" · วันที่มีข้อมูลเดิมในระบบ จะถูกเขียนทับด้วยข้อมูลจากไฟล์ "+old.length+" วัน ("+old.map(x=>+x.slice(8)).join(", ")+")":" · ไม่มีวันซ้ำกับข้อมูลเดิม")+(bad?" · ข้ามแถวที่อ่านไม่ได้ "+bad+" แถว":"")+" — ตรวจเดือนให้ถูกก่อนกดบันทึก","ok");$("cvm-imp").hidden=!ds.length}
+  $("cvm-im").addEventListener("input",prep);
+  $("cvm-file").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;IMP=null;$("cvm-imp").hidden=true;fs("กำลังอ่านไฟล์…");
+    try{const wb=new ExcelJS.Workbook();await wb.xlsx.load(await f.arrayBuffer());const ws=wb.worksheets.find(w=>/ข้อมูลรายวัน/.test(w.name))||wb.worksheets.find(w=>String(cvx(w.getCell(1,1))||"").trim()==="วันที่"&&/รุ่น/.test(String(cvx(w.getCell(1,2))||"")));if(!ws)throw new Error('ไม่พบชีท "ข้อมูลรายวัน" ในไฟล์นี้');
+      const num=v=>{const n=Number(String(v==null?"":v).replace(/,/g,""));return isNaN(n)?0:n},rows=[];for(let r=2;r<=ws.rowCount;r++){const dv=cvx(ws.getCell(r,1));if(dv===null||dv===undefined||dv==="")continue;rows.push({day:Math.round(num(dv)),model:String(cvx(ws.getCell(r,2))||""),color:String(cvx(ws.getCell(r,3))||""),size:Math.round(num(cvx(ws.getCell(r,4)))),qty:Math.round(num(cvx(ws.getCell(r,5))))})}
+      let mo="";const txt=wb.worksheets.filter(w=>w!==ws).map(w=>[1,2,8].map(c=>String(cvx(w.getCell(1,c))||"")).join(" ")).join(" ")+" "+f.name,mm=txt.match(/(ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.)\s*(25\d\d|\d{2})\b/);
+      if(mm){const yy=+mm[2],be=yy<100?2500+yy:yy;mo=(be-543)+"-"+p2(MONS.indexOf(mm[1])+1)}else{const m2=txt.match(/(\d{1,2})\s*\/\s*(\d{2})\b/);if(m2)mo=(2500+ +m2[2]-543)+"-"+p2(+m2[1])}
+      $("cvm-im").value=mo;IMP={rows};if(!rows.length)throw new Error("ชีทข้อมูลรายวันไม่มีข้อมูล");prep();if(!mo)fs("อ่านไฟล์แล้ว "+rows.length+" แถว แต่หาเดือนในไฟล์ไม่เจอ — เลือกเดือนของข้อมูลในช่องด้านบนก่อน","warn")}
+    catch(err){fs("อ่านไฟล์ไม่สำเร็จ: "+(err&&err.message||err),"warn")}});
+  $("cvm-imp").onclick=async()=>{if(!IMP||!IMP.ds||!IMP.ds.length)return;const key=($("pf-key").value||"").trim()||fgKeySet(true);if(!key){fs("ใส่รหัสบันทึกก่อน","warn");return}
+    let by="";try{by=(localStorage.getItem("fgby")||"").trim()}catch(e){}$("cvm-imp").disabled=true;let done=0;
+    try{for(const d of IMP.ds){fs("กำลังบันทึก "+(done+1)+" / "+IMP.ds.length+" วัน…");const M=Object.assign({},cvAll("cvrecv")[d]||{});["205S","205R"].forEach(pm=>CVMC.forEach(c=>{M[pm+"-"+c]=new Array(CVS.length).fill(0)}));Object.keys(IMP.by[d]).forEach(k=>{M[k]=IMP.by[d][k]});
+        const rows=[];Object.keys(M).forEach(k=>cgChunkRows("cvrecv",k,M[k]).forEach(r=>rows.push(r)));
+        const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by,rows})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ");done++;await load()}
+      fs("บันทึกแล้ว "+done+" วัน ("+thM($("cvm-im").value)+") — ดูตารางด้านบน","ok");IMP=null;$("cvm-imp").hidden=true;$("cvm-m").value=$("cvm-im").value;cvmDraw()}
+    catch(err){fs("บันทึกไม่สำเร็จ (สำเร็จ "+done+" วัน): "+(err&&err.message||err),"warn")}$("cvm-imp").disabled=false}})();
 /* รายงานสต๊อก ณ วันนั้น */
 function cgRepDates(){const F=cvF(),s=new Set();["cvstkB","cvstkK"].forEach(kd=>{const a=cvAll(kd);Object.keys(a).forEach(d=>{if(F.some(it=>(a[d][it[0]]||[]).some(x=>x>0)))s.add(d)})});return[...s].sort().reverse()}
 function cgRepFill(pick){const sel=$("cgr-d"),ds=cgRepDates(),cur=pick||sel.value;sel.innerHTML=ds.length?ds.map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join(""):'<option value="">— ยังไม่มีข้อมูล —</option>';if(ds.length)sel.value=ds.includes(cur)?cur:ds[0];cgRepDraw()}
