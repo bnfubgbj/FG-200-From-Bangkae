@@ -437,6 +437,7 @@ thead th{background:#dcecff;color:#0a47a8}
 .cv-i{width:54px;text-align:right;padding:4px 5px;font-size:13px}
 #cv-grid table td,#cv-grid table th{white-space:nowrap;padding:3px 3px}#cv-grid table td:first-child,#cv-grid table th:first-child{position:sticky;left:0;z-index:2;background:var(--surface);font-weight:600;padding-left:8px;padding-right:8px}#cv-grid thead th:first-child{background:var(--accent)}
 #cv-grid .cv-t{font-weight:700;text-align:right;min-width:62px}
+.cgthree{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-top:6px}.cgt3{flex:1 1 275px;min-width:262px;overflow-x:auto}.cgt3 table{width:100%}.cgt3 th,.cgt3 td{padding:5px 3px!important;font-size:12.5px!important;white-space:nowrap}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -457,7 +458,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 128)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 129)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4120,14 +4121,18 @@ $("cg-stk-imp").onclick=async()=>{if(!CGIMP)return;const d=CGIMP.date||$("cg-stk
 /* รายงานสต๊อก ณ วันนั้น */
 function cgRepDates(){const F=cvF(),s=new Set();["cvstkB","cvstkK"].forEach(kd=>{const a=cvAll(kd);Object.keys(a).forEach(d=>{if(F.some(it=>(a[d][it[0]]||[]).some(x=>x>0)))s.add(d)})});return[...s].sort().reverse()}
 function cgRepFill(pick){const sel=$("cgr-d"),ds=cgRepDates(),cur=pick||sel.value;sel.innerHTML=ds.length?ds.map(d=>'<option value="'+d+'">'+thD(d)+"</option>").join(""):'<option value="">— ยังไม่มีข้อมูล —</option>';if(ds.length)sel.value=ds.includes(cur)?cur:ds[0];cgRepDraw()}
+/* ข้อมูล 3 ตาราง: บางหว้า / บางแค / รวม — เบอร์ x [ขาว,ดำ,น้ำตาล] */
+function cgThree(pf,K,B){const C=["ขาว","ดำ","นด"],g=(M,c,i)=>((M[pf+"-"+c]||[])[i]||0),vB=C.map(c=>CVS.map((z,i)=>g(B,c,i))),vK=C.map(c=>CVS.map((z,i)=>g(K,c,i))),vS=vB.map((a,j)=>a.map((x,i)=>x+vK[j][i])),nz=CVS.map((z,i)=>i).filter(i=>vS.some(c=>c[i])||vB.some(c=>c[i])||vK.some(c=>c[i])),idx=nz.length?CVS.map((z,i)=>i).filter(i=>i>=nz[0]&&i<=nz[nz.length-1]):[],tt=v=>cvSum1(v.map(c=>cvSum1(c)));
+  return{v:[vB,vK,vS],idx,tot:[tt(vB),tt(vK),tt(vS)]}}
 function cgRepDraw(){const box=$("cgr-body"),d=$("cgr-d").value;cgTitle("stk");cgGoalDraw();
   if(!d){box.innerHTML='<div class="empty">ยังไม่มีข้อมูลสต๊อกของ '+cvPN()+' — นำเข้าจากไฟล์ Excel หรือกรอกมือด้านล่าง</div>';return}
-  const pf=CVPG[CVP][0],COLS=[["ขาว","ขาว","#e9eef3","#1f2d3a"],["ดำ","ดำ","#1f2d3a","#fff"],["นด","น้ำตาล","#8a5a3c","#fff"]],K=cvAll("cvstkK")[d]||{},B=cvAll("cvstkB")[d]||{},g=(M,c,i)=>((M[pf+"-"+c]||[])[i]||0);
-  const tK=COLS.map(c=>cvSum1(CVS.map((z,i)=>g(K,c[0],i)))),tB=COLS.map(c=>cvSum1(CVS.map((z,i)=>g(B,c[0],i)))),sK=cvSum1(tK),sB=cvSum1(tB),has=a=>a>0;
+  const pf=CVPG[CVP][0],K=cvAll("cvstkK")[d]||{},B=cvAll("cvstkB")[d]||{},T=cgThree(pf,K,B),sK=T.tot[1],sB=T.tot[0],has=a=>a!==0,
+    dd=d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
   let h='<div class="sdk">'+cgCard("#8a5a3c","สต๊อกบางแค (เก็บที่ รง.)",cvN(sK),'<span class="sdz">คู่</span>')+cgCard("#1677ff","สต๊อกบางหว้า (โกดังเรา)",cvN(sB),'<span class="sdz">คู่</span>')+cgCard("#19c38b","รวมทั้ง 2 ที่",cvN(sK+sB),'<span class="sdz">ณ '+thD(d)+(has(sK)&&has(sB)?"":" · <b>ยังไม่มีข้อมูลของบางแค/บางหว้าในวันนี้ครบ</b>")+"</span>")+"</div>";
-  h+='<div class="scroll"><table class="cgrep"><thead><tr><th rowspan="2">เบอร์</th>'+COLS.map(c=>'<th colspan="3" style="background:'+c[2]+";color:"+c[3]+'">'+c[1]+"</th>").join("")+'<th colspan="3" class="gt">รวมทุกสี</th></tr><tr>'+COLS.concat([["","",""]]).map((c,i)=>'<th class="sb">บางแค</th><th class="sb">บางหว้า</th><th class="sb tt">รวม</th>').join("")+"</tr></thead><tbody>";
-  CVS.forEach((z,i)=>{const row=COLS.map(c=>[g(K,c[0],i),g(B,c[0],i)]),ak=cvSum1(row.map(r=>r[0])),ab=cvSum1(row.map(r=>r[1]));if(!ak&&!ab)return;h+="<tr><th>"+z+"</th>"+row.map(r=>"<td>"+cvN(r[0])+"</td><td>"+cvN(r[1])+'</td><td class="tt">'+cvN(r[0]+r[1])+"</td>").join("")+"<td>"+cvN(ak)+"</td><td>"+cvN(ab)+'</td><td class="tt">'+cvN(ak+ab)+"</td></tr>"});
-  h+="</tbody><tfoot><tr><th>รวม</th>"+COLS.map((c,j)=>"<td>"+cvN(tK[j])+"</td><td>"+cvN(tB[j])+'</td><td class="tt">'+cvN(tK[j]+tB[j])+"</td>").join("")+"<td>"+cvN(sK)+"</td><td>"+cvN(sB)+'</td><td class="tt">'+cvN(sK+sB)+"</td></tr></tfoot></table></div>";
+  const HC=[["#e9eef3","#1f2d3a"],["#262626","#fff"],["#8a5a3c","#fff"],["#d6dde6","#1f2d3a"]],TT=[["สต๊อค 02 บางหว้า",0],["สต๊อค บางแค",1],["รวมสต๊อค 2 ที่",2]],fmt=v=>v<0?'<span style="color:#d93025">'+cvN(v)+"</span>":cvN(v);
+  h+='<div class="cgthree">'+TT.map(t=>{const k=t[1];let x='<div class="cgt3"><table class="cgrep"><thead><tr><th style="background:#c6e0b4;color:#1f2933">'+cvPN()+'</th><th colspan="3" style="background:#ffff00;color:#1f2933;text-align:left">'+t[0]+'</th><th style="background:#fff;color:#1f2933;font-weight:500">'+dd+'</th></tr><tr><th>เบอร์</th>'+["ขาว","ดำ","น้ำตาล"].map((c,j)=>'<th style="background:'+HC[j][0]+";color:"+HC[j][1]+'">'+c+"</th>").join("")+'<th style="background:'+HC[3][0]+";color:"+HC[3][1]+'">รวมผลิต</th></tr></thead><tbody>';
+    T.idx.forEach(i=>{const v=T.v[k].map(c=>c[i]);x+="<tr><th>"+CVS[i]+"</th>"+v.map(n=>"<td>"+fmt(n)+"</td>").join("")+'<td class="tt">'+fmt(cvSum1(v))+"</td></tr>"});
+    return x+'</tbody><tfoot><tr style="background:#ffff00;color:#1f2933"><th style="background:#ffff00;color:#1f2933">รวม</th>'+T.v[k].map(c=>'<td style="background:#ffff00">'+fmt(cvSum1(c))+"</td>").join("")+'<td style="background:#ffff00">'+fmt(T.tot[k===2?2:k])+"</td></tr></tfoot></table></div>"}).join("")+"</div>";
   box.innerHTML=h}
 $("cgr-d").addEventListener("input",()=>cgRepDraw());
 
@@ -4196,25 +4201,24 @@ function cgPlanSheet(P,ms){const it=cgFP(P),A=cvAll("cvplan"),n=it.length,mm=ms.
   return{name:cgPN(P),rows,hdr,tot,w1:22,w:12}}
 const cgNone=()=>{throw new Error("ยังไม่มีข้อมูลให้ดาวน์โหลดในช่วงที่เลือก")};
 cgXlBtn($("x-cgstk"),"xl-stk",async()=>{const d=$("cgr-d").value;if(!d)cgNone();
-  const sh=["S","R"].map(P=>{const pf=CVPG[P][0],K=cvAll("cvstkK")[d]||{},B=cvAll("cvstkB")[d]||{},COLS=[["ขาว","ขาว"],["ดำ","ดำ"],["นด","น้ำตาล"]],g=(M,c,i)=>((M[pf+"-"+c]||[])[i]||0);
-    const rows=[["ผ้าใบ "+cgPN(P)+" รายงานสต๊อก ณ "+thD(d)+" (หน่วย: คู่)"],[],["เบอร์"].concat(...COLS.map(c=>[c[1],"",""]),["รวมทุกสี","",""]),[""].concat(...[0,1,2,3].map(()=>["บางแค (รง.)","บางหว้า (โกดังเรา)","รวม"]))];
-    const dr=[],dv=[];CVS.forEach((z,i)=>{const row=COLS.map(c=>[g(K,c[0],i),g(B,c[0],i)]),ak=cvSum1(row.map(r=>r[0])),ab=cvSum1(row.map(r=>r[1]));if(!ak&&!ab)return;const R=rows.length+1,L=colL;dr.push(R);dv.push(ak+ab);rows.push([z].concat(...row.map((r,j)=>[r[0],r[1],FX(L(2+3*j)+R+"+"+L(3+3*j)+R,r[0]+r[1])]),[FX("B"+R+"+E"+R+"+H"+R,ak),FX("C"+R+"+F"+R+"+I"+R,ab),FX("K"+R+"+L"+R,ak+ab)]))});
-    const tk=COLS.map(c=>cvSum1(CVS.map((z,i)=>g(K,c[0],i)))),tb=COLS.map(c=>cvSum1(CVS.map((z,i)=>g(B,c[0],i))));
-    const f1=dr[0],f2=dr[dr.length-1],cs=(c,v)=>f1?SUMC(c,f1,f2,v):v;rows.push(["รวม"].concat(...COLS.map((c,j)=>[cs(2+3*j,tk[j]),cs(3+3*j,tb[j]),cs(4+3*j,tk[j]+tb[j])]),[cs(11,cvSum1(tk)),cs(12,cvSum1(tb)),cs(13,cvSum1(tk)+cvSum1(tb))]));
-    const tv=[];COLS.forEach((c,j)=>{tv.push(tk[j],tb[j],tk[j]+tb[j])});tv.push(cvSum1(tk),cvSum1(tb),cvSum1(tk)+cvSum1(tb));const grand=tv[11],totR=rows.length,PC=(a,b)=>FX(a,grand?b/grand:"",true);
-    rows[2].push("% ของสต๊อกรวม");rows[3].push("");dr.forEach((R,k)=>rows[R-1].push(PC("M"+R+"/$M$"+totR,dv[k])));rows[totR-1].push(PC("M"+totR+"/$M$"+totR,grand));
-    rows.push(["% ของสต๊อกรวม"].concat(tv.map((v,i)=>PC(colL(2+i)+totR+"/$M$"+totR,v)),[""]));
-    const ND=dr.length,CC=[["FFFFFF","D5DAE0","1F2933","F5F7F9","E9EDF1"],["262626","595959","FFFFFF","EDEDED","D9D9D9"],["8B5E3C","B58863","FFFFFF","FBF3EC","F0E0D0"],["1677FF","5B9BFF","FFFFFF","EAF2FF","D6E6FF"]];
-    const post=ws=>{const thin={style:"thin",color:{argb:"FFA7B0BC"}},med={style:"medium",color:{argb:"FF1F2933"}},fillC=h=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+h}}),lastR=totR+1;
-      for(let r=3;r<=lastR;r++)for(let c=1;c<=14;c++){const cell=ws.getCell(r,c),g=c===1||c===14?-1:Math.floor((c-2)/3),k=c>=2&&c<=13?(c-2)%3:-1,col=CC[g>=0?g:3];
-        cell.border={top:thin,bottom:thin,left:(g>=0&&k===0)||c===1||c===14?med:thin,right:(g>=0&&k===2)||c===14||c===1?med:thin};
-        if(r===3){cell.fill=fillC(g>=0?col[0]:"1677FF");cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF"+(g>=0?col[2]:"FFFFFF")}};cell.alignment={horizontal:"center",vertical:"middle"}}
-        else if(r===4){cell.fill=fillC(g>=0?col[1]:"5B9BFF");cell.font={name:"Tahoma",size:11,bold:true,color:{argb:"FF"+(g>=0?col[2]:"FFFFFF")}};cell.alignment={horizontal:"center",vertical:"middle",wrapText:true}}
-        else if(r<=4+ND){cell.fill=fillC(g>=0?(k===2?col[4]:col[3]):c===14?"EAF2FF":"F5F7F9");cell.font={name:"Tahoma",size:11,bold:c===1||k===2,color:{argb:"FF1F2933"}};if(c===14){cell.numFmt="0.0%";cell.alignment={horizontal:"right"}}}
-        else if(r===totR){cell.fill=fillC(g>=0?col[4]:"D6E6FF");cell.font={name:"Tahoma",size:12,bold:true};cell.border={top:med,bottom:med,left:cell.border.left,right:cell.border.right};if(c===14)cell.numFmt="0.0%"}
-        else{cell.fill=fillC(g>=0?col[3]:"F5F7F9");cell.font={name:"Tahoma",size:11,bold:true,italic:true,color:{argb:"FF1F2933"}};cell.numFmt="0.0%";cell.border={top:med,bottom:med,left:cell.border.left,right:cell.border.right}}}
-      for(let c=2;c<=13;c++)for(let r=5;r<=4+ND;r++)ws.getCell(r,c).alignment={horizontal:"right"};ws.getColumn(1).width=14;ws.getColumn(14).width=16;ws.getRow(3).height=24;ws.getRow(4).height=34;ws.views=[{state:"frozen",xSplit:1,ySplit:4}]};
-    return{name:cgPN(P),rows,hdr:[2,3],tot:[totR-1],merge:[[2,2,2,4],[2,5,2,7],[2,8,2,10],[2,11,2,13],[2,14,3,14],[2,1,3,1]],freeze:4,w:14,post}});
+  const dd=d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543),L=colL,TN=["สต๊อค 02 บางหว้า","สต๊อค บางแค","รวมสต๊อค 2 ที่"];
+  const sh=["S","R"].map(P=>{const pf=CVPG[P][0],T=cgThree(pf,cvAll("cvstkK")[d]||{},cvAll("cvstkB")[d]||{}),n=T.idx.length,W=18,rows=[["ผ้าใบ "+cgPN(P)+" รายงานสต๊อก ณ "+thD(d)+" (หน่วย: คู่)"],[],new Array(W).fill(""),new Array(W).fill("")],r1=5,rl=4+n,TR=rl+1,PR=rl+2;
+    for(let k=0;k<3;k++){const c0=k*6;rows[2][c0]=cgPN(P);rows[2][c0+1]=TN[k];rows[2][c0+4]=dd;["เบอร์","ขาว","ดำ","น้ำตาล","รวมผลิต "+cgPN(P).replace("205-","")].forEach((t,j)=>rows[3][c0+j]=t)}
+    for(let i=0;i<=n+1;i++)rows.push(new Array(W).fill(""));
+    T.idx.forEach((zi,q)=>{const R=r1+q,row=rows[4+q];for(let k=0;k<3;k++){const c0=k*6;row[c0]=CVS[zi];for(let j=0;j<3;j++){const v=T.v[k][j][zi];row[c0+1+j]=k<2?v:FX(L(2+j)+R+"+"+L(8+j)+R,v)}
+      const tv=cvSum1(T.v[k].map(c=>c[zi]));row[c0+4]=FX("SUM("+L(c0+2)+R+":"+L(c0+4)+R+")",tv)}});
+    for(let k=0;k<3;k++){const c0=k*6,tr=rows[rl],pr=rows[rl+1];tr[c0]="รวม";pr[c0]="% สี";const gt=T.tot[k];for(let j=0;j<4;j++){const col=L(c0+2+j),val=j<3?cvSum1(T.v[k][j]):gt;tr[c0+1+j]=n?FX("SUM("+col+r1+":"+col+rl+")",val):val;pr[c0+1+j]=FX(col+TR+"/$"+L(c0+5)+"$"+TR,gt?val/gt:"",true)}}
+    const post=ws=>{const thin={style:"thin",color:{argb:"FF8A94A0"}},med={style:"medium",color:{argb:"FF1F2933"}},fl=h=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+h}}),HC=[["FFFFFF","1F2933"],["262626","FFFFFF"],["8B5E3C","FFFFFF"],["D6DDE6","1F2933"]];
+      for(let k=0;k<3;k++)for(let j=1;j<=5;j++){const c=k*6+j;ws.getColumn(c).width=j===1?8:13.5;ws.getColumn(c+(j===5?1:0)).width=ws.getColumn(c+(j===5?1:0)).width}
+      for(let k=0;k<3;k++){const c0=k*6+1;ws.getColumn(c0+5).width=4;for(let r=3;r<=PR;r++)for(let j=0;j<5;j++){const cell=ws.getCell(r,c0+j);cell.border={top:thin,bottom:thin,left:thin,right:thin};cell.font={name:"Tahoma",size:11,color:{argb:"FF1F2933"}};
+        if(r===3){cell.fill=fl(j===0?"C6E0B4":j===4?"FFFFFF":"FFFF00");cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1F2933"}};if(j===4)cell.alignment={horizontal:"right"}}
+        else if(r===4){const hc=HC[Math.max(0,j-1)];cell.fill=fl(j===0?"E3E8EE":hc[0]);cell.font={name:"Tahoma",size:11,bold:true,color:{argb:"FF"+(j===0?"1F2933":hc[1])}};cell.alignment={horizontal:"center"}}
+        else if(r<=rl){cell.numFmt='#,##0;[Red]-#,##0;"-"';cell.alignment={horizontal:j===0?"center":"right"};if(j===0)cell.font={name:"Tahoma",size:11,bold:true};if(j===4)cell.font={name:"Tahoma",size:11,bold:true};if(j===4)cell.fill=fl("EAF2FF")}
+        else if(r===TR){cell.fill=fl("FFFF00");cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1F2933"}};cell.numFmt='#,##0;[Red]-#,##0;"-"';cell.border={top:med,bottom:med,left:thin,right:thin};cell.alignment={horizontal:j===0?"center":"right"}}
+        else{cell.fill=fl("F5F7F9");cell.font={name:"Tahoma",size:11,italic:true,bold:true,color:{argb:"FF1F2933"}};cell.numFmt="0.0%";cell.alignment={horizontal:j===0?"center":"right"}}}
+        ws.mergeCells(3,c0+1,3,c0+3)}
+      ws.getRow(4).height=22;ws.views=[{state:"frozen",ySplit:4}]};
+    return{name:cgPN(P),rows,hdr:[],tot:[],post}});
   await cgXlBook(sh,"สต๊อกผ้าใบ_"+d+".xlsx")});
 cgXlBtn($("x-cgplan"),"xl-plan",async()=>{const ms=cgRange("xl-plan",($("cg-plan-d").value||"").slice(0,7)),sh=["S","R"].map(P=>cgPlanSheet(P,ms)).filter(Boolean);if(!sh.length)cgNone();
   await cgXlBook(sh,"แผนผลิตผ้าใบ_"+ms[0]+(ms.length>1?"_ถึง_"+ms[ms.length-1]:"")+".xlsx")},cgXO("xl-plan"));
