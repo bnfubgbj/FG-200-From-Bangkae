@@ -457,7 +457,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 125)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 126)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4082,7 +4082,7 @@ async function cgStkImport(file){cgFs("stk","กำลังอ่านไฟ�
   try{const d=await cgStkRead(file);CGIMP=d;if(d.date){$("cg-stk-d").value=d.date}
     cgFs("stk","อ่านสต๊อก ณ "+(d.date?thD(d.date):"(ไม่พบวันที่ในไฟล์ — ใช้วันที่ในช่องกรอก)")+" แล้ว: 205-S บางแค "+cvN(cgTot2(d.S.K))+" · บางหว้า "+cvN(cgTot2(d.S.B))+"  |  205-R บางแค "+cvN(cgTot2(d.R.K))+" · บางหว้า "+cvN(cgTot2(d.R.B))+" คู่ — ตรวจตัวเลขแล้วกดปุ่ม บันทึกสต๊อกจากไฟล์","ok");$("cg-stk-imp").hidden=false}
   catch(err){cgFs("stk","อ่านไฟล์ไม่สำเร็จ: "+(err&&err.message||err),"warn")}}
-function cgChunkRows(kd,key,a){const r=[];for(let c=0;c<4;c++){const v=a.slice(c*6,c*6+6);while(v.length<6)v.push(0);const t=cvSum1(v);if(t>0)r.push([kd,key+"#"+(c+1)].concat(v.map(x=>x||""),[t]))}return r}
+function cgChunkRows(kd,key,a){const r=[];for(let c=0;c<4;c++){const v=a.slice(c*6,c*6+6);while(v.length<6)v.push(0);const t=cvSum1(v);if(v.some(x=>x))r.push([kd,key+"#"+(c+1)].concat(v.map(x=>x||""),[t]))}return r}
 $("cg-stk-imp").onclick=async()=>{if(!CGIMP)return;const d=CGIMP.date||$("cg-stk-d").value;if(!d){cgFs("stk","ไม่พบวันที่ — เลือกวันที่ในช่องกรอกก่อน","warn");return}
   const key=($("pf-key").value||"").trim()||fgKeySet(true);if(!key){cgFs("stk","ใส่รหัสบันทึกก่อน","warn");return}
   let by="";try{by=($("cg-stk-by").value||localStorage.getItem("fgby")||"").trim()}catch(e){}
