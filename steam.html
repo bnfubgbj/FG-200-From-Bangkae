@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 132)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 134)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4128,6 +4128,7 @@ function cvmData(m,pf,sel){const A=cvAll(),all=Object.keys(A).filter(d=>d.slice(
   const col=CVMC.map((c,j)=>cvSum1(dl.map(r=>r[1][j])));return{dl,sz,idx,col,tot:cvSum1(col),all:dl.length&&!sel}}
 function cvmMonths(pf){const A=cvAll(),s=new Set();Object.keys(A).forEach(d=>{if(CVMC.some(c=>cvSum1(A[d][pf+"-"+c]||[])))s.add(d.slice(0,7))});return[...s].sort().reverse()}
 function cvmDays(m,pf){return cvmData(m,pf,null).dl.map(r=>r[0])}
+function cvmWork(m,sel){const S=cvmData(m,CVPG.S[0],sel),R=cvmData(m,CVPG.R[0],sel),u=[...new Set(S.dl.map(r=>r[0]).concat(R.dl.map(r=>r[0])))].sort();return{S,R,days:u,n:u.length}}
 const CVMS={key:"",all:true,set:[]};
 function cvmSel(m,pf){const ds=cvmDays(m,pf);if(CVMS.all)return{ds,sel:null,all:true};const s=CVMS.set.filter(d=>ds.includes(d));return s.length&&s.length<ds.length?{ds,sel:s,all:false}:{ds,sel:null,all:true}}
 function cvmDraw(){const box=$("cvm-body");if(!box)return;const pf=CVPG[CVP][0],ms=cvmMonths(pf),sel=$("cvm-m"),cur=sel.value;sel.innerHTML=ms.length?ms.map(m=>'<option value="'+m+'">'+thM(m)+"</option>").join(""):'<option value="">— ยังไม่มีข้อมูล —</option>';
@@ -4135,9 +4136,11 @@ function cvmDraw(){const box=$("cvm-body");if(!box)return;const pf=CVPG[CVP][0],
   sel.value=ms.includes(cur)?cur:ms[0];const m=sel.value,key=CVP+"|"+m;if(CVMS.key!==key){CVMS.key=key;CVMS.all=true;CVMS.set=[]}
   const S=cvmSel(m,pf),D=cvmData(m,pf,S.sel),N=cvmWD(m);$("cvm-wd").value=N;
   $("cvm-days").innerHTML='<label class="chip'+(S.all?" on":"")+'"><input type="checkbox" value="all"'+(S.all?" checked":"")+">ทั้งเดือน</label>"+S.ds.map(d=>{const on=!S.all&&S.sel.includes(d);return'<label class="chip'+(on?" on":"")+'"><input type="checkbox" value="'+d+'"'+(on?" checked":"")+">"+(+d.slice(8))+"</label>"}).join("");
-  const k=D.dl.length,avg=k?D.tot/k:0,fmt=v=>cvN(v),card=(c,t,v,sub)=>cgCard(c,t,v,'<span class="sdz">'+sub+"</span>");
-  const what=S.all?"ทั้งเดือน "+thM(m):(k===1?"วันที่ "+cvmDmy(D.dl[0][0]):k+" วันที่เลือก");
-  let h='<div class="sdk">'+card("#1677ff","ผลิตรวม "+what,fmt(D.tot),"คู่")+card("#19c38b","ผลิตเฉลี่ยวันละ",fmt(avg),k>1?"คู่ · "+fmt(D.tot)+" ÷ "+k+" วัน":"คู่")+(S.all?card("#ffb020","ประมาณการทั้งเดือน",fmt(avg*N),"คู่ · เฉลี่ย × "+N+" วันทำงาน")+card("#ff6b8a","วันทำงานที่เหลือ",String(Math.max(0,N-k)),"วัน จาก "+N+" วันทำงาน (ผลิตแล้ว "+k+" วัน)"):"")+"</div>";
+  const fmt=v=>cvN(v),card=(c,t,v,sub)=>cgCard(c,t,v,'<span class="sdz">'+sub+"</span>"),W=cvmWork(m,S.sel),past=m<todayS().slice(0,7),wd=W.n,rem=past?0:Math.max(0,N-wd),k=D.dl.length;
+  const what=S.all?"ทั้งเดือน "+thM(m):(wd===1?"วันที่ "+cvmDmy(W.days[0]):wd+" วันที่เลือก"),av=t=>wd?t/wd:0;
+  let h='<div class="sdk">'+card("#1677ff","205-S ผลิตรวม "+what,fmt(W.S.tot),"คู่ · เฉลี่ยวันละ <b>"+fmt(av(W.S.tot))+"</b> (÷ "+wd+" วันทำงานจริง)")+card("#8a5a3c","205-R ผลิตรวม "+what,fmt(W.R.tot),"คู่ · เฉลี่ยวันละ <b>"+fmt(av(W.R.tot))+"</b> (÷ "+wd+" วันทำงานจริง)")+card("#19c38b","รวม 205-S + 205-R",fmt(W.S.tot+W.R.tot),"คู่ · เฉลี่ยวันละ <b>"+fmt(av(W.S.tot+W.R.tot))+"</b>")+
+    (S.all?card("#ff6b8a","วันทำงานจริง",String(wd),"วัน จาก "+N+" วันทำงานของเดือน · <b>เหลือ "+rem+" วัน</b>"+(past?" (ครบเดือนแล้ว)":"")):card("#ff6b8a","วันที่เลือก",String(wd),"วัน (วันที่ 205-S หรือ 205-R ผลิต)"))+
+    (S.all&&!past?card("#ffb020","ประมาณการทั้งเดือน",fmt(av(W.S.tot+W.R.tot)*N),"คู่ · S "+fmt(av(W.S.tot)*N)+" · R "+fmt(av(W.R.tot)*N)+" (เฉลี่ย × "+N+" วัน)"):"")+"</div>";
   const CL=["#c3ccd6","#1f2933","#8a5a3c","var(--ink,#1f2933)"],head=(t,l)=>'<div class="cgmt">'+cvPN()+" · "+t+'</div><table class="cgmint"><thead><tr><th class="l">'+l+"</th>"+CVMN.map((c,j)=>'<th style="--c:'+CL[j]+'">'+c+"</th>").join("")+'<th style="--c:'+CL[3]+'">รวม</th></tr></thead>',cell=x=>x?"<td>"+fmt(x)+"</td>":'<td class="z">–</td>';
   const foot=D.col.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(D.tot)+"</td>";
   const t1='<div class="cgt3 cgmin">'+head("ผลิตจริงรายวัน","วันที่")+"<tbody>"+D.dl.map(r=>'<tr><td class="l">'+cvmDmy(r[0])+"</td>"+r[1].map(cell).join("")+'<td class="tt">'+fmt(cvSum1(r[1]))+"</td></tr>").join("")+"</tbody><tfoot><tr><td class=\"l\">รวม</td>"+foot+"</tr></tfoot></table></div>";
@@ -4148,8 +4151,8 @@ function cvmSheet(P,m,N,sel){const pf=CVPG[P][0],D=cvmData(m,pf,sel),L=colL,nL=D
   for(let i=0;i<n;i++){const R=5+i,r=new Array(W).fill("");if(i<nL){const q=D.dl[i];r[0]=cvmDmy(q[0]);for(let j=0;j<3;j++)r[1+j]=q[1][j];r[4]=FX("SUM(B"+R+":D"+R+")",cvSum1(q[1]))}
     if(i<nR){const zi=D.idx[i],v=D.sz[zi];r[6]=CVS[zi];for(let j=0;j<3;j++)r[7+j]=v[j];r[10]=FX("SUM(H"+R+":J"+R+")",cvSum1(v))}rows.push(r)}
   const tr=new Array(W).fill("");tr[0]="รวม";tr[6]="รวม";for(let j=0;j<4;j++){const v=j<3?D.col[j]:D.tot;tr[1+j]=FX("SUM("+L(2+j)+"5:"+L(2+j)+(T-1)+")",v);tr[7+j]=FX("SUM("+L(8+j)+"5:"+L(8+j)+(T-1)+")",v)}rows.push(tr);rows.push(new Array(W).fill(""));
-  const k=nL,avg=k?D.tot/k:0,S=T+2,sm=[["ผลิตรวม (คู่)",FX("E"+T,D.tot)],["จำนวนวันที่ผลิต (วัน)",FX('COUNTIF(E5:E'+(T-1)+',">0")',k)],["ผลิตเฉลี่ยวันละ (คู่)",FX("IF(E"+(S+1)+">0,E"+S+"/E"+(S+1)+",0)",avg)]];
-  if(!sel){sm.push(["วันทำงานทั้งเดือน (วัน) — แก้ได้",N],["ประมาณการทั้งเดือน (คู่)",FX("E"+(S+2)+"*E"+(S+3),avg*N)],["วันทำงานที่เหลือ (วัน)",FX("MAX(0,E"+(S+3)+"-E"+(S+1)+")",Math.max(0,N-k))])}
+  const WK=cvmWork(m,sel),wd=WK.n,past=m<todayS().slice(0,7),avg=wd?D.tot/wd:0,S=T+2,sm=[["ผลิตรวม (คู่)",FX("E"+T,D.tot)],["วันทำงานจริง (วัน) — วันที่ 205-S หรือ 205-R ผลิต",wd],["ผลิตเฉลี่ยวันละ (คู่) = ผลิตรวม ÷ วันทำงานจริง",FX("IF(E"+(S+1)+">0,E"+S+"/E"+(S+1)+",0)",avg)]];
+  if(!sel){sm.push(["วันทำงานทั้งเดือน (วัน) — แก้ได้",N]);if(!past)sm.push(["ประมาณการทั้งเดือน (คู่)",FX("E"+(S+2)+"*E"+(S+3),avg*N)]);sm.push(["วันทำงานที่เหลือ (วัน)"+(past?" — ครบเดือนแล้ว":""),past?0:FX("MAX(0,E"+(S+3)+"-E"+(S+1)+")",Math.max(0,N-wd))])}
   sm.forEach(a=>{const r=new Array(W).fill("");r[0]=a[0];r[4]=a[1];rows.push(r)});
   const post=ws=>{const hair={style:"thin",color:{argb:"FFD5DAE0"}},CA=["FFBFC8D2","FF1F2933","FF8B5E3C","FF1F2933"],NF='#,##0;[Red]-#,##0;"–"',F=(o)=>Object.assign({name:"Tahoma",size:11,color:{argb:"FF1F2933"}},o||{});
     [1,7].forEach(c0=>{for(let j=0;j<5;j++)ws.getColumn(c0+j).width=j===0?13:12;ws.getCell(3,c0).font=F({size:12,bold:true});
