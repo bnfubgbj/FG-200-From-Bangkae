@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 135)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 16 ต.ค. 69 (แก้ไขรอบ 136)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4122,7 +4122,7 @@ $("cg-stk-imp").onclick=async()=>{if(!CGIMP)return;const d=CGIMP.date||$("cg-stk
 /* ---------- ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน: 2 ตาราง + เฉลี่ยต่อวัน + นำเข้า Excel ---------- */
 const CVMC=["ขาว","ดำ","นด"],CVMN=["ขาว","ดำ","น้ำตาล"],cvmDmy=d=>d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
 function cvmWD(m,set){const k="cvwd_"+m;if(set!==undefined){try{localStorage.setItem(k,String(set))}catch(e){}return set}try{const v=+localStorage.getItem(k);if(v>0)return v}catch(e){}
-  if(m==="2026-10")return 26;const y=+m.slice(0,4),mo=+m.slice(5,7),n=new Date(y,mo,0).getDate();let c=0;for(let d=1;d<=n;d++)if(new Date(y,mo-1,d).getDay()!==0)c++;return c}
+  const KN={"2026-08":19,"2026-10":26};if(KN[m])return KN[m];const y=+m.slice(0,4),mo=+m.slice(5,7),n=new Date(y,mo,0).getDate();let c=0;for(let d=1;d<=n;d++)if(new Date(y,mo-1,d).getDay()!==0)c++;return c}
 function cvmData(m,pf,sel){const A=cvAll(),all=Object.keys(A).filter(d=>d.slice(0,7)===m).sort(),days=sel?all.filter(d=>sel.includes(d)):all,dl=[];days.forEach(d=>{const v=CVMC.map(c=>cvSum1(A[d][pf+"-"+c]||[]));if(v.some(x=>x))dl.push([d,v])});
   const sz=CVS.map((z,i)=>CVMC.map(c=>dl.reduce((a,r)=>a+((A[r[0]][pf+"-"+c]||[])[i]||0),0))),nz=CVS.map((z,i)=>i).filter(i=>sz[i].some(x=>x)),idx=nz.length?CVS.map((z,i)=>i).filter(i=>i>=nz[0]&&i<=nz[nz.length-1]):[];
   const col=CVMC.map((c,j)=>cvSum1(dl.map(r=>r[1][j])));return{dl,sz,idx,col,tot:cvSum1(col),all:dl.length&&!sel}}
