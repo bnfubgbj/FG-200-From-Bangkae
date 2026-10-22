@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 138)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 139)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4334,7 +4334,7 @@ cgXlBtn($("x-cgdash"),"xl-dash",async()=>{const P=CVP,F=cgFP(P),ms=(CGMS[P]||pvM
 
 /* ---------- สต๊อก: รายงานตามแม่แบบ (สีเรียงไปทางขวา) ---------- */
 (function(){const d=document.createElement("div");d.className="panel";d.id="x-stkrep";d.hidden=true;
-  d.innerHTML='<h2>สต๊อก ณ วันนี้ → คงเหลือสิ้นเดือน (คู่)</h2><div class="note">เรียงตามแม่แบบ Excel: สีเรียงไปทางขวา แต่ละสีแยกเบอร์ 8.5–11 · ค่าติดลบ (สีส้ม) = ของขาด · เพิ่มสต๊อกวันใหม่ได้ที่ช่องด้านล่าง</div><div class="row" style="align-items:flex-end"><div style="min-width:190px"><span class="lbl">สต๊อก ณ วันที่</span><select id="sr-d"></select></div></div><div id="sr-kpis" class="kpis"></div><div id="sr-msg" class="msg" hidden></div><div id="sr-body" class="scroll"></div>';
+  d.innerHTML='<h2>สต๊อก ณ วันนี้ → คงเหลือสิ้นเดือน (คู่)</h2><div class="note">เรียงตามแม่แบบ Excel: สีเรียงไปทางขวา แต่ละสีแยกเบอร์ 8.5–11 · ค่าติดลบ (สีส้ม) = ของขาด · เพิ่มสต๊อกวันใหม่ได้ที่ช่องด้านล่าง</div><div class="row" style="align-items:flex-end"><div style="min-width:190px"><span class="lbl">สต๊อก ณ วันที่</span><select id="sr-d"></select></div><div style="min-width:170px"><span class="lbl">ยอดแผ่นยางที่ผลิต</span><select id="sr-pm"><option value="net">หักของเสีย</option><option value="full">ไม่หัก (เต็ม cap)</option></select></div><div style="width:90px"><span class="lbl">หักออก %</span><input type="number" id="sr-px" min="0" max="100" step="1"></div></div><div id="sr-pn" class="note"></div><div id="sr-kpis" class="kpis"></div><div id="sr-msg" class="msg" hidden></div><div id="sr-body" class="scroll"></div>';
   $("x-stk").before(d)})();
 function stkRepData(){const sel=$("sr-d"),es=$("e-sd");if(!es)return{err:"ยังไม่พร้อม"};initE();
   if(sel.options.length!==es.options.length||[...es.options].some((o,i)=>sel.options[i]&&sel.options[i].value!==o.value)){sel.innerHTML=[...es.options].map(o=>'<option value="'+o.value+'">'+o.textContent+"</option>").join("")}
@@ -4347,7 +4347,9 @@ const qAt=()=>{const q=$("e-qd")&&$("e-qd").value;return q?" ณ "+thD(q):""};
 const SRROWS=[["","สต๊อก ณ วันนี้","start"],["บวก","แผ่นยางที่จะผลิตถึงสิ้นเดือน","inn"],["เท่ากับ","ยอด FG ที่จะมีถึงสิ้นเดือน","mid"],["หัก","ยอดโควต้าคงเหลือ","quota"],["","คงเหลือ ณ สิ้นเดือน","end"]];
 function stkRepDraw(){const box=$("sr-body"),msg=$("sr-msg");if(!box)return;let c;try{c=stkRepData()}catch(e){c={err:String(e&&e.message||e)}}
   if(!c||c.err){box.innerHTML="";$("sr-kpis").innerHTML="";msg.hidden=false;msg.className="msg warn";msg.textContent=(c&&c.err)||"คำนวณไม่ได้";return}
-  msg.hidden=true;const T=a=>a.reduce((x,y)=>x+y,0),cols=stkRepCols(c),nsp=cols.filter(x=>x.sp).length;
+  msg.hidden=true;$("sr-pm").value=c.pmode;if(document.activeElement!==$("sr-px"))$("sr-px").value=$("e-px").value;$("sr-px").disabled=c.pmode!=="net";
+  $("sr-pn").textContent="แผ่นยางที่นับ: จ่ายประกอบ "+thD(c.d1)+" ถึง "+thD(c.d2)+" (รวมวันแรก) · "+(c.pmode==="net"?"หักของเสีย "+$("e-px").value+"% แล้ว":"ไม่หักของเสีย (เต็ม cap)");
+  const T=a=>a.reduce((x,y)=>x+y,0),cols=stkRepCols(c),nsp=cols.filter(x=>x.sp).length;
   const hc=x=>{if(x.sp)return"background:#6b7280;color:#fff";const h=(x.k==="ขาว"?"BFC5CB":colOf(x.k)[1]).replace("#",""),r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return"background:#"+h+";color:"+((r*299+g*587+b*114)/1000>150?"#1b2a3a":"#fff")};
   let h='<table class="cgrep sr"><thead><tr><th colspan="2" rowspan="2"></th>'+cols.map(x=>'<th colspan="6" style="'+hc(x)+'">'+escH(x.n)+"</th>").join("")+'<th rowspan="2" class="gt">รวมทุกสี</th></tr><tr>'+cols.map(()=>SIZES.map(z=>'<th class="sz">'+z+"</th>").join("")).join("")+"</tr></thead><tbody>";
   SRROWS.forEach(r=>{const lab=r[2]==="mid"?r[1]+" ("+thD(c.ed)+")":r[2]==="start"?r[1]+" ("+thD(c.sd)+")":r[2]==="quota"?r[1]+qAt():r[1];h+="<tr"+(r[2]==="end"?' class="srend"':"")+'><td class="op">'+r[0]+'</td><td class="lb">'+escH(lab)+"</td>"+cols.map(x=>x[r[2]].map(v=>{const n=Math.round(v);return'<td class="'+(n<0?"neg":n?"":"zero")+'">'+(n?fmt(n):"-")+"</td>"}).join("")).join("")+'<td class="tt">'+fmt(Math.round(T(cols.map(x=>T(x[r[2]])))))+"</td></tr>"});
@@ -4355,6 +4357,8 @@ function stkRepDraw(){const box=$("sr-body"),msg=$("sr-msg");if(!box)return;let 
     $("sr-kpis").innerHTML='<div class="kpi"'+hvK("sr1","สีธรรมดา · สต๊อก ณ "+thD(c.sd)+" (คู่)",main.map(rw))+'><div class="k">ยอดรวมสีธรรมดา ('+nz(main)+" สี)</div><div class=\"v\">"+fmt(tm)+'</div></div><div class="kpi"'+hvK("sr2","สีพิเศษ · สต๊อก ณ "+thD(c.sd)+" (คู่)",spc.map(rw))+'><div class="k">ยอดรวมสีพิเศษ ('+nz(spc)+" สี)</div><div class=\"v\">"+fmt(ts)+'</div></div><div class="kpi main"'+hvK("sr3","ทุกสี · สต๊อก ณ "+thD(c.sd)+" (คู่)",cols.map(rw))+'><div class="k">ยอดรวมทั้งสิ้น ณ '+thD(c.sd)+'</div><div class="v">'+fmt(tm+ts)+"</div></div>"}
   box.innerHTML=h+"</tbody></table>"+(nsp?'<div class="note" style="margin-top:8px">สีพิเศษ (หัวตารางสีเทา) = สต๊อกจริงเกรด A จากไฟล์สต๊อกพี่ชุมพร ไม่มีแผ่นยางหรือโควต้าในระบบ จึงนับคงเหลือสิ้นเดือน = สต๊อกวันนี้</div>':"");window._src=c}
 $("sr-d").addEventListener("input",stkRepDraw);
+$("sr-pm").addEventListener("change",()=>{const rd=document.querySelector('input[name="e-prod"][value="'+$("sr-pm").value+'"]');if(rd){rd.checked=true;rd.dispatchEvent(new Event("change",{bubbles:true}))}try{renderE()}catch(e){}stkRepDraw()});
+$("sr-px").addEventListener("input",()=>{$("e-px").value=$("sr-px").value;$("e-px").dispatchEvent(new Event("input",{bubbles:true}));stkRepDraw()});
 cgXlBtn($("x-stkrep"),"xl-sr",async()=>{stkRepDraw();const c=window._src;if(!c)cgNone();const cols=stkRepCols(c),n=cols.length,last=2+6*n,L=colL,rows=[["ฟองน้ำ รุ่น 200 · สต๊อก ณ วันนี้ → คงเหลือสิ้นเดือน ("+thD(c.sd)+" ถึง "+thD(c.ed)+") หน่วย: คู่"],[]],hdr=[2,3],tot=[8],T=a=>a.reduce((x,y)=>x+y,0);
   const h1=["",""],h2=["",""];cols.forEach(x=>{h1.push(x.n);for(let i=1;i<6;i++)h1.push("");SIZES.forEach(z=>h2.push(z))});h1.push("รวมทุกสี");h2.push("");rows.push(h1,h2);
   const labs={start:"สต๊อก ณ วันนี้",inn:"บวก แผ่นยางที่จะผลิตถึงสิ้นเดือน",mid:"เท่ากับ ยอด FG ที่จะมีถึงสิ้นเดือน",quota:"หัก ยอดโควต้าคงเหลือ"+qAt(),end:"คงเหลือ ณ สิ้นเดือน"},rn={start:5,inn:6,mid:7,quota:8,end:9},get=(x,i,j)=>Math.round(x[i][j]);
