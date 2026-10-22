@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 143)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 144)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4121,6 +4121,9 @@ async function cgStkRead(file){const wb=new ExcelJS.Workbook();await wb.xlsx.loa
   const hdr=r=>{if(num(cvx(w1.getCell(r,2)))!==28||num(cvx(w1.getCell(r,23)))!==49)throw new Error("แถวหัวเบอร์ (แถว "+r+") ไม่ใช่ 28–49 — รูปแบบไฟล์เปลี่ยนไปหรือไม่")};
   const blk=(r0,r1,hr)=>{hdr(hr);const o={};for(let r=r0;r<=r1;r++){const c=cgCol(cvx(w1.getCell(r,1)));if(!c)throw new Error("อ่านชื่อสีในเซลล์ A"+r+" ไม่ได้");o[c]=CVS.map((z,i)=>num(cvx(w1.getCell(r,2+i))))}return o};
   const rB=(function(){const o={};[["ขาว",71],["ดำ",86],["นด",101]].forEach(([c,r0])=>{const arr=new Array(CVS.length).fill(0);for(let i=0;i<15;i++){const sz=31+i,m=String(cvx(w2.getCell(r0+i,3))||"").match(/(\d{2})\s*$/);if(m&&+m[1]!==sz)throw new Error("205-R บางหว้า แถว "+(r0+i)+" ไม่ใช่เบอร์ "+sz+" — รูปแบบไฟล์เปลี่ยนไปหรือไม่");arr[CVS.indexOf(sz)]=num(cvx(w2.getCell(r0+i,10)))}o[c]=arr});return o})();
+  {const isE=c=>{const v=c.value;return v&&typeof v==="object"&&!(v instanceof Date)&&(v.error||(v.result&&typeof v.result==="object"&&v.result.error))};let ne=0;
+    for(let r=26;r<=28;r++)for(let c=2;c<=23;c++)if(isE(w1.getCell(r,c)))ne++;for(let r=77;r<=86;r++)for(let c=2;c<=23;c++)if(isE(w1.getCell(r,c)))ne++;for(let r=71;r<=115;r++)if(isE(w2.getCell(r,10)))ne++;
+    if(ne)throw new Error("ไฟล์นี้มีเซลล์ #VALUE!/error "+ne+" ช่อง (สูตรคำนวณพัง เพราะเปิดแบบ Enable Editing/Enable Content แล้วบันทึกทับ) — ให้โหลดไฟล์ต้นฉบับจากพี่ชุมพรใหม่ เปิดดูโดยไม่กด Enable แล้วนำเข้าเลย")}
   let date=null;for(let c=1;c<=30&&!date;c++)date=cgThDate(cvx(w1.getCell(2,c)));if(!date)date=cgThDate(cvx(w2.getCell(1,6)));
   return{date,S:{K:blk(84,86,83),B:blk(77,79,76)},R:{K:blk(26,28,3),B:rB}}}
 let CGIMP=null;
