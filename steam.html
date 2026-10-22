@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 141)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 143)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -3681,7 +3681,8 @@ function calcE(){
     const qv=(has?SIZES.map((z,i)=>s[i]||0):SIZES.map((z,i)=>B>0?q[c].total*b[i]/B:q[c].total/6)).map(x=>x*pct*pf);
     const start=b.slice(0,6),o={start,inn:inn[c],quota:qv,target:q[c].target};o.mid=start.map((x,i)=>x+o.inn[i]);o.end=start.map((x,i)=>x+o.inn[i]-qv[i]);res[c]=o});
   const tq=SC.reduce((a,c)=>a+T(res[c].quota),0);
-  return{spAlloc,sd,ed,lag,f,pct,nd,last,d1,d2,mul,pmode,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0,fgLast,pace:!!(pace&&pace.rows)};
+  const poolB=sup["ดำ"].map(x=>x*mul),poolW=sup["ขาว"].map(x=>x*mul);
+  return{poolB,poolW,spAlloc,sd,ed,lag,f,pct,nd,last,d1,d2,mul,pmode,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0,fgLast,pace:!!(pace&&pace.rows)};
 }
 function periodsOf(c,mode){
   const days=[];for(let d=c.sd;d<=c.ed;d=addD(d,1))days.push(d);
@@ -4370,20 +4371,30 @@ cgXlBtn($("x-stkrep"),"xl-sr",async()=>{stkRepDraw();const c=window._src;if(!c)c
   const merge=cols.map((x,ci)=>[2,3+ci*6,2,8+ci*6]).concat([[2,last+1,3,last+1],[2,1,3,2]]);
   rows.push([]);
   const V=[["start","ฟองน้ำ รุ่น 200 · สต๊อก ณ "+thD(c.sd)+" (หน่วย: คู่)"],["inn","+ "+innLab(c)],["mid","= ยอด FG ที่จะมีถึง "+thD(c.ed)+" (ก่อนหักโควต้า)"],["quota","− ยอดโควต้าคงเหลือที่ยังไม่ได้ขาย"+qAt()],["end","= คงเหลือ ณ สิ้นเดือน "+thD(c.ed)+" (สต๊อกสุทธิที่ส่งได้จริง)"]];
-  V.forEach(b=>{const key=b[0];tot.push(rows.length);rows.push([b[1]]);hdr.push(rows.length);rows.push(["สี/เบอร์","8 1/2","9","9 1/2","10","10 1/2","11","รวม","% สี"]);
+  let S0=-1;
+  V.forEach(b=>{const key=b[0];if(key==="inn")S0=rows.length;tot.push(rows.length);rows.push([b[1]]);hdr.push(rows.length);rows.push(["สี/เบอร์","8 1/2","9","9 1/2","10","10 1/2","11","รวม","% สี"]);
     const r1=rows.length+1,rt=r1+cols.length;
     const gtot=T(cols.map(x=>T(SIZES.map((z,j)=>get(x,key,j)))));cols.forEach((x,ci)=>{const R=rows.length+1,row=[x.n];SIZES.forEach((z,j)=>row.push(FX(L(3+ci*6+j)+rn[key],get(x,key,j))));const rs=T(SIZES.map((z,j)=>get(x,key,j)));row.push(FX("SUM(B"+R+":G"+R+")",rs));row.push(FX("IF(H"+rt+"<>0,H"+R+"/H"+rt+',"")',gtot?rs/gtot:"",true));rows.push(row)});
     const sums=SIZES.map((z,j)=>T(cols.map(x=>get(x,key,j))));tot.push(rows.length);rows.push(["รวม"].concat(sums.map((q,j)=>FX("SUM("+L(2+j)+r1+":"+L(2+j)+(rt-1)+")",q)),[FX("SUM(H"+r1+":H"+(rt-1)+")",T(sums)),FX("SUM(I"+r1+":I"+(rt-1)+")",1,true)]));rows.push([])});
-  const sh={name:"สต๊อก",rows,hdr,tot,merge,w1:38,w:9};await cgXlBook([sh],"สต๊อก_คงเหลือสิ้นเดือน_"+c.sd+".xlsx")});
+  if(S0>=0&&c.poolB){const pad=(a,n)=>{while(a.length<n)a.push("");return a},pb=c.poolB.slice(0,6).map(Math.round),pw=c.poolW.slice(0,6).map(Math.round),r1=S0+3;
+    pad(rows[S0],10).push("แผ่นยางสีดำ / สีขาว ก่อนปัน (นึ่ง "+thD(c.d1)+" – "+thD(c.d2)+(c.pmode==="net"?" หัก "+Math.round((1-c.mul)*1000)/10+"% แล้ว)":")"));
+    pad(rows[S0+1],10).push("สี/เบอร์","8 1/2","9","9 1/2","10","10 1/2","11","รวม");
+    [["สีดำ (ก่อนปันให้หูสีพิเศษ)",pb],["สีขาว (ก่อนปันให้ดำหน้าขาว)",pw]].forEach((q,k)=>{const R=r1+k,row=pad(rows[S0+2+k],10);row.push(q[0]);q[1].forEach(v=>row.push(v));row.push(FX("SUM(L"+R+":Q"+R+")",cvSum1(q[1])))});
+    const row=pad(rows[S0+4],10);row.push("รวมดำ + ขาว");SIZES.forEach((z,j)=>row.push(FX(L(12+j)+r1+"+"+L(12+j)+(r1+1),pb[j]+pw[j])));row.push(FX("SUM(L"+(r1+2)+":Q"+(r1+2)+")",cvSum1(pb)+cvSum1(pw)))}
+  const sh={name:"สต๊อก",rows,hdr,tot,merge,w1:38,w:9,post:ws=>{if(S0<0)return;ws.getColumn(10).width=3;ws.getColumn(11).width=34;[S0+1,S0+2].forEach(i=>{const cl=ws.getRow(i).getCell(10);cl.fill={type:"pattern",pattern:"none"}});ws.getRow(S0+5).eachCell((cl,ci)=>{if(ci>=11)cl.font={name:"Tahoma",size:11,bold:true}})}};await cgXlBook([sh],"สต๊อก_คงเหลือสิ้นเดือน_"+c.sd+".xlsx")});
 /* ---------- ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน (ฟองน้ำ) ---------- */
 const RCM={y:"",m:""};
+function rcPlan(m){const o=PL[m];if(!o)return null;const rv=Object.keys(o).map(Number).sort((a,b)=>b-a)[0];return rv==null?null:{rev:rv,c:o[rv].colors}}
+function rcCmp(m,dm){const P=rcPlan(m);if(!P)return null;const SP=PTPL.slice(7);
+  return{rev:P.rev,rows:SP.map(r=>{const pl=(P.c[r[0]]||cZ()).slice(0,6).map(x=>x||0),ac=(dm[r[0]]||cZ()).slice(0,6).map(x=>x||0),tp=cT(pl),ta=cT(ac),d=tp-ta;
+    const bs=SIZES.map((z,i)=>pl[i]-ac[i]).map((x,i)=>x>0?SIZES[i]+": ขาด "+fmt(x):"").filter(Boolean);return{k:r[0],n:r[1],tp,ta,d,bs,st:tp===0&&ta===0?"":tp===0?"ไม่มีในแผน":d>0?"ขาด "+fmt(d):d<0?"เกินแผน "+fmt(-d):"ครบแล้ว"}}).filter(x=>x.tp>0||x.ta>0)}}
 function rcMonData(){const M={},ck=PTPL.map(r=>r[0]);Object.keys(FGD).forEach(d=>{const ym=d.slice(0,7),o=M[ym]=M[ym]||{days:0,c:{}};let any=false;ck.forEach(k=>{const a=FGD[d][k];if(!a)return;if(cT(a)>0)any=true;const t=o.c[k]=o.c[k]||cZ();a.forEach((v,i)=>t[i]+=v||0)});if(any)o.days++});Object.keys(M).forEach(m=>{if(!Object.values(M[m].c).some(a=>cT(a)>0))delete M[m]});return M}
 (function(){const host=$("view-x"),d=document.createElement("div");d.className="panel";d.id="x-rcmon";d.hidden=true;
-  d.innerHTML='<h2>ผลิตจริงเข้าโกดังพี่ชุมพร · รายเดือน (คู่)</h2><div class="note">รวมยอดที่บันทึกในช่อง "เพิ่มหรือแก้ไขข้อมูลรายวัน" ด้านล่าง เป็นรายเดือน แยกสี · กดที่แถวเดือนเพื่อดูรายละเอียดสี × เบอร์ด้านล่าง</div><div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ปี (ค.ศ.)</span><select id="rm-y"></select></div></div><div id="rm-body"></div>';host.appendChild(d)})();
+  d.innerHTML='<h2>ผลิตจริงเข้าโกดังพี่ชุมพร · รายเดือน (คู่)</h2><div class="note">รวมยอดที่บันทึกในช่อง "เพิ่มหรือแก้ไขข้อมูลรายวัน" ด้านล่าง เป็นรายเดือน แยกสี · กดที่แถวเดือนเพื่อดูรายละเอียดสี × เบอร์ด้านล่าง</div><div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ปี (ค.ศ.)</span><select id="rm-y"></select></div><div style="min-width:150px"><span class="lbl">เดือนที่แสดง</span><select id="rm-m"></select></div></div><div id="rm-body"></div>';host.appendChild(d)})();
 function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),ms=Object.keys(M).sort(),ys=[...new Set(ms.map(m=>m.slice(0,4)))].sort().reverse(),ysel=$("rm-y");
   if(!ys.length){ysel.innerHTML="";box.innerHTML='<div class="empty">ยังไม่มียอดรับเข้าโกดังที่บันทึกไว้ — บันทึกในช่อง "เพิ่มหรือแก้ไขข้อมูลรายวัน" ด้านล่างก่อน</div>';return}
   if(!ys.includes(RCM.y))RCM.y=ys[0];ysel.innerHTML=ys.map(y=>'<option value="'+y+'"'+(y===RCM.y?" selected":"")+">"+(+y+543)+" ("+y+")</option>").join("");
-  const my=ms.filter(m=>m.slice(0,4)===RCM.y);if(!my.includes(RCM.m))RCM.m=my[my.length-1];
+  const my=ms.filter(m=>m.slice(0,4)===RCM.y);if(!my.includes(RCM.m))RCM.m=my[my.length-1];$("rm-m").innerHTML=my.map(m=>'<option value="'+m+'"'+(m===RCM.m?" selected":"")+">"+thM(m)+"</option>").join("");
   const cols=PTPL.filter(r=>my.some(m=>cT(M[m].c[r[0]]||cZ())>0)),tc=(m,k)=>cT(M[m].c[k]||cZ());
   let h='<div class="scroll"><table class="cgrep"><thead><tr><th>เดือน</th>'+cols.map(r=>"<th>"+escH(r[1])+"</th>").join("")+'<th class="tt">รวม (คู่)</th><th>วันที่บันทึก</th></tr></thead><tbody>';
   my.forEach(m=>{const tot=cols.reduce((a,r)=>a+tc(m,r[0]),0);h+='<tr data-m="'+m+'" class="'+(m===RCM.m?"sel":"")+'" style="cursor:pointer"><th>'+thM(m)+"</th>"+cols.map(r=>"<td>"+fmt(tc(m,r[0]))+"</td>").join("")+'<td class="tt">'+fmt(tot)+"</td><td>"+M[m].days+" วัน</td></tr>"});
@@ -4392,8 +4403,13 @@ function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),m
   h+='<div class="cgsec">รายละเอียด '+thM(RCM.m)+' · สี × เบอร์</div><div class="scroll"><table class="cgrep"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวม (คู่)</th></tr></thead><tbody>'+
     dc.map(r=>{const a=dm[r[0]];return"<tr><th>"+escH(r[1])+"</th>"+a.map(v=>"<td>"+fmt(v)+"</td>").join("")+'<td class="tt">'+fmt(cT(a))+"</td></tr>"}).join("")+
     '</tbody><tfoot><tr><th>รวม</th>'+SIZES.map((z,i)=>"<td>"+fmt(dc.reduce((a,r)=>a+dm[r[0]][i],0))+"</td>").join("")+'<td class="tt">'+fmt(dc.reduce((a,r)=>a+cT(dm[r[0]]),0))+"</td></tr></tfoot></table></div>";
+  {const cp=rcCmp(RCM.m,dm);h+='<div class="cgsec">หูสีพิเศษ · ดำหน้าขาว เทียบแผนผลิต '+thM(RCM.m)+(cp?" (แผน "+revName(cp.rev)+")":"")+"</div>";
+    if(!cp)h+='<div class="note">ยังไม่มีแผนผลิตของเดือนนี้ในระบบ จึงเทียบไม่ได้ — นำเข้าที่เมนู แผนผลิต</div>';
+    else if(!cp.rows.length)h+='<div class="note">เดือนนี้ไม่มีรายการหูสีพิเศษในแผนและไม่มีผลิตจริง</div>';
+    else h+='<div class="scroll"><table class="cgrep"><thead><tr><th>ชนิด</th><th>แผนผลิต (คู่)</th><th>ผลิตจริง (คู่)</th><th>ขาด / เกิน</th><th>ขาดรายเบอร์</th></tr></thead><tbody>'+cp.rows.map(x=>'<tr><th>'+escH(x.n)+"</th><td>"+fmt(x.tp)+"</td><td>"+fmt(x.ta)+'</td><td style="font-weight:700;color:var(--'+(x.d>0?"warn":"accent")+')">'+(x.st||"-")+'</td><td style="text-align:left">'+(x.d>0?escH(x.bs.join(" · ")):"-")+"</td></tr>").join("")+"</tbody></table></div>"}
   box.innerHTML=h}
 $("rm-y").addEventListener("input",e=>{RCM.y=e.target.value;RCM.m="";rcMonDraw()});
+$("rm-m").addEventListener("change",e=>{RCM.m=e.target.value;rcMonDraw()});
 $("rm-body").addEventListener("click",e=>{const tr=e.target.closest("tr[data-m]");if(tr){RCM.m=tr.dataset.m;rcMonDraw()}});
 cgXlBtn($("x-rcmon"),"xl-rcm",async()=>{const M=rcMonData(),my=Object.keys(M).sort().filter(m=>m.slice(0,4)===RCM.y);if(!my.length)cgNone();
   const cols=PTPL.filter(r=>my.some(m=>cT(M[m].c[r[0]]||cZ())>0)),n=cols.length,rows=[["ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน ปี "+(+RCM.y+543)+" (หน่วย: คู่)"],[],["เดือน"].concat(cols.map(r=>r[1]),["รวม","วันที่บันทึก"])];
@@ -4403,7 +4419,10 @@ cgXlBtn($("x-rcmon"),"xl-rcm",async()=>{const M=rcMonData(),my=Object.keys(M).so
   my.forEach(m=>{const dc=PTPL.filter(r=>cT(M[m].c[r[0]]||cZ())>0),rr=[["ผลิตจริงเข้าโกดังพี่ชุมพร "+thM(m)+" สี × เบอร์ (หน่วย: คู่)"],[],["สี"].concat(SIZES,["รวม"])];
     dc.forEach((r,i)=>{const a=M[m].c[r[0]],R=4+i;rr.push([r[1]].concat(a,[SUMR(R,2,SIZES.length+1,cT(a))]))});
     rr.push(["รวม"].concat(SIZES.map((z,i)=>SUMC(i+2,4,3+dc.length,dc.reduce((a,r)=>a+M[m].c[r[0]][i],0))),[SUMC(SIZES.length+2,4,3+dc.length,dc.reduce((a,r)=>a+cT(M[m].c[r[0]]),0))]));
-    sh.push({name:thM(m).replace(".","").slice(0,31),rows:rr,hdr:[2],tot:[rr.length-1],w1:16,w:11})});
+    const hd=[2],tt=[rr.length-1],cp=rcCmp(m,M[m].c);
+    if(cp&&cp.rows.length){rr.push([]);tt.push(rr.length);rr.push(["หูสีพิเศษ · ดำหน้าขาว เทียบแผนผลิต (แผน "+revName(cp.rev)+")"]);hd.push(rr.length);rr.push(["ชนิด","แผนผลิต","ผลิตจริง","ขาด/เกิน","สถานะ","ขาดรายเบอร์"]);
+      cp.rows.forEach(x=>{const R=rr.length+1;rr.push([x.n,x.tp,x.ta,FX("B"+R+"-C"+R,x.d),FX('IF(D'+R+'>0,"ขาด",IF(D'+R+'<0,"เกินแผน","ครบแล้ว"))',x.d>0?"ขาด":x.d<0?"เกินแผน":"ครบแล้ว"),x.d>0?x.bs.join(" · "):""])})}
+    sh.push({name:thM(m).replace(".","").slice(0,31),rows:rr,hdr:hd,tot:tt,w1:16,w:11})});
   await cgXlBook(sh,"ผลิตจริงเข้าโกดังพี่ชุมพร_"+RCM.y+".xlsx")});
 /* ---------- Dashboard: รับเข้าโกดังจริง เทียบแผ่นยาง และแผนผลิต ---------- */
 const RCC={plan:"#8fa3b8",asm:"#ffb020",act:"#19c38b"};
