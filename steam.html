@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 139)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 22 ต.ค. 69 (แก้ไขรอบ 140)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -3664,6 +3664,9 @@ function calcE(){
   if(bo!=null){bReg=SIZES.map(()=>bo/100);bsrc="ตามที่กำหนด"}
   else if(Pm){const spc=pkD.map((x,i)=>Math.max(0,x-pk("ดำ")[i]));bReg=SIZES.map((z,i)=>{const pool=sup["ดำ"][i]*mul;return pool>0?Math.max(0,pool-spc[i])/pool:1});bsrc="ตัดให้พื้นดำหูพิเศษตามแผน "+thM(m)+" ก่อน ที่เหลือเป็นสีดำ"}
   else{bReg=SIZES.map(()=>1);bsrc="ใช้ทั้งหมด (ไม่มีแผนเดือนนี้)"}
+  const spAlloc={};
+  if(Pm&&bo==null){const ks=Object.keys(Pm).filter(k=>k!=="ดำ"&&planPool(k)==="ดำ");ks.forEach(k=>spAlloc[k]=Z6());
+    SIZES.forEach((z,i)=>{const pool=sup["ดำ"][i]*mul,tot=ks.reduce((a,k)=>a+(Pm[k][i]||0),0),give=Math.min(pool,tot);if(tot>0)ks.forEach(k=>spAlloc[k][i]=(Pm[k][i]||0)*give/tot)})}
   const inn={"น้ำเงิน":sup["น้ำเงิน"],"เขียว":sup["เขียว"],"แดง":sup["แดง"],"เหลือง":sup["เหลือง"],"เทา":sup["เทา"],
     "ขาว":sup["ขาว"].map((x,i)=>x*wReg[i]),"ดำ/ขาว":sup["ขาว"].map((x,i)=>x*(1-wReg[i])),"ดำ":sup["ดำ"].map((x,i)=>x*bReg[i])};
   const dayCol={},sm=a=>a.reduce((x,y)=>x+y,0);
@@ -3678,7 +3681,7 @@ function calcE(){
     const qv=(has?SIZES.map((z,i)=>s[i]||0):SIZES.map((z,i)=>B>0?q[c].total*b[i]/B:q[c].total/6)).map(x=>x*pct*pf);
     const start=b.slice(0,6),o={start,inn:inn[c],quota:qv,target:q[c].target};o.mid=start.map((x,i)=>x+o.inn[i]);o.end=start.map((x,i)=>x+o.inn[i]-qv[i]);res[c]=o});
   const tq=SC.reduce((a,c)=>a+T(res[c].quota),0);
-  return{sd,ed,lag,f,pct,nd,last,d1,d2,mul,pmode,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0,fgLast,pace:!!(pace&&pace.rows)};
+  return{spAlloc,sd,ed,lag,f,pct,nd,last,d1,d2,mul,pmode,res,dayCol,kind,wsrc,bsrc,rev:revs.length?revs[0]:null,m,tq,hasQ:tq>0,fgLast,pace:!!(pace&&pace.rows)};
 }
 function periodsOf(c,mode){
   const days=[];for(let d=c.sd;d<=c.ed;d=addD(d,1))days.push(d);
@@ -4341,7 +4344,7 @@ function stkRepData(){const sel=$("sr-d"),es=$("e-sd");if(!es)return{err:"ยั
   if(sel.value&&es.value!==sel.value&&[...es.options].some(o=>o.value===sel.value)){es.value=sel.value;try{es.dispatchEvent(new Event("input"))}catch(e){}}else sel.value=es.value;
   return calcE()}
 function stkRepCols(c){const Z=()=>[0,0,0,0,0,0],L=SC.map(k=>({k,n:SCN[k]||k,sp:0,start:c.res[k].start,inn:c.res[k].inn,mid:c.res[k].mid,quota:c.res[k].quota,end:c.res[k].end})),sp=stkGet("special",c.sd)||{};
-  const add=(k,n,k2)=>{const a=(sp[k]||sp[k2]||Z()).slice(0,6).map(x=>x||0);L.push({k,n,sp:1,start:a,inn:Z(),mid:a.slice(),quota:Z(),end:a.slice()})};
+  const add=(k,n,k2)=>{const a=(sp[k]||sp[k2]||Z()).slice(0,6).map(x=>x||0),g=((c.spAlloc||{})[k]||Z()).slice(0,6),m=a.map((x,i)=>x+g[i]);L.push({k,n,sp:1,start:a,inn:g,mid:m,quota:Z(),end:m.slice()})};
   PTPL.forEach(r=>{if(!SC.includes(r[0]))add(r[0],r[1],r[1])});Object.keys(sp).forEach(k=>{if(!PTPL.some(r=>r[0]===k||r[1]===k))add(k,k)});return L}
 const qAt=()=>{const q=$("e-qd")&&$("e-qd").value;return q?" ณ "+thD(q):""};
 const SRROWS=[["","สต๊อก ณ วันนี้","start"],["บวก","แผ่นยางที่จะผลิตถึงสิ้นเดือน","inn"],["เท่ากับ","ยอด FG ที่จะมีถึงสิ้นเดือน","mid"],["หัก","ยอดโควต้าคงเหลือ","quota"],["","คงเหลือ ณ สิ้นเดือน","end"]];
@@ -4355,7 +4358,7 @@ function stkRepDraw(){const box=$("sr-body"),msg=$("sr-msg");if(!box)return;let 
   SRROWS.forEach(r=>{const lab=r[2]==="mid"?r[1]+" ("+thD(c.ed)+")":r[2]==="start"?r[1]+" ("+thD(c.sd)+")":r[2]==="quota"?r[1]+qAt():r[1];h+="<tr"+(r[2]==="end"?' class="srend"':"")+'><td class="op">'+r[0]+'</td><td class="lb">'+escH(lab)+"</td>"+cols.map(x=>x[r[2]].map(v=>{const n=Math.round(v);return'<td class="'+(n<0?"neg":n?"":"zero")+'">'+(n?fmt(n):"-")+"</td>"}).join("")).join("")+'<td class="tt">'+fmt(Math.round(T(cols.map(x=>T(x[r[2]])))))+"</td></tr>"});
   {const main=cols.filter(x=>!x.sp),spc=cols.filter(x=>x.sp),sm=a=>Math.round(T(a.map(x=>T(x.start)))),rw=x=>({tr:tint(x.k),lab:escH(x.n),v:x.start}),nz=a=>a.filter(x=>T(x.start)>0).length,tm=sm(main),ts=sm(spc);
     $("sr-kpis").innerHTML='<div class="kpi"'+hvK("sr1","สีธรรมดา · สต๊อก ณ "+thD(c.sd)+" (คู่)",main.map(rw))+'><div class="k">ยอดรวมสีธรรมดา ('+nz(main)+" สี)</div><div class=\"v\">"+fmt(tm)+'</div></div><div class="kpi"'+hvK("sr2","สีพิเศษ · สต๊อก ณ "+thD(c.sd)+" (คู่)",spc.map(rw))+'><div class="k">ยอดรวมสีพิเศษ ('+nz(spc)+" สี)</div><div class=\"v\">"+fmt(ts)+'</div></div><div class="kpi main"'+hvK("sr3","ทุกสี · สต๊อก ณ "+thD(c.sd)+" (คู่)",cols.map(rw))+'><div class="k">ยอดรวมทั้งสิ้น ณ '+thD(c.sd)+'</div><div class="v">'+fmt(tm+ts)+"</div></div>"}
-  box.innerHTML=h+"</tbody></table>"+(nsp?'<div class="note" style="margin-top:8px">สีพิเศษ (หัวตารางสีเทา) = สต๊อกจริงเกรด A จากไฟล์สต๊อกพี่ชุมพร ไม่มีแผ่นยางหรือโควต้าในระบบ จึงนับคงเหลือสิ้นเดือน = สต๊อกวันนี้</div>':"");window._src=c}
+  box.innerHTML=h+"</tbody></table>"+(nsp?'<div class="note" style="margin-top:8px">สีพิเศษ (หัวตารางสีเทา) = สต๊อกจริงเกรด A จากไฟล์สต๊อกพี่ชุมพร ไม่มีแผ่นยางหรือโควต้าในระบบ จึงนับคงเหลือสิ้นเดือน = สต๊อกวันนี้ + ยางพื้นดำที่แบ่งให้หูสีพิเศษตามแผนผลิต (ถ้ามีแผน)</div>':"");window._src=c}
 $("sr-d").addEventListener("input",stkRepDraw);
 $("sr-pm").addEventListener("change",()=>{const rd=document.querySelector('input[name="e-prod"][value="'+$("sr-pm").value+'"]');if(rd){rd.checked=true;rd.dispatchEvent(new Event("change",{bubbles:true}))}try{renderE()}catch(e){}stkRepDraw()});
 $("sr-px").addEventListener("input",()=>{$("e-px").value=$("sr-px").value;$("e-px").dispatchEvent(new Event("input",{bubbles:true}));stkRepDraw()});
