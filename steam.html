@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 148)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 149)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -802,7 +802,7 @@ thead th{background:#dcecff;color:#0a47a8}
       <div id="cv-sb"></div></div>
     <div class="panel" id="x-stk" hidden><h2>สต๊อก Update รายวัน</h2><div class="note">ไฟล์สต็อกคงเหลือจากพี่ชุมพร (เปลี่ยนทุกวัน): เลือกไฟล์ → ตรวจวันที่ → กดบันทึก วันใหม่ไม่ทับวันเก่า · ดูผลที่ <a href="#" data-go="e">ประเมินสต็อก › สิ้นเดือน</a></div>
       <details class="dbox" id="e-d1" open><summary>เลือกไฟล์สต็อก (.xlsx)</summary><div class="dbody">
-      <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่ตัดยอดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · วันที่อ่านจากช่อง B2 ของไฟล์ แล้วกดบันทึกสต็อก</div>
+      <div class="note">เลือกไฟล์สต็อกมาตรฐาน "FG200 สต็อกคงเหลือ" ที่ตัดยอดออกไว้บริหารจัดการแล้ว ระบบใช้ตัวเลขนี้เป็นสต็อกต้นงวด · ไฟล์ Stock 205-S,200 ไฟล์เดียว บันทึกครั้งเดียวได้ทั้ง ฟองน้ำ 200 + ผ้าใบ 205-S + 205-R · ตรวจวันที่ในช่องแล้วกดบันทึกสต็อก</div>
       <div class="row" style="align-items:center"><input type="file" id="e-file" accept=".xlsx" style="max-width:340px"><input type="date" id="e-fdate" style="max-width:170px" aria-label="วันที่สต็อก"><button class="btn" id="e-fsave" disabled>บันทึกสต็อก</button></div>
       <div id="e-fprev" class="note"></div>
       <div class="row" style="align-items:flex-end;margin-top:6px"><div style="min-width:200px"><span class="lbl">สต็อกที่บันทึกไว้</span><select id="xk-sd"></select></div><button class="btn ghost" id="e-fdel" type="button" style="color:var(--bad);border-color:var(--bad)">ลบสต็อกวันที่ที่เลือก</button></div>
@@ -2245,7 +2245,7 @@ function fgReveal(views,panels,title,code,groups){document.querySelectorAll(".fg
   if(groups)fgGroups(code,groups);$("ptitle").textContent=title;fgBar(null,code);accView()}
 const FGPG={
   d:()=>{$("tab-d").click();fgBar(null,"d")},
-  stk:()=>{show("x5");initE();fgReveal([],["x-stkrep","x-stk","x-quo"],"สต๊อก","stk",[[0,"โควต้าฝ่ายขายที่เหลือ (ใช้คำนวณแถว \"หัก\")",["x-quo"],0]]);stkRepDraw();["x-stkrep","x-stk"].forEach(id=>{const p=$(id);if(!p)return;p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")})},
+  stk:()=>{show("x5");initE();fgReveal([],["x-stkrep","x-stk"],"สต๊อก","stk");stkRepDraw();["x-stkrep","x-stk"].forEach(id=>{const p=$(id);if(!p)return;p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")})},
   plan:()=>{show("p");initE();renderP();pfInit();poInit();xpDraw();xsDraw();xlDraw();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}fgReveal([],["x-plan","x-plist"],"แผนผลิต","plan",[[0,"แผนผลิต · คำนวณสต็อกคงเหลือ",["view-p"],1],[0,"นำเข้าแผนผลิต (PDF) และแผนผลิตที่บันทึกไว้",["x-plan","x-plist"],0]]);$("view-p").hidden=false},
   asm:()=>{show("x2");xsDraw();xlDraw();fgReveal(["q"],["x-steam","x-slist","x-sdash"],"แผ่นยางประกอบ","asm",[[0,"แผ่นยางประกอบ · ภาพรวม",["view-q"],1],[0,"นำเข้าไฟล์นึ่งยาง (Excel)",["x-steam"],1],[0,"แผ่นยางที่บันทึกไว้ และแดชบอร์ด",["x-slist","x-sdash"],0]])},
   prod:()=>{window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("tab-r").setAttribute("aria-selected","false");cmpInit();initM();renderM();rcMonDraw();fgReveal(["c","m","r"],["x-rcmon"],"ผลิตจริงเข้าโกดัง","prod",[[0,"เปรียบเทียบกับแผน (แผนผลิต · แผนประกอบ · รับจริง)",["view-c","view-m"],0]])},
@@ -3100,10 +3100,13 @@ function eMsg(t,cls){const q=!$("x-quo").hidden;["e-msg","eq-msg"].forEach(id=>{
 $("e-file").onchange=async e=>{
   const f=e.target.files[0];EIMP=null;$("e-fsave").disabled=true;$("e-fprev").textContent="";if(!f)return;
   const r=await readStock(f);
-  if(r.err){$("e-fprev").textContent=r.err;return}
+  r.cv=null;r.cvErr="";try{r.cv=await cgStkRead(f)}catch(err){r.cvErr=(err&&err.message)||String(err)}
+  if(r.err&&!r.cv){$("e-fprev").textContent=r.err;return}
+  if(r.err){$("e-fprev").textContent="ฟองน้ำ 200: "+r.err+" · ผ้าใบ: อ่านได้";EIMP=r;$("e-fdate").value=(r.cv&&r.cv.date)||"";$("e-fsave").disabled=false;return}
   EIMP=r;$("e-fdate").value=r.date;$("e-fsave").disabled=false;const sp=sumT(r.tabs.special);
   const a=sumT(r.tabs.stock),b=sumT(r.tabs.booked),n=sumT(r.tabs.net);if(r.std){$("e-fprev").innerHTML="อ่านไฟล์มาตรฐานได้: สต็อกต้นเดือน <b>"+fmt(a)+"</b> คู่"+(r.date?"":' <span style="color:var(--warn)">(ไม่มีวันที่ในช่อง B2 — เลือกวันที่ด้านบน)</span>');return}
   $("e-fprev").innerHTML="อ่านได้: คงเหลือ <b>"+fmt(a)+"</b> − ยอดซื้อ <b>"+fmt(b)+"</b> = สุทธิ <b>"+fmt(n)+"</b> คู่"+(Math.abs(a-b-n)>1?' <span style="color:var(--warn)">(ตัวเลขในไฟล์ไม่ตรงสูตร ตรวจอีกครั้ง)</span>':"")+" · วันที่ในหัวตาราง "+(r.date?thD(r.date):"อ่านไม่ได้ — กรอกวันที่เอง")+" · สีพิเศษ (ตารางเหลือง) <b>"+fmt(sp)+"</b> คู่ รวมทั้งหมด <b>"+fmt(n+sp)+"</b>";
+  {const p=$("e-fprev");p.innerHTML+=r.cv?'<br>ผ้าใบ: อ่านได้ 205-S บางแค <b>'+cvN(cgTot2(r.cv.S.K))+'</b> · บางหว้า <b>'+cvN(cgTot2(r.cv.S.B))+'</b> | 205-R บางแค <b>'+cvN(cgTot2(r.cv.R.K))+'</b> · บางหว้า <b>'+cvN(cgTot2(r.cv.R.B))+'</b> คู่ — กดบันทึกครั้งเดียวจะเก็บทั้ง 3 สินค้าที่วันที่ด้านบน':'<br><span style="color:var(--warn)">ผ้าใบ: อ่านไม่ได้ ('+escH(r.cvErr||"ไม่พบแท็บ")+') — จะบันทึกเฉพาะฟองน้ำ 200</span>'}
 };
 $("e-fsave").onclick=async()=>{
   const key=($("pf-key").value||$("e-key").value).trim(),d=$("e-fdate").value;if(!EIMP||!d){sMsg("เลือกไฟล์และวันที่ก่อน","warn");return}
@@ -3112,7 +3115,8 @@ $("e-fsave").onclick=async()=>{
   const rows=[];["stock","booked","net","special"].forEach(k=>Object.keys(EIMP.tabs[k]||{}).forEach(c=>rows.push([k,c].concat(EIMP.tabs[k][c],[""]))));
   $("e-fsave").disabled=true;
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by:"",rows})}).then(r=>r.json());
-    if(r.ok){sMsg("บันทึกสต็อกวันที่ "+thD(d)+" แล้ว ("+r.rows+" แถว)","ok");EIMP=null;$("e-file").value="";$("e-fprev").textContent="";await load();$("e-sd").value=d;renderE();poInit()}
+    if(r.ok){let cm="";if(EIMP&&EIMP.cv){try{let by="";try{by=(localStorage.getItem("fgby")||"").trim()}catch(e){}await cgStkPost(EIMP.cv,d,key,by);cm=" + ผ้าใบ 205-S/205-R"}catch(e2){cm=" (ผ้าใบบันทึกไม่สำเร็จ: "+((e2&&e2.message)||e2)+")"}}
+      sMsg("บันทึกสต็อกวันที่ "+thD(d)+" แล้ว: ฟองน้ำ 200 ("+r.rows+" แถว)"+cm,"ok");EIMP=null;$("e-file").value="";$("e-fprev").textContent="";await load();$("e-sd").value=d;renderE();poInit()}
     else{sMsg(r.error||"บันทึกไม่สำเร็จ","warn");$("e-fsave").disabled=false}}
   catch(err){sMsg("บันทึกไม่สำเร็จ: "+err,"warn");$("e-fsave").disabled=false}
 };
@@ -4160,13 +4164,15 @@ async function cgStkImport(file){cgFs("stk","กำลังอ่านไฟ�
     cgFs("stk","อ่านสต๊อก ณ "+(d.date?thD(d.date):"(ไม่พบวันที่ในไฟล์ — ใช้วันที่ในช่องกรอก)")+" แล้ว: 205-S บางแค "+cvN(cgTot2(d.S.K))+" · บางหว้า "+cvN(cgTot2(d.S.B))+"  |  205-R บางแค "+cvN(cgTot2(d.R.K))+" · บางหว้า "+cvN(cgTot2(d.R.B))+" คู่ — ตรวจตัวเลขแล้วกดปุ่ม บันทึกสต๊อกจากไฟล์","ok");$("cg-stk-imp").hidden=false}
   catch(err){cgFs("stk","อ่านไฟล์ไม่สำเร็จ: "+(err&&err.message||err),"warn")}}
 function cgChunkRows(kd,key,a){const r=[];for(let c=0;c<4;c++){const v=a.slice(c*6,c*6+6);while(v.length<6)v.push(0);const t=cvSum1(v);if(v.some(x=>x))r.push([kd,key+"#"+(c+1)].concat(v.map(x=>x||""),[t]))}return r}
+async function cgStkPost(data,d,key,by){
+  const rows=[];[["K","cvstkK"],["B","cvstkB"]].forEach(w=>{const M=Object.assign({},cvAll(w[1])[d]||{});[["S","205S"],["R","205R"]].forEach(p=>{Object.keys(data[p[0]][w[0]]).forEach(c=>{M[p[1]+"-"+c]=data[p[0]][w[0]][c]})});Object.keys(M).forEach(k=>cgChunkRows(w[1],k,M[k]).forEach(r=>rows.push(r)))});
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by,rows})}).then(x=>x.json());
+  if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ");return r}
 $("cg-stk-imp").onclick=async()=>{if(!CGIMP)return;const d=CGIMP.date||$("cg-stk-d").value;if(!d){cgFs("stk","ไม่พบวันที่ — เลือกวันที่ในช่องกรอกก่อน","warn");return}
   const key=($("pf-key").value||"").trim()||fgKeySet(true);if(!key){cgFs("stk","ใส่รหัสบันทึกก่อน","warn");return}
   let by="";try{by=($("cg-stk-by").value||localStorage.getItem("fgby")||"").trim()}catch(e){}
-  const rows=[];[["K","cvstkK"],["B","cvstkB"]].forEach(w=>{const M=Object.assign({},cvAll(w[1])[d]||{});[["S","205S"],["R","205R"]].forEach(p=>{Object.keys(CGIMP[p[0]][w[0]]).forEach(c=>{M[p[1]+"-"+c]=CGIMP[p[0]][w[0]][c]})});Object.keys(M).forEach(k=>cgChunkRows(w[1],k,M[k]).forEach(r=>rows.push(r)))});
   $("cg-stk-imp").disabled=true;
-  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by,rows})}).then(x=>x.json());
-    if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ");await load();CGIMP=null;$("cg-stk-imp").hidden=true;$("cg-stk-d").value=d;cgRepFill(d);cgFs("stk","บันทึกสต๊อก ณ "+thD(d)+" แล้ว (205-S และ 205-R ทั้ง 2 โกดัง) — ดูรายงานด้านบน","ok")}
+  try{await cgStkPost(CGIMP,d,key,by);await load();CGIMP=null;$("cg-stk-imp").hidden=true;$("cg-stk-d").value=d;cgRepFill(d);cgFs("stk","บันทึกสต๊อก ณ "+thD(d)+" แล้ว (205-S และ 205-R ทั้ง 2 โกดัง) — ดูรายงานด้านบน","ok")}
   catch(err){cgFs("stk","บันทึกไม่สำเร็จ: "+(err&&err.message||err),"warn")}$("cg-stk-imp").disabled=false};
 /* ---------- ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน: 2 ตาราง + เฉลี่ยต่อวัน + นำเข้า Excel ---------- */
 const CVMC=["ขาว","ดำ","นด"],CVMN=["ขาว","ดำ","น้ำตาล"],cvmDmy=d=>d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
@@ -4390,7 +4396,7 @@ function stkRepDraw(){const box=$("sr-body"),msg=$("sr-msg");if(!box)return;let 
   SRROWS.forEach(r=>{const lab=r[2]==="mid"?r[1]+" ("+thD(c.ed)+")":r[2]==="start"?r[1]+" ("+thD(c.sd)+")":r[2]==="inn"?innLab(c):r[2]==="quota"?r[1]+qAt():r[1];h+="<tr"+(r[2]==="end"?' class="srend"':"")+'><td class="op">'+r[0]+'</td><td class="lb">'+escH(lab)+"</td>"+cols.map(x=>x[r[2]].map(v=>{const n=Math.round(v);return'<td class="'+(n<0?"neg":n?"":"zero")+'">'+(n?fmt(n):"-")+"</td>"}).join("")).join("")+'<td class="tt">'+fmt(Math.round(T(cols.map(x=>T(x[r[2]])))))+"</td></tr>"});
   {const main=cols.filter(x=>!x.sp),spc=cols.filter(x=>x.sp),sm=a=>Math.round(T(a.map(x=>T(x.start)))),rw=x=>({tr:tint(x.k),lab:escH(x.n),v:x.start}),nz=a=>a.filter(x=>T(x.start)>0).length,tm=sm(main),ts=sm(spc);
     $("sr-kpis").innerHTML='<div class="kpi"'+hvK("sr1","สีธรรมดา · สต๊อก ณ "+thD(c.sd)+" (คู่)",main.map(rw))+'><div class="k">ยอดรวมสีธรรมดา ('+nz(main)+" สี)</div><div class=\"v\">"+fmt(tm)+'</div></div><div class="kpi"'+hvK("sr2","สีพิเศษ · สต๊อก ณ "+thD(c.sd)+" (คู่)",spc.map(rw))+'><div class="k">ยอดรวมสีพิเศษ ('+nz(spc)+" สี)</div><div class=\"v\">"+fmt(ts)+'</div></div><div class="kpi main"'+hvK("sr3","ทุกสี · สต๊อก ณ "+thD(c.sd)+" (คู่)",cols.map(rw))+'><div class="k">ยอดรวมทั้งสิ้น ณ '+thD(c.sd)+'</div><div class="v">'+fmt(tm+ts)+"</div></div>"}
-  box.innerHTML=h+"</tbody></table>"+(nsp?'<div class="note" style="margin-top:8px">สีพิเศษ (หัวตารางสีเทา) = สต๊อกจริงเกรด A จากไฟล์สต๊อกพี่ชุมพร ไม่มีแผ่นยางหรือโควต้าในระบบ จึงนับคงเหลือสิ้นเดือน = สต๊อกวันนี้ + ยางพื้นดำที่แบ่งให้หูสีพิเศษตามแผนผลิต (ถ้ามีแผน)</div>':"");window._src=c}
+  box.innerHTML=h+"</tbody></table>";window._src=c}
 $("sr-d").addEventListener("input",stkRepDraw);
 $("sr-pm").addEventListener("change",()=>{const rd=document.querySelector('input[name="e-prod"][value="'+$("sr-pm").value+'"]');if(rd){rd.checked=true;rd.dispatchEvent(new Event("change",{bubbles:true}))}try{renderE()}catch(e){}stkRepDraw()});
 $("sr-px").addEventListener("input",()=>{$("e-px").value=$("sr-px").value;$("e-px").dispatchEvent(new Event("input",{bubbles:true}));stkRepDraw()});
