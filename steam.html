@@ -460,7 +460,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 166)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 168)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2230,8 +2230,8 @@ $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>se
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 var CVP="S";const CVT={cgdash:"Dashboard",cgstk:"สต๊อกรายวัน",cgplan:"แผนผลิต",cv1:"ผลิตจริงเข้าโกดังพี่ชุมพร",cgsale:"ยอดขาย-เป้าขาย"};
-const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["asm","แผ่นยางประกอบ"],["prod","ผลิตจริงเข้าโกดัง"],["sw","ยางลดเบอร์"],["sale","ยอดขาย-เป้าขาย"],["ord","ออกแผนผลิต"]],
-  FGMAP={d:"d",e:"stk",w:"stk",x5:"stk",x6:"stk",q:"asm",p:"plan",x1:"plan",x2:"asm",c:"prod",m:"prod",r:"prod",x3:"prod",x8:"prod",x4:"sale",x7:"sale",o:"ord"};
+const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["asm","แผ่นยางประกอบ"],["prod","ผลิตจริงเข้าโกดัง"],["cmp","แผน vs จริง"],["sw","ยางลดเบอร์"],["sale","ยอดขาย-เป้าขาย"],["ord","ออกแผนผลิต"]],
+  FGMAP={d:"d",e:"stk",w:"stk",x5:"stk",x6:"stk",q:"asm",p:"plan",x1:"plan",x2:"asm",c:"cmp",m:"cmp",r:"prod",x3:"prod",x8:"prod",x4:"sale",x7:"sale",o:"ord"};
 function tbOrd(key){try{return JSON.parse(localStorage.getItem("tbo_"+key)||"[]")}catch(e){return[]}}
 function tbSort(list,key,idf){const o=tbOrd(key);return list.slice().sort((a,b)=>{const x=o.indexOf(idf(a)),y=o.indexOf(idf(b));return(x<0?99:x)-(y<0?99:y)})}
 function tbDnD(bar,attr){let drag=null;
@@ -2249,7 +2249,8 @@ const FGPG={
   stk:()=>{show("x5");initE();fgReveal([],["x-stkrep","x-stk"],"สต๊อก","stk");stkRepDraw();["x-stkrep","x-stk"].forEach(id=>{const p=$(id);if(!p)return;p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")})},
   plan:()=>{sxMove("p");show("p");initE();renderP();pfInit();poInit();xpDraw();xsDraw();xlDraw();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}fgReveal([],["x-plan","x-plist"],"แผนผลิต","plan",[[0,"แผนผลิต · คำนวณสต็อกคงเหลือ",["view-p"],1],[0,"นำเข้าแผนผลิต (PDF) และแผนผลิตที่บันทึกไว้",["x-plan","x-plist"],0]]);$("view-p").hidden=false},
   asm:()=>{show("x2");xsDraw();xlDraw();fgReveal(["q"],["x-steam","x-slist","x-sdash"],"แผ่นยางประกอบ","asm",[[0,"แผ่นยางประกอบ · ภาพรวม",["view-q"],1],[0,"นำเข้าไฟล์นึ่งยาง (Excel)",["x-steam"],1],[0,"แผ่นยางที่บันทึกไว้ และแดชบอร์ด",["x-slist","x-sdash"],0]])},
-  prod:()=>{sxMove("rc");window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("tab-r").setAttribute("aria-selected","false");cmpInit();initM();renderM();rcMonDraw();fgReveal(["c","m","r"],["x-rcmon","rc-imp-wrap"],"ผลิตจริงเข้าโกดัง","prod",[[0,"เปรียบเทียบกับแผน (แผนผลิต · แผนประกอบ · รับจริง)",["view-c","view-m"],0]])},
+  prod:()=>{sxMove("rc");window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("tab-r").setAttribute("aria-selected","false");rcMonDraw();fgReveal(["r"],["x-rcmon","rc-imp-wrap"],"ผลิตจริงเข้าโกดัง","prod")},
+  cmp:()=>{show("c");cmpInit();initM();renderM();fgReveal(["c","m"],[],"แผน vs จริง","cmp")},
   sale:()=>{show("x4");slBuild();if(!$("sl-month").value){$("sl-month").value=todayS().slice(0,7)}slMonthChanged();slDraw();tgFill();fgReveal([],["x-sales","x-tgt"],"ยอดขาย-เป้าขาย","sale")},
   ord:()=>{$("tab-o").click();fgBar(null,"ord")}};
 (function(){const r=$("view-r"),c=$("view-c"),m=$("view-m");if(r&&c&&m){r.after(c);c.after(m)}})();
@@ -5135,14 +5136,16 @@ function sxMonth(v){
 }
 const sxN=c=>{let v=cv(c);const n=Number(v);return v===null||v===undefined||v===""||isNaN(n)?0:Math.max(0,Math.round(n))};
 let SXIMP=[];
+function sxRowMap(ws){const m={};for(let r=6;r<=31;r++){const v=cv(ws.getCell(r,1));if(v!=null&&v!=="")m[String(v).trim()]=r}return m}
+function sxRowOf(m,d,k){return m[d[1]]||(k<SX8.length?6+k:17+k-SX8.length)}
 function sxRead(ws,t){
-  const rows={};let any=false;
-  SX8.concat(SXS).forEach((d,k)=>{const r=k<SX8.length?6+k:17+k-SX8.length;const v=SIZES.map((z,i)=>sxN(ws.getCell(r,i+2)));if(v.some(x=>x)){rows[d[0]]=v;any=true}});
+  const rows={};let any=false;const RM=sxRowMap(ws);
+  SX8.concat(SXS).forEach((d,k)=>{const r=sxRowOf(RM,d,k);const v=SIZES.map((z,i)=>sxN(ws.getCell(r,i+2)));if(v.some(x=>x)){rows[d[0]]=v;any=true}});
   return{rows,any};
 }
 function sxCheck(ws,rows){
-  const bad=[];let n=0;
-  SX8.concat(SXS).forEach((d,k)=>{const r=k<SX8.length?6+k:17+k-SX8.length,v=cv(ws.getCell(r,9));if(v===null||v===undefined||v==="")return;const pv=Number(v);if(isNaN(pv))return;n++;
+  const bad=[];let n=0;const RM=sxRowMap(ws);
+  SX8.concat(SXS).forEach((d,k)=>{const r=sxRowOf(RM,d,k),v=cv(ws.getCell(r,9));if(v===null||v===undefined||v==="")return;const pv=Number(v);if(isNaN(pv))return;n++;
     const sum=(rows[d[0]]||[]).reduce((a,b)=>a+b,0);if(sum!==pv)bad.push(d[1]+" (ใบ "+pv.toLocaleString("en-US")+" / รวมได้ "+sum.toLocaleString("en-US")+")")});
   SIZES.forEach((z,i)=>{const v=cv(ws.getCell(32,i+2));if(v===null||v===undefined||v==="")return;const pv=Number(v);if(isNaN(pv))return;n++;
     const sum=Object.values(rows).reduce((a,r)=>a+(r[i]||0),0);if(sum!==pv)bad.push("เบอร์ "+z+" (ใบ "+pv.toLocaleString("en-US")+" / รวมได้ "+sum.toLocaleString("en-US")+")")});
