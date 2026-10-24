@@ -439,7 +439,7 @@ thead th{background:#dcecff;color:#0a47a8}
 #cv-grid .cv-t{font-weight:700;text-align:right;min-width:62px}
 .cgthree{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-top:6px}.cgt3{flex:1 1 275px;min-width:262px;overflow-x:auto}.cgt3 table{width:100%}.cgt3 th,.cgt3 td{padding:5px 3px!important;font-size:12.5px!important;white-space:nowrap}
 .cgmin{flex:1 1 320px}.cgmin .cgmt{font-weight:600;margin:6px 0 8px}.cgmint{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}.cgmint th,.cgmint td{background:none!important;color:inherit;padding:6px 8px!important;text-align:right;white-space:nowrap;font-size:13.5px!important}.cgmint th{font-weight:600;color:var(--muted)!important;border:0;border-bottom:2px solid var(--c,var(--line))}.cgmint td{border:0;border-bottom:1px solid var(--line)}.cgmint .l{text-align:left!important}.cgmint td.l{font-weight:600}.cgmint td.z{color:var(--muted);opacity:.6}.cgmint .tt{font-weight:700}.cgmint tfoot td{font-weight:700;border-bottom:0;border-top:2px solid currentColor}
-#rc-imp #sx-d .dbody>.note{display:none}#rc-imp #sx-d{border:0;background:none;padding:0}
+#rc-imp #sx-d .dbody>.note{display:none}#rc-imp #sx-d{border:0;background:none;padding:0}#rc-imp #sx-d .dbody{padding:0}#rc-imp .row{gap:10px 12px;margin:8px 0}#rc-imp #sx-save{margin:6px 0 4px}#rc-imp #sx-prev:empty,#rc-imp #sx-msg[hidden]{display:none}#rc-imp #sx-prev{margin:8px 0}
 </style>
 <div class="app">
 <nav class="side" id="side" aria-label="เมนู">
@@ -460,7 +460,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 163)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 164)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2748,7 +2748,11 @@ function accView(){if(ACC_OFF)return;accInit();const vis=[...document.querySelec
   vis.forEach(p=>{if(p.dataset.touched||p.dataset.init)return;p.dataset.init="1";const sh=vis.length>1;p.classList.toggle("shut",sh);const h=p.firstElementChild;if(h)h.setAttribute("aria-expanded",String(!sh))})}
 try{new MutationObserver(()=>{clearTimeout(window._accT);window._accT=setTimeout(()=>{accInit();accView()},30)}).observe(document.body,{childList:true,subtree:true})}catch(e){}
 accView();
-function frMode(only){const fr=$("fr"),f=()=>{try{const d=fr.contentDocument;d.body.classList.toggle("only-e",only);d.getElementById(only?"tab-e":"tab-d").click()}catch(e){}};
+function frFit(){const fr=$("fr");try{const d=fr.contentDocument,h=Math.max(d.body.offsetHeight,d.body.scrollHeight>d.documentElement.clientHeight?d.body.scrollHeight:0);fr.style.height=Math.max(60,h+12)+"px"}catch(e){}}
+function frMode(only){const fr=$("fr"),f=()=>{try{const d=fr.contentDocument;d.body.classList.toggle("only-e",only);d.getElementById(only?"tab-e":"tab-d").click();
+    if(fr._ro){fr._ro.disconnect();fr._ro=null}
+    if(only){d.documentElement.style.minHeight="0";d.body.style.minHeight="0";d.body.style.height="auto";fr._ro=new fr.contentWindow.ResizeObserver(frFit);fr._ro.observe(d.body);frFit();setTimeout(frFit,300)}
+    else{fr.style.height="900px";d.body.style.height="";d.body.style.minHeight=""}}catch(e){}};
   if(fr.contentDocument&&fr.contentDocument.getElementById("tab-e"))f();else fr.addEventListener("load",f,{once:true})}
 $("tab-x3").onclick=()=>{window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("ptitle").textContent=PT.x3;$("tab-r").setAttribute("aria-selected","false");$("tab-x3").setAttribute("aria-selected","true");xOpen(true);fgBar("x3")};
 $("tab-r").onclick=()=>{show("r");if(!window._x3go){try{if($("fr").contentDocument.body.classList.contains("only-e"))frMode(false)}catch(e){}}window._rvis=1;if(!$("fr").getAttribute("srcdoc"))$("fr").srcdoc=document.getElementById("fg-src").textContent.replace(/<\\\/script/g,"</script")};
@@ -4588,8 +4592,8 @@ function rcCmp(m,dm){const P=rcPlan(m);if(!P)return null;const SP=PTPL;
     const bs=SIZES.map((z,i)=>pl[i]-ac[i]).map((x,i)=>x>0?SIZES[i]+": ขาด "+fmt(x):"").filter(Boolean);return{k:r[0],n:r[1],tp,ta,d,bs,st:tp===0&&ta===0?"":tp===0?"ไม่มีในแผน":d>0?"ขาด "+fmt(d):d<0?"เกินแผน "+fmt(-d):"ครบแล้ว"}}).filter(x=>x.tp>0||x.ta>0)}}
 function rcMonData(){const M={},ck=PTPL.map(r=>r[0]);Object.keys(FGD).forEach(d=>{const ym=d.slice(0,7),o=M[ym]=M[ym]||{days:0,c:{}};let any=false;ck.forEach(k=>{const a=FGD[d][k];if(!a)return;if(cT(a)>0)any=true;const t=o.c[k]=o.c[k]||cZ();a.forEach((v,i)=>t[i]+=v||0)});if(any)o.days++});Object.keys(M).forEach(m=>{if(!Object.values(M[m].c).some(a=>cT(a)>0))delete M[m]});return M}
 (function(){const host=$("view-x"),d=document.createElement("div");d.className="panel";d.id="x-rcmon";d.hidden=true;
-  d.innerHTML='<h2>ผลิตจริงเข้าโกดังพี่ชุมพร · รายเดือน (คู่)</h2><div class="note">รวมยอดที่บันทึกในช่อง "เพิ่มหรือแก้ไขข้อมูลรายวัน" ด้านล่าง เป็นรายเดือน แยกสี · กดที่แถวเดือนเพื่อดูรายละเอียดสี × เบอร์ด้านล่าง</div><div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ปี (ค.ศ.)</span><select id="rm-y"></select></div><div style="min-width:150px"><span class="lbl">เดือนที่แสดง</span><select id="rm-m"></select></div></div><div id="rm-body"></div>';host.appendChild(d);
-  const sx=$("sx-d");if(sx){window.SXHOME={p:sx.parentNode,n:sx.nextSibling};const slot=document.createElement("div");slot.id="rc-imp";slot.style.cssText="margin:0 0 14px";slot.innerHTML='<div class="cgsec" style="margin-top:0">นำเข้ายอดรายวันจากไฟล์ Excel (ไฟล์ ผลิตจริงเข้าโกดังพี่ชุมพร: 1 แผ่น = 1 วัน)</div><div class="note">กด "เลือกไฟล์มาตรฐาน" เลือกไฟล์ที่ทำตามแม่แบบ ตรวจรายการด้านล่าง แล้วกด "บันทึกที่เลือก" · วันที่มีข้อมูลอยู่แล้วจะถูกเขียนทับ</div>';const h2=d.querySelector("h2");h2.parentNode.insertBefore(slot,h2.nextSibling)}})();
+  d.innerHTML='<h2>ผลิตจริงเข้าโกดังพี่ชุมพร · รายเดือน (คู่)</h2><div class="note">ยอดผลิตจริงเข้าโกดังแยกสี × เบอร์ รวมจากข้อมูลรายวันที่บันทึกไว้ เลือกเดือนที่ต้องการดูได้ด้านล่าง</div><div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ปี (ค.ศ.)</span><select id="rm-y"></select></div><div style="min-width:150px"><span class="lbl">เดือนที่แสดง</span><select id="rm-m"></select></div></div><div id="rm-body"></div>';host.appendChild(d);
+  const sx=$("sx-d");if(sx){window.SXHOME={p:sx.parentNode,n:sx.nextSibling};const slot=document.createElement("div");slot.id="rc-imp";slot.style.cssText="margin:0 0 14px;padding:0 16px";slot.innerHTML='<div class="cgsec" style="margin-top:0">นำเข้ายอดรายวันจากไฟล์ Excel (ไฟล์ ผลิตจริงเข้าโกดังพี่ชุมพร: 1 แผ่น = 1 วัน)</div><div class="note">กด "เลือกไฟล์มาตรฐาน" เลือกไฟล์ที่ทำตามแม่แบบ ตรวจรายการด้านล่าง แล้วกด "บันทึกที่เลือก" · วันที่มีข้อมูลอยู่แล้วจะถูกเขียนทับ</div>';const h2=d.querySelector("h2");h2.parentNode.insertBefore(slot,h2.nextSibling)}})();
 window.sxMove=function(to){const sx=$("sx-d");if(!sx||!window.SXHOME)return;if(to==="rc"){const s=$("rc-imp");if(s&&sx.parentNode!==s){s.appendChild(sx);sx.open=true}}else if(sx.parentNode!==SXHOME.p){SXHOME.p.insertBefore(sx,SXHOME.n&&SXHOME.n.parentNode===SXHOME.p?SXHOME.n:null);sx.open=false}};
 function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),ms=Object.keys(M).sort(),ys=[...new Set(ms.map(m=>m.slice(0,4)))].sort().reverse(),ysel=$("rm-y");
   if(!ys.length){ysel.innerHTML="";box.innerHTML='<div class="empty">ยังไม่มียอดรับเข้าโกดังที่บันทึกไว้ — บันทึกในช่อง "เพิ่มหรือแก้ไขข้อมูลรายวัน" ด้านล่างก่อน</div>';return}
