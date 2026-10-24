@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 154)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 155)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2229,7 +2229,7 @@ $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>se
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 var CVP="S";const CVT={cgdash:"Dashboard",cgstk:"สต๊อกรายวัน",cgplan:"แผนผลิต",cv1:"ผลิตจริงเข้าโกดังพี่ชุมพร",cgsale:"ยอดขาย-เป้าขาย"};
-const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["asm","แผ่นยางประกอบ"],["prod","ผลิตจริงเข้าโกดัง"],["sale","ยอดขาย-เป้าขาย"],["ord","ออกแผนผลิต"]],
+const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["asm","แผ่นยางประกอบ"],["prod","ผลิตจริงเข้าโกดัง"],["sw","ยางลดเบอร์"],["sale","ยอดขาย-เป้าขาย"],["ord","ออกแผนผลิต"]],
   FGMAP={d:"d",e:"stk",w:"stk",x5:"stk",x6:"stk",q:"asm",p:"plan",x1:"plan",x2:"asm",c:"prod",m:"prod",r:"prod",x3:"prod",x8:"prod",x4:"sale",x7:"sale",o:"ord"};
 function tbOrd(key){try{return JSON.parse(localStorage.getItem("tbo_"+key)||"[]")}catch(e){return[]}}
 function tbSort(list,key,idf){const o=tbOrd(key);return list.slice().sort((a,b)=>{const x=o.indexOf(idf(a)),y=o.indexOf(idf(b));return(x<0?99:x)-(y<0?99:y)})}
@@ -4174,6 +4174,141 @@ $("cg-stk-imp").onclick=async()=>{if(!CGIMP)return;const d=CGIMP.date||$("cg-stk
   $("cg-stk-imp").disabled=true;
   try{await cgStkPost(CGIMP,d,key,by);await load();CGIMP=null;$("cg-stk-imp").hidden=true;$("cg-stk-d").value=d;cgRepFill(d);cgFs("stk","บันทึกสต๊อก ณ "+thD(d)+" แล้ว (205-S และ 205-R ทั้ง 2 โกดัง) — ดูรายงานด้านบน","ok")}
   catch(err){cgFs("stk","บันทึกไม่สำเร็จ: "+(err&&err.message||err),"warn")}$("cg-stk-imp").disabled=false};
+/* ---------- ยางลดเบอร์ (Swing arm ปั๊มไม่ได้) : เก็บรายวัน + นำเข้า Excel + กราฟ/Dashboard ---------- */
+const SWC=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา","ปีแดงพื้นเหลือง"],SWK=["swing","swingt","swingd"],SWO=[8.5,9,9.5,10,10.5,11];
+const swHex=k=>{if(k==="ขาว")return"#BFC5CB";if(k==="ปีแดงพื้นเหลือง")return"#E4572E";try{return String(colOf(k)[1]).replace(/^#?/,"#")}catch(e){return"#64748b"}};
+const sf=n=>n==null||isNaN(n)?"–":(Math.round(n*10)/10).toLocaleString("en-US",{maximumFractionDigits:1}),sp=(a,b)=>b>0?a/b*100:0,spf=v=>(Math.round(v*100)/100).toFixed(2)+"%";
+const swS=a=>a.reduce((x,y)=>x+y,0),swSh=d=>d.slice(8)+"/"+d.slice(5,7);
+function swDate(v){if(v==null||v==="")return"";if(v instanceof Date){return isNaN(v)?"":v.getUTCFullYear()+"-"+p2(v.getUTCMonth()+1)+"-"+p2(v.getUTCDate())}
+  const m=String(v).match(/(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{4})/);if(!m)return"";let y=+m[3];if(y>2400)y-=543;const mo=+m[2],d=+m[1];if(mo<1||mo>12||d<1||d>31)return"";return y+"-"+p2(mo)+"-"+p2(d)}
+const swNum=v=>{const n=Number(String(v==null?"":v).replace(/,/g,""));return isNaN(n)?0:n};
+function swAll(){const D={};(STK||[]).forEach(r=>{const k=r[1];if(!SWK.includes(k))return;const d=normD(r[0]);if(!d)return;const o=D[d]=D[d]||{st:"",c:{}};
+  if(k==="swingd"){const n=Number(r[9])||0;if(n>19000000){const s=String(Math.round(n));o.st=s.slice(0,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8)}}
+  else{const c=o.c[r[2]]=o.c[r[2]]||{v:[0,0,0,0,0,0],y:0};if(k==="swing")c.v=r.slice(3,9).map(x=>Number(x)||0);else c.y=Number(r[9])||0}});return D}
+function swAgg(f,t){const D=swAll(),days=Object.keys(D).filter(d=>(!f||d>=f)&&(!t||d<=t)).sort(),colors=[];
+  days.forEach(d=>Object.keys(D[d].c).forEach(k=>{if(!colors.includes(k))colors.push(k)}));
+  colors.sort((a,b)=>{const x=SWC.indexOf(a),y=SWC.indexOf(b);return(x<0?99:x)-(y<0?99:y)});
+  const A={days:days.map(d=>{const o=D[d],red=swS(Object.values(o.c).map(c=>swS(c.v))),y=swS(Object.values(o.c).map(c=>c.y));return{d,st:o.st,c:o.c,red,y,pct:sp(red,y)}}),colors,
+    size:[0,0,0,0,0,0],col:{},heat:{},red:0,y:0};
+  colors.forEach(k=>{A.col[k]={red:0,y:0};A.heat[k]=[0,0,0,0,0,0]});
+  A.days.forEach(x=>{A.red+=x.red;A.y+=x.y;Object.keys(x.c).forEach(k=>{const c=x.c[k];A.col[k].red+=swS(c.v);A.col[k].y+=c.y;c.v.forEach((v,i)=>{A.size[i]+=v;A.heat[k][i]+=v})})});
+  A.pct=sp(A.red,A.y);return A}
+/* ---------- อ่านไฟล์ ---------- */
+function swParseSummary(wb){const wd=wb.worksheets.find(w=>/^ข้อมูล$/.test(w.name.trim())),wy=wb.worksheets.find(w=>/ยอดยาง/.test(w.name));if(!wd)return null;
+  const D={},rows=[];wd.eachRow((r,i)=>{if(i===1)return;const pd=swDate(cvx(r.getCell(1))),sd=swDate(cvx(r.getCell(2))),c=String(cvx(r.getCell(3))||"").trim(),o=swNum(cvx(r.getCell(4))),n=swNum(cvx(r.getCell(6)));if(!pd||!c)return;
+    const ix=SWO.indexOf(o);if(ix<0)return;const day=D[pd]=D[pd]||{st:sd,c:{}};if(sd)day.st=sd;const cc=day.c[c]=day.c[c]||{v:[0,0,0,0,0,0],y:0};cc.v[ix]+=n});
+  if(wy){const hd=[];wy.getRow(1).eachCell((c,j)=>{hd[j]=String(cvx(c)||"").trim()});wy.eachRow((r,i)=>{if(i===1)return;const pd=swDate(cvx(r.getCell(1)));if(!pd)return;const sd=swDate(cvx(r.getCell(2)));
+      const day=D[pd]=D[pd]||{st:sd,c:{}};if(sd&&!day.st)day.st=sd;for(let j=3;j<hd.length;j++){const k=hd[j];if(!k||/^รวม/.test(k))continue;const y=swNum(cvx(r.getCell(j)));if(!y)continue;const cc=day.c[k]=day.c[k]||{v:[0,0,0,0,0,0],y:0};cc.y=y}})}
+  return D}
+function swParseDay(ws){const get=(r,c)=>cvx(ws.getCell(r,c)),R=Math.min(ws.rowCount,60),C=Math.min(ws.columnCount,20);let pd="",sd="",r0=0,yc=0;
+  for(let r=1;r<=R;r++)for(let c=1;c<=C;c++){const v=get(r,c);if(typeof v!=="string")continue;
+    if(/แผนปั๊ม/.test(v)&&!pd){for(let k=c+1;k<=c+4&&!pd;k++)pd=swDate(get(r,k))}
+    else if(/ยางนึ่งวันที่/.test(v)&&!sd){for(let k=c+1;k<=c+4&&!sd;k++)sd=swDate(get(r,k))}
+    if(/ยางเบอร์เดิม/.test(v)&&!r0)r0=r;if(/^ยอดยาง/.test(v.trim())&&!yc)yc=c}
+  if(!pd||!r0)return null;const sc=[];for(let c=1;c<=C;c++){const n=get(r0,c);if(typeof n==="number"){const ix=SWO.indexOf(n);if(ix>=0)sc[ix]=c}}
+  if(sc.filter(x=>x).length<6)return null;const o={st:sd,c:{}};
+  for(let r=r0+2;r<=R;r++){const lab=String(get(r,1)||"").trim();if(/^รวม/.test(lab))break;if(!lab)continue;const v=sc.map(c=>swNum(get(r,c))),y=yc?swNum(get(r,yc)):0;if(v.some(x=>x)||y)o.c[lab]={v,y}}
+  return Object.keys(o.c).length?{pd,day:o}:null}
+async function swRead(file){const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());let D=swParseSummary(wb),kind="ไฟล์สรุป (แท็บ ข้อมูล)";
+  if(!D||!Object.keys(D).length){D={};kind="รายงานรายวัน";wb.worksheets.forEach(ws=>{const r=swParseDay(ws);if(r)D[r.pd]=r.day});}
+  if(!Object.keys(D).length)throw new Error("ไม่พบข้อมูลยางลดเบอร์ — ต้องเป็นไฟล์สรุป (แท็บ 'ข้อมูล') หรือรายงานรายวัน (มีคำว่า 'แผนปั๊มยางวันที่' และ 'ยางเบอร์เดิมก่อนปั๊ม')");
+  return{D,kind}}
+/* ---------- บันทึก ---------- */
+const swYmd=d=>d?Number(d.replace(/-/g,"")):0;
+async function swPost(d,day,key,by){const rows=[];Object.keys(day.c).forEach(k=>{const c=day.c[k];rows.push(["swing",k].concat(c.v,[swS(c.v)]));rows.push(["swingt",k,0,0,0,0,0,0,c.y||0])});rows.push(["swingd","ยางนึ่ง",0,0,0,0,0,0,swYmd(day.st)]);
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:d,by:by||"",rows})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ");return r}
+function swKey(){return($("pf-key").value||"").trim()||fgKeySet(true)}
+function swMsg(t,cls){const m=$("sw-msg");m.hidden=!t;m.className="msg "+(cls||"");m.textContent=t||""}
+let SWIMP=null,SWTHR=10;
+/* ---------- หน้าจอ ---------- */
+(function(){const host=$("view-x"),d=document.createElement("div");d.className="panel";d.id="x-swing";d.hidden=true;
+  d.innerHTML='<h2>ยางลดเบอร์ (Swing arm ปั๊มไม่ได้ จึงลดเบอร์) · ยางเล็กแผนกประกอบฟองน้ำ</h2><div class="note">รง. ปั๊มยางเบอร์เดิมไม่ได้ จึงลดลง 0.5 เบอร์ (เช่น 10 → 9.5) ทำให้ของที่เข้าโกดังไม่ตรงแผน · เก็บรายวันตามรายงานของ รง. หน่วย = แผ่น (1 แผ่น = 2 คู่)</div><div id="sw-msg" class="msg" hidden></div>'+
+  '<details class="dbox" open><summary>นำเข้าจากไฟล์ Excel</summary><div class="dbody"><div class="note">เลือกได้ 2 แบบ: (1) ไฟล์สรุปที่มีแท็บ "ข้อมูล" + "ยอดยางรายสี" (นำเข้าได้หลายวันในครั้งเดียว) หรือ (2) รายงานรายวันของ รง. (1 แท็บ = 1 วันปั๊ม เลือกได้ทีละหลายแท็บ)</div>'+
+  '<div class="row" style="align-items:center"><input type="file" id="sw-file" accept=".xlsx" style="max-width:340px"><button class="btn" id="sw-imp" disabled>บันทึกที่อ่านได้</button></div><div id="sw-prev" class="note"></div></div></details>'+
+  '<button type="button" class="btn ghost" id="sw-mt" style="align-self:flex-start;margin-top:8px">✎ กรอกรายวันด้วยมือ (กดเพื่อคลี่ลงมา)</button><details class="dbox" id="sw-man"><summary>กรอกรายวันด้วยมือ</summary><div class="dbody"><div class="row" style="align-items:flex-end"><div style="min-width:160px"><span class="lbl">วันที่แผนปั๊ม</span><input type="date" id="sw-d"></div><div style="min-width:160px"><span class="lbl">วันที่นึ่งยาง</span><input type="date" id="sw-sd"></div><div style="min-width:190px"><span class="lbl">เปิดวันที่บันทึกไว้</span><select id="sw-sel"></select></div><button class="btn" id="sw-save">บันทึก</button><button class="btn ghost" id="sw-del" type="button" style="color:var(--bad);border-color:var(--bad)">ลบวันที่เลือก</button></div>'+
+  '<div class="note" style="margin-top:6px">ใส่จำนวนแผ่นที่ลดเบอร์ แยกตามเบอร์เดิม (ช่องว่าง = ไม่ลด · ใส่ .5 ได้) และยอดยางนึ่งของสีนั้น</div><div class="scroll" id="sw-grid"></div></div></details>'+
+  '<div id="sw-dash"></div>';
+  host.appendChild(d);
+  const sh=show;show=function(v){sh.apply(this,arguments);const p=$("x-swing");if(p)p.hidden=true};
+  $("sw-file").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";SWIMP=null;$("sw-imp").disabled=true;if(!f)return;$("sw-prev").textContent="กำลังอ่านไฟล์…";
+    try{const r=await swRead(f),ds=Object.keys(r.D).sort(),red=swS(ds.map(x=>swS(Object.values(r.D[x].c).map(c=>swS(c.v))))),y=swS(ds.map(x=>swS(Object.values(r.D[x].c).map(c=>c.y))));SWIMP=r.D;
+      $("sw-prev").innerHTML="อ่านได้ ("+r.kind+"): <b>"+ds.length+"</b> วัน ("+thD(ds[0])+(ds.length>1?" – "+thD(ds[ds.length-1]):"")+") · ลดเบอร์รวม <b>"+sf(red)+"</b> แผ่น"+(y?" · ยอดยางนึ่ง <b>"+fmt(y)+"</b> แผ่น = <b>"+spf(sp(red,y))+"</b>":' <span style="color:var(--warn)">(ไม่พบยอดยางนึ่ง จึงคำนวณ % ไม่ได้)</span>')+" — วันที่ซ้ำกับที่บันทึกไว้จะถูกแทนที่";$("sw-imp").disabled=false}
+    catch(err){$("sw-prev").innerHTML='<span style="color:var(--warn)">อ่านไฟล์ไม่สำเร็จ: '+escH(err&&err.message||err)+"</span>"}});
+  $("sw-imp").onclick=async()=>{if(!SWIMP)return;const key=swKey();if(!key){swMsg("ใส่รหัสบันทึกก่อน","warn");return}let by="";try{by=(localStorage.getItem("fgby")||"").trim()}catch(e){}
+    const ds=Object.keys(SWIMP).sort();$("sw-imp").disabled=true;let n=0;try{for(const x of ds){await swPost(x,SWIMP[x],key,by);n++;swMsg("กำลังบันทึก "+n+"/"+ds.length+"…")}await load();swMsg("บันทึกยางลดเบอร์แล้ว "+n+" วัน","ok");SWIMP=null;$("sw-prev").textContent="";swInit();swDraw()}
+    catch(err){swMsg("บันทึกได้ "+n+"/"+ds.length+" วัน แล้วหยุด: "+(err&&err.message||err),"warn");$("sw-imp").disabled=false}};
+  $("sw-mt").onclick=()=>{const m=$("sw-man");m.open=!m.open;$("sw-mt").textContent=m.open?"▲ พับช่องกรอกมือขึ้น":"✎ กรอกรายวันด้วยมือ (กดเพื่อคลี่ลงมา)"};
+  $("sw-sel").addEventListener("change",()=>swLoadDay($("sw-sel").value));
+  $("sw-save").onclick=async()=>{const dt=$("sw-d").value;if(!dt){swMsg("เลือกวันที่แผนปั๊มก่อน","warn");return}const key=swKey();if(!key){swMsg("ใส่รหัสบันทึกก่อน","warn");return}
+    const day={st:$("sw-sd").value||"",c:{}};SWROWS().forEach((k,i)=>{const v=SWO.map((z,j)=>swNum($("sw-v-"+i+"-"+j).value)),y=swNum($("sw-y-"+i).value);if(v.some(x=>x)||y)day.c[k]={v,y}});
+    if(!Object.keys(day.c).length){swMsg("ยังไม่ได้กรอกตัวเลข","warn");return}let by="";try{by=(localStorage.getItem("fgby")||"").trim()}catch(e){}
+    $("sw-save").disabled=true;try{await swPost(dt,day,key,by);await load();swMsg("บันทึกวันที่ "+thD(dt)+" แล้ว","ok");swInit(dt);swDraw()}catch(err){swMsg("บันทึกไม่สำเร็จ: "+(err&&err.message||err),"warn")}$("sw-save").disabled=false};
+  $("sw-del").onclick=async()=>{const dt=$("sw-sel").value;if(!dt){swMsg("เลือกวันที่ที่จะลบก่อน","warn");return}const key=swKey();if(!key)return;
+    try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"clear",scope:"stock",key,date:dt,kinds:SWK})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"ลบไม่สำเร็จ");await load();swMsg("ลบวันที่ "+thD(dt)+" แล้ว","ok");swInit();swDraw()}catch(err){swMsg("ลบไม่สำเร็จ: "+(err&&err.message||err),"warn")}};
+})();
+function SWROWS(){const D=swAll(),ex=[];Object.values(D).forEach(o=>Object.keys(o.c).forEach(k=>{if(!SWC.includes(k)&&!ex.includes(k))ex.push(k)}));return SWC.concat(ex)}
+function swBuildGrid(){const rs=SWROWS();let h='<table class="cgrep"><thead><tr><th>สี</th>'+SWO.map(z=>"<th>"+z+" → "+(z-.5)+"</th>").join("")+'<th class="tt">รวม (แผ่น)</th><th>ยอดยางนึ่ง (แผ่น)</th></tr></thead><tbody>';
+  rs.forEach((k,i)=>{h+='<tr><th>'+escH(k)+"</th>"+SWO.map((z,j)=>'<td><input type="text" inputmode="decimal" autocomplete="off" id="sw-v-'+i+"-"+j+'" style="width:64px"></td>').join("")+'<td class="tt" id="sw-t-'+i+'"></td><td><input type="text" inputmode="numeric" autocomplete="off" id="sw-y-'+i+'" style="width:84px"></td></tr>'});
+  $("sw-grid").innerHTML=h+"</tbody></table>";rs.forEach((k,i)=>SWO.forEach((z,j)=>$("sw-v-"+i+"-"+j).addEventListener("input",()=>{{const s=swS(SWO.map((q,m)=>swNum($("sw-v-"+i+"-"+m).value)));$("sw-t-"+i).textContent=s?sf(s):""}})))}
+function swLoadDay(d){swBuildGrid();$("sw-d").value=d||"";$("sw-sd").value="";if(!d)return;const o=swAll()[d];if(!o)return;$("sw-sd").value=o.st||"";SWROWS().forEach((k,i)=>{const c=o.c[k];if(!c)return;c.v.forEach((v,j)=>{$("sw-v-"+i+"-"+j).value=v?String(v):""});$("sw-t-"+i).textContent=sf(swS(c.v));$("sw-y-"+i).value=c.y?String(c.y):""})}
+function swInit(sel){const ds=Object.keys(swAll()).sort().reverse(),s=$("sw-sel");s.innerHTML='<option value="">— วันใหม่ —</option>'+ds.map(d=>'<option value="'+d+'"'+(d===sel?" selected":"")+">"+thD(d)+"</option>").join("");swLoadDay(sel||"")}
+/* ---------- Dashboard ---------- */
+const SWF={f:"",t:""};
+function swDraw(){const box=$("sw-dash");if(!box)return;const D=swAll(),all=Object.keys(D).sort();
+  if(!all.length){box.innerHTML='<div class="empty">ยังไม่มีข้อมูลยางลดเบอร์ — นำเข้าไฟล์ Excel หรือกรอกรายวันด้านบน</div>';return}
+  if(!SWF.f||SWF.f<all[0])SWF.f=all[0];if(!SWF.t||SWF.t>all[all.length-1])SWF.t=all[all.length-1];
+  const A=swAgg(SWF.f,SWF.t),thr=SWTHR,warn=A.days.filter(x=>x.y&&x.pct>thr),worst=A.days.filter(x=>x.y).sort((a,b)=>b.pct-a.pct)[0];
+  const kp=(k,v,s)=>'<div class="kpi"><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(s?'<div class="k" style="margin-top:2px">'+s+"</div>":"")+"</div>";
+  let h='<div class="row" style="align-items:flex-end;margin-top:6px"><div style="min-width:150px"><span class="lbl">ตั้งแต่วันที่แผนปั๊ม</span><input type="date" id="sw-f" value="'+SWF.f+'"></div><div style="min-width:150px"><span class="lbl">ถึง</span><input type="date" id="sw-t" value="'+SWF.t+'"></div><div style="width:130px"><span class="lbl">เตือนเมื่อ % เกิน</span><input type="number" id="sw-thr" value="'+thr+'" min="0" step="0.5"></div><button class="btn ghost" id="sw-xl" type="button">⬇ ดาวน์โหลด Excel</button></div>';
+  h+='<div class="kpis" style="margin:12px 0">'+kp("% ลดเบอร์รวม",spf(A.pct),"ของยอดยางนึ่ง "+fmt(A.y)+" แผ่น")+kp("แผ่นที่ลดเบอร์",sf(A.red),"= "+fmt(A.red*2)+" คู่ ที่ไม่ตรงแผน")+kp("จำนวนวัน",A.days.length,warn.length?"เกิน "+thr+"%: "+warn.length+" วัน":"ไม่มีวันที่เกิน "+thr+"%")+kp("วันที่ลดมากสุด",worst?spf(worst.pct):"–",worst?"ปั๊ม "+thD(worst.d):"")+"</div>";
+  h+='<h3 style="margin:16px 0 4px;font-size:15px">% ยางลดเบอร์รายวัน</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">แท่ง = แผ่นที่ลดเบอร์ ÷ ยอดยางนึ่งของวันนั้น · สีส้ม = เกิน '+thr+'%</div><div style="overflow-x:auto">'+swTrend(A,thr)+"</div>";
+  h+='<h3 style="margin:18px 0 4px;font-size:15px">จำนวนแผ่นที่ลดเบอร์รายวัน แยกสี</h3>'+swLeg(A.colors)+'<div style="overflow-x:auto">'+swStack(A)+"</div>";
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px"><div><h3 style="margin:18px 0 4px;font-size:15px">ลดจากเบอร์ไหนมากที่สุด</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">แผ่นที่ลดเบอร์ แยกตามเบอร์เดิม</div>'+swSize(A)+'</div><div><h3 style="margin:18px 0 4px;font-size:15px">% ลดเบอร์แยกสี</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">แผ่นที่ลด ÷ ยอดยางนึ่งของสีนั้น</div>'+swColor(A,thr)+"</div></div>";
+  h+='<h3 style="margin:18px 0 4px;font-size:15px">สี × เบอร์เดิม (แผ่น)</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">ยิ่งเข้มยิ่งลดมาก · วงเล็บ = % ของยอดยางนึ่งสีนั้น</div><div class="scroll">'+swHeat(A)+"</div>";
+  h+='<h3 style="margin:18px 0 4px;font-size:15px">รายวัน × สี (% ลดเบอร์)</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">ช่องเหลือง = เกิน '+thr+'%</div><div class="scroll">'+swDayTbl(A,thr)+"</div>";
+  box.innerHTML=h;
+  $("sw-f").onchange=e=>{SWF.f=e.target.value||SWF.f;swDraw()};$("sw-t").onchange=e=>{SWF.t=e.target.value||SWF.t;swDraw()};$("sw-thr").onchange=e=>{SWTHR=Math.max(0,Number(e.target.value)||0);swDraw()};$("sw-xl").onclick=()=>swExcel(A).catch(err=>swMsg("ส่งออกไม่สำเร็จ: "+(err&&err.message||err),"warn"))}
+function swLeg(cs){return'<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:2px 0 8px">'+cs.map(k=>'<span><i style="display:inline-block;width:11px;height:11px;border-radius:2px;background:'+swHex(k)+';vertical-align:-1px"></i> '+escH(k)+"</span>").join("")+"</div>"}
+function swTrend(A,thr){const n=A.days.length,W=Math.max(640,n*44+70),H=230,l=44,r=10,t=18,b=34,mx=Math.max(thr*1.3,...A.days.map(x=>x.pct),1),Y=v=>t+(H-t-b)*(1-v/mx),bw=Math.min(30,(W-l-r)/n-8);let g="";
+  for(let k=0;k<=4;k++){const v=mx*k/4;g+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(l-5)+'" y="'+(Y(v)+3)+'" text-anchor="end" font-size="10" fill="currentColor" opacity=".7">'+(Math.round(v*10)/10)+"%</text>"}
+  g+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+Y(thr)+'" y2="'+Y(thr)+'" stroke="#E4572E" stroke-dasharray="5 4"/>';
+  A.days.forEach((x,i)=>{const cx=l+(W-l-r)*(i+.5)/n,hh=(H-t-b)*x.pct/mx,bad=x.y&&x.pct>thr;
+    g+='<rect x="'+(cx-bw/2)+'" y="'+(H-b-hh)+'" width="'+bw+'" height="'+Math.max(hh,x.y?1:0)+'" rx="2" fill="'+(bad?"#E4572E":"#2563EB")+'"><title>ปั๊ม '+thD(x.d)+" · ลด "+sf(x.red)+" แผ่น ÷ นึ่ง "+fmt(x.y)+" = "+spf(x.pct)+'</title></rect><text x="'+cx+'" y="'+(H-b-hh-4)+'" text-anchor="middle" font-size="10" fill="currentColor">'+(x.y?(Math.round(x.pct*10)/10):"")+'</text><text x="'+cx+'" y="'+(H-14)+'" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">'+swSh(x.d)+"</text>"});
+  return'<svg viewBox="0 0 '+W+" "+H+'" style="width:100%;min-width:'+Math.min(W,520)+'px;height:auto;max-height:290px" role="img" aria-label="เปอร์เซ็นต์ยางลดเบอร์รายวัน">'+g+"</svg>"}
+function swStack(A){const n=A.days.length,W=Math.max(640,n*44+70),H=230,l=50,r=10,t=14,b=34,mx=Math.max(1,...A.days.map(x=>x.red)),Y=v=>t+(H-t-b)*(1-v/mx),bw=Math.min(30,(W-l-r)/n-8);let g="";
+  for(let k=0;k<=4;k++){const v=mx*k/4;g+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(l-5)+'" y="'+(Y(v)+3)+'" text-anchor="end" font-size="10" fill="currentColor" opacity=".7">'+Math.round(v)+"</text>"}
+  A.days.forEach((x,i)=>{const cx=l+(W-l-r)*(i+.5)/n;let acc=0;A.colors.forEach(k=>{const c=x.c[k];if(!c)return;const s=swS(c.v);if(!s)return;const y1=Y(acc+s),y0=Y(acc);acc+=s;
+      g+='<rect x="'+(cx-bw/2)+'" y="'+y1+'" width="'+bw+'" height="'+Math.max(.5,y0-y1)+'" fill="'+swHex(k)+'"><title>ปั๊ม '+thD(x.d)+" · "+escH(k)+" ลด "+sf(s)+' แผ่น</title></rect>'});
+    g+='<text x="'+cx+'" y="'+(Y(acc)-4)+'" text-anchor="middle" font-size="10" fill="currentColor">'+(acc?Math.round(acc):"")+'</text><text x="'+cx+'" y="'+(H-14)+'" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">'+swSh(x.d)+"</text>"});
+  return'<svg viewBox="0 0 '+W+" "+H+'" style="width:100%;min-width:'+Math.min(W,520)+'px;height:auto;max-height:290px" role="img" aria-label="แผ่นที่ลดเบอร์รายวันแยกสี">'+g+"</svg>"}
+function swSize(A){const mx=Math.max(1,...A.size),tot=swS(A.size),W=420,H=230,l=8,b=44,t=22,gw=(W-l*2)/6;let g="";
+  SWO.forEach((z,i)=>{const hh=(H-b-t)*A.size[i]/mx,x0=l+i*gw;g+='<rect x="'+(x0+6)+'" y="'+(H-b-hh)+'" width="'+(gw-12)+'" height="'+Math.max(hh,A.size[i]?1:0)+'" rx="2" fill="#2563EB"><title>เบอร์ '+z+" → "+(z-.5)+" · "+sf(A.size[i])+' แผ่น</title></rect><text x="'+(x0+gw/2)+'" y="'+(H-b-hh-4)+'" text-anchor="middle" font-size="10" fill="currentColor">'+(A.size[i]?sf(A.size[i]):"")+'</text><text x="'+(x0+gw/2)+'" y="'+(H-26)+'" text-anchor="middle" font-size="11" fill="currentColor">'+z+'</text><text x="'+(x0+gw/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="10" fill="currentColor" opacity=".7">→ '+(z-.5)+" ("+(tot?Math.round(A.size[i]/tot*100):0)+"%)</text>"});
+  return'<svg viewBox="0 0 '+W+" "+H+'" style="width:100%;height:auto;max-width:520px" role="img" aria-label="แผ่นที่ลดเบอร์แยกตามเบอร์เดิม">'+g+"</svg>"}
+function swColor(A,thr){const cs=A.colors.filter(k=>A.col[k].y||A.col[k].red),mx=Math.max(thr,...cs.map(k=>sp(A.col[k].red,A.col[k].y)),1),W=480,L0=120,rh=30,H=cs.length*rh+6;let g="";
+  cs.forEach((k,i)=>{const c=A.col[k],p=sp(c.red,c.y),y=i*rh+4,w=(W-L0-130)*p/mx;g+='<text x="'+(L0-8)+'" y="'+(y+15)+'" text-anchor="end" font-size="12" fill="currentColor">'+escH(k)+'</text><rect x="'+L0+'" y="'+y+'" width="'+Math.max(1,w)+'" height="20" rx="2" fill="'+swHex(k)+'"><title>'+escH(k)+" · ลด "+sf(c.red)+" ÷ นึ่ง "+fmt(c.y)+" = "+spf(p)+'</title></rect><text x="'+(L0+Math.max(1,w)+6)+'" y="'+(y+15)+'" font-size="12" fill="currentColor">'+(c.y?spf(p):"–")+' <tspan opacity=".65">('+sf(c.red)+" แผ่น)</tspan></text>"});
+  return'<svg viewBox="0 0 '+W+" "+H+'" style="width:100%;height:auto;max-width:560px" role="img" aria-label="เปอร์เซ็นต์ลดเบอร์แยกสี">'+g+"</svg>"}
+function swHeat(A){const mx=Math.max(1,...A.colors.flatMap(k=>A.heat[k]));let h='<table class="cgrep"><thead><tr><th>สี</th>'+SWO.map(z=>"<th>"+z+" → "+(z-.5)+"</th>").join("")+'<th class="tt">รวม (แผ่น)</th><th>ยอดยางนึ่ง</th><th>% ลดเบอร์</th></tr></thead><tbody>';
+  A.colors.forEach(k=>{const c=A.col[k];h+="<tr><th>"+escH(k)+"</th>"+A.heat[k].map(v=>'<td style="'+(v?"background:rgba(37,99,235,"+(.08+.5*v/mx).toFixed(2)+")":"")+'">'+(v?sf(v)+' <small style="opacity:.7">('+(c.y?(Math.round(v/c.y*1000)/10)+"%":"–")+")</small>":"")+"</td>").join("")+'<td class="tt">'+sf(c.red)+"</td><td>"+(c.y?fmt(c.y):"–")+"</td><td><b>"+(c.y?spf(sp(c.red,c.y)):"–")+"</b></td></tr>"});
+  return h+"</tbody><tfoot><tr><th>รวม</th>"+A.size.map(v=>"<td>"+sf(v)+"</td>").join("")+'<td class="tt">'+sf(A.red)+"</td><td>"+fmt(A.y)+"</td><td><b>"+spf(A.pct)+"</b></td></tr></tfoot></table>"}
+function swDayTbl(A,thr){const cs=A.colors;let h='<table class="cgrep"><thead><tr><th>วันที่แผนปั๊ม</th><th>วันที่นึ่งยาง</th>'+cs.map(k=>"<th>"+escH(k)+"</th>").join("")+'<th class="tt">รวม (แผ่น)</th><th>ยอดยางนึ่ง</th><th>% รวม</th></tr></thead><tbody>';
+  const cell=(red,y)=>{const p=sp(red,y);return'<td style="'+(y&&p>thr?"background:#FFF200;color:#000;font-weight:700":"")+'">'+(y&&red?(Math.round(p*100)/100).toFixed(2):(y?"–":""))+"</td>"};
+  A.days.forEach(x=>{h+="<tr><th>"+thD(x.d)+"</th><td>"+(x.st?thD(x.st):"–")+"</td>"+cs.map(k=>{const c=x.c[k];return c?cell(swS(c.v),c.y):"<td></td>"}).join("")+'<td class="tt">'+sf(x.red)+"</td><td>"+fmt(x.y)+"</td>"+cell(x.red,x.y)+"</tr>"});
+  return h+"</tbody></table>"}
+async function swExcel(A){if(typeof ExcelJS==="undefined")throw new Error("ยังโหลด ExcelJS ไม่เสร็จ");
+  const wb=new ExcelJS.Workbook(),dmy=d=>d?d.slice(8)+"/"+d.slice(5,7)+"/"+d.slice(0,4):"",hd=ws=>{const r=ws.getRow(1);r.font={bold:true,color:{argb:"FFFFFFFF"}};r.eachCell(c=>{c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF1A56DB"}};c.alignment={horizontal:"center"}})};
+  const wd=wb.addWorksheet("ข้อมูล");wd.addRow(["วันที่แผนปั๊ม","วันที่นึ่งยาง","สี","เบอร์เดิม","เบอร์ที่ปั๊มได้","จำนวน (แผ่น)"]);hd(wd);wd.columns=[{width:16},{width:16},{width:18},{width:11},{width:14},{width:14}];
+  A.days.forEach(x=>A.colors.forEach(k=>{const c=x.c[k];if(!c)return;c.v.forEach((v,i)=>{if(v)wd.addRow([dmy(x.d),dmy(x.st),k,SWO[i],SWO[i]-.5,v])})}));
+  const wy=wb.addWorksheet("ยอดยางรายสี");wy.addRow(["วันที่แผนปั๊ม","วันที่นึ่งยาง"].concat(A.colors,["รวม"]));hd(wy);wy.columns=[{width:16},{width:16}].concat(A.colors.map(()=>({width:13})),[{width:12}]);
+  A.days.forEach((x,i)=>{const r=i+2,L=n=>String.fromCharCode(64+n),last=2+A.colors.length;wy.addRow([dmy(x.d),dmy(x.st)].concat(A.colors.map(k=>x.c[k]&&x.c[k].y?x.c[k].y:null),[{formula:"SUM(C"+r+":"+L(last)+r+")",result:x.y}]))});
+  const ws=wb.addWorksheet("สรุปลดเบอร์",{views:[{state:"frozen",ySplit:3}]});ws.columns=[{width:22}].concat(SWO.map(()=>({width:12})),[{width:14},{width:14},{width:12}]);
+  ws.addRow(["สรุปยางลดเบอร์ แยกสี × เบอร์เดิม (แผ่น) · แผนปั๊ม "+dmy(A.days[0].d)+" – "+dmy(A.days[A.days.length-1].d)]).font={bold:true,size:13};ws.addRow(["1 แผ่น = 2 คู่ · % = แผ่นที่ลด ÷ ยอดยางนึ่งของสีนั้น (ตัวเลขคำนวณจากแท็บ ข้อมูล / ยอดยางรายสี)"]);
+  const h=ws.addRow(["สี"].concat(SWO.map(z=>z+" → "+(z-.5)),["รวม (แผ่น)","ยอดยางนึ่ง","% ลดเบอร์"]));h.font={bold:true,color:{argb:"FFFFFFFF"}};h.eachCell(c=>{c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF1A56DB"}};c.alignment={horizontal:"center"}});
+  const nD=wd.rowCount,L=n=>String.fromCharCode(64+n);A.colors.forEach((k,i)=>{const r=4+i,cj=L(3+i),row=ws.addRow([k].concat(SWO.map((z,j)=>({formula:"SUMIFS('ข้อมูล'!$F$2:$F$"+nD+",'ข้อมูล'!$C$2:$C$"+nD+",$A"+r+",'ข้อมูล'!$D$2:$D$"+nD+","+z+")",result:A.heat[k][j]})),
+      [{formula:"SUM(B"+r+":G"+r+")",result:A.col[k].red},{formula:"SUM('ยอดยางรายสี'!"+cj+"2:"+cj+(A.days.length+1)+")",result:A.col[k].y},{formula:"IF(I"+r+">0,H"+r+"/I"+r+",0)",result:A.col[k].y?A.col[k].red/A.col[k].y:0}]));row.getCell(10).numFmt="0.00%"});
+  const t=4+A.colors.length,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8,9].map(j=>({formula:"SUM("+L(j)+"4:"+L(j)+(t-1)+")"})),[{formula:"IF(I"+t+">0,H"+t+"/I"+t+",0)",result:A.pct/100}]));tr.font={bold:true};tr.getCell(10).numFmt="0.00%";
+  const fn="ยางลดเบอร์_"+A.days[0].d+"_ถึง_"+A.days[A.days.length-1].d+".xlsx";await saveBook(wb,fn)}
+FGPG.sw=()=>{show("x5");fgReveal([],["x-swing"],"ยางลดเบอร์","sw");["x-stk","x-stkrep","x-quo"].forEach(id=>{const e=$(id);if(e)e.hidden=true});swInit();swDraw();{const p=$("x-swing");p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")}};
+
 /* ---------- ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน: 2 ตาราง + เฉลี่ยต่อวัน + นำเข้า Excel ---------- */
 const CVMC=["ขาว","ดำ","นด"],CVMN=["ขาว","ดำ","น้ำตาล"],cvmDmy=d=>d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
 function cvmWD(m,set){const k="cvwd_"+m;if(set!==undefined){try{localStorage.setItem(k,String(set))}catch(e){}return set}try{const v=+localStorage.getItem(k);if(v>0)return v}catch(e){}
