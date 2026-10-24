@@ -460,7 +460,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 184)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 185)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4713,8 +4713,10 @@ function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),m
   {const mm=RCM.m,y=+mm.slice(0,4),mo=+mm.slice(5,7),ld=Object.keys(FGD).filter(d=>d.slice(0,7)===mm&&Object.values(FGD[d]).some(v=>v.some(x=>x>0))).map(d=>+d.slice(8)).sort((a,b)=>a-b),last=ld.length?ld[ld.length-1]:0,ms=[];
     for(let d=1;d<=last;d++)if(!ld.includes(d))ms.push(d);
     const chip=(t,on,tt,dk)=>'<span'+(dk?' class="rcday" data-d="'+dk+'" tabindex="0" aria-label="ดูสีและเบอร์ที่ผลิตวันที่ '+t+'"':' title="'+tt+'"')+' style="display:inline-block;'+(dk?'cursor:pointer;':'')+'margin:2px 3px 2px 0;padding:2px 9px;border-radius:10px;font-size:13px;'+(on?'background:var(--accent-soft);color:var(--accent);font-weight:600':'background:var(--surface2);color:var(--muted)')+'">'+t+'</span>';
+    const whole=ld.length===1&&ld[0]===new Date(y,mo,0).getDate()&&cT(Object.values(M[mm].c).map(cT))>=100000;
+    if(whole)h+='<div class="note" style="margin:0 0 8px">ข้อมูลรวมทั้งเดือน '+thM(mm)+' (ไม่มียอดรายวัน)</div>';else{
     h+='<div class="cgsec">วันที่โหลดเข้าระบบแล้ว · '+thM(mm)+' ('+ld.length+' วัน)</div><div>'+(ld.length?ld.map(d=>chip(d,1,"",mm+"-"+String(d).padStart(2,"0"))).join(""):'<span class="note">ยังไม่มีข้อมูลรายวัน</span>')+'</div>';
-    if(ms.length)h+='<div class="note" style="margin:6px 0 0">ยังไม่มีข้อมูล (ก่อนวันที่ '+last+'): '+ms.map(d=>chip(d+(new Date(y,mo-1,d).getDay()===0?" (อา.)":""),0,"ยังไม่มีข้อมูล")).join("")+'</div>';}
+    if(ms.length)h+='<div class="note" style="margin:6px 0 0">ยังไม่มีข้อมูล (ก่อนวันที่ '+last+'): '+ms.map(d=>chip(d+(new Date(y,mo-1,d).getDay()===0?" (อา.)":""),0,"ยังไม่มีข้อมูล")).join("")+'</div>';}}
   const dm=M[RCM.m].c,dc=PTPL.filter(r=>cT(dm[r[0]]||cZ())>0);
   h+='<div class="cgsec">รายละเอียด '+thM(RCM.m)+' · สี × เบอร์</div><div class="scroll"><table class="cgrep"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวม (คู่)</th></tr></thead><tbody>'+
     dc.map(r=>{const a=dm[r[0]];return"<tr><th"+rcRowTip(r,a)+">"+escH(r[1])+"</th>"+a.map(v=>"<td>"+fmt(v)+"</td>").join("")+'<td class="tt">'+fmt(cT(a))+"</td></tr>"}).join("")+
