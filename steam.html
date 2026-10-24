@@ -460,7 +460,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 182)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 183)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -5325,14 +5325,19 @@ $("sx-save").onclick=async()=>{
   Object.keys(stk).forEach(date=>{const g=stk[date];
     if(g.k.stock&&g.k.booked&&!g.k.net)SX8.forEach(d=>{const a=g.k.stock[d[0]]||Z6(),b=g.k.booked[d[0]]||Z6(),n=a.map((v,i)=>v-b[i]);if(n.some(v=>v))g.rows.push(["net",d[0]].concat(n,[""]))});
     posts.push({type:"stock",key,date,by:"",rows:g.rows,_l:"สต็อก/โควต้า/ยอดจอง "+thD(date)})});
-  let ok=0;const fail=[];
-  for(const b of posts){const lab=b._l;delete b._l;
-    try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(b)}).then(r=>r.json());if(r.ok)ok++;else fail.push(lab+": "+(r.error||"ไม่สำเร็จ"))}catch(err){fail.push(lab+": "+err)}}
-  sxMsg("บันทึกแล้ว "+ok+" จาก "+posts.length+" รายการ"+(fail.length?" · ไม่สำเร็จ: "+fail.join("; "):""),fail.length?"warn":"ok");
-  SXIMP=SXIMP.filter(x=>!(x.on&&x.st!=="err")||fail.length);$("sx-prev").innerHTML="";
+  let ok=0;const fail=[],failX=[];
+  for(const b of posts){const lab=b._l;delete b._l;let done=false,msg="";
+    for(let t=1;t<=3&&!done;t++){
+      try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(b)}).then(r=>r.text()).then(tx=>{try{return JSON.parse(tx)}catch(e){return{_nj:1}}});
+        if(r._nj){msg="เซิร์ฟเวอร์ตอบกลับผิดปกติ (ชั่วคราว)"}else if(r.ok){ok++;done=true}else{msg=r.error||"ไม่สำเร็จ";break}}
+      catch(err){msg=String(err)}
+      if(!done&&t<3){sxMsg("กำลังบันทึก… ลองใหม่ "+lab+" ("+(t+1)+"/3)");await new Promise(z=>setTimeout(z,1800*t))}}
+    if(!done){fail.push(lab+": "+msg);failX.push(lab)}}
+  sxMsg("บันทึกแล้ว "+ok+" จาก "+posts.length+" รายการ"+(fail.length?" · ไม่สำเร็จ: "+fail.join("; ")+" — กด \"บันทึกที่เลือก\" อีกครั้งเพื่อลองเฉพาะรายการที่ไม่สำเร็จ":""),fail.length?"warn":"ok");
+  SXIMP=SXIMP.filter(x=>{if(!(x.on&&x.st!=="err"))return false;const t=x.t,kind=t.id==="book"?"nbook":t.id==="qbase"?"qbase":t.id==="quota"?"quota":t.kind,date=(kind==="nbook"||kind==="qbase")?x.key+"-01":x.key,L=t.id==="day"?"รายวัน "+thD(x.key):t.id==="plan"?"แผน "+thM(x.key)+" "+revName(x.rev):"สต็อก/โควต้า/ยอดจอง "+thD(date);return failX.includes(L)});$("sx-prev").innerHTML="";if(SXIMP.length)sxDraw(0);
   try{await load();renderE()}catch(e){}
   try{if(typeof rcMonDraw==="function"){const dm=sel.filter(x=>x.t.id==="day").map(x=>x.key).sort().pop();if(dm){RCM.y=dm.slice(0,4);RCM.m=dm.slice(0,7)}else RCM.m="";rcMonDraw()}}catch(e){}
-  $("sx-save").disabled=true;
+  $("sx-save").disabled=!SXIMP.some(x=>x.on);
 };
 
 /* ---------- ขั้น 3: ยอดจองฝ่ายขาย ---------- */
