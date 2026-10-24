@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 145)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 148)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -1249,7 +1249,7 @@ const API_URL="https://script.google.com/macros/s/AKfycbypdnmDNOXuOQ6rA74u2u4ary
 const SIZES=["8.5","9","9.5","10","10.5","11"];
 // รูปแบบตามตารางแผนผลิต: [คีย์ในชีต (หู/พื้น), ชื่อแสดง, สีพื้นแถว Excel, สีตัวอักษร]
 const TPL8=[["น้ำเงิน","สีน้ำเงิน","D6E4F5","1F4FD8"],["เขียว","สีเขียว","DDEEDD","1E7E34"],["แดง","สีแดง","F8D7DA","C62828"],["เหลือง","สีเหลือง","FFF2CC","B7791F"],["ขาว","สีขาว","F5F5F5","333333"],["ดำ","สีดำ","D9D9D9","000000"],["เทา","สีเทา","E8E8E8","666666"],["ดำ/ขาว","สีดำหน้าขาว","D9D9D9","000000"]];
-const TPLS=[["เขียว/แดง","Xmas หูเขียว","F8D7DA","333333"],["แดง/เขียว","Xmas หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
+const TPLS=[["เขียว/แดง","Xmas หูเขียว","F8D7DA","333333"],["แดง/เขียว","Xmas หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","โกโก้ล้วน","F0E4DA","333333"]];
 const MAIN=TPL8.map(r=>r[0]), MIX=TPLS.map(r=>r[0]), ALL=MAIN.concat(MIX);
 const LAB={}; TPL8.concat(TPLS).forEach(r=>LAB[r[0]]=r[1]);
 const lab=c=>LAB[c]||c;
@@ -2310,11 +2310,7 @@ async function xpExcel(ms,name){
   const head=(ws,first)=>{const h=ws.addRow([first].concat(SIZES,["รวม 8.5-11"]));h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center"};x.border=B})};
   const title=(ws,t,o,st)=>{const r=ws.addRow([t]);ws.mergeCells(r.number,1,r.number,8);const q=r.getCell(1);q.font={bold:true,size:o||12,color:{argb:st==="old"?"FF6B7280":st==="latest"?"FF14532D":"FF1A56DB"}};if(st)q.fill=fill(st==="latest"?"BBF7D0":"E5E7EB")};
   const note=(ws,t)=>{if(!t)return;const r=ws.addRow([t]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};r.getCell(1).alignment={wrapText:true}};
-  const table=(ws,m,r,isL)=>{const c=xpC(m,r),pv=planView(c);title(ws,(isL?"★ ล่าสุด · ":"ฉบับเก่า · ")+thM(m)+" — "+revName(r)+(c.P.date?" (แจ้ง รง. "+thD(c.P.date)+")":""),12,isL?"latest":"old");note(ws,c.P.note);head(ws,"สี (หน่วย: คู่)");const r1=ws.rowCount+1;
-    pv.rows.forEach(x=>{const n=ws.rowCount+1,cl=colOf(x.k),row=ws.addRow([x.label].concat(x.v,[{formula:"SUM(B"+n+":G"+n+")",result:T(x.v)}]));
-      row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===8){q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
-    const r2=ws.rowCount,tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?pv.tot[j-2]:T(pv.tot)}))));
-    tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt="#,##0"});ws.addRow([])};
+  const table=(ws,m,r,isL)=>{const c=xpC(m,r),pv=planView(c);title(ws,(isL?"★ ล่าสุด · ":"ฉบับเก่า · ")+thM(m)+" — "+revName(r)+(c.P.date?" (แจ้ง รง. "+thD(c.P.date)+")":""),12,isL?"latest":"old");note(ws,c.P.note);fgTable(ws,pv.rows.map(x=>({k:x.k,label:x.label,v:x.v})),{head:()=>head(ws,"สี (หน่วย: คู่)"),B,fill,fmt:F0});ws.addRow([])};
   const cols=ws=>{ws.columns=[{width:40}].concat(SIZES.map(()=>({width:11})),[{width:15}])};
   if(ms.length>1){const ws=wb.addWorksheet("สรุปรายเดือน");cols(ws);title(ws,"สรุปแผนผลิตรายเดือน (ฉบับล่าสุดของแต่ละเดือน) หน่วย: คู่",13);head(ws,"เดือน");const r1=ws.rowCount+1;
     ms.forEach(m=>{const rs=xpRevs(m),lr=rs[rs.length-1],pv=planView(xpC(m,lr)),n=ws.rowCount+1,row=ws.addRow([thM(m)+" ("+revName(lr)+")"].concat(pv.tot,[{formula:"SUM(B"+n+":G"+n+")",result:T(pv.tot)}]));row.eachCell((q,j)=>{q.border=B;if(j>1)q.numFmt=F0})});
@@ -2371,11 +2367,8 @@ async function xlExcel(ms,name){const wb=new ExcelJS.Workbook(),fill=x=>({type:"
   const cols=ws=>{ws.columns=[{width:40}].concat(SIZES.map(()=>({width:11})),[{width:15}])};
   ms.forEach(m=>{const ws=wb.addWorksheet(thM(m));cols(ws);const days=xlDays(m),A0=xsAgg(days),A={mat:xlRemap(A0.mat),tot:A0.tot,n:A0.n};
     const t0=ws.addRow(["แผ่นยางจ่ายประกอบ "+thM(m)+" (หน่วย: แผ่น) · "+A.n+" วัน · 1 แผ่น = "+f+" คู่"]);ws.mergeCells(t0.number,1,t0.number,8);t0.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};
-    head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]));const r1=ws.rowCount+1,keys=xlKeys(A.mat);
-    keys.forEach(k=>{const v=A.mat[k]||[0,0,0,0,0,0],n=ws.rowCount+1,cl=colOf(k),row=ws.addRow([xlLab(k)].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));
-      row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===8){q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
-    const r2=ws.rowCount,tot=[0,0,0,0,0,0];Object.values(A.mat).forEach(v=>v.forEach((x,i)=>tot[i]+=x));
-    const tr=ws.addRow(["รวม (แผ่น)"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tot[j-2]:T(tot)}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt="#,##0"});
+    const keys=xlKeys(A.mat),tot=[0,0,0,0,0,0];Object.values(A.mat).forEach(v=>v.forEach((x,i)=>tot[i]+=x));
+    fgTable(ws,keys.map(k=>({k,label:xlLab(k),v:A.mat[k]||[0,0,0,0,0,0]})),{head:()=>head(ws,["สี"].concat(SIZES,["รวม 8.5-11"])),B,fill,fmt:F0,totLabel:"รวมทั้งหมด (แผ่น)"});
     const n2=ws.rowCount,pr=ws.addRow(["รวม (คู่ ≈ แผ่น × "+f+")"].concat([2,3,4,5,6,7,8].map(j=>({formula:String.fromCharCode(64+j)+n2+"*"+f,result:(j<8?tot[j-2]:T(tot))*f}))));pr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("FFF2CC");if(j>1)q.numFmt="#,##0"});
     ws.addRow([]);const t1=ws.addRow(["รายวัน (แผ่น)"]);t1.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};head(ws,["วันที่ / สี"].concat(SIZES,["รวม"]));
     days.forEach(d=>{const dr=ws.addRow([thD(d)]);dr.eachCell(x=>{x.font={bold:true};x.fill=fill("EEF2FF");x.border=B});ws.mergeCells(dr.number,1,dr.number,8);
@@ -2511,13 +2504,12 @@ async function cmpExcel(){const f=$("c-from").value,t=$("c-to").value,src=CSRC.f
   if($("c-t-qty").checked){const ws=wb.addWorksheet("สรุปปริมาณ");ws.columns=[{width:26},{width:18},{width:16},{width:22}];title(ws,"ติดตามการผลิต — สรุปปริมาณ",null,4);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,4);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};
     if(notes.length){const q=ws.addRow(["ที่มา: "+notes.join(", ")]);ws.mergeCells(q.number,1,q.number,4);q.getCell(1).font={size:10,color:{argb:"FF888888"}}}ws.addRow([]);head(ws,["รายการ","ปริมาณ (คู่)","% ของแผน","ส่วนต่างจากแผน (คู่)"]);
     const r0=ws.rowCount+1,pi=src.findIndex(x=>x[0]==="plan"),pr=pi>=0?r0+pi:0;
-    src.forEach(s=>{const n=ws.rowCount+1,isP=s[0]==="plan",no=isP||!pr,r=ws.addRow([s[1],$("c-t-det").checked?{formula:"'"+s[1].slice(0,31)+"'!H"+(4+keys.length),result:tot[s[0]]}:tot[s[0]],no?"":{formula:"IF($B$"+pr+"=0,\"\",B"+n+"/$B$"+pr+")",result:tot.plan?tot[s[0]]/tot.plan:""},no?"":{formula:"B"+n+"-$B$"+pr,result:tot[s[0]]-tot.plan}]);
+    src.forEach(s=>{const n=ws.rowCount+1,isP=s[0]==="plan",no=isP||!pr,r=ws.addRow([s[1],$("c-t-det").checked?{formula:"'"+s[1].slice(0,31)+"'!H"+fgGrandRow(3,keys),result:tot[s[0]]}:tot[s[0]],no?"":{formula:"IF($B$"+pr+"=0,\"\",B"+n+"/$B$"+pr+")",result:tot.plan?tot[s[0]]/tot.plan:""},no?"":{formula:"B"+n+"-$B$"+pr,result:tot[s[0]]-tot.plan}]);
       r.eachCell((q,j)=>{q.border=B;if(j===1){q.font={bold:true,color:{argb:"FFFFFFFF"}};q.fill=fill(HC[s[0]])}if(j===2)q.numFmt="#,##0";if(j===3)q.numFmt="0.0%";if(j===4)q.numFmt=FD})})}
-  if($("c-t-det").checked){const mk=(name,M,ref,c,ttl,srcN,refN)=>{const ws=wb.addWorksheet(name.slice(0,31));cols(ws);title(ws,ttl,c);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]),c);const r1=ws.rowCount+1;
-      keys.forEach(k=>{const v=ref?(M[k]||cZ()).map((x,i)=>x-(ref[k]||cZ())[i]):(M[k]||cZ()),n=ws.rowCount+1,cl=colOf(k),row=ws.addRow([cLab(k)].concat(ref?v.map((x,i)=>({formula:"'"+srcN+"'!"+String.fromCharCode(66+i)+n+"-'"+refN+"'!"+String.fromCharCode(66+i)+n,result:x})):v,[{formula:"SUM(B"+n+":G"+n+")",result:cT(v)}]));
-        row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=ref?FD:F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j>1&&ref){const x=j===8?cT(v):v[j-2];q.font={bold:j===8,color:{argb:x>0?"FF15803D":x<0?"FFC2410C":"FF999999"}}}if(j===8){if(!ref)q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
-      const r2=ws.rowCount,tv=cZ();keys.forEach(k=>(ref?(M[k]||cZ()).map((x,i)=>x-(ref[k]||cZ())[i]):(M[k]||cZ())).forEach((x,i)=>tv[i]+=x));
-      const tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?tv[j-2]:cT(tv)}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt=ref?FD:"#,##0"})};
+  if($("c-t-det").checked){const mk=(name,M,ref,c,ttl,srcN,refN)=>{const ws=wb.addWorksheet(name.slice(0,31));cols(ws);title(ws,ttl,c);const r=ws.addRow([per]);ws.mergeCells(r.number,1,r.number,8);r.getCell(1).font={italic:true,color:{argb:"FF666666"}};const ZV=cZ(),items=keys.map(k=>{const v=ref?(M[k]||ZV).map((x,i)=>x-(ref[k]||ZV)[i]):(M[k]||ZV);
+        return {k,label:cLab(k),v,cells:n=>ref?v.map((x,i)=>({formula:"'"+srcN+"'!"+String.fromCharCode(66+i)+n+"-'"+refN+"'!"+String.fromCharCode(66+i)+n,result:x})):v,
+          post:row=>row.eachCell((q,j)=>{if(j>1&&ref){const x=j===8?cT(v):v[j-2];q.numFmt=FD;q.font={bold:j===8,color:{argb:x>0?"FF15803D":x<0?"FFC2410C":"FF999999"}}}})}});
+      fgTable(ws,items,{head:()=>head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]),c),B,fill,fmt:ref?FD:F0,subFmt:ref?FD:"#,##0"})};
     src.forEach(s=>mk(s[1],o[s[0]],null,HC[s[0]],s[1]+" — สี × เบอร์ (คู่)"));
     if($("c-s-plan").checked)src.filter(s=>s[0]!=="plan").forEach(s=>mk("ส่วนต่าง "+s[1],o[s[0]],o.plan,HC[s[0]],"ส่วนต่าง: "+s[1]+" − แผนผลิต (คู่)  เขียว = เกินแผน · ส้มแดง = ต่ำกว่าแผน (สูตรลิงก์จากแท็บ "+s[1]+" และ แผนผลิต)",s[1].slice(0,31),"แผนผลิต"))}
   await saveBook(wb,"ติดตามการผลิต_"+f+"_ถึง_"+t+".xlsx");return""}
@@ -2605,10 +2597,7 @@ async function slExcel(ms,name){const D=slData(),wb=new ExcelJS.Workbook(),fill=
   if(ms.length>1){const ws=wb.addWorksheet("สรุปรายเดือน");cols(ws);const t0=ws.addRow(["สรุปยอดขายรายเดือน (หน่วย: คู่)"]);ws.mergeCells(t0.number,1,t0.number,8);t0.getCell(1).font={bold:true,size:13,color:{argb:"FF1A56DB"}};head(ws,"เดือน");const r1=ws.rowCount+1;
     ms.forEach(m=>{const t=mTot(m),n=ws.rowCount+1,row=ws.addRow([thM(m)].concat(t,[{formula:"SUM(B"+n+":G"+n+")",result:T(t)}]));row.eachCell((q,j)=>{q.border=B;if(j>1)q.numFmt=F0})});
     const r2=ws.rowCount,tr=ws.addRow(["รวมทุกเดือน"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")"}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt="#,##0"})}
-  ms.forEach(m=>{const ws=wb.addWorksheet(thM(m).replace(/[\\\/\?\*\[\]:]/g,""));cols(ws);const t0=ws.addRow(["ยอดขาย "+thM(m)+" (หน่วย: คู่) — แถวที่เป็น - คือไม่มียอดขาย"]);ws.mergeCells(t0.number,1,t0.number,8);t0.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};head(ws,"สี");const r1=ws.rowCount+1;
-    PTPL.forEach(r=>{const v=D[m][r[0]]||[0,0,0,0,0,0],n=ws.rowCount+1,cl=colOf(r[0]),row=ws.addRow([r[1]].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));
-      row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===8){q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}})});
-    const r2=ws.rowCount,t=mTot(m),tr=ws.addRow(["รวม"].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+String.fromCharCode(64+j)+r1+":"+String.fromCharCode(64+j)+r2+")",result:j<8?t[j-2]:T(t)}))));tr.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill("DCE6FA");if(j>1)q.numFmt="#,##0"})});
+  ms.forEach(m=>{const ws=wb.addWorksheet(thM(m).replace(/[\\\/\?\*\[\]:]/g,""));cols(ws);const t0=ws.addRow(["ยอดขาย "+thM(m)+" (หน่วย: คู่) — แถวที่เป็น - คือไม่มียอดขาย"]);ws.mergeCells(t0.number,1,t0.number,8);t0.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};fgTable(ws,PTPL.map(r=>({k:r[0],label:r[1],v:D[m][r[0]]||[0,0,0,0,0,0]})),{head:()=>head(ws,"สี"),B,fill,fmt:F0})});
   await saveBook(wb,name)}
 $("sl-list").addEventListener("click",async e=>{
   const x=e.target.closest&&e.target.closest("[data-sx]");
@@ -2767,7 +2756,7 @@ try{$("i-key").value=localStorage.getItem("fgkey")||""}catch(e){}
 /* ---------- Excel export ---------- */
 async function saveBook(wb,name){const buf=await wb.xlsx.writeBuffer();const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 const TPL8=[["น้ำเงิน","สีน้ำเงิน","D6E4F5","1F4FD8"],["เขียว","สีเขียว","DDEEDD","1E7E34"],["แดง","สีแดง","F8D7DA","C62828"],["เหลือง","สีเหลือง","FFF2CC","B7791F"],["ขาว","สีขาว","F5F5F5","333333"],["ดำล้วน","สีดำ","D9D9D9","000000"],["เทา","สีเทา","E8E8E8","666666"],["-","สีดำหน้าขาว","D9D9D9","000000"]];
-const TPLS=[["Xmax หูเขียว","Xmas หูเขียว","F8D7DA","333333"],["Xmax หูแดง","Xmas หูแดง","DDEEDD","333333"],["โควิด หูเหลือง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["-","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["-","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงินล้วน","น้ำเงินล้วน","D6E4F5","333333"],["แดงล้วน","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
+const TPLS=[["Xmax หูเขียว","Xmas หูเขียว","F8D7DA","333333"],["Xmax หูแดง","Xmas หูแดง","DDEEDD","333333"],["โควิด หูเหลือง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["-","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["-","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["-","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงินล้วน","น้ำเงินล้วน","D6E4F5","333333"],["แดงล้วน","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","โกโก้ล้วน","F0E4DA","333333"]];
 $("xl").onclick=async()=>{
   const b=$("xl"), back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel",2500);
   if(typeof ExcelJS==="undefined"){b.textContent="โหลดตัวสร้าง Excel ไม่ได้";back();return}
@@ -2846,6 +2835,35 @@ function planCalc(){
 const PTPL=[["น้ำเงิน","สีน้ำเงิน"],["เขียว","สีเขียว"],["แดง","สีแดง"],["เหลือง","สีเหลือง"],["ขาว","สีขาว"],["ดำ","สีดำ"],["เทา","สีเทา"],["ดำ/ขาว","สีดำหน้าขาว"],["เขียว/แดง","Xmas หูเขียว"],["แดง/เขียว","Xmas หูแดง"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน"],["แดง/แดง","แดงล้วน"],["โกโก้ล้วน","โกโก้ล้วน"]];
 const PCOL={"น้ำเงิน":["D6E4F5","1F4FD8"],"เขียว":["DDEEDD","1E7E34"],"แดง":["F8D7DA","C62828"],"เหลือง":["FFF2CC","B7791F"],"ขาว":["F5F5F5","333333"],"ดำ":["D9D9D9","000000"],"เทา":["E8E8E8","666666"],"ดำ/ขาว":["D9D9D9","000000"],"เขียว/แดง":["F8D7DA","1E7E34"],"แดง/เขียว":["DDEEDD","C62828"],"เหลือง/แดง":["F8D7DA","B7791F"],"เหลือง/ดำ":["FFF9C4","333333"],"น้ำเงิน/น้ำเงิน":["D6E4F5","1F4FD8"],"แดง/แดง":["F8D7DA","C62828"],"โกโก้ล้วน":["F0E4DA","6B4226"]};
 const colOf=k=>PCOL[k]||(k.indexOf("/ดำ")>0?["D9D9D9","333333"]:["FFFFFF","333333"]);
+/* ===== รูปแบบรายงานฟองน้ำ 200 (ตามแม่แบบ format): 8 สีหลัก + รวม / สีพิเศษ (Export เท่านั้น) + รวมสีพิเศษ / รวมทั้งหมด ===== */
+const FG_MAIN=["น้ำเงิน","เขียว","แดง","เหลือง","ขาว","ดำ","เทา","ดำ/ขาว"];
+function fgTable(ws,items,o){
+  // items: [{k,label,v:[6 เบอร์]}] เรียงตามแม่แบบ · o:{head:()=>…, B, fill, fmt, totLabel, mainLabel, spLabel, subLabel, spSubLabel}
+  const L=n=>String.fromCharCode(64+n),Z=()=>[0,0,0,0,0,0],T=a=>a.reduce((x,y)=>x+y,0);
+  const fmt=o.fmt||"#,##0;-#,##0;-",B=o.B,fill=o.fill,rowOf={};
+  const main=items.filter(x=>FG_MAIN.includes(x.k)),sp=items.filter(x=>!FG_MAIN.includes(x.k));
+  const sec=t=>{const r=ws.addRow([t]);r.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};return r};
+  const grey=(r,argb)=>r.eachCell((q,j)=>{q.font={bold:true};q.border=B;q.fill=fill(argb);if(j>1)q.numFmt=o.subFmt||"#,##0"});
+  const sumRow=(label,r1,r2,tot,argb)=>{const r=ws.addRow([label].concat([2,3,4,5,6,7,8].map(j=>({formula:"SUM("+L(j)+r1+":"+L(j)+r2+")",result:j<8?tot[j-2]:T(tot)}))));grey(r,argb);return r};
+  const block=(arr,title,subLabel)=>{
+    sec(title);o.head();const r1=ws.rowCount+1,tot=Z();
+    arr.forEach(x=>{const v=(x.v||Z()).map(a=>a||0),n=ws.rowCount+1,cl=(o.cl||colOf)(x.k);v.forEach((a,i)=>tot[i]+=a);rowOf[x.k]=n;
+      const row=ws.addRow([x.label].concat(x.cells?x.cells(n):v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));
+      row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=fmt;if(j===1)q.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===8){q.font={bold:true,color:{argb:"FF"+cl[1]}};q.fill=fill("EEF2FF")}});
+      if(x.post)x.post(row,v)});
+    const r2=ws.rowCount,sr=sumRow(subLabel,r1,r2,tot,"DCE6FA");return {tot,row:sr.number};
+  };
+  const a=block(main,o.mainLabel||"8 สีหลัก",o.subLabel||"รวม");
+  let b={tot:Z(),row:0};
+  if(sp.length){ws.addRow([]);b=block(sp,o.spLabel||"สีพิเศษ (Export เท่านั้น)",o.spSubLabel||"รวมสีพิเศษ")}
+  const g=a.tot.map((x,i)=>x+b.tot[i]);
+  ws.addRow([]);
+  const fm=j=>"("+L(j)+a.row+(b.row?"+"+L(j)+b.row:"")+")";
+  const gr=ws.addRow([o.totLabel||"รวมทั้งหมด"].concat([2,3,4,5,6,7,8].map(j=>({formula:L(j)+a.row+(b.row?"+"+L(j)+b.row:""),result:j<8?g[j-2]:T(g)}))));
+  grey(gr,"BFD3F5");
+  return {tot:g,grandRow:gr.number,mainRow:a.row,spRow:b.row,rowOf};
+}
+function fgGrandRow(start,keys){const m=keys.filter(k=>FG_MAIN.includes(k)).length,sp=keys.length-m;return sp?start+8+m+sp:start+4+m}
 const POOLKEY={"น้ำเงิน":"น้ำเงิน","เขียว":"เขียว","แดง":"แดง","เหลือง":"เหลือง","ขาว":"ขาว","ดำ":"ดำ","เทา":"เทา","Xmas เขียว":"เขียว/แดง","Xmas แดง":"แดง/เขียว","พื้นแดง เหลือง":"เหลือง/แดง","น้ำเงินล้วน":"น้ำเงิน/น้ำเงิน","แดงล้วน":"แดง/แดง","โกโก้":"โกโก้ล้วน"};
 const tint=k=>' style="--c:#'+(k==="ขาว"?"BFC5CB":colOf(k)[1])+'"';
 function planView(c){ // -> {rows:[{label,v,st}], tot, prevRev}
@@ -3540,16 +3558,10 @@ function poSheet(wb,C){
   const rows={};
   const addT=(key,title,vf,ff)=>{
     ws.addRow([]);ws.addRow([title]).getCell(1).font={bold:true};
-    const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
-    rows[key]={};let first=0,last=0;
-    C.list.forEach(c=>{const v=vf(c),r=ws.addRow([labC(c)+(SC.includes(c)?"":" (สีพิเศษ ไม่หัก)")].concat(v.map(Math.round),[0])),n=r.number;if(!first)first=n;last=n;rows[key][c]=n;
-      SIZES.forEach((z,j)=>{const fo=ff?ff(c,j):null;if(fo)r.getCell(j+2).value={formula:fo,result:Math.round(v[j])}});
-      r.getCell(8).value={formula:"SUM(B"+n+":G"+n+")",result:Math.round(v.reduce((a,b)=>a+b,0))};
-      let cl="FFFFFF";try{cl=SC.includes(c)?colOf(c)[0]:((SXS.find(d=>d[0]===c)||[])[2]||"FFFFFF")}catch(e){}
-      r.eachCell((cc,i)=>{cc.border=B;cc.fill=fill(cl);if(i>1)cc.numFmt=NF})});
-    const tr=ws.addRow(["รวมทุกสี"]);tr.font={bold:true};
-    "BCDEFGH".split("").forEach((col,i)=>{const t=C.list.reduce((a,c)=>a+(i<6?vf(c)[i]:vf(c).reduce((p,q)=>p+q,0)),0);tr.getCell(i+2).value={formula:"SUM("+col+first+":"+col+last+")",result:Math.round(t)};tr.getCell(i+2).numFmt=NF});
-    tr.eachCell(c=>{c.border=B;c.fill=fill("EEEEEE")});
+    const hd=()=>{const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B})};
+    const items=C.list.map(c=>{const v=vf(c).map(Math.round);return {k:c,label:labC(c)+(SC.includes(c)?"":" (สีพิเศษ ไม่หัก)"),v,cells:n=>v.map((x,j)=>{const fo=ff?ff(c,j):null;return fo?{formula:fo,result:x}:x})}});
+    const R=fgTable(ws,items,{head:hd,B,fill,fmt:NF,cl:k=>SC.includes(k)?colOf(k):[(SXS.find(d=>d[0]===k)||[])[2]||"FFFFFF","333333"]});
+    rows[key]=R.rowOf;
   };
   addT("s","1) สต็อกต้นงวด ณ "+thD(C.sd),c=>C.start[c]);
   addT("r","2) "+(C.opt===1?"แผนผลิต":"แผนประกอบนึ่งยาง (แผ่นที่จ่ายไปประกอบ × คู่ต่อแผ่น)")+" ก่อนหัก",c=>C.raw[c]);
@@ -3626,11 +3638,15 @@ $("m-xl").onclick=async()=>{
   const w1=wb.addWorksheet("สรุปรายสี");w1.columns=[{width:30}].concat(Array(8).fill({width:16}));
   w1.addRow(["ติดตามผลิตจริง เทียบแผน · "+thM(M.mo)+" · "+(M.rev!==""?revName(M.rev):"")]).getCell(1).font={bold:true,size:13};
   w1.addRow(["เข้าโกดังถึง "+(M.lastA?thD(M.lastA):"-")+" · เป้า "+Math.round(M.hc*100)+"% ของแผน"]);
-  hdr(w1.addRow(["สี","แผนผลิต","เป้า","นึ่งแล้ว (คู่)","เข้าโกดังจริง","% ของแผน","% ของเป้า","ค้างระหว่างทาง","คาดสิ้นเดือน"]));
-  M.rows.forEach(r=>{const row=w1.addRow([r.label,Math.round(r.pt),Math.round(r.tg),Math.round(r.st),Math.round(r.at),r.pct==null?"":r.pct,r.pctT==null?"":r.pctT,Math.round(r.gap),r.proj==null?"":Math.round(r.proj)]);const cl=colOf(r.k);row.eachCell((c,i)=>{c.border=B;c.fill=fill(cl[0]);if(i>1)c.numFmt=(i===6||i===7)?"0%":"#,##0;[Red]-#,##0;-"})});
+  {const NF1="#,##0;[Red]-#,##0;-",hd1=()=>hdr(w1.addRow(["สี","แผนผลิต","เป้า","นึ่งแล้ว (คู่)","เข้าโกดังจริง","% ของแผน","% ของเป้า","ค้างระหว่างทาง","คาดสิ้นเดือน"])),
+     sec1=t=>{w1.addRow([t]).getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}}},nz=(a,f)=>a.reduce((x,r)=>x+(f(r)||0),0),
+     tot1=(label,a,argb)=>{const pt=nz(a,r=>r.pt),tg=nz(a,r=>r.tg),at=nz(a,r=>r.at),row=w1.addRow([label,Math.round(pt),Math.round(tg),Math.round(nz(a,r=>r.st)),Math.round(at),pt?at/pt:"",tg?at/tg:"",Math.round(nz(a,r=>r.gap)),Math.round(nz(a,r=>r.proj))]);
+       row.eachCell((c,i)=>{c.font={bold:true};c.border=B;c.fill=fill(argb);if(i>1)c.numFmt=(i===6||i===7)?"0%":NF1});return row},
+     blk1=(a,title,sub)=>{sec1(title);hd1();a.forEach(r=>{const row=w1.addRow([r.label,Math.round(r.pt),Math.round(r.tg),Math.round(r.st),Math.round(r.at),r.pct==null?"":r.pct,r.pctT==null?"":r.pctT,Math.round(r.gap),r.proj==null?"":Math.round(r.proj)]);const cl=colOf(r.k);row.eachCell((c,i)=>{c.border=B;c.fill=fill(cl[0]);if(i>1)c.numFmt=(i===6||i===7)?"0%":NF1})});tot1(sub,a,"DCE6FA")};
+   const mR=M.rows.filter(r=>FG_MAIN.includes(r.k)),sR=M.rows.filter(r=>!FG_MAIN.includes(r.k));
+   blk1(mR,"8 สีหลัก","รวม");if(sR.length){w1.addRow([]);blk1(sR,"สีพิเศษ (Export เท่านั้น)","รวมสีพิเศษ")}w1.addRow([]);tot1("รวมทั้งหมด",M.rows,"BFD3F5")}
   const w2=wb.addWorksheet("เข้าโกดังจริงรายเบอร์");w2.columns=[{width:30}].concat(Array(7).fill({width:13}));
-  hdr(w2.addRow(["สี"].concat(SIZES,["รวม"])));
-  M.rows.forEach(r=>{const row=w2.addRow([r.label].concat(r.a.map(Math.round),[Math.round(r.at)]));const cl=colOf(r.k);row.eachCell((c,i)=>{c.border=B;c.fill=fill(cl[0]);if(i>1)c.numFmt="#,##0;[Red]-#,##0;-"})});
+  fgTable(w2,M.rows.map(r=>({k:r.k,label:r.label,v:r.a.map(Math.round)})),{head:()=>hdr(w2.addRow(["สี"].concat(SIZES,["รวม"]))),B,fill,fmt:"#,##0;[Red]-#,##0;-"});
   try{await saveBook(wb,"ติดตามผลิตจริง_"+M.mo+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back();
 };
 let EINIT=false;
@@ -3762,7 +3778,7 @@ async function wExcel(){
       const c1=rw.getCell(1);c1.value=SCN[k]||k;c1.font={bold:true,color:{argb:"FF"+cl[1]}};c1.fill=fl(cl[0]);c1.border=B;
       SIZES.forEach((z,i)=>{const v=val(k,i,row,idx),x=rw.getCell(i+2),n=typeof v==="object"?v.result:v;x.value=v;x.numFmt=NF;x.fill=fl(cl[0]);x.border=B;colT[i]+=n;rs+=n});
       const x=rw.getCell(8);x.value={formula:"SUM(B"+row+":G"+row+")",result:rs};x.numFmt=NF;x.fill=fl(cl[0]);x.border=B;x.font={bold:true};gt+=rs;row++});
-    const last=row-1,tr=ws.getRow(row);tr.getCell(1).value="รวมทุกสี";
+    const last=row-1,tr=ws.getRow(row);tr.getCell(1).value="รวม";
     SIZES.forEach((z,i)=>{tr.getCell(i+2).value={formula:"SUM("+CL[i]+first+":"+CL[i]+last+")",result:colT[i]}});tr.getCell(8).value={formula:"SUM(H"+first+":H"+last+")",result:gt};
     tr.eachCell((x,i)=>{x.fill=fl("DCE6FA");x.font={bold:true};x.border=B;if(i>1)x.numFmt=NF});
     const o={first,tot:row};row+=2;return o};
@@ -4569,9 +4585,7 @@ $("o-xl").onclick=async()=>{const b=$("o-xl"),back=()=>setTimeout(()=>b.textCont
   const w1=wb.addWorksheet("แผนที่แจ้ง รง.");w1.columns=[{width:34}].concat(Array(7).fill({width:13}));
   w1.addRow(["แจ้งผลิตฟองน้ำ 200 เดือน "+thM(d.m)+" (หน่วย: คู่)"]).getCell(1).font={bold:true,size:14};
   w1.addRow(["คิดจากสต็อกจริง ณ "+thD(d.c.sd)+" · โรงงานส่งได้จริง "+OST.dr+"% ของแผน"]).getCell(1).font={color:{argb:"FF555555"}};w1.addRow([]);
-  hd(w1,["สี"].concat(SIZES.map(z=>"เบอร์ "+z),["รวม"]));
-  const tot=Z6();keys.forEach(k=>{const v=V[k].pl.map(Math.round);v.forEach((y,i)=>tot[i]+=y);const r=w1.addRow([cLab(k)].concat(v,[T(v)]));const cl=PCOL[k]||["FFFFFF","000000"];r.eachCell((cell,i)=>{cell.border=BR;cell.fill=fill(cl[0]);if(i>1)cell.numFmt=nf;else cell.font={bold:true,color:{argb:"FF"+cl[1]}}})});
-  {const r=w1.addRow(["รวม"].concat(tot,[T(tot)]));r.eachCell((cell,i)=>{cell.font={bold:true};cell.fill=fill("DCE6FA");cell.border=BR;if(i>1)cell.numFmt=nf})}
+  fgTable(w1,keys.map(k=>({k,label:cLab(k),v:V[k].pl.map(Math.round)})),{head:()=>hd(w1,["สี"].concat(SIZES.map(z=>"เบอร์ "+z),["รวม"])),B:BR,fill,fmt:nf});
   const w2=wb.addWorksheet("โฟล 9 ขั้น");w2.columns=[{width:30},{width:9}].concat(Array(11).fill({width:14}));
   w2.addRow(["โฟล 9 ขั้น แยกสี แยกเบอร์ · ณ "+thD(d.c.sd)+" → ออกแผน "+thM(d.m)]).getCell(1).font={bold:true,size:14};w2.addRow([]);
   hd(w2,["สี","เบอร์","① สต็อกจริง","② ผลิตได้+รับเข้า","③ = ①+②","④ โควต้าขาย","⑤ คาดสิ้นเดือนนี้","⑥ แผนที่จะแจ้ง","⑦ = ⑤+⑥×ส่ง%","⑧ ยอดจองเดือนหน้า","⑨ คาดสิ้นเดือนหน้า","เป้าสต็อก"]);
@@ -4842,16 +4856,9 @@ $("nb-xl").onclick=async()=>{
   ws.addRow(["ต้องการ FG ภายในวันที่",thD(tg0)]);ws.addRow(["นึ่งยาง → จ่ายประกอบ (วัน)",lag0]);ws.addRow(["สั่งนึ่งเพิ่มช้าสุดวันที่",thD(d0.toISOString().slice(0,10))]).font={bold:true,color:{argb:"FFB45309"}};
   const rows={};
   const addT=(key,title,vf,ff)=>{ws.addRow([]);ws.addRow([title]).getCell(1).font={bold:true};
-    const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B});
-    rows[key]={};let first=0,last=0;
-    (r.ks?SC.concat(r.ks):SC).forEach(k=>{const v=vf(k),rr=ws.addRow([SCN[k]||(SXS.find(d=>d[0]===k)||[0,k])[1]].concat(v.map(Math.round),[0])),n=rr.number;if(!first)first=n;last=n;rows[key][k]=n;
-      SIZES.forEach((z,j)=>{const fo=ff?ff(k,j):null;if(fo)rr.getCell(j+2).value={formula:fo,result:Math.round(v[j])}});
-      rr.getCell(8).value={formula:"SUM(B"+n+":G"+n+")",result:Math.round(v.reduce((a,c)=>a+c,0))};
-      let cl="FFFFFF";try{cl=colOf(k)[0]}catch(e){}
-      rr.eachCell((cc,i)=>{cc.border=B;cc.fill=fill(cl);if(i>1)cc.numFmt=NF})});
-    const tr=ws.addRow(["รวมทุกสี"]);tr.font={bold:true};
-    "BCDEFGH".split("").forEach((col,i)=>{const t=(r.ks?SC.concat(r.ks):SC).reduce((a,k)=>a+(i<6?vf(k)[i]:vf(k).reduce((p,q)=>p+q,0)),0);tr.getCell(i+2).value={formula:"SUM("+col+first+":"+col+last+")",result:Math.round(t)};tr.getCell(i+2).numFmt=NF});
-    tr.eachCell(c=>{c.border=B;c.fill=fill("EEEEEE")})};
+    const hd=()=>{const h=ws.addRow(["สี"].concat(SIZES,["รวม"]));h.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("1A56DB");c.alignment={horizontal:"center"};c.border=B})};
+    const items=(r.ks?SC.concat(r.ks):SC).map(k=>{const v=vf(k).map(Math.round);return {k,label:SCN[k]||(SXS.find(d=>d[0]===k)||[0,k])[1],v,cells:n=>v.map((x,j)=>{const fo=ff?ff(k,j):null;return fo?{formula:fo,result:x}:x})}});
+    const R=fgTable(ws,items,{head:hd,B,fill,fmt:NF});rows[key]=R.rowOf};
   addT("a","5) สต็อกคาดว่าจะเหลือสิ้น "+thM(r.ed.slice(0,7)),k=>r.stock[k]);
   addT("b","6) + แผนผลิต "+thM(r.m)+" หักออก X% (สูตร = ตารางขวา × (1 − X%) · สีพิเศษไม่หัก)",k=>r.plan[k],(k,j)=>RL[j]+rows.b[k]+(SC.includes(k)?"*(1-"+xRef+")":""));
    (()=>{const KK=r.ks?SC.concat(r.ks):SC,f0=rows.b[KK[0]],f1=rows.b[KK[KK.length-1]];
@@ -4863,7 +4870,7 @@ $("nb-xl").onclick=async()=>{
        SIZES.forEach((z,j)=>{ws.getCell(n,11+j).value=Math.round(v[j])});
        ws.getCell(n,17).value={formula:"SUM(K"+n+":P"+n+")",result:Math.round(v.reduce((a,c)=>a+c,0))};
        for(let c=10;c<=17;c++){const cc=ws.getCell(n,c);cc.border=B;cc.fill=fill(cl);if(c>10)cc.numFmt=NF}});
-     const tn=f1+1;ws.getCell(tn,10).value="รวมทุกสี";"KLMNOPQ".split("").forEach((col,i)=>{ws.getCell(tn,11+i).value={formula:"SUM("+col+f0+":"+col+f1+")",result:Math.round(KK.reduce((a,k)=>a+(i<6?r.full[k][i]:r.full[k].reduce((p,q)=>p+q,0)),0))}});
+     const tn=f1+1;ws.getCell(tn,10).value="รวม";"KLMNOPQ".split("").forEach((col,i)=>{ws.getCell(tn,11+i).value={formula:"SUM("+col+f0+":"+col+f1+")",result:Math.round(KK.reduce((a,k)=>a+(i<6?r.full[k][i]:r.full[k].reduce((p,q)=>p+q,0)),0))}});
      for(let c=10;c<=17;c++){const cc=ws.getCell(tn,c);cc.border=B;cc.fill=fill("EEEEEE");cc.font={bold:true};if(c>10)cc.numFmt=NF}})();
   addT("c","7) = สต็อกคาดว่าจะมี (5 + 6)",k=>r.have[k],(k,j)=>L[j]+rows.a[k]+"+"+L[j]+rows.b[k]);
   addT("d","8) − การจองของฝ่ายขาย "+thM(r.m),k=>r.book[k]);
@@ -4876,7 +4883,7 @@ $("nb-xl").onclick=async()=>{
 
 /* ---------- นำเข้าไฟล์มาตรฐาน (ทุกชนิดข้อมูลใช้ตารางสี × เบอร์เดียวกัน) ---------- */
 const SX8=[["น้ำเงิน","สีน้ำเงิน","D6E4F5","1F4FD8"],["เขียว","สีเขียว","DDEEDD","1E7E34"],["แดง","สีแดง","F8D7DA","C62828"],["เหลือง","สีเหลือง","FFF2CC","B7791F"],["ขาว","สีขาว","F5F5F5","333333"],["ดำ","สีดำ","D9D9D9","000000"],["เทา","สีเทา","E8E8E8","666666"],["ดำ/ขาว","สีดำหน้าขาว","D9D9D9","000000"]];
-const SXS=[["เขียว/แดง","Xmas หูเขียว","F8D7DA","333333"],["แดง/เขียว","Xmas หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","น้ำตาลล้วน","F0E4DA","333333"]];
+const SXS=[["เขียว/แดง","Xmas หูเขียว","F8D7DA","333333"],["แดง/เขียว","Xmas หูแดง","DDEEDD","333333"],["เหลือง/แดง","พื้นแดง หูเหลือง(โควิด)","F8D7DA","333333"],["น้ำเงิน/ดำ","พิเศษ พื้นดำ หูน้ำเงิน","D9D9D9","333333"],["เขียว/ดำ","พิเศษ พื้นดำ หูเขียว","D9D9D9","333333"],["แดง/ดำ","พิเศษ พื้นดำ หูแดง","D9D9D9","333333"],["เหลือง/ดำ(พระ)","พิเศษ พื้นดำ หูเหลือง(พระ)","D9D9D9","333333"],["เหลือง/ดำ","พิเศษ พื้นดำ หูเหลือง(โควิด)","FFF9C4","333333"],["ขาว/ดำ","พิเศษ พื้นดำ หูขาว","D9D9D9","333333"],["เทา/ดำ","พิเศษ พื้นดำ หูเทา","D9D9D9","333333"],["น้ำเงิน/น้ำเงิน","น้ำเงินล้วน","D6E4F5","333333"],["แดง/แดง","แดงล้วน","F8D7DA","333333"],["โกโก้ล้วน","โกโก้ล้วน","F0E4DA","333333"]];
 const SXT=[
  {id:"day",title:"FG200 รายวัน",name:"รายวัน",n:3,l2:"วันที่ (เช่น 13/10/2026)",f2:"date",l3:"ยอดรวมที่พิมพ์ในรายงาน",all:1,d:"ยอดเข้าโกดังพี่ชุมพรรายวัน (คู่) · 1 แผ่น = 1 วัน"},
  {id:"plan",title:"FG200 แผนผลิต",name:"แผนผลิต",n:1,l2:"เดือนที่ผลิต (เช่น 10/2026)",f2:"month",l3:"ฉบับ (0 = แผนเริ่มต้น, 1, 2, ...)",all:1,d:"แผนผลิตของโรงงาน · วันที่แจ้งโรงงาน D2 · หมายเหตุ D3 (ไม่บังคับ)"},
@@ -5083,4 +5090,48 @@ function fgKeySet(ask){let k="";try{k=localStorage.getItem("fgkey")||""}catch(e)
 $("chg-key").onclick=e=>{e.preventDefault();fgKeySet(true)};
 setTimeout(()=>fgKeySet(false),400);
 load();
+
+/* ===== จัดตารางสี × เบอร์ บนหน้าจอทั้งหมดให้เป็นรูปแบบแม่แบบ: 8 สีหลัก + รวม / สีพิเศษ (Export เท่านั้น) + รวมสีพิเศษ / รวมทั้งหมด ===== */
+(function(){
+  const css=document.createElement("style");
+  css.textContent="tr.fg-sec>td{text-align:left!important;font-weight:700;font-size:12.5px;color:var(--accent);background:transparent!important;border:0!important;padding-top:10px}"+
+  "tr.fg-sub>td{font-weight:700;background:var(--accent-soft)!important}tr.fg-sub>td:first-child{text-align:left}";
+  document.head.appendChild(css);
+  const mainK=PTPL.filter(r=>FG_MAIN.includes(r[0])).map(r=>r[1]);
+  const spK=PTPL.filter(r=>!FG_MAIN.includes(r[0])).map(r=>r[1]).concat(["โกโก้ล้วน","น้ำตาลล้วน","แดงล้วน","น้ำเงินล้วน"]);
+  const ALLL=mainK.map(t=>[t,1]).concat(spK.map(t=>[t,0])).sort((a,b)=>b[0].length-a[0].length);
+  const kind=t=>{t=String(t||"").replace(/\s+/g," ").trim();for(const [l,m] of ALLL)if(t.indexOf(l)===0)return m;return -1};
+  const DASH=/^[\s\-–—]*$/,NUM=/^([+−\-–])?\s*([\d,]+(?:\.\d+)?)$/;
+  function parse(t){t=String(t||"").replace(/ /g," ").trim();if(DASH.test(t))return{v:0,plus:false,m:false};const q=t.match(NUM);if(!q)return null;
+    const neg=q[1]==="−"||q[1]==="-"||q[1]==="–";return{v:(neg?-1:1)*parseFloat(q[2].replace(/,/g,"")),plus:q[1]==="+",m:q[1]==="−"}}
+  function sub(trs,label,ncell){
+    const tr=document.createElement("tr");tr.className="fg-sub";let td=document.createElement("td");td.textContent=label;tr.appendChild(td);
+    for(let c=1;c<ncell;c++){let sum=0,ok=true,plus=false,minus=false;
+      trs.forEach(r=>{const cell=r.children[c];if(!cell){ok=false;return}const p=parse(cell.textContent);if(!p){ok=false;return}sum+=p.v;plus=plus||p.plus;minus=minus||p.m});
+      td=document.createElement("td");td.textContent=!ok?"":(sum===0?"–":(sum>0&&plus?"+":"")+(sum<0&&minus?"−":"")+Math.abs(sum).toLocaleString("en-US"));
+      if(ok&&sum<0&&!minus)td.textContent="-"+Math.abs(sum).toLocaleString("en-US");tr.appendChild(td)}
+    return tr}
+  function sec(t,n){const tr=document.createElement("tr");tr.className="fg-sec";const td=document.createElement("td");td.colSpan=n;td.textContent=t;tr.appendChild(td);return tr}
+  function fix(tb){
+    tb.setAttribute("data-fg","1");
+    const body=tb.tBodies[0];if(!body||tb.classList.contains("sdh"))return;
+    const rows=[...body.rows];if(rows.length<4)return;
+    if(body.querySelector("input,select,textarea,[id]"))return;                 // ตารางกรอก/ตารางที่อัปเดตในที่เดิม ไม่แตะ
+    const ks=rows.map(r=>r.cells.length?kind(r.cells[0].textContent):-1);
+    const mi=ks.map((k,i)=>k===1?i:-1).filter(i=>i>=0),si=ks.map((k,i)=>k===0?i:-1).filter(i=>i>=0);
+    if(mi.length<2||!si.length)return;
+    const m0=mi[0],m1=mi[mi.length-1],s0=si[0],s1=si[si.length-1];
+    if(m1-m0+1!==mi.length||s1-s0+1!==si.length||m1>=s0)return;               // ต้องเรียงต่อกัน: สีหลัก แล้วสีพิเศษ
+    const n=rows[m0].cells.length,A=rows.slice(m0,m1+1),Bk=rows.slice(s0,s1+1);
+    body.insertBefore(sec("สีพิเศษ (Export เท่านั้น)",n),rows[s0]);
+    body.insertBefore(sub(A,"รวม",n),body.rows[[...body.rows].indexOf(rows[s0])-1]);
+    const after=rows[s1].nextSibling;body.insertBefore(sub(Bk,"รวมสีพิเศษ",n),after);
+    body.insertBefore(sec("8 สีหลัก",n),rows[m0]);
+    const f=tb.tFoot;if(f)[...f.rows].forEach(r=>{const c=r.cells[0];if(c&&c.textContent.trim()==="รวม")c.textContent="รวมทั้งหมด"});
+  }
+  let q=0;
+  function scan(){q=0;document.querySelectorAll("table:not([data-fg])").forEach(t=>{try{fix(t)}catch(e){t.setAttribute("data-fg","err")}})}
+  new MutationObserver(()=>{if(!q)q=requestAnimationFrame(scan)}).observe(document.body,{childList:true,subtree:true});
+  scan();
+})();
 </script>
