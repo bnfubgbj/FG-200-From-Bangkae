@@ -460,7 +460,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 185)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 186)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4707,7 +4707,17 @@ function rcRowTip(r,a){const P=rcPlan(RCM.m),k=r[0],pl=P&&P.c[k]?P.c[k].slice(0,
 function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),ms=Object.keys(M).sort(),ys=[...new Set(ms.map(m=>m.slice(0,4)))].sort().reverse(),ysel=$("rm-y");
   if(!ys.length){ysel.innerHTML="";box.innerHTML='<div class="empty">ยังไม่มียอดรับเข้าโกดังที่บันทึกไว้ — บันทึกในช่อง "เพิ่มหรือแก้ไขข้อมูลรายวัน" ด้านล่างก่อน</div>';return}
   if(!ys.includes(RCM.y))RCM.y=ys[0];ysel.innerHTML=ys.map(y=>'<option value="'+y+'"'+(y===RCM.y?" selected":"")+">"+(+y+543)+" ("+y+")</option>").join("");
-  const my=ms.filter(m=>m.slice(0,4)===RCM.y);if(!my.includes(RCM.m))RCM.m=my[my.length-1];$("rm-m").innerHTML=my.map(m=>'<option value="'+m+'"'+(m===RCM.m?" selected":"")+">"+thM(m)+"</option>").join("");
+  const my=ms.filter(m=>m.slice(0,4)===RCM.y);if(!my.includes(RCM.m)&&!(RCM.m==="ALL"&&my.length))RCM.m=my[my.length-1];$("rm-m").innerHTML='<option value="ALL"'+(RCM.m==="ALL"?" selected":"")+">ทั้งปี "+(+RCM.y+543)+"</option>"+my.map(m=>'<option value="'+m+'"'+(m===RCM.m?" selected":"")+">"+thM(m)+"</option>").join("");
+  if(RCM.m==="ALL"){const ytot=my.map(m=>cT(Object.values(M[m].c).map(cT))),yall=ytot.reduce((a,b)=>a+b,0),ycol=PTPL.filter(r=>my.some(m=>cT(M[m].c[r[0]]||cZ())>0)),ym={};ycol.forEach(r=>ym[r[0]]=my.reduce((a,m)=>{const v=M[m].c[r[0]]||cZ();return a.map((x,i)=>x+(v[i]||0))},cZ()));
+    const grp=(ks)=>ks.reduce((a,r)=>a+cT(ym[r[0]]),0),mainC=ycol.filter(r=>FG_MAIN.includes(r[0])),spC=ycol.filter(r=>!FG_MAIN.includes(r[0])&&r[0]!=="KFC"),kfC=ycol.filter(r=>r[0]==="KFC"),pc=(x)=>yall?Math.round(x/yall*100)+"%":"–";
+    let h2='<div class="cgsec">ยอดรวมทั้งปี '+(+RCM.y+543)+' · '+my.length+' เดือน</div><div class="note" style="font-size:15px"><b>รวมทั้งปี '+fmt(yall)+' คู่</b> · 8 สีหลัก '+fmt(grp(mainC))+' ('+pc(grp(mainC))+')'+(spC.length?' · สีพิเศษ '+fmt(grp(spC))+' ('+pc(grp(spC))+')':'')+(kfC.length?' · KFC '+fmt(grp(kfC))+' ('+pc(grp(kfC))+')':'')+'</div>';
+    h2+='<div class="cgsec">รายเดือน (กดที่แถวเพื่อดูรายละเอียดเดือนนั้น)</div><div class="scroll"><table class="cgrep"><thead><tr><th>เดือน</th><th>8 สีหลัก</th>'+(spC.length?'<th>สีพิเศษ</th>':'')+(kfC.length?'<th>KFC</th>':'')+'<th class="tt">รวม (คู่)</th><th>% ของปี</th></tr></thead><tbody>'+
+      my.map((m,i)=>{const g=ks=>ks.reduce((a,r)=>a+cT(M[m].c[r[0]]||cZ()),0);return'<tr data-m="'+m+'" style="cursor:pointer"><th>'+thM(m)+'</th><td>'+fmt(g(mainC))+'</td>'+(spC.length?'<td>'+fmt(g(spC))+'</td>':'')+(kfC.length?'<td>'+fmt(g(kfC))+'</td>':'')+'<td class="tt">'+fmt(ytot[i])+'</td><td>'+pc(ytot[i])+'</td></tr>'}).join("")+
+      '</tbody><tfoot><tr><th>รวมทั้งปี</th><td>'+fmt(grp(mainC))+'</td>'+(spC.length?'<td>'+fmt(grp(spC))+'</td>':'')+(kfC.length?'<td>'+fmt(grp(kfC))+'</td>':'')+'<td class="tt">'+fmt(yall)+'</td><td>100%</td></tr></tfoot></table></div>';
+    const blk=(t,rs)=>rs.length?'<tr><th colspan="'+(SIZES.length+3)+'" style="text-align:left;color:var(--accent)">'+t+'</th></tr>'+rs.map(r=>"<tr><th>"+escH(r[1])+"</th>"+ym[r[0]].map(v=>"<td>"+fmt(v)+"</td>").join("")+'<td class="tt">'+fmt(cT(ym[r[0]]))+"</td><td>"+pc(cT(ym[r[0]]))+"</td></tr>").join("")+'<tr><th>รวม'+(t.indexOf("8")===0?"":t)+'</th>'+SIZES.map((z,i)=>"<td><b>"+fmt(rs.reduce((a,r)=>a+ym[r[0]][i],0))+"</b></td>").join("")+'<td class="tt">'+fmt(grp(rs))+"</td><td>"+pc(grp(rs))+"</td></tr>":"";
+    h2+='<div class="cgsec">ทั้งปี '+(+RCM.y+543)+' · สี × เบอร์</div><div class="scroll"><table class="cgrep"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวม (คู่)</th><th>%</th></tr></thead><tbody>'+blk("8 สีหลัก",mainC)+blk("สีพิเศษ (Export เท่านั้น)",spC)+blk("งานเฉพาะกิจ KFC",kfC)+
+      '</tbody><tfoot><tr><th>รวมทั้งปี</th>'+SIZES.map((z,i)=>"<td>"+fmt(ycol.reduce((a,r)=>a+ym[r[0]][i],0))+"</td>").join("")+'<td class="tt">'+fmt(yall)+"</td><td>100%</td></tr></tfoot></table></div>";
+    box.innerHTML=h2;return}
   const cols=PTPL.filter(r=>my.some(m=>cT(M[m].c[r[0]]||cZ())>0)),tc=(m,k)=>cT(M[m].c[k]||cZ());
   let h='';
   {const mm=RCM.m,y=+mm.slice(0,4),mo=+mm.slice(5,7),ld=Object.keys(FGD).filter(d=>d.slice(0,7)===mm&&Object.values(FGD[d]).some(v=>v.some(x=>x>0))).map(d=>+d.slice(8)).sort((a,b)=>a-b),last=ld.length?ld[ld.length-1]:0,ms=[];
