@@ -2970,24 +2970,35 @@ function parseDateV(v){
 }
 const norm=s=>String(s).replace(/\s+/g," ").trim();
 let IMP=[];
-async function readFile(file){
-  const out={name:file.name,date:null,steam:"",rows:{},total:0,printed:null,err:""};
-  try{
-    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());const ws=wb.worksheets[0];
-    out.date=parseDateV(cv(ws.getCell("C2")))||parseDateV(cv(ws.getCell("B2")));
-    const k1=cv(ws.getCell("K1"));out.steam=k1==null?"":(k1 instanceof Date?(k1.getUTCDate()+"/"+(k1.getUTCMonth()+1)):norm(k1));
-    let printedCols=null;
-    for(let r=6;r<=40;r++){
-      const lab=norm(cv(ws.getCell(r,1))||"");if(!lab)continue;
-      const v=SIZES.map((s,i)=>Math.max(0,Math.round(Number(cv(ws.getCell(r,i+2)))||0)));
-      if(lab==="รวม"){printedCols=v;out.printed=Number(cv(ws.getCell(r,8)))||v.reduce((a,b)=>a+b,0);break}
-      if(v.some(x=>x))out.rows[lab]=v;
-    }
-    out.total=Object.values(out.rows).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0);
-    if(!out.date)out.err="อ่านวันที่ (ช่อง C2) ไม่ได้";
-    if(printedCols){out.colOk=SIZES.every((s,i)=>printedCols[i]===Object.values(out.rows).reduce((a,v)=>a+v[i],0))}
-  }catch(e){out.err="เปิดไฟล์ไม่ได้: "+e.message}
+function parseSteamSheet(ws,name){
+  const out={name:name,date:null,steam:"",rows:{},total:0,printed:null,err:""};
+  out.date=parseDateV(cv(ws.getCell("C2")))||parseDateV(cv(ws.getCell("B2")));
+  const k1=cv(ws.getCell("K1"));out.steam=k1==null?"":(k1 instanceof Date?(k1.getUTCDate()+"/"+(k1.getUTCMonth()+1)):norm(k1));
+  let printedCols=null;
+  for(let r=6;r<=40;r++){
+    const lab=norm(cv(ws.getCell(r,1))||"");if(!lab)continue;
+    const v=SIZES.map((s,i)=>Math.max(0,Math.round(Number(cv(ws.getCell(r,i+2)))||0)));
+    if(lab==="รวม"){printedCols=v;out.printed=Number(cv(ws.getCell(r,8)))||v.reduce((a,b)=>a+b,0);break}
+    if(v.some(x=>x))out.rows[lab]=v;
+  }
+  out.total=Object.values(out.rows).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0);
+  if(!out.date)out.err="อ่านวันที่ (ช่อง C2) ไม่ได้";
+  if(printedCols){out.colOk=SIZES.every((s,i)=>printedCols[i]===Object.values(out.rows).reduce((a,v)=>a+v[i],0))}
   return out;
+}
+/* 1 ไฟล์ อาจมีหลายชีต (ชีตละ 1 วัน) -> คืนเป็น array ของแต่ละวัน */
+async function readFile(file){
+  try{
+    const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());
+    const sheets=wb.worksheets,res=[];
+    sheets.forEach((ws,i)=>{
+      const o=parseSteamSheet(ws,sheets.length>1?file.name+" ["+ws.name+"]":file.name);
+      if(i>0&&!o.date&&!o.total)return;   // ชีตเปล่าที่ไม่ใช่ชีตแรก ข้ามไป
+      res.push(o);
+    });
+    if(!res.length)res.push({name:file.name,date:null,steam:"",rows:{},total:0,printed:null,err:"ไม่พบข้อมูลในไฟล์"});
+    return res;
+  }catch(e){return [{name:file.name,date:null,steam:"",rows:{},total:0,printed:null,err:"เปิดไฟล์ไม่ได้: "+e.message}]}
 }
 function drawImport(){
   if(!IMP.length){$("i-prev").innerHTML="";$("i-save").disabled=true;return}
@@ -3009,7 +3020,7 @@ function drawImport(){
 }
 $("i-file").onchange=async e=>{
   if(typeof ExcelJS==="undefined"){$("i-msg").hidden=false;$("i-msg").className="msg warn";$("i-msg").textContent="โหลดตัวอ่าน Excel ไม่ได้";return}
-  $("i-msg").hidden=true;IMP=[];for(const f of e.target.files)IMP.push(await readFile(f));
+  $("i-msg").hidden=true;IMP=[];for(const f of e.target.files)IMP.push(...await readFile(f));
   IMP.sort((a,b)=>(a.date||"").localeCompare(b.date||""));drawImport();
 };
 $("i-save").onclick=async()=>{
