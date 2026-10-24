@@ -459,7 +459,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 160)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 161)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4582,7 +4582,7 @@ cgXlBtn($("x-stkrep"),"xl-sr",async()=>{stkRepDraw();const c=window._src;if(!c)c
 /* ---------- ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน (ฟองน้ำ) ---------- */
 const RCM={y:"",m:""};
 function rcPlan(m){const o=PL[m];if(!o)return null;const rv=Object.keys(o).map(Number).sort((a,b)=>b-a)[0];return rv==null?null:{rev:rv,c:o[rv].colors}}
-function rcCmp(m,dm){const P=rcPlan(m);if(!P)return null;const SP=PTPL.slice(7);
+function rcCmp(m,dm){const P=rcPlan(m);if(!P)return null;const SP=PTPL;
   return{rev:P.rev,rows:SP.map(r=>{const pl=(P.c[r[0]]||cZ()).slice(0,6).map(x=>x||0),ac=(dm[r[0]]||cZ()).slice(0,6).map(x=>x||0),tp=cT(pl),ta=cT(ac),d=tp-ta;
     const bs=SIZES.map((z,i)=>pl[i]-ac[i]).map((x,i)=>x>0?SIZES[i]+": ขาด "+fmt(x):"").filter(Boolean);return{k:r[0],n:r[1],tp,ta,d,bs,st:tp===0&&ta===0?"":tp===0?"ไม่มีในแผน":d>0?"ขาด "+fmt(d):d<0?"เกินแผน "+fmt(-d):"ครบแล้ว"}}).filter(x=>x.tp>0||x.ta>0)}}
 function rcMonData(){const M={},ck=PTPL.map(r=>r[0]);Object.keys(FGD).forEach(d=>{const ym=d.slice(0,7),o=M[ym]=M[ym]||{days:0,c:{}};let any=false;ck.forEach(k=>{const a=FGD[d][k];if(!a)return;if(cT(a)>0)any=true;const t=o.c[k]=o.c[k]||cZ();a.forEach((v,i)=>t[i]+=v||0)});if(any)o.days++});Object.keys(M).forEach(m=>{if(!Object.values(M[m].c).some(a=>cT(a)>0))delete M[m]});return M}
@@ -4593,17 +4593,15 @@ function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),m
   if(!ys.includes(RCM.y))RCM.y=ys[0];ysel.innerHTML=ys.map(y=>'<option value="'+y+'"'+(y===RCM.y?" selected":"")+">"+(+y+543)+" ("+y+")</option>").join("");
   const my=ms.filter(m=>m.slice(0,4)===RCM.y);if(!my.includes(RCM.m))RCM.m=my[my.length-1];$("rm-m").innerHTML=my.map(m=>'<option value="'+m+'"'+(m===RCM.m?" selected":"")+">"+thM(m)+"</option>").join("");
   const cols=PTPL.filter(r=>my.some(m=>cT(M[m].c[r[0]]||cZ())>0)),tc=(m,k)=>cT(M[m].c[k]||cZ());
-  let h='<div class="scroll"><table class="cgrep"><thead><tr><th>เดือน</th>'+cols.map(r=>"<th>"+escH(r[1])+"</th>").join("")+'<th class="tt">รวม (คู่)</th><th>วันที่บันทึก</th></tr></thead><tbody>';
-  my.forEach(m=>{const tot=cols.reduce((a,r)=>a+tc(m,r[0]),0);h+='<tr data-m="'+m+'" class="'+(m===RCM.m?"sel":"")+'" style="cursor:pointer"><th>'+thM(m)+"</th>"+cols.map(r=>"<td>"+fmt(tc(m,r[0]))+"</td>").join("")+'<td class="tt">'+fmt(tot)+"</td><td>"+M[m].days+" วัน</td></tr>"});
-  const gt=cols.map(r=>my.reduce((a,m)=>a+tc(m,r[0]),0));h+='</tbody><tfoot><tr><th>รวมปี '+(+RCM.y+543)+"</th>"+gt.map(v=>"<td>"+fmt(v)+"</td>").join("")+'<td class="tt">'+fmt(cT(gt))+"</td><td>"+my.reduce((a,m)=>a+M[m].days,0)+" วัน</td></tr></tfoot></table></div>";
+  let h='';
   const dm=M[RCM.m].c,dc=PTPL.filter(r=>cT(dm[r[0]]||cZ())>0);
   h+='<div class="cgsec">รายละเอียด '+thM(RCM.m)+' · สี × เบอร์</div><div class="scroll"><table class="cgrep"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวม (คู่)</th></tr></thead><tbody>'+
     dc.map(r=>{const a=dm[r[0]];return"<tr><th>"+escH(r[1])+"</th>"+a.map(v=>"<td>"+fmt(v)+"</td>").join("")+'<td class="tt">'+fmt(cT(a))+"</td></tr>"}).join("")+
     '</tbody><tfoot><tr><th>รวม</th>'+SIZES.map((z,i)=>"<td>"+fmt(dc.reduce((a,r)=>a+dm[r[0]][i],0))+"</td>").join("")+'<td class="tt">'+fmt(dc.reduce((a,r)=>a+cT(dm[r[0]]),0))+"</td></tr></tfoot></table></div>";
-  {const cp=rcCmp(RCM.m,dm);h+='<div class="cgsec">หูสีพิเศษ · ดำหน้าขาว เทียบแผนผลิต '+thM(RCM.m)+(cp?" (แผน "+revName(cp.rev)+")":"")+"</div>";
+  {const cp=rcCmp(RCM.m,dm);h+='<div class="cgsec">เทียบแผนผลิต '+thM(RCM.m)+(cp?" (แผน "+revName(cp.rev)+")":"")+"</div>";
     if(!cp)h+='<div class="note">ยังไม่มีแผนผลิตของเดือนนี้ในระบบ จึงเทียบไม่ได้ — นำเข้าที่เมนู แผนผลิต</div>';
-    else if(!cp.rows.length)h+='<div class="note">เดือนนี้ไม่มีรายการหูสีพิเศษในแผนและไม่มีผลิตจริง</div>';
-    else h+='<div class="scroll"><table class="cgrep"><thead><tr><th>ชนิด</th><th>แผนผลิต (คู่)</th><th>ผลิตจริง (คู่)</th><th>ขาด / เกิน</th><th>ขาดรายเบอร์</th></tr></thead><tbody>'+cp.rows.map(x=>'<tr><th>'+escH(x.n)+"</th><td>"+fmt(x.tp)+"</td><td>"+fmt(x.ta)+'</td><td style="font-weight:700;color:var(--'+(x.d>0?"warn":"accent")+')">'+(x.st||"-")+'</td><td style="text-align:left">'+(x.d>0?escH(x.bs.join(" · ")):"-")+"</td></tr>").join("")+"</tbody></table></div>"}
+    else if(!cp.rows.length)h+='<div class="note">เดือนนี้ไม่มีรายการในแผนและไม่มีผลิตจริง</div>';
+    else h+='<div class="scroll"><table class="cgrep"><thead><tr><th>สี / ชนิด</th><th>แผนผลิต (คู่)</th><th>ผลิตจริง (คู่)</th><th>ขาด / เกิน</th><th>ขาดรายเบอร์</th></tr></thead><tbody>'+cp.rows.map(x=>'<tr><th>'+escH(x.n)+"</th><td>"+fmt(x.tp)+"</td><td>"+fmt(x.ta)+'</td><td style="font-weight:700;color:var(--'+(x.d>0?"warn":"accent")+')">'+(x.st||"-")+'</td><td style="text-align:left">'+(x.d>0?escH(x.bs.join(" · ")):"-")+"</td></tr>").join("")+"</tbody></table></div>"}
   box.innerHTML=h}
 $("rm-y").addEventListener("input",e=>{RCM.y=e.target.value;RCM.m="";rcMonDraw()});
 $("rm-m").addEventListener("change",e=>{RCM.m=e.target.value;rcMonDraw()});
@@ -4617,7 +4615,7 @@ cgXlBtn($("x-rcmon"),"xl-rcm",async()=>{const M=rcMonData(),my=Object.keys(M).so
     dc.forEach((r,i)=>{const a=M[m].c[r[0]],R=4+i;rr.push([r[1]].concat(a,[SUMR(R,2,SIZES.length+1,cT(a))]))});
     rr.push(["รวม"].concat(SIZES.map((z,i)=>SUMC(i+2,4,3+dc.length,dc.reduce((a,r)=>a+M[m].c[r[0]][i],0))),[SUMC(SIZES.length+2,4,3+dc.length,dc.reduce((a,r)=>a+cT(M[m].c[r[0]]),0))]));
     const hd=[2],tt=[rr.length-1],cp=rcCmp(m,M[m].c);
-    if(cp&&cp.rows.length){rr.push([]);tt.push(rr.length);rr.push(["หูสีพิเศษ · ดำหน้าขาว เทียบแผนผลิต (แผน "+revName(cp.rev)+")"]);hd.push(rr.length);rr.push(["ชนิด","แผนผลิต","ผลิตจริง","ขาด/เกิน","สถานะ","ขาดรายเบอร์"]);
+    if(cp&&cp.rows.length){rr.push([]);tt.push(rr.length);rr.push(["เทียบแผนผลิต ทุกสี (แผน "+revName(cp.rev)+")"]);hd.push(rr.length);rr.push(["ชนิด","แผนผลิต","ผลิตจริง","ขาด/เกิน","สถานะ","ขาดรายเบอร์"]);
       cp.rows.forEach(x=>{const R=rr.length+1;rr.push([x.n,x.tp,x.ta,FX("B"+R+"-C"+R,x.d),FX('IF(D'+R+'>0,"ขาด",IF(D'+R+'<0,"เกินแผน","ครบแล้ว"))',x.d>0?"ขาด":x.d<0?"เกินแผน":"ครบแล้ว"),x.d>0?x.bs.join(" · "):""])})}
     sh.push({name:thM(m).replace(".","").slice(0,31),rows:rr,hdr:hd,tot:tt,w1:16,w:11})});
   await cgXlBook(sh,"ผลิตจริงเข้าโกดังพี่ชุมพร_"+RCM.y+".xlsx")});
