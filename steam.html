@@ -460,7 +460,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 168)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 170)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4590,7 +4590,14 @@ const RCM={y:"",m:""};
 function rcPlan(m){const o=PL[m];if(!o)return null;const rv=Object.keys(o).map(Number).sort((a,b)=>b-a)[0];return rv==null?null:{rev:rv,c:o[rv].colors}}
 function rcCmp(m,dm){const P=rcPlan(m);if(!P)return null;const SP=PTPL;
   return{rev:P.rev,rows:SP.map(r=>{const pl=(P.c[r[0]]||cZ()).slice(0,6).map(x=>x||0),ac=(dm[r[0]]||cZ()).slice(0,6).map(x=>x||0),tp=cT(pl),ta=cT(ac),d=tp-ta;
-    const bs=SIZES.map((z,i)=>pl[i]-ac[i]).map((x,i)=>x>0?SIZES[i]+": ขาด "+fmt(x):"").filter(Boolean);return{k:r[0],n:r[1],tp,ta,d,bs,st:tp===0&&ta===0?"":tp===0?"ไม่มีในแผน":d>0?"ขาด "+fmt(d):d<0?"เกินแผน "+fmt(-d):"ครบแล้ว"}}).filter(x=>x.tp>0||x.ta>0)}}
+    const bs=SIZES.map((z,i)=>pl[i]-ac[i]).map((x,i)=>x>0?SIZES[i]+": ขาด "+fmt(x):"").filter(Boolean);return{k:r[0],n:r[1],tp,ta,d,bs,pl,sf:SIZES.map((z,i)=>Math.max(0,pl[i]-ac[i])),st:tp===0&&ta===0?"":tp===0?"ไม่มีในแผน":d>0?"ขาด "+fmt(d):d<0?"เกินแผน "+fmt(-d):"ครบแล้ว"}}).filter(x=>x.tp>0||x.ta>0)}}
+const RCCLR={"น้ำเงิน":"#1f4fd8","เขียว":"#1e7e34","แดง":"#c62828","เหลือง":"#e6b800","ขาว":"#ffffff","ดำ":"#111111","เทา":"#8a8a8a","โกโก้ล้วน":"#8b5a3c"};
+function rcBarBg(k){const p=k.replace(/\(.*\)/,"").split("/"),a=RCCLR[p[0]]||"#888",b=RCCLR[p[1]]||a;return a===b?a:"linear-gradient(90deg,"+a+" 50%,"+b+" 50%)"}
+function rcBars(x,mx){if(!x.sf.some(v=>v>0))return"-";const bg=rcBarBg(x.k),W="flex:1;min-width:52px;text-align:center";
+  return'<div style="min-width:340px;padding:2px 4px 4px"><div style="display:flex;gap:4px">'+SIZES.map(z=>'<div style="'+W+';font-size:11px;color:var(--muted)">'+z+'</div>').join("")+'</div><div style="display:flex;gap:4px">'+
+  SIZES.map((z,i)=>{const s=x.sf[i];if(!s)return'<div style="'+W+';border-top:2px solid var(--muted);color:var(--muted);font-size:12px;padding-top:2px">\u2013</div>';
+    const h=Math.max(4,Math.round(s/mx*64)),p=x.pl[i]?Math.round(s/x.pl[i]*100):0;
+    return'<div style="'+W+';border-top:2px solid var(--muted)" title="เบอร์ '+z+': ขาด '+fmt(s)+' คู่ จากแผน '+fmt(x.pl[i])+'"><div style="width:58%;max-width:30px;height:'+h+'px;margin:0 auto;background:'+bg+';border-radius:0 0 4px 4px;box-shadow:0 0 0 1px rgba(0,0,0,.28)"></div><div style="font-weight:700;font-size:12px;line-height:1.25;margin-top:3px">-'+fmt(s)+'</div><div style="font-size:11px;color:var(--warn)">'+(p<1?"<1":p)+'%</div></div>'}).join("")+'</div></div>'}
 function rcMonData(){const M={},ck=PTPL.map(r=>r[0]);Object.keys(FGD).forEach(d=>{const ym=d.slice(0,7),o=M[ym]=M[ym]||{days:0,c:{}};let any=false;ck.forEach(k=>{const a=FGD[d][k];if(!a)return;if(cT(a)>0)any=true;const t=o.c[k]=o.c[k]||cZ();a.forEach((v,i)=>t[i]+=v||0)});if(any)o.days++});Object.keys(M).forEach(m=>{if(!Object.values(M[m].c).some(a=>cT(a)>0))delete M[m]});return M}
 (function(){const host=$("view-x"),d=document.createElement("div");d.className="panel";d.id="x-rcmon";d.hidden=true;
   d.innerHTML='<h2>ผลิตจริงเข้าโกดังพี่ชุมพร · รายเดือน (คู่)</h2><div class="note">ยอดผลิตจริงเข้าโกดังแยกสี × เบอร์ รวมจากข้อมูลรายวันที่บันทึกไว้ เลือกเดือนที่ต้องการดูได้ด้านล่าง</div><div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ปี (ค.ศ.)</span><select id="rm-y"></select></div><div style="min-width:150px"><span class="lbl">เดือนที่แสดง</span><select id="rm-m"></select></div></div><div id="rm-body"></div>';host.appendChild(d);
@@ -4607,8 +4614,8 @@ function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),m
   let h='';
   {const mm=RCM.m,y=+mm.slice(0,4),mo=+mm.slice(5,7),ld=Object.keys(FGD).filter(d=>d.slice(0,7)===mm&&Object.values(FGD[d]).some(v=>v.some(x=>x>0))).map(d=>+d.slice(8)).sort((a,b)=>a-b),last=ld.length?ld[ld.length-1]:0,ms=[];
     for(let d=1;d<=last;d++)if(!ld.includes(d))ms.push(d);
-    const chip=(t,on,tt)=>'<span title="'+tt+'" style="display:inline-block;margin:2px 3px 2px 0;padding:2px 9px;border-radius:10px;font-size:13px;'+(on?'background:var(--accent-soft);color:var(--accent);font-weight:600':'background:var(--surface2);color:var(--muted)')+'">'+t+'</span>';
-    h+='<div class="cgsec">วันที่โหลดเข้าระบบแล้ว · '+thM(mm)+' ('+ld.length+' วัน)</div><div>'+(ld.length?ld.map(d=>chip(d,1,"มีข้อมูลแล้ว")).join(""):'<span class="note">ยังไม่มีข้อมูลรายวัน</span>')+'</div>';
+    const chip=(t,on,tt,dk)=>'<span'+(dk?' class="rcday" data-d="'+dk+'" tabindex="0" aria-label="ดูสีและเบอร์ที่ผลิตวันที่ '+t+'"':' title="'+tt+'"')+' style="display:inline-block;'+(dk?'cursor:pointer;':'')+'margin:2px 3px 2px 0;padding:2px 9px;border-radius:10px;font-size:13px;'+(on?'background:var(--accent-soft);color:var(--accent);font-weight:600':'background:var(--surface2);color:var(--muted)')+'">'+t+'</span>';
+    h+='<div class="cgsec">วันที่โหลดเข้าระบบแล้ว · '+thM(mm)+' ('+ld.length+' วัน)</div><div>'+(ld.length?ld.map(d=>chip(d,1,"",mm+"-"+String(d).padStart(2,"0"))).join(""):'<span class="note">ยังไม่มีข้อมูลรายวัน</span>')+'</div>';
     if(ms.length)h+='<div class="note" style="margin:6px 0 0">ยังไม่มีข้อมูล (ก่อนวันที่ '+last+'): '+ms.map(d=>chip(d+(new Date(y,mo-1,d).getDay()===0?" (อา.)":""),0,"ยังไม่มีข้อมูล")).join("")+'</div>';}
   const dm=M[RCM.m].c,dc=PTPL.filter(r=>cT(dm[r[0]]||cZ())>0);
   h+='<div class="cgsec">รายละเอียด '+thM(RCM.m)+' · สี × เบอร์</div><div class="scroll"><table class="cgrep"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวม (คู่)</th></tr></thead><tbody>'+
@@ -4617,11 +4624,26 @@ function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),m
   {const cp=rcCmp(RCM.m,dm);h+='<div class="cgsec">เทียบแผนผลิต '+thM(RCM.m)+(cp?" (แผน "+revName(cp.rev)+")":"")+"</div>";
     if(!cp)h+='<div class="note">ยังไม่มีแผนผลิตของเดือนนี้ในระบบ จึงเทียบไม่ได้ — นำเข้าที่เมนู แผนผลิต</div>';
     else if(!cp.rows.length)h+='<div class="note">เดือนนี้ไม่มีรายการในแผนและไม่มีผลิตจริง</div>';
-    else h+='<div class="scroll"><table class="cgrep"><thead><tr><th>สี / ชนิด</th><th>แผนผลิต (คู่)</th><th>ผลิตจริง (คู่)</th><th>ขาด / เกิน</th><th>ขาดรายเบอร์</th></tr></thead><tbody>'+cp.rows.map(x=>'<tr><th>'+escH(x.n)+"</th><td>"+fmt(x.tp)+"</td><td>"+fmt(x.ta)+'</td><td style="font-weight:700;color:var(--'+(x.d>0?"warn":"accent")+')">'+(x.st||"-")+'</td><td style="text-align:left">'+(x.d>0?escH(x.bs.join(" · ")):"-")+"</td></tr>").join("")+"</tbody></table></div>"}
+    else{const MXS=Math.max(1,...cp.rows.map(x=>Math.max(0,...x.sf)));h+='<div class="scroll"><table class="cgrep"><thead><tr><th>สี / ชนิด</th><th>แผนผลิต (คู่)</th><th>ผลิตจริง (คู่)</th><th>ขาด / เกิน</th><th>ขาดรายเบอร์ <span style="font-weight:400;font-size:11px">(แท่งใต้เส้น = จำนวนที่ขาด · % ของแผนเบอร์นั้น)</span></th></tr></thead><tbody>'+cp.rows.map(x=>'<tr><th>'+escH(x.n)+"</th><td>"+fmt(x.tp)+"</td><td>"+fmt(x.ta)+'</td><td style="font-weight:700;color:var(--'+(x.d>0?"warn":"accent")+')">'+(x.st||"-")+'</td><td style="text-align:left">'+rcBars(x,MXS)+"</td></tr>").join("")+"</tbody></table></div>"}}
   box.innerHTML=h}
 $("rm-y").addEventListener("input",e=>{RCM.y=e.target.value;RCM.m="";rcMonDraw()});
 $("rm-m").addEventListener("change",e=>{RCM.m=e.target.value;rcMonDraw()});
 $("rm-body").addEventListener("click",e=>{const tr=e.target.closest("tr[data-m]");if(tr){RCM.m=tr.dataset.m;rcMonDraw()}});
+(function(){const tip=document.createElement("div");tip.id="rc-tip";tip.hidden=true;tip.setAttribute("role","tooltip");tip.style.cssText="position:fixed;z-index:1000;background:var(--surface);color:var(--text,inherit);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(15,40,90,.22);padding:10px 12px;font-size:13px;max-width:calc(100vw - 16px);pointer-events:none";document.body.appendChild(tip);
+  let cur=null;
+  function hide(){tip.hidden=true;cur=null}
+  function open(el){const d=el.dataset.d,v=FGD[d];if(!v)return;const rs=PTPL.filter(r=>v[r[0]]&&v[r[0]].some(x=>x>0));
+    const f=x=>x?fmt(x):"\u2013",tot=rs.reduce((a,r)=>a+cT(v[r[0]]),0);
+    tip.innerHTML='<div style="font-weight:700;margin-bottom:6px">'+thD(d)+' · รวม '+fmt(tot)+' คู่</div><div class="scroll" style="overflow:visible"><table class="cgrep" style="margin:0"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวม</th></tr></thead><tbody>'+rs.map(r=>"<tr><th>"+escH(r[1])+"</th>"+v[r[0]].map(x=>"<td>"+f(x)+"</td>").join("")+'<td class="tt">'+fmt(cT(v[r[0]]))+"</td></tr>").join("")+'</tbody><tfoot><tr><th>รวม</th>'+SIZES.map((z,i)=>"<td>"+f(rs.reduce((a,r)=>a+v[r[0]][i],0))+"</td>").join("")+'<td class="tt">'+fmt(tot)+"</td></tr></tfoot></table></div>";
+    tip.hidden=false;cur=el;const r=el.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;
+    let L=Math.min(Math.max(8,r.left),innerWidth-w-8),T=r.bottom+6;if(T+h>innerHeight-8)T=r.top-h-6;tip.style.left=L+"px";tip.style.top=Math.max(8,T)+"px"}
+  const b=$("rm-body");
+  b.addEventListener("mouseover",e=>{const c=e.target.closest(".rcday");if(c&&c!==cur)open(c)});
+  b.addEventListener("mouseout",e=>{if(e.target.closest(".rcday")&&!(e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest(".rcday")))hide()});
+  b.addEventListener("focusin",e=>{const c=e.target.closest(".rcday");if(c)open(c)});
+  b.addEventListener("focusout",hide);
+  b.addEventListener("click",e=>{const c=e.target.closest(".rcday");if(!c)return;if(cur===c)hide();else open(c)});
+  addEventListener("scroll",hide,true);addEventListener("resize",hide)})();
 cgXlBtn($("x-rcmon"),"xl-rcm",async()=>{const M=rcMonData(),my=Object.keys(M).sort().filter(m=>m.slice(0,4)===RCM.y);if(!my.length)cgNone();
   const cols=PTPL.filter(r=>my.some(m=>cT(M[m].c[r[0]]||cZ())>0)),n=cols.length,rows=[["ผลิตจริงเข้าโกดังพี่ชุมพร รายเดือน ปี "+(+RCM.y+543)+" (หน่วย: คู่)"],[],["เดือน"].concat(cols.map(r=>r[1]),["รวม","วันที่บันทึก"])];
   my.forEach(m=>{const v=cols.map(r=>cT(M[m].c[r[0]]||cZ())),R=rows.length+1;rows.push([thM(m)].concat(v,[SUMR(R,2,n+1,cvSum1(v)),M[m].days]))});
