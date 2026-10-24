@@ -460,7 +460,7 @@ thead th{background:#dcecff;color:#0a47a8}
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 176)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 178)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2247,7 +2247,7 @@ function fgReveal(views,panels,title,code,groups){document.querySelectorAll(".fg
 const FGPG={
   d:()=>{$("tab-d").click();fgBar(null,"d")},
   stk:()=>{show("x5");initE();fgReveal([],["x-stkrep","x-stk"],"สต๊อก","stk");stkRepDraw();["x-stkrep","x-stk"].forEach(id=>{const p=$(id);if(!p)return;p.dataset.init="1";p.classList.remove("shut");if(p.firstElementChild)p.firstElementChild.setAttribute("aria-expanded","true")})},
-  plan:()=>{sxMove("p");show("p");initE();renderP();pfInit();poInit();xpDraw();xsDraw();xlDraw();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}fgReveal([],["x-plan","x-plist"],"แผนผลิต","plan",[[0,"แผนผลิต · คำนวณสต็อกคงเหลือ",["view-p"],1],[0,"นำเข้าแผนผลิต (PDF) และแผนผลิตที่บันทึกไว้",["x-plan","x-plist"],0]]);$("view-p").hidden=false},
+  plan:()=>{sxMove("p");show("p");initE();renderP();pfInit();poInit();xpDraw();xsDraw();xlDraw();if(!window._x1){window._x1=1;if(!PFIMP){$("pf-type").value="pdf";$("pf-type").onchange()}}fgReveal([],["x-plan","x-plist"],"แผนผลิต","plan",[[0,"นำเข้าแผนผลิต (PDF) และแผนผลิตที่บันทึกไว้",["x-plan","x-plist"],1]]);$("view-p").hidden=true},
   asm:()=>{show("x2");xsDraw();xlDraw();fgReveal(["q"],["x-steam","x-slist","x-sdash"],"แผ่นยางประกอบ","asm",[[0,"แผ่นยางประกอบ · ภาพรวม",["view-q"],1],[0,"นำเข้าไฟล์นึ่งยาง (Excel)",["x-steam"],1],[0,"แผ่นยางที่บันทึกไว้ และแดชบอร์ด",["x-slist","x-sdash"],0]])},
   prod:()=>{sxMove("rc");window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("tab-r").setAttribute("aria-selected","false");rcMonDraw();fgReveal(["r"],["x-rcmon","rc-imp-wrap"],"ผลิตจริงเข้าโกดัง","prod")},
   cmp:()=>{show("c");cmpInit();initM();renderM();fgReveal(["c","m"],[],"แผน vs จริง","cmp")},
@@ -2284,15 +2284,16 @@ function xpTable(m,r){const c=xpC(m,r),pv=planView(c),T=a=>a.reduce((x,y)=>x+y,0
   h+='<div class="scroll"><table class="tpl"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม 8.5-11</th></tr></thead><tbody>";
   pv.rows.forEach(x=>{h+="<tr"+tint(x.k)+"><td>"+escH(x.label)+"</td>"+x.v.map((q,i)=>'<td class="'+x.st[i]+(q?"":" zero")+'">'+(q?fmt(q):"-")+"</td>").join("")+"<td><b>"+(T(x.v)?fmt(T(x.v)):"-")+"</b></td></tr>"});
   return h+"</tbody><tfoot><tr><td>รวม</td>"+pv.tot.map(q=>"<td>"+fmt(q)+"</td>").join("")+"<td>"+fmt(g)+"</td></tr></tfoot></table></div>"}
+function xpHv(m,r){const pv=planView(xpC(m,r));return hvK("xp_"+m+"_"+r,thM(m)+" · "+revName(r)+" (คู่)",pv.rows.map(x=>({lab:escH(x.label),v:x.v,tr:tint(x.k)})),{})}
 function xpDraw(){const L=$("xp-list");if(!L)return;const ys=xpYears();
   if(!ys.length){L.innerHTML='<div class="empty">ยังไม่มีแผนผลิตที่บันทึกไว้ นำเข้าไฟล์ PDF ด้านบนก่อน</div>';return}
   const open=new Set([...L.querySelectorAll("details[open]")].map(d=>d.dataset.k)),seen=new Set([...L.querySelectorAll("details")].map(d=>d.dataset.k));
   L.innerHTML=ys.map(y=>{const ms=Object.keys(PL).filter(m=>m.slice(0,4)===y).sort();
     return '<details class="xy" data-k="y'+y+'"'+(open.has("y"+y)||ys.length===1?" open":"")+'><summary>ปี '+(+y+543)+' <span class="note" style="font-weight:400">('+ms.length+' เดือนที่มีแผน)</span><span class="xs"><button class="btn ghost" type="button" data-dl="y'+y+'">ดาวน์โหลด Excel ทั้งปี</button></span></summary>'+
     ms.slice().reverse().map(m=>{const rs=xpRevs(m),lr=rs[rs.length-1];
-      return '<details class="xm" data-k="m'+m+'"'+(open.has("m"+m)?" open":"")+'><summary><b>'+thM(m)+'</b><span class="note">ล่าสุด: '+revName(lr)+" · รวม "+fmt(xpTot(m,lr))+' คู่ · '+rs.length+' ฉบับ</span><span class="xs"><button class="btn ghost" type="button" data-dl="m'+m+'">ดาวน์โหลด Excel เดือนนี้</button><button class="btn ghost" type="button" data-clr="'+m+'" style="color:var(--bad,#c62828)">ล้างข้อมูลเดือนนี้</button></span></summary><div class="xb" data-m="'+m+'">'+
+      return '<details class="xm" data-k="m'+m+'"'+(open.has("m"+m)?" open":"")+'><summary'+xpHv(m,lr)+'><b>'+thM(m)+'</b><span class="note">ล่าสุด: '+revName(lr)+" · รวม "+fmt(xpTot(m,lr))+' คู่ · '+rs.length+' ฉบับ</span><span class="xs"><button class="btn ghost" type="button" data-dl="m'+m+'">ดาวน์โหลด Excel เดือนนี้</button><button class="btn ghost" type="button" data-clr="'+m+'" style="color:var(--bad,#c62828)">ล้างข้อมูลเดือนนี้</button></span></summary><div class="xb" data-m="'+m+'">'+
         rs.slice().reverse().map(r=>{const isL=r===lr,pi=rs.indexOf(r)-1,t=xpTot(m,r),dl=pi>=0?t-xpTot(m,rs[pi]):null,k="r"+m+"_"+r,P=PL[m][r],opn=seen.has(k)?open.has(k):isL;
-          return '<details class="xr '+(isL?"latest":"old")+'" data-k="'+k+'"'+(opn?" open":"")+'><summary><span class="xbadge">'+(isL?"ล่าสุด":"เก่า")+'</span><b>'+revName(r)+'</b><span class="note">'+(P.date?"แจ้ง รง. "+thD(P.date)+" · ":"")+"รวม "+fmt(t)+" คู่"+(dl!=null?' · <span class="'+(dl<0?"xdn":dl>0?"xup":"")+'">'+(dl>0?"▲ +"+fmt(dl):dl<0?"▼ −"+fmt(-dl):"เท่าเดิม")+" จากฉบับก่อน</span>":"")+'</span></summary><div class="xrb">'+xpTable(m,r)+"</div></details>"}).join("")+"</div></details>"}).join("")+"</details>"}).join("")}
+          return '<details class="xr '+(isL?"latest":"old")+'" data-k="'+k+'"'+(opn?" open":"")+'><summary'+xpHv(m,r)+'><span class="xbadge">'+(isL?"ล่าสุด":"เก่า")+'</span><b>'+revName(r)+'</b><span class="note">'+(P.date?"แจ้ง รง. "+thD(P.date)+" · ":"")+"รวม "+fmt(t)+" คู่"+(dl!=null?' · <span class="'+(dl<0?"xdn":dl>0?"xup":"")+'">'+(dl>0?"▲ +"+fmt(dl):dl<0?"▼ −"+fmt(-dl):"เท่าเดิม")+" จากฉบับก่อน</span>":"")+'</span></summary><div class="xrb">'+xpTable(m,r)+"</div></details>"}).join("")+"</div></details>"}).join("")+"</details>"}).join("")}
 $("xp-list").addEventListener("change",e=>{const m=e.target.dataset&&e.target.dataset.rv;if(m){const t=$("xp-list").querySelector('[data-t="'+m+'"]');t.innerHTML=xpTable(m,+e.target.value)}});
 $("xp-list").addEventListener("click",async e=>{const c=e.target.closest&&e.target.closest("[data-clr]");if(c){e.preventDefault();e.stopPropagation();const m=c.dataset.clr,rs=xpRevs(m),pm=$("pf-msg"),say=(t,k)=>{pm.hidden=false;pm.className="msg "+k;pm.textContent=t};
     const key=($("pf-key").value||"").trim()||fgKeySet(true);if(!key){say("ใส่รหัสบันทึกก่อน","warn");return}
@@ -4620,7 +4621,7 @@ function rcvBars(cp){return'<div class="scroll"><table class="cgrep"><thead><tr>
 let RCPJ=false;
 function rcRemain(m){const sd=$("e-sd").value,ed=$("e-end").value,Z=()=>[0,0,0,0,0,0];
   if(!sd||sd.slice(0,7)!==m||!ed||ed.slice(0,7)!==m)return{err:"คิดไม่ได้: ยังไม่มีสต็อกจริงของเดือนนี้ในระบบ (ต้องมีสต็อกที่เป็นวันที่ในเดือน "+thM(m)+") — นำเข้าที่เมนู สต๊อก ก่อน"};
-  const fg=$("e-fg"),was=fg.checked;let c;fg.checked=true;try{c=calcE()}catch(e){c={err:String(e)}}finally{fg.checked=was}
+  const fg=$("e-fg"),was=fg.checked,rd=[...document.querySelectorAll('input[name="e-prod"]')],wasR=rd.find(r=>r.checked),fl=rd.find(r=>r.value==="full");let c;fg.checked=true;if(fl)fl.checked=true;try{c=calcE()}catch(e){c={err:String(e)}}finally{fg.checked=was;if(wasR)wasR.checked=true}
   if(c.err)return{err:c.err};
   const rem={};
   SC.forEach(k=>{const act=Z();if(c.fgLast)Object.keys(FGD).forEach(d=>{if(d>=c.sd&&d<=c.fgLast&&FGD[d][k])FGD[d][k].forEach((x,i)=>act[i]+=x)});rem[k]=c.res[k].inn.map((v,i)=>Math.max(0,v-act[i]))});
@@ -4631,7 +4632,7 @@ function rcRemain(m){const sd=$("e-sd").value,ed=$("e-end").value,Z=()=>[0,0,0,0
     SIZES.forEach((z,i)=>{const pool=c.poolB[i]||0,tot=sk.reduce((a,k)=>a+need[k][i],0),give=Math.min(pool,tot);sk.forEach(k=>{(rem[k]=rem[k]||Z())[i]=tot>0?need[k][i]*give/tot:0});bl[i]=Math.max(0,pool-give)});
     if(rem["ดำ"])rem["ดำ"]=bl}
   const px=+$("e-px").value||0,la=Object.keys(FGD).filter(d=>d.slice(0,7)===m&&Object.values(FGD[d]).some(v=>v.some(x=>x>0))).sort().pop()||"";
-  return{rem,c,note:"แผ่นยางที่เหลือ: จ่ายประกอบวันที่ "+thD(c.fgLast&&addD(c.fgLast,1-c.lag)>c.d1?addD(c.fgLast,1-c.lag):c.d1)+" – "+thD(c.d2)+" ("+c.nd+" วันที่มีข้อมูล) × "+c.f+" คู่/แผ่น · "+(c.pmode==="net"?"หักเผื่อ รง. ผลิตไม่เต็มแผน "+px+"%":"ไม่หักเผื่อ")+" · ผลิตจริงเข้าโกดังนับถึง "+(la?thD(la):"ยังไม่มี")+" · ปัดเป็นโหลด"+(la&&c.d1>addD(la,1)?'<br><b style="color:var(--warn)">ระวัง: วันที่ '+thD(addD(la,1))+' – '+thD(addD(c.d1,-1))+' ไม่ได้ถูกนับทั้งผลิตจริงและแผ่นยาง</b>':"")}}
+  return{rem,c,note:"แผ่นยางที่เหลือ: จ่ายประกอบวันที่ "+thD(c.fgLast&&addD(c.fgLast,1-c.lag)>c.d1?addD(c.fgLast,1-c.lag):c.d1)+" – "+thD(c.d2)+" ("+c.nd+" วันที่มีข้อมูล) × "+c.f+" คู่/แผ่น · "+(c.pmode==="net"?"หักเผื่อ รง. ผลิตไม่เต็มแผน "+px+"%":"ไม่หักเผื่อ (นับแผ่นยางเต็มจำนวน)")+" · ผลิตจริงเข้าโกดังนับถึง "+(la?thD(la):"ยังไม่มี")+" · ปัดเป็นโหลด"+(la&&c.d1>addD(la,1)?'<br><b style="color:var(--warn)">ระวัง: วันที่ '+thD(addD(la,1))+' – '+thD(addD(c.d1,-1))+' ไม่ได้ถูกนับทั้งผลิตจริงและแผ่นยาง</b>':"")}}
 function rcPjBuild(cpA,dm){const m=RCM.m,pill='<div style="margin:10px 0 4px"><button type="button" class="rcv-pj" data-rcpj="1" aria-pressed="'+RCPJ+'">'+(RCPJ?"\u2713 ":"")+'แผ่นยางที่เหลือถึงสิ้นเดือน · ถ้าผลิตตามแผน จะขาด/เกินเท่าไร</button></div>';
   if(!RCPJ)return{cp:cpA,html:pill};
   const R=rcRemain(m);if(R.err)return{cp:cpA,html:pill+'<div class="note" style="color:var(--warn)">'+escH(R.err)+"</div>"};
