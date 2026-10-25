@@ -463,7 +463,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 189)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 190)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4704,7 +4704,7 @@ function rcRowTip(r,a){const P=rcPlan(RCM.m),k=r[0],pl=P&&P.c[k]?P.c[k].slice(0,
     h+='<table class="tpl"><thead><tr><th></th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>\u0e23\u0e27\u0e21</th></tr></thead><tbody>"+
       "<tr><td>\u0e41\u0e1c\u0e19 ("+revName(P.rev)+")</td>"+pl.map(x=>"<td>"+f(x)+"</td>").join("")+"<td><b>"+f(T(pl))+"</b></td></tr>"+
       "<tr><td>\u0e1c\u0e25\u0e34\u0e15\u0e41\u0e25\u0e49\u0e27</td>"+ac.map(x=>"<td>"+f(x)+"</td>").join("")+"<td><b>"+f(T(ac))+"</b></td></tr>"+
-      "<tr><td>\u0e04\u0e07\u0e40\u0e2b\u0e25\u0e37\u0e2d\u0e17\u0e35\u0e48\u0e15\u0e49\u0e2d\u0e07\u0e17\u0e33</td>"+pl.map((x,i)=>"<td>"+cell(x,i)+"</td>").join("")+"<td><b>"+(tg>0?'<span style="color:var(--warn)">'+f(tg)+"</span>":tg<0?'<span style="color:var(--accent)">+'+f(-tg)+"</span>":"\u0e04\u0e23\u0e1a")+"</b></td></tr>"+
+      "<tr><td>"+(tg<0?"ทำเกินแผน":"\u0e04\u0e07\u0e40\u0e2b\u0e25\u0e37\u0e2d\u0e17\u0e35\u0e48\u0e15\u0e49\u0e2d\u0e07\u0e17\u0e33")+"</td>"+pl.map((x,i)=>"<td>"+cell(x,i)+"</td>").join("")+"<td><b>"+(tg>0?'<span style="color:var(--warn)">'+f(tg)+"</span>":tg<0?'<span style="color:var(--accent)">+'+f(-tg)+"</span>":"\u0e04\u0e23\u0e1a")+"</b></td></tr>"+
       "<tr><td>\u0e04\u0e27\u0e32\u0e21\u0e04\u0e37\u0e1a\u0e2b\u0e19\u0e49\u0e32</td>"+pl.map((x,i)=>"<td>"+(x?pc(ac[i],x):"\u2013")+"</td>").join("")+"<td><b>"+pc(T(ac),T(pl))+"</b></td></tr></tbody></table>"}
   const key="rr_"+RCM.m+"_"+k;FGHVK[key]=h;return' data-hk="'+key+'" tabindex="0" style="cursor:help"'}
 function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),ms=Object.keys(M).sort(),ys=[...new Set(ms.map(m=>m.slice(0,4)))].sort().reverse(),ysel=$("rm-y");
