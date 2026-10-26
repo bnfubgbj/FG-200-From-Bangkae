@@ -463,7 +463,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 191)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 192)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -640,7 +640,9 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
       <div class="row" style="align-items:flex-end;gap:10px 16px">
         <div style="min-width:170px"><span class="lbl">ออกแผนของเดือน</span><input type="month" id="o-m"></div>
         <div style="min-width:170px"><span class="lbl">โรงงานส่งได้จริง (% ของแผน)</span><input type="number" id="o-dr" min="10" max="150" step="1" style="width:110px"></div>
-        <button class="btn" id="o-auto">เสนอแผนอัตโนมัติ</button>
+        <div style="min-width:200px"><span class="lbl">ยอดรวมผลิตที่ตกลงกับ รง. (คู่)</span><input type="text" inputmode="numeric" id="o-tot" placeholder="เช่น 875,000" style="width:150px"></div>
+        <button class="btn" id="o-split">แบ่งตามยอดรวม</button>
+        <button class="btn ghost" id="o-auto">เสนอแผนอัตโนมัติ</button>
         <button class="btn" id="o-tg">ขยาย/ยุบ ทุกเบอร์</button>
       </div>
       <div class="note" id="o-info"></div>
@@ -4832,11 +4834,11 @@ $("rc-m0").onclick=()=>{const t=rcLatest();$("rc-f").value=t.slice(0,7)+"-01";$(
 $("rc-m1").onclick=()=>{const t=rcLatest(),y=+t.slice(0,4),m=+t.slice(5,7),py=m===1?y-1:y,pm=m===1?12:m-1,dim=new Date(py,pm,0).getDate();$("rc-f").value=py+"-"+p2(pm)+"-01";$("rc-t").value=py+"-"+p2(pm)+"-"+p2(dim);rcDraw()};
 
 /* ---------- ออกแผนผลิต: โฟล 9 ขั้นแยกสี แยกเบอร์ ---------- */
-const OST={plan:{},tg:{},open:{},m:"",dr:null,auto:true,all:false};
+const OST={plan:{},tg:{},open:{},m:"",dr:null,auto:true,all:false,tot:0,msg:""};
 const oNum=v=>{const n=Number(String(v||"").replace(/[^0-9.]/g,""));return isNaN(n)?0:n};
 const oOn=v=>{v=Math.round(v);return v?v.toLocaleString("en-US"):"-"};
-function oLoadSt(m){OST.plan={};OST.tg={};OST.auto=true;OST.m=m;try{const s=JSON.parse(localStorage.getItem("fgo_"+m)||"null");if(s){OST.plan=s.plan||{};OST.tg=s.tg||{};if(s.dr!=null)OST.dr=s.dr;OST.auto=!Object.keys(OST.plan).length}}catch(e){}}
-function oSave(){try{localStorage.setItem("fgo_"+OST.m,JSON.stringify({plan:OST.plan,tg:OST.tg,dr:OST.dr}))}catch(e){}}
+function oLoadSt(m){OST.plan={};OST.tg={};OST.tot=0;OST.msg="";OST.auto=true;OST.m=m;try{const s=JSON.parse(localStorage.getItem("fgo_"+m)||"null");if(s){OST.plan=s.plan||{};OST.tg=s.tg||{};OST.tot=s.tot||0;if(s.dr!=null)OST.dr=s.dr;OST.auto=!Object.keys(OST.plan).length}}catch(e){}}
+function oSave(){try{localStorage.setItem("fgo_"+OST.m,JSON.stringify({plan:OST.plan,tg:OST.tg,dr:OST.dr,tot:OST.tot}))}catch(e){}}
 function oHist(){let P=0,R=0,n=0;const cur=($("e-sd").value||todayS()).slice(0,7);
   Object.keys(PL).forEach(m=>{if(m>=cur)return;const rv=Object.keys(PL[m]).map(Number).sort((a,b)=>b-a),cl=PL[m][rv[0]].colors,pt=Object.values(cl).reduce((a,v)=>a+v.reduce((x,y)=>x+y,0),0);let rt=0;
     Object.keys(FGD).forEach(d=>{if(d.slice(0,7)!==m)return;Object.values(FGD[d]).forEach(v=>{rt+=v.reduce((x,y)=>x+y,0)})});if(pt>0&&rt>0){P+=pt;R+=rt;n++}});
@@ -4853,6 +4855,20 @@ function oData(){
 function oSuggest(d){const dr=(OST.dr||100)/100;
   d.KS.forEach(k=>{const x=d.D[k],tg=OST.tg[k]||0,bt=x.book.reduce((a,b)=>a+b,0);
     OST.plan[k]=x.book.map((b,i)=>{const sh=bt>0?b/bt:1/6,need=x.main?Math.max(0,b+tg*sh-x.end[i]):b;return need>0.5?Math.ceil(need/dr/100)*100:0})})}
+function oSplit(d,Tg){const dr=(OST.dr||100)/100,keys=d.KS,sp=[],mn=[],U=12;
+  keys.forEach(k=>{const x=d.D[k];if(x.main)mn.push(k);else sp.push(k)});
+  let spT=0;sp.forEach(k=>{OST.plan[k]=d.D[k].book.map(b=>{const n=b>0?Math.ceil(b/dr/100)*100:0;spT+=n;return n})});
+  const mt=Math.max(0,Tg-spT),cells=[];let S=0,Bk=0;
+  mn.forEach(k=>{const x=d.D[k],tg=OST.tg[k]||0,bt=x.book.reduce((a,b)=>a+b,0);
+    x.book.forEach((b,i)=>{const sh=bt>0?b/bt:1/6,n=Math.max(0,(b+tg*sh-x.end[i])/dr);cells.push({k,i,n,b,v:0});S+=n;Bk+=b})});
+  let extra=0,short=0;
+  if(S<=mt){extra=mt-S;cells.forEach(c=>{c.v=c.n+(Bk>0?extra*c.b/Bk:extra/cells.length)})}
+  else{short=S-mt;cells.forEach(c=>{c.v=c.n*mt/S})}
+  const goal=Math.floor(mt/U),fl=cells.map(c=>Math.floor(c.v/U));let rest=goal-fl.reduce((a,b)=>a+b,0);
+  cells.map((c,j)=>({j,r:c.v/U-fl[j]})).sort((a,b)=>b.r-a.r).forEach(o=>{if(rest>0){fl[o.j]++;rest--}});
+  mn.forEach(k=>{OST.plan[k]=Z6()});cells.forEach((c,j)=>{OST.plan[c.k][c.i]=fl[j]*U});
+  const f=x=>Math.round(x).toLocaleString("en-US");
+  OST.msg="แบ่งยอดรวม <b>"+f(Tg)+"</b> คู่ แล้ว: สีพิเศษ/KFC ตามยอดจอง "+f(spT)+" · 8 สีหลัก "+f(goal*U)+" คู่ · ต้องการเพื่อไม่ให้ขาด "+f(S)+" คู่ — "+(short>0?'<span style="color:var(--warn);font-weight:700">ยอดรวมน้อยกว่าที่ต้องการ '+f(short)+' คู่ ระบบลดสัดส่วนทุกช่องลงเท่ากัน อาจยังขาดบางเบอร์ (ดูสถานะขวาสุด)</span>':'เหลือเผื่อ '+f(extra)+' คู่ แบ่งตามสัดส่วนยอดจอง ('+(Tg>0?(extra/Tg*100).toFixed(1):0)+'% ของยอดรวม)')}
 function oVals(d){const dr=(OST.dr||100)/100,V={};
   d.KS.forEach(k=>{const x=d.D[k],pl=OST.plan[k]||Z6(),p7=x.end.map((v,i)=>v+(pl[i]||0)*dr),p9=p7.map((v,i)=>v-x.book[i]);V[k]={pl,p7,p9}});return V}
 function oStatus(x,v,tg){const T=a=>a.reduce((p,q)=>p+q,0),neg=SIZES.filter((z,i)=>Math.round(v.p9[i])<0);
@@ -4887,6 +4903,8 @@ function renderO(){
   const gs=["st","inn","mid","qt","en","pl","p7","bk","p9"].map(q=>T(G[q]));
   t+='</tbody><tfoot><tr><td>รวมทุกสี</td>'+gs.map((y,j)=>'<td id="o-g'+j+'">'+oOn(y)+"</td>").join("")+"<td></td><td></td></tr></tfoot></table></div>";
   B.innerHTML=t;B._d=d;
+  if($("o-tot")&&document.activeElement!==$("o-tot"))$("o-tot").value=OST.tot?OST.tot.toLocaleString("en-US"):"";
+  if(OST.msg)info.innerHTML+='<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--accent-soft)">'+OST.msg+'</div>';
 }
 function oRefresh(){const d=$("o-body")._d;if(!d)return;const V=oVals(d),T=a=>a.reduce((x,y)=>x+y,0),G=[0,0,0,0,0,0,0,0,0];
   const setN=(el,v,neg)=>{if(!el)return;el.textContent=oOn(v);if(neg){el.classList.toggle("neg",Math.round(v)<0);el.style.fontWeight=Math.round(v)<0?"600":""}};
@@ -4907,7 +4925,10 @@ $("o-body").addEventListener("click",e=>{if(e.target.closest("input"))return;con
 $("o-tg").onclick=()=>{OST.all=!OST.all;if(!OST.all)OST.open={};renderO()};
 $("o-m").addEventListener("input",()=>{OST.m="";renderO()});
 $("o-dr").addEventListener("input",()=>{OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSave();oRefresh()});
-$("o-auto").onclick=()=>{const d=$("o-body")._d;if(!d)return;OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSuggest(d);oSave();renderO()};
+$("o-tot").addEventListener("input",()=>{OST.tot=oNum($("o-tot").value);oSave()});
+$("o-split").onclick=()=>{const d=$("o-body")._d;if(!d)return;const Tg=oNum($("o-tot").value);if(!Tg){OST.msg='<span style="color:var(--warn)">ใส่ยอดรวมผลิตที่ตกลงกับ รง. ก่อน</span>';renderO();return}
+  OST.tot=Tg;OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSplit(d,Tg);OST.auto=false;oSave();renderO()};
+$("o-auto").onclick=()=>{OST.msg="";const d=$("o-body")._d;if(!d)return;OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSuggest(d);oSave();renderO()};
 
 /* ---------- แผนเสริม ---------- */
 const EX={v:{}};
