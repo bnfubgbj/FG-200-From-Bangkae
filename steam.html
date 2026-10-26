@@ -463,7 +463,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 190)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 191)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -648,6 +648,18 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <div class="panel">
       <h2 style="font-size:15px">ตารางโฟล 9 ขั้น (กรอกแผนที่จะแจ้งในช่อง ⑥ ระดับเบอร์)</h2>
       <div id="o-body"></div>
+    </div>
+    <div class="panel" id="ex-panel">
+      <div class="head2"><h2 style="font-size:15px">แผนเสริม · ขอเพิ่มเฉพาะที่ขาด (ไม่ต้องส่งแผนใหม่ทั้งชุด)</h2><button class="btn" id="ex-xl">ดาวน์โหลด Excel แผนเสริม</button></div>
+      <div class="row" style="align-items:flex-end;gap:10px 16px">
+        <div style="min-width:170px"><span class="lbl">เสริมให้แผนเดือน</span><input type="month" id="ex-m"></div>
+        <div style="min-width:170px"><span class="lbl">ต้องการรับของภายในวันที่</span><input type="date" id="ex-d"></div>
+        <div style="flex:1 1 260px;min-width:200px"><span class="lbl">เหตุผล (ไม่บังคับ)</span><input type="text" id="ex-r" placeholder="เช่น ยอดจองเพิ่มหลังส่งแผน"></div>
+        <button class="btn ghost" id="ex-clr" type="button">ล้างตาราง</button>
+      </div>
+      <div class="note" id="ex-info"></div>
+      <div class="scroll"><div id="ex-body"></div></div>
+      <div class="note">กรอกเป็นคู่ ระบบปัดเป็นโหลดให้ · ไฟล์ Excel จะมีเฉพาะสี/เบอร์ที่กรอก ส่งโรงงานเป็นหน้าเดียว</div>
     </div>
   </div>
   <div id="view-w" hidden style="display:flex;flex-direction:column;gap:16px">
@@ -4896,6 +4908,41 @@ $("o-tg").onclick=()=>{OST.all=!OST.all;if(!OST.all)OST.open={};renderO()};
 $("o-m").addEventListener("input",()=>{OST.m="";renderO()});
 $("o-dr").addEventListener("input",()=>{OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSave();oRefresh()});
 $("o-auto").onclick=()=>{const d=$("o-body")._d;if(!d)return;OST.dr=Math.max(10,Math.min(150,oNum($("o-dr").value)||100));oSuggest(d);oSave();renderO()};
+
+/* ---------- แผนเสริม ---------- */
+const EX={v:{}};
+(function(){const mi=$("ex-m");if(!mi)return;
+  const nm=()=>{const d=new Date();d.setMonth(d.getMonth()+1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")};
+  mi.value=nm();
+  function draw(){const m=mi.value,P=rcPlan(m),keys=PTPL.map(r=>r[0]),main=keys.filter(k=>FG_MAIN.includes(k)),sp=keys.filter(k=>!FG_MAIN.includes(k));
+    const inp=(k,i)=>'<td><input type="number" min="0" step="12" inputmode="numeric" data-k="'+escH(k)+'" data-i="'+i+'" value="'+((EX.v[k]||[])[i]||"")+'" style="width:84px;text-align:center;padding:5px 6px"></td>';
+    const row=k=>'<tr><th>'+escH(cLab(k))+'</th>'+SIZES.map((z,i)=>inp(k,i)).join("")+'<td class="tt" id="ex-t-'+keys.indexOf(k)+'">0</td></tr>';
+    const head='<thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวม (คู่)</th></tr></thead>';
+    $("ex-body").innerHTML='<table class="cgrep">'+head+'<tbody><tr><th colspan="8" style="text-align:left;color:var(--accent)">8 สีหลัก</th></tr>'+main.map(row).join("")+'</tbody></table>'+
+      '<details style="margin:8px 0"><summary style="cursor:pointer;font-weight:600">สีพิเศษ / KFC</summary><table class="cgrep">'+head+'<tbody>'+sp.map(row).join("")+'</tbody></table></details>';
+    upd()}
+  function upd(){const m=mi.value,P=rcPlan(m),T=a=>a.reduce((x,y)=>x+y,0),keys=PTPL.map(r=>r[0]);let tot=0;
+    keys.forEach((k,j)=>{const t=T((EX.v[k]||[]).map(x=>x||0));tot+=t;const e=$("ex-t-"+j);if(e)e.textContent=fmt(t)});
+    const pt=P?T(Object.values(P.c).map(a=>T((a||[]).slice(0,6).map(x=>x||0)))):0;
+    $("ex-info").innerHTML=P?('แผนเดิม '+thM(m)+' ('+revName(P.rev)+') รวม <b>'+fmt(pt)+'</b> คู่ · ขอเสริม <b>'+fmt(tot)+'</b> คู่'+(pt?' (<b>+'+(tot/pt*100).toFixed(1)+'%</b>)':'')+' · รวมหลังเสริม <b>'+fmt(pt+tot)+'</b> คู่'):('ยังไม่มีแผนของ '+thM(m)+' ในระบบ · ขอเสริม <b>'+fmt(tot)+'</b> คู่')}
+  $("ex-body").addEventListener("change",e=>{const t=e.target;if(!t.dataset||t.dataset.k==null)return;let v=Math.max(0,Math.round((+t.value||0)/12)*12);t.value=v||"";(EX.v[t.dataset.k]=EX.v[t.dataset.k]||[0,0,0,0,0,0])[+t.dataset.i]=v;upd()});
+  mi.addEventListener("change",()=>{upd()});
+  $("ex-clr").onclick=()=>{EX.v={};draw()};
+  $("ex-xl").onclick=async()=>{const b=$("ex-xl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel แผนเสริม",2500),T=a=>a.reduce((x,y)=>x+y,0);
+    const items=PTPL.map(r=>({k:r[0],label:r[1],v:(EX.v[r[0]]||[0,0,0,0,0,0]).slice(0,6)})).filter(x=>T(x.v)>0);
+    if(!items.length){b.textContent="ยังไม่ได้กรอกยอดเสริม";back();return}
+    if(typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้";back();return}
+    const m=mi.value,wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF999999"}},BR={top:bd,left:bd,bottom:bd,right:bd},nf="#,##0;[Red]-#,##0;-";
+    const ws=wb.addWorksheet("แผนเสริม");ws.columns=[{width:34}].concat(Array(7).fill({width:13}));
+    ws.addRow(["แผนเสริมผลิตฟองน้ำ 200 · ส่วนที่ขอเพิ่มจากแผนเดือน "+thM(m)+" (หน่วย: คู่)"]).getCell(1).font={bold:true,size:14};
+    const d=$("ex-d").value;ws.addRow(["วันที่แจ้ง "+thD(todayS())+(d?" · ต้องการรับของภายใน "+thD(d):"")]).getCell(1).font={color:{argb:"FF555555"}};
+    const rs=$("ex-r").value.trim();if(rs)ws.addRow(["เหตุผล: "+rs]).getCell(1).font={color:{argb:"FF555555"}};
+    ws.addRow(["หมายเหตุ: เป็นยอดที่ขอเพิ่มจากแผนเดิม ไม่ใช่แผนใหม่ทั้งชุด"]).getCell(1).font={italic:true,color:{argb:"FFA14B00"}};ws.addRow([]);
+    const hd=a=>{const r=ws.addRow(a);r.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center",vertical:"middle",wrapText:true};x.border=BR})};
+    fgTable(ws,items,{head:()=>hd(["สี"].concat(SIZES.map(z=>"เบอร์ "+z),["รวม"])),B:BR,fill,fmt:nf});
+    ws.eachRow(r=>r.eachCell((c,i)=>{if(i>1&&c.alignment==null)c.alignment={horizontal:"center"}}));
+    try{await saveBook(wb,"แผนเสริม_ฟองน้ำ200_"+m+".xlsx");b.textContent="ดาวน์โหลดแล้ว"}catch(e){b.textContent="สร้างไฟล์ไม่ได้"}back()};
+  window.exDraw=draw;draw()})();
 $("o-xl").onclick=async()=>{const b=$("o-xl"),back=()=>setTimeout(()=>b.textContent="ดาวน์โหลด Excel แจ้ง รง.",2500),d=$("o-body")._d;
   if(!d||typeof ExcelJS==="undefined"){b.textContent="สร้างไฟล์ไม่ได้ (ยังไม่มีข้อมูล)";back();return}
   const V=oVals(d),T=a=>a.reduce((x,y)=>x+y,0),wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF999999"}},BR={top:bd,left:bd,bottom:bd,right:bd};
