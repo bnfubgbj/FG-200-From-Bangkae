@@ -464,7 +464,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 211)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 212)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4025,7 +4025,7 @@ const st=document.createElement("style");st.textContent=`
 `;document.head.appendChild(st)})();
 const SDMN=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],
  SDC={"205S-ขาว":"#e4e7ea","205S-ดำ":"#475569","205S-นด":"#a9733f","205R-ขาว":"#e4e7ea","205R-ดำ":"#475569","205R-นด":"#a9733f","121Z-ขาว":"#8fb8de","121Z-ดำ":"#2f4f7a"};
-let SDY=null,SDTG=(()=>{try{return localStorage.getItem("fgsdtg")||"tick"}catch(e){return"tick"}})();const SDMS=new Set();
+let SDY=null,SDTG=(()=>{try{return localStorage.getItem("fgsdtg")||"cover"}catch(e){return"cover"}})();const SDMS=new Set();
 function sdEnsure(){const P=$("x-cgsale");if(!P)return null;if($("cg-sale-dash"))return $("cg-sale-dash");
   const dash=document.createElement("div");dash.id="cg-sale-dash";dash.className="sdb";
   const tg=document.createElement("button");tg.type="button";tg.id="cg-sale-et";tg.className="sdb-tg";
@@ -4063,8 +4063,9 @@ function sdDraw(){const dash=sdEnsure();if(!dash)return;
   // 1) รายเดือน
   const W=900,H=322,L=52,T=26,B=56,pw=W-L-12,ph=H-T-B,mx=sdNice(Math.max(1,...mt,...(TG?TG.M:[0]),...pt.map(x=>x||0))),bw=pw/12;let g="";
   for(let i=0;i<=4;i++){const y=T+ph-ph*i/4;g+='<line x1="'+L+'" x2="'+(W-12)+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" opacity=".12"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="currentColor" opacity=".7">'+Math.round(mx*i/4).toLocaleString("en-US")+"</text>"}
-  const PR=SDTG==="pair"&&TG;
-  for(let m=0;m<12;m++){let y0=T+ph;const x=L+m*bw+bw*(PR?.1:.16),w=bw*(PR?.42:.68);
+  const PR=SDTG==="pair"&&TG,CV=SDTG==="cover"&&TG;if(CV)g+='<defs><linearGradient id="sdg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".7"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".1"/></linearGradient></defs>';
+  for(let m=0;m<12;m++){let y0=T+ph;const x=L+m*bw+bw*(PR?.1:CV?.27:.16),w=bw*(PR?.42:CV?.46:.68);
+    if(CV&&TG.M[m]>0){const gh=ph*TG.M[m]/mx,cx0=L+m*bw+bw*.1;g+='<rect x="'+cx0.toFixed(1)+'" y="'+(T+ph-gh).toFixed(1)+'" width="'+(bw*.8).toFixed(1)+'" height="'+gh.toFixed(1)+'" rx="3" fill="url(#sdg)"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+" คู่"+(mt[m]?" · ทำได้ "+Math.round(mt[m]/TG.M[m]*100)+"%":"")+"</title></rect>";if(mt[m]<TG.M[m]*0.88||!mt[m])g+='<text x="'+(cx0+bw*.4).toFixed(1)+'" y="'+(T+ph-gh-5).toFixed(1)+'" text-anchor="middle" font-size="10.5" font-weight="600" fill="#b45309">เป้า '+(TG.M[m]>=1000?(TG.M[m]/1000).toFixed(1).replace(/\.0$/,"")+"k":N(TG.M[m]))+"</text>"}
     if(PR&&TG.M[m]>0){const gh=ph*TG.M[m]/mx;g+='<rect x="'+(x+w+3).toFixed(1)+'" y="'+(T+ph-gh).toFixed(1)+'" width="'+(bw*.3).toFixed(1)+'" height="'+gh.toFixed(1)+'" rx="2" fill="#e5a64a" stroke="var(--line)" stroke-width=".6"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+" คู่"+(mt[m]?" · ทำได้ "+Math.round(mt[m]/TG.M[m]*100)+"%":"")+"</title></rect>"}
     F.forEach((it,i)=>{const v=Math.max(0,IM[i][m]);if(!v)return;const h=ph*v/mx;y0-=h;g+='<rect x="'+x.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="'+(SDC[it[0]]||"#999")+'" stroke="var(--line)" stroke-width=".6"><title>'+SDMN[m]+" · "+escH(it[1])+": "+N(IM[i][m])+" คู่</title></rect>"});
     if(SDTG==="tick"&&TG&&TG.M[m]>0){const ty=(T+ph-ph*TG.M[m]/mx).toFixed(1),x1=(x-6).toFixed(1),x2=(x+w+6).toFixed(1);g+='<line x1="'+x1+'" x2="'+x2+'" y1="'+ty+'" y2="'+ty+'" stroke="var(--surface)" stroke-width="6" stroke-linecap="round"/><line x1="'+x1+'" x2="'+x2+'" y1="'+ty+'" y2="'+ty+'" stroke="#e08a00" stroke-width="3.2" stroke-linecap="round"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+" คู่"+(mt[m]?" · ทำได้ "+Math.round(mt[m]/TG.M[m]*100)+"%":"")+"</title></line>"}
@@ -4072,7 +4073,7 @@ function sdDraw(){const dash=sdEnsure();if(!dash)return;
     if(TG&&TG.M[m]>0&&(mt[m]||m<=lastM)){const pcm=mt[m]/TG.M[m]*100;g+='<text x="'+(x+(PR?w*.85:w/2)).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-size="12" font-weight="700" fill="'+(pcm>=100?"var(--ok)":"var(--bad)")+'">'+Math.round(pcm)+"%</text>"}
     if(pt[m]>0){g+='<circle cx="'+(x+w/2).toFixed(1)+'" cy="'+(T+ph-ph*pt[m]/mx).toFixed(1)+'" r="4" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" opacity=".75"><title>ปีก่อน '+SDMN[m]+": "+N(pt[m])+"</title></circle>"}
     g+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-28)+'" text-anchor="middle" font-size="12" fill="currentColor" opacity=".85">'+SDMN[m]+"</text>"}
-  const c1='<div class="cd"><h4>ยอดขายรายเดือน</h4><div class="hs">แท่ง = ยอดขายสุทธิแยกสี'+(TG?(SDTG==="tick"?" · ขีดสีส้ม = เป้ารายเดือน":SDTG==="pair"?" · แท่งส้มข้างกัน = เป้ารายเดือน":"")+" · % ใต้เดือน = ยอดขาย÷เป้า":"")+(pt.some(x=>x>0)?" · วงกลม = ปีก่อน":"")+"</div>"+lg+(TG?'<div class="lg" style="gap:6px;margin:0 0 8px">แสดงเป้าแบบ: '+[["tick","ขีดเป้า"],["pair","แท่งเป้าคู่"],["none","ไม่แสดงเป้าในกราฟ"]].map(q=>'<button type="button" class="mchip'+(SDTG===q[0]?" on":"")+'" data-sdt="'+q[0]+'">'+q[1]+"</button>").join("")+"</div>":"")+'<svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
+  const c1='<div class="cd"><h4>ยอดขายรายเดือน</h4><div class="hs">แท่ง = ยอดขายสุทธิแยกสี'+(TG?(SDTG==="cover"?" · แท่งสีส้มจางด้านหลัง = เป้ารายเดือน (แท่งยอดขายยื่นพ้น = เกินเป้า)":SDTG==="tick"?" · ขีดสีส้ม = เป้ารายเดือน":SDTG==="pair"?" · แท่งส้มข้างกัน = เป้ารายเดือน":"")+" · % ใต้เดือน = ยอดขาย÷เป้า":"")+(pt.some(x=>x>0)?" · วงกลม = ปีก่อน":"")+"</div>"+lg+(TG?'<div class="lg" style="gap:6px;margin:0 0 8px">แสดงเป้าแบบ: '+[["cover","ครอบแท่ง"],["tick","ขีดเป้า"],["pair","แท่งเป้าคู่"],["none","ไม่แสดงเป้าในกราฟ"]].map(q=>'<button type="button" class="mchip'+(SDTG===q[0]?" on":"")+'" data-sdt="'+q[0]+'">'+q[1]+"</button>").join("")+"</div>":"")+'<svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
   // 2) สัดส่วนสี (donut)
   const pos=IT.map(v=>Math.max(0,v)),ps=sum(pos)||1,R=70,CC=2*Math.PI*R;let off=0,dg='<svg viewBox="0 0 190 190" role="img" aria-label="สัดส่วนตามสี"><g transform="rotate(-90 95 95)">';
   F.forEach((it,i)=>{const l=CC*pos[i]/ps;if(l>0){dg+='<circle cx="95" cy="95" r="'+R+'" fill="none" stroke="'+(SDC[it[0]]||"#999")+'" stroke-width="30" stroke-dasharray="'+l.toFixed(2)+" "+(CC-l).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'"><title>'+escH(it[1])+": "+N(IT[i])+"</title></circle>"}off+=l});
