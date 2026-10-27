@@ -182,6 +182,7 @@ td.hm-ok{background:color-mix(in srgb,var(--ok) 22%,transparent)}
 td.hm-mid{background:color-mix(in srgb,var(--mid) 26%,transparent)}
 td.hm-bad{background:color-mix(in srgb,var(--bad) 24%,transparent)}
 @media (max-width:640px){.dr{grid-template-columns:1fr 52px}.dtrack{grid-column:1/-1;order:3}.dt{display:none}}
+#hvpop{pointer-events:none}#hvpop.pin{pointer-events:auto}
 #hvpop{display:none;position:fixed;z-index:1000;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);padding:8px 10px;max-width:calc(100vw - 16px);overflow:auto}
 #hvpop .hvt{font-size:12px;color:var(--muted);margin:0 0 4px}
 #hvpop table{border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
@@ -463,7 +464,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 196)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 198)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -3128,9 +3129,9 @@ $("e-file").onchange=async e=>{
   r.cv=null;r.cvErr="";try{r.cv=await cgStkRead(f)}catch(err){r.cvErr=(err&&err.message)||String(err)}
   if(r.err&&!r.cv){$("e-fprev").textContent=r.err;return}
   if(r.err){$("e-fprev").textContent="ฟองน้ำ 200: "+r.err+" · ผ้าใบ: อ่านได้";EIMP=r;$("e-fdate").value=(r.cv&&r.cv.date)||"";$("e-fsave").disabled=false;return}
-  EIMP=r;$("e-fdate").value=r.date;$("e-fsave").disabled=false;const sp=sumT(r.tabs.special);
+  EIMP=r;if(r.cv&&r.cv.date&&!r.std){r.date=r.cv.date}$("e-fdate").value=r.date;$("e-fsave").disabled=false;const sp=sumT(r.tabs.special);
   const a=sumT(r.tabs.stock),b=sumT(r.tabs.booked),n=sumT(r.tabs.net);if(r.std){$("e-fprev").innerHTML="อ่านไฟล์มาตรฐานได้: สต็อกต้นเดือน <b>"+fmt(a)+"</b> คู่"+(r.date?"":' <span style="color:var(--warn)">(ไม่มีวันที่ในช่อง B2 — เลือกวันที่ด้านบน)</span>');return}
-  $("e-fprev").innerHTML="อ่านได้: คงเหลือ <b>"+fmt(a)+"</b> − ยอดซื้อ <b>"+fmt(b)+"</b> = สุทธิ <b>"+fmt(n)+"</b> คู่"+(Math.abs(a-b-n)>1?' <span style="color:var(--warn)">(ตัวเลขในไฟล์ไม่ตรงสูตร ตรวจอีกครั้ง)</span>':"")+" · วันที่ในหัวตาราง "+(r.date?thD(r.date):"อ่านไม่ได้ — กรอกวันที่เอง")+" · สีพิเศษ (ตารางเหลือง) <b>"+fmt(sp)+"</b> คู่ รวมทั้งหมด <b>"+fmt(n+sp)+"</b>";
+  $("e-fprev").innerHTML="อ่านได้: คงเหลือ <b>"+fmt(a)+"</b> − ยอดซื้อ <b>"+fmt(b)+"</b> = สุทธิ <b>"+fmt(n)+"</b> คู่"+(Math.abs(a-b-n)>1?' <span style="color:var(--warn)">(ตัวเลขในไฟล์ไม่ตรงสูตร ตรวจอีกครั้ง)</span>':"")+" · วันที่ของไฟล์ "+(r.date?thD(r.date):"อ่านไม่ได้ — กรอกวันที่เอง")+" · สีพิเศษ (ตารางเหลือง) <b>"+fmt(sp)+"</b> คู่ รวมทั้งหมด <b>"+fmt(n+sp)+"</b>";
   {const p=$("e-fprev");p.innerHTML+=r.cv?'<br>ผ้าใบ: อ่านได้ 205-S บางแค <b>'+cvN(cgTot2(r.cv.S.K))+'</b> · บางหว้า <b>'+cvN(cgTot2(r.cv.S.B))+'</b> | 205-R บางแค <b>'+cvN(cgTot2(r.cv.R.K))+'</b> · บางหว้า <b>'+cvN(cgTot2(r.cv.R.B))+'</b> คู่ — กดบันทึกครั้งเดียวจะเก็บทั้ง 3 สินค้าที่วันที่ด้านบน':'<br><span style="color:var(--warn)">ผ้าใบ: อ่านไม่ได้ ('+escH(r.cvErr||"ไม่พบแท็บ")+') — จะบันทึกเฉพาะฟองน้ำ 200</span>'}
 };
 $("e-fsave").onclick=async()=>{
@@ -3566,10 +3567,11 @@ function poOut(C){
   const hp=$("hvpop");if(hp)hp.style.display="none";
 }
 (function(){const pop=document.createElement("div");pop.id="hvpop";document.body.appendChild(pop);let pinned=null;
-  const show=el=>{const h=el.dataset.hk?FGHVK[el.dataset.hk]:HV[+el.dataset.hv];if(!h)return;pop.innerHTML=h;pop.style.display="block";const r=el.getBoundingClientRect(),pw=pop.offsetWidth,ph=pop.offsetHeight;
-    const x=Math.min(Math.max(8,r.left),Math.max(8,innerWidth-pw-8));let y=r.bottom+6;if(y+ph>innerHeight-8)y=Math.max(8,r.top-ph-6);pop.style.left=x+"px";pop.style.top=y+"px"};
-  const hid=()=>{pop.style.display="none"};
-  document.addEventListener("mouseover",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");if(el&&!pinned)show(el)});
+  const show=el=>{const h=el.dataset.hk?FGHVK[el.dataset.hk]:HV[+el.dataset.hv];if(!h)return;pop._cur=el;pop.innerHTML=h;pop.style.display="block";pop.style.maxHeight="";const r=el.getBoundingClientRect(),pw=pop.offsetWidth,ph0=pop.offsetHeight;
+    const below=innerHeight-r.bottom-14,above=r.top-14,putBelow=ph0<=below||below>=above,room=Math.max(80,putBelow?below:above);pop.style.maxHeight=room+"px";const ph=Math.min(ph0,room);
+    const x=Math.min(Math.max(8,r.left),Math.max(8,innerWidth-pw-8)),y=putBelow?r.bottom+6:Math.max(8,r.top-ph-6);pop.style.left=x+"px";pop.style.top=y+"px";pop.classList.toggle("pin",pinned===el)};
+  const hid=()=>{pop.style.display="none";pop.classList.remove("pin")};
+  document.addEventListener("mouseover",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");if(el&&!pinned&&!(el===pop._cur&&pop.style.display==="block"))show(el)});
   document.addEventListener("mouseout",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");if(el&&!pinned&&!(e.relatedTarget&&el.contains(e.relatedTarget)))hid()});
   document.addEventListener("focusin",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");if(el&&!pinned)show(el)});
   document.addEventListener("click",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");
