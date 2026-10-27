@@ -464,7 +464,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 207)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 208)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4063,13 +4063,17 @@ function sdDraw(){const dash=sdEnsure();if(!dash)return;
   // 1) รายเดือน
   const W=900,H=300,L=52,T=26,B=34,pw=W-L-12,ph=H-T-B,mx=sdNice(Math.max(1,...mt,...(TG?TG.M:[0]),...pt.map(x=>x||0))),bw=pw/12;let g="";
   for(let i=0;i<=4;i++){const y=T+ph-ph*i/4;g+='<line x1="'+L+'" x2="'+(W-12)+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" opacity=".12"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="currentColor" opacity=".7">'+Math.round(mx*i/4).toLocaleString("en-US")+"</text>"}
+  const tpts=[];
   for(let m=0;m<12;m++){let y0=T+ph;const x=L+m*bw+bw*.16,w=bw*.68;
     F.forEach((it,i)=>{const v=Math.max(0,IM[i][m]);if(!v)return;const h=ph*v/mx;y0-=h;g+='<rect x="'+x.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="'+(SDC[it[0]]||"#999")+'" stroke="var(--line)" stroke-width=".6"><title>'+SDMN[m]+" · "+escH(it[1])+": "+N(IM[i][m])+" คู่</title></rect>"});
-    if(mt[m]||IM.some(r=>r[m]))g+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(Math.min(y0,T+ph-ph*Math.max(0,mt[m])/mx)-6).toFixed(1)+'" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">'+N(mt[m])+"</text>";
-    if(TG&&TG.M[m]>0){const ty=T+ph-ph*TG.M[m]/mx;g+='<line x1="'+(x-4).toFixed(1)+'" x2="'+(x+w+4).toFixed(1)+'" y1="'+ty.toFixed(1)+'" y2="'+ty.toFixed(1)+'" stroke="#e08a00" stroke-width="2.2" stroke-dasharray="5 3"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+"</title></line>"}
+    if(mt[m]||IM.some(r=>r[m]))g+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(Math.min(y0,T+ph-ph*Math.max(0,mt[m])/mx)-6).toFixed(1)+'" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor" stroke="var(--surface)" stroke-width="3" paint-order="stroke">'+N(mt[m])+"</text>";
+    if(TG&&TG.M[m]>0)tpts[m]=[+(x+w/2).toFixed(1),+(T+ph-ph*TG.M[m]/mx).toFixed(1)];
     if(pt[m]>0){g+='<circle cx="'+(x+w/2).toFixed(1)+'" cy="'+(T+ph-ph*pt[m]/mx).toFixed(1)+'" r="4" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" opacity=".75"><title>ปีก่อน '+SDMN[m]+": "+N(pt[m])+"</title></circle>"}
     g+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-12)+'" text-anchor="middle" font-size="12" fill="currentColor" opacity=".85">'+SDMN[m]+"</text>"}
-  const c1='<div class="cd"><h4>ยอดขายรายเดือน</h4><div class="hs">แท่ง = ยอดขายสุทธิแยกสี'+(TG?" · เส้นประส้ม = เป้ารายเดือน":"")+(pt.some(x=>x>0)?" · วงกลม = ปีก่อน":"")+"</div>"+lg+'<svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
+  if(TG){let seg=[],segs=[];for(let m=0;m<12;m++){if(tpts[m])seg.push(tpts[m]);else{if(seg.length)segs.push(seg);seg=[]}}if(seg.length)segs.push(seg);
+    segs.forEach(sg=>{if(sg.length>1)g+='<polyline points="'+sg.map(q=>q.join(",")).join(" ")+'" fill="none" stroke="#e08a00" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity=".95"/>'});
+    tpts.forEach((q,m)=>{if(q)g+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4.5" fill="#e08a00" stroke="var(--surface)" stroke-width="1.5"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+" คู่</title></circle>"})}
+  const c1='<div class="cd"><h4>ยอดขายรายเดือน</h4><div class="hs">แท่ง = ยอดขายสุทธิแยกสี'+(TG?" · เส้น+จุดสีส้ม = เป้ารายเดือน":"")+(pt.some(x=>x>0)?" · วงกลม = ปีก่อน":"")+"</div>"+lg+'<svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
   // 2) สัดส่วนสี (donut)
   const pos=IT.map(v=>Math.max(0,v)),ps=sum(pos)||1,R=70,CC=2*Math.PI*R;let off=0,dg='<svg viewBox="0 0 190 190" role="img" aria-label="สัดส่วนตามสี"><g transform="rotate(-90 95 95)">';
   F.forEach((it,i)=>{const l=CC*pos[i]/ps;if(l>0){dg+='<circle cx="95" cy="95" r="'+R+'" fill="none" stroke="'+(SDC[it[0]]||"#999")+'" stroke-width="30" stroke-dasharray="'+l.toFixed(2)+" "+(CC-l).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'"><title>'+escH(it[1])+": "+N(IT[i])+"</title></circle>"}off+=l});
