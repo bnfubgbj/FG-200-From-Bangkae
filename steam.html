@@ -463,7 +463,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 195)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 196)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -3984,10 +3984,11 @@ function cgPlanAll(){const P=$("x-cgplan");if(!P)return;let b=$("cg-plan-all");i
     '<div class="scroll"><table class="cgrep"><thead><tr><th>เดือน</th>'+F.map(it=>"<th>"+escH(it[1])+"</th>").join("")+'<th class="tt">รวม (คู่)</th></tr></thead><tbody>'+
     ms.map((d,j)=>"<tr><th>"+thM(d.slice(0,7))+"</th>"+F.map(it=>"<td>"+cvN(cvSum1(A[d][it[0]]||[]))+"</td>").join("")+'<td class="tt">'+cvN(gt[j])+"</td></tr>").join("")+"</tbody></table></div>";
   ms.forEach((d,j)=>{const cols=CVS.map((z,c)=>c).filter(c=>F.some(it=>((A[d][it[0]]||[])[c]||0)>0)),rows=F.filter(it=>(A[d][it[0]]||[]).some(x=>x>0));
-    h+='<div class="cgsec" style="margin-top:14px">'+thM(d.slice(0,7))+' · รวม '+cvN(gt[j])+' คู่</div><div class="scroll"><table class="cgrep"><thead><tr><th>ชนิดรองเท้า</th>'+cols.map(c=>"<th>"+CVS[c]+"</th>").join("")+'<th class="tt">รวม</th></tr></thead><tbody>'+
+    h+='<details class="cgpd" style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;padding:8px 4px">'+thM(d.slice(0,7))+' · รวม '+cvN(gt[j])+' คู่ <span class="note" style="font-weight:400">(กดเพื่อดูรายเบอร์)</span></summary><div class="scroll"><table class="cgrep"><thead><tr><th>ชนิดรองเท้า</th>'+cols.map(c=>"<th>"+CVS[c]+"</th>").join("")+'<th class="tt">รวม</th></tr></thead><tbody>'+
       rows.map(it=>{const a=A[d][it[0]]||[];return"<tr><th>"+escH(it[1])+"</th>"+cols.map(c=>"<td>"+cvN(a[c]||0)+"</td>").join("")+'<td class="tt">'+cvN(cvSum1(a))+"</td></tr>"}).join("")+
-      '</tbody><tfoot><tr><th>รวม</th>'+cols.map(c=>"<td>"+cvN(cvSum1(rows.map(it=>(A[d][it[0]]||[])[c]||0)))+"</td>").join("")+'<td class="tt">'+cvN(gt[j])+"</td></tr></tfoot></table></div>"});
-  b.innerHTML=h}
+      '</tbody><tfoot><tr><th>รวม</th>'+cols.map(c=>"<td>"+cvN(cvSum1(rows.map(it=>(A[d][it[0]]||[])[c]||0)))+"</td>").join("")+'<td class="tt">'+cvN(gt[j])+"</td></tr></tfoot></table></div></details>"});
+  b.innerHTML=h.replace('</div><div class="scroll"><table class="cgrep"><thead><tr><th>เดือน</th>','</div><div class="scroll"><table class="cgrep"><thead><tr><th>เดือน</th>')+'';
+  if(ms.length>1){const t=b.querySelector(".cgsec");if(t){const x=document.createElement("button");x.type="button";x.className="btn ghost";x.style.cssText="margin-left:10px;padding:3px 10px;font-size:13px";x.textContent="เปิดทั้งหมด";x.onclick=()=>{const ds=b.querySelectorAll("details.cgpd"),on=[...ds].some(q=>!q.open);ds.forEach(q=>{q.open=on});x.textContent=on?"ปิดทั้งหมด":"เปิดทั้งหมด"};t.appendChild(x)}}}
 (function(){const f0=cgFill;cgFill=function(k){f0(k);if(k==="plan")try{cgPlanAll()}catch(e){}}})();
 function cgSel(k){const all=cvAll(cgK(k)),ds=Object.keys(all).filter(d=>cvF().some(it=>(all[d][it[0]]||[]).some(x=>x>0))).sort().reverse(),sel=$("cg-"+k+"-sel"),cur=sel.value;
   sel.innerHTML='<option value="">— รายการใหม่ —</option>'+ds.map(d=>'<option value="'+d+'">'+(CGC[k].day?thD(d):thM(d.slice(0,7)))+"</option>").join("");sel.value=ds.includes(cur)?cur:""}
