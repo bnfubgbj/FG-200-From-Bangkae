@@ -464,7 +464,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 202)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 204)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4018,13 +4018,14 @@ const st=document.createElement("style");st.textContent=`
 .sdb table th,.sdb table td,.sdb table tfoot td,.sdb table tfoot th{background:transparent;color:inherit;border:0}.sdb table th{color:var(--muted)}.sdb table td.rl,.sdb table th.rl{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1;color:var(--ink)}
 .sdb td.hc{border-radius:5px;min-width:44px}.sdb tr.tt td,.sdb tr.tt th{font-weight:700}
 .sdb .dtl{border:1px solid var(--line);border-radius:14px;background:var(--surface)}.sdb .dtl>summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none}.sdb .dtl>summary::-webkit-details-marker{display:none}.sdb .dtl>summary:before{content:"▸ ";color:var(--accent)}.sdb .dtl[open]>summary:before{content:"▾ "}.sdb .dtl .hm{padding:0 12px 12px}
+.sdb .mchip{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:99px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}.sdb .mchip:hover{border-color:var(--accent)}.sdb .mchip.on{background:var(--accent);color:#fff;border-color:var(--accent)}.sdb .mchip.off{opacity:.45}
 .sdb .em{padding:22px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);text-align:center}
 .sdb-tg{margin:14px 0 8px;width:100%;text-align:left;padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}.sdb-tg:hover{border-color:var(--accent)}
 @media(max-width:980px){.sdb .kp{grid-template-columns:1fr 1fr}.sdb .k.hero{grid-column:1/-1}.sdb .g2{grid-template-columns:1fr}}
 `;document.head.appendChild(st)})();
 const SDMN=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],
  SDC={"205S-ขาว":"#e4e7ea","205S-ดำ":"#475569","205S-นด":"#a9733f","205R-ขาว":"#e4e7ea","205R-ดำ":"#475569","205R-นด":"#a9733f","121Z-ขาว":"#8fb8de","121Z-ดำ":"#2f4f7a"};
-let SDY=null;
+let SDY=null;const SDMS=new Set();
 function sdEnsure(){const P=$("x-cgsale");if(!P)return null;if($("cg-sale-dash"))return $("cg-sale-dash");
   const dash=document.createElement("div");dash.id="cg-sale-dash";dash.className="sdb";
   const tg=document.createElement("button");tg.type="button";tg.id="cg-sale-et";tg.className="sdb-tg";
@@ -4035,7 +4036,7 @@ function sdEnsure(){const P=$("x-cgsale");if(!P)return null;if($("cg-sale-dash")
   let open=true;try{open=localStorage.getItem("fgsent")!=="0"}catch(e){}
   const apply=()=>{ent.hidden=!open;tg.textContent=open?"▲ เก็บช่องกรอกยอดขาย":"✎ กรอก / แก้ไขยอดขาย (กดเพื่อคลี่ลงมา)";tg.setAttribute("aria-expanded",open?"true":"false")};
   tg.onclick=()=>{open=!open;try{localStorage.setItem("fgsent",open?"1":"0")}catch(e){}apply()};apply();
-  dash.addEventListener("change",e=>{if(e.target.id==="sd-y"){SDY=e.target.value;sdDraw()}});return dash}
+  dash.addEventListener("change",e=>{if(e.target.id==="sd-y"){SDY=e.target.value;SDMS.clear();sdDraw()}});dash.addEventListener("click",e=>{const b=e.target.closest("[data-sdm]");if(!b)return;const v=b.dataset.sdm;if(v==="all")SDMS.clear();else{const m=+v;if(SDMS.has(m))SDMS.delete(m);else SDMS.add(m)}sdDraw()});return dash}
 function sdNice(v){if(v<=0)return 10;const p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
 function sdDraw(){const dash=sdEnsure();if(!dash)return;
   const S=cvAll("cvsale"),F=cvF(),pn=cvPN(),N=v=>v?Math.round(v).toLocaleString("en-US"):"-",sum=a=>a.reduce((x,y)=>x+y,0);
@@ -4083,11 +4084,15 @@ function sdDraw(){const dash=sdEnsure();if(!dash)return;
     g2+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(y0-5).toFixed(1)+'" text-anchor="middle" font-size="'+(sw>16?9.5:11)+'" font-weight="700" fill="currentColor">'+(sz[c]>=1000?(sz[c]/1000).toFixed(1)+"k":N(sz[c]))+"</text>"+
      '<text x="'+(x+w/2).toFixed(1)+'" y="'+(H2-12)+'" text-anchor="middle" font-size="12" fill="currentColor" opacity=".85">'+CVS[c]+"</text>"});
   const bs=cols.reduce((a,c)=>sz[c]>sz[a]?c:a,cols[0]),c3='<div class="cd"><h4>ยอดขายแยกเบอร์</h4><div class="hs">แท่ง = ยอดขายสุทธิแยกสี · เบอร์ขายดีที่สุด: <b>'+(cols.length?CVS[bs]+" ("+N(sz[bs])+" คู่)":"-")+'</b></div>'+'<svg viewBox="0 0 '+W2+" "+H2+'" role="img" aria-label="ยอดขายแยกเบอร์">'+g2+"</svg></div>";
-  // 4) heatmap สี × เบอร์
-  const mxc=Math.max(1,...F.flatMap((it,i)=>cols.map(c=>IS[i][c]))),ht='<div class="hm"><table><thead><tr><th class="rl">สี / เบอร์</th>'+cols.map(c=>"<th>"+CVS[c]+"</th>").join("")+"<th>รวม</th><th>%</th></tr></thead><tbody>"+
-   F.map((it,i)=>'<tr><td class="rl"><span style="display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid var(--line);background:'+(SDC[it[0]]||"#999")+';margin-right:6px;vertical-align:-1px"></span>'+escH(it[1])+"</td>"+cols.map(c=>{const v=IS[i][c],a=v>0?Math.max(.08,v/mxc):0;return'<td class="hc" style="'+(v<0?"background:color-mix(in srgb,var(--bad) 22%,transparent)":a?"background:color-mix(in srgb,var(--accent) "+Math.round(a*70)+"%,transparent)":"")+'" title="'+escH(it[1])+" · เบอร์ "+CVS[c]+": "+N(v)+' คู่">'+N(v)+"</td>"}).join("")+"<td><b>"+N(IT[i])+"</b></td><td>"+(tot?(IT[i]/tot*100).toFixed(1):"0")+"%</td></tr>").join("")+
-   '</tbody><tfoot><tr class="tt"><th class="rl">รวมทุกสี</th>'+cols.map(c=>"<td>"+N(sz[c])+"</td>").join("")+"<td>"+N(tot)+"</td><td>100%</td></tr><tr><th class=\"rl\">% ต่อเบอร์</th>"+cols.map(c=>"<td>"+(tot?(sz[c]/tot*100).toFixed(1):"0")+"</td>").join("")+"<td></td><td></td></tr></tfoot></table></div>";
-  const c4='<div class="cd"><h4>ยอดขายแยกสี × เบอร์</h4><div class="hs">ยิ่งเข้มยิ่งขายมาก · ตัวเลขเป็นยอดสุทธิทั้งปี (ช่องสีแดง = ยอดคืนมากกว่ายอดขาย)</div>'+ht+"</div>";
+  // 4) heatmap สี × เบอร์ (เลือกเดือนได้หลายเดือน)
+  const selM=[...Array(12).keys()].filter(m=>SDMS.has(m)),useM=selM.length?selM:[...Array(12).keys()],hasM=m=>IM.some(r=>r[m]);
+  const HS=F.map((it,i)=>{const o=new Array(nS).fill(0);useM.forEach(m=>get(Y,m+1,it).forEach((v,c)=>o[c]+=v));return o}),HT=HS.map(sum),htot=sum(HT),hsz=CVS.map((z,c)=>sum(HS.map(r=>r[c]))),hcols=CVS.map((z,c)=>c).filter(c=>hsz[c]||HS.some(r=>r[c]));
+  const chips='<div class="lg" style="gap:6px;margin:4px 0 10px"><button type="button" class="mchip'+(selM.length?"":" on")+'" data-sdm="all">ทั้งปี</button>'+SDMN.map((n,m)=>'<button type="button" class="mchip'+(SDMS.has(m)?" on":"")+(hasM(m)?"":" off")+'" data-sdm="'+m+'"'+(hasM(m)?"":' title="ยังไม่มียอดขายเดือนนี้"')+">"+n+"</button>").join("")+"</div>";
+  const selLab=selM.length?selM.map(m=>SDMN[m]).join(", "):"ทั้งปี",mxc=Math.max(1,...F.flatMap((it,i)=>hcols.map(c=>HS[i][c]))),
+   ht='<div class="hm"><table><thead><tr><th class="rl">สี / เบอร์</th>'+hcols.map(c=>"<th>"+CVS[c]+"</th>").join("")+"<th>รวม</th><th>%</th></tr></thead><tbody>"+
+   F.map((it,i)=>'<tr><td class="rl"><span style="display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid var(--line);background:'+(SDC[it[0]]||"#999")+';margin-right:6px;vertical-align:-1px"></span>'+escH(it[1])+"</td>"+hcols.map(c=>{const v=HS[i][c],a=v>0?Math.max(.08,v/mxc):0;return'<td class="hc" style="'+(v<0?"background:color-mix(in srgb,var(--bad) 22%,transparent)":a?"background:color-mix(in srgb,var(--accent) "+Math.round(a*70)+"%,transparent)":"")+'" title="'+escH(it[1])+" · เบอร์ "+CVS[c]+": "+N(v)+' คู่">'+N(v)+"</td>"}).join("")+"<td><b>"+N(HT[i])+"</b></td><td>"+(htot?(HT[i]/htot*100).toFixed(1):"0")+"%</td></tr>").join("")+
+   '</tbody><tfoot><tr class="tt"><th class="rl">รวมทุกสี</th>'+hcols.map(c=>"<td>"+N(hsz[c])+"</td>").join("")+"<td>"+N(htot)+"</td><td>100%</td></tr><tr><th class=\"rl\">% ต่อเบอร์</th>"+hcols.map(c=>"<td>"+(htot?(hsz[c]/htot*100).toFixed(1):"0")+"</td>").join("")+"<td></td><td></td></tr></tfoot></table></div>";
+  const c4='<div class="cd"><h4>ยอดขายแยกสี × เบอร์ · '+selLab+'</h4><div class="hs">กดเลือกเดือนที่ต้องการดู (เลือกได้หลายเดือน รวมยอดให้) · ยิ่งเข้มยิ่งขายมาก · ช่องสีแดง = ยอดคืนมากกว่ายอดขาย</div>'+chips+(htot||hcols.length?ht:'<div class="em">เดือนที่เลือกยังไม่มียอดขาย</div>')+"</div>";
   // 5) ตารางรายเดือน × สี
   const mtb='<div class="hm"><table><thead><tr><th class="rl">เดือน</th>'+F.map(it=>"<th>"+escH(it[1])+"</th>").join("")+"<th>รวม</th>"+(TG?"<th>เป้า</th><th>% เป้า</th>":"")+"</tr></thead><tbody>"+
    [...Array(12).keys()].map(m=>'<tr><td class="rl">'+SDMN[m]+"</td>"+F.map((it,i)=>"<td>"+N(IM[i][m])+"</td>").join("")+"<td><b>"+N(mt[m])+"</b></td>"+(TG?"<td>"+N(TG.M[m])+"</td><td>"+(TG.M[m]>0&&(mt[m]||m<=lastM)?'<span class="'+(mt[m]>=TG.M[m]?"pos":"neg")+'">'+(mt[m]/TG.M[m]*100).toFixed(0)+"%</span>":"")+"</td>":"")+"</tr>").join("")+
@@ -4657,7 +4662,18 @@ function cgSaleSheet(P,y){const it=cgFP(P),S=cvAll("cvsale"),TG=(cgTG()[y]||{})[
     rows.push([thMn(i)].concat(v,[SUMR(R,2,n+1,sm),tg[j],FX("IF("+colL(cT)+R+">0,"+colL(cS)+R+"/"+colL(cT)+R+',"")',sm&&tg[j]?sm/tg[j]:"",true)]))});
   const R=rows.length+1;rows.push(["รวมปี"].concat(cs.map((q,k)=>SUMC(k+2,4,15,q)),[SUMC(cS,4,15,ts),SUMC(cT,4,15,tt),FX("IF("+colL(cT)+R+">0,"+colL(cS)+R+"/"+colL(cT)+R+',"")',ts&&tt?ts/tt:"",true)]));
   return{name:cgPN(P)+" ยอดขาย",rows,hdr:[2],tot:[rows.length-1],freeze:3,w:13}}
-cgXlBtn($("x-cgsale"),"xl-sale",async()=>{const y=($("cg-sale-d").value||todayS()).slice(0,4);const S=cvAll("cvsale");if(!Object.keys(S).some(d=>d.slice(0,4)===y)&&!cgTG()[y])cgNone();await cgXlBook(["S","R"].map(P=>cgSaleSheet(P,y)),"ยอดขายเป้าผ้าใบ_"+y+".xlsx")});
+function cgSaleSizeSheet(P,y){const it=cgFP(P),S=cvAll("cvsale"),n=it.length,g=(m,x)=>{const a=((S[y+"-"+p2(m)+"-01"]||{})[x[0]])||[];return CVS.map((z,c)=>Number(a[c])||0)};
+  const ms=cgtM().filter(m=>it.some(x=>g(m,x).some(v=>v))),used=CVS.map((z,c)=>c).filter(c=>ms.some(m=>it.some(x=>g(m,x)[c]))),u=used.length,cT=u+3,
+    rows=[["ยอดขายแยกสี × เบอร์ รายเดือน ผ้าใบ "+cgPN(P)+" ปี "+y+" (หน่วย: คู่ · ยอดสุทธิหักยอดคืนแล้ว)"],[],["เดือน","สี / รุ่น"].concat(used.map(c=>CVS[c]),["รวมคู่"])],tot=[],pos={};
+  it.forEach(x=>pos[x[0]]=[]);
+  ms.forEach(m=>{const r0=rows.length+1;it.forEach((x,k)=>{const v=g(m,x),R=rows.length+1;pos[x[0]].push(R);rows.push([k===0?thMn(m):"",x[1]].concat(used.map(c=>v[c]),[SUMR(R,3,u+2,cvSum1(used.map(c=>v[c])))]))});
+    const r1=rows.length,R=rows.length+1;tot.push(rows.length);rows.push(["","รวม "+thMn(m)].concat(used.map((c,j)=>SUMC(j+3,r0,r1,cvSum1(it.map(x=>g(m,x)[c])))),[SUMC(cT,r0,r1,cvSum1(it.map(x=>cvSum1(used.map(c=>g(m,x)[c])))))]))});
+  if(ms.length){rows.push([]);rows.push(["รวมปี","สี / รุ่น"].concat(used.map(c=>CVS[c]),["รวมคู่"]));const hy=rows.length-1,y0=rows.length+1;
+    it.forEach(x=>{const R=rows.length+1,v=used.map(c=>ms.reduce((a,m)=>a+g(m,x)[c],0));rows.push(["",x[1]].concat(v.map((q,j)=>FX(pos[x[0]].map(r=>colL(j+3)+r).join("+"),q)),[SUMR(R,3,u+2,cvSum1(v))]))});
+    const y1=rows.length;tot.push(rows.length);rows.push(["","รวมทุกสี"].concat(used.map((c,j)=>SUMC(j+3,y0,y1,cvSum1(it.map(x=>ms.reduce((a,m)=>a+g(m,x)[c],0))))),[SUMC(cT,y0,y1,cvSum1(it.map(x=>cvSum1(used.map(c=>ms.reduce((a,m)=>a+g(m,x)[c],0))))))]));
+    return{name:cgPN(P)+" แยกเบอร์",rows,hdr:[2,hy],tot,freeze:3,w:10,w1:12,post:ws=>{ws.getColumn(2).width=20;ws.eachRow(r=>{const c=r.getCell(2);c.alignment={horizontal:"left",vertical:"middle"}})}}}
+  rows.push(["","ยังไม่มียอดขายของปีนี้"]);return{name:cgPN(P)+" แยกเบอร์",rows,hdr:[2],tot:[],freeze:3,w:10}}
+cgXlBtn($("x-cgsale"),"xl-sale",async()=>{const y=($("cg-sale-d").value||todayS()).slice(0,4);const S=cvAll("cvsale");if(!Object.keys(S).some(d=>d.slice(0,4)===y)&&!cgTG()[y])cgNone();await cgXlBook(["S","R"].map(P=>cgSaleSheet(P,y)).concat(["S","R"].map(P=>cgSaleSizeSheet(P,y))),"ยอดขายเป้าผ้าใบ_"+y+".xlsx")});
 cgXlBtn($("x-cgdash"),"xl-dash",async()=>{const P=CVP,F=cgFP(P),ms=(CGMS[P]||pvMonths().slice(0,3)).slice().sort();if(!ms.length)cgNone();const PLK=cvAll("cvplan"),AC=cvAll(),z=()=>new Array(CVS.length).fill(0),Pm={},Am={},rows=[["ผลิตจริงเทียบแผนผลิต ผ้าใบ "+cgPN(P)+" (หน่วย: คู่)"],[],["เดือน","แผนผลิต","ผลิตจริง","% ผลิตจริง÷แผน"]];
   F.forEach(it=>{Pm[it[0]]=z();Am[it[0]]=z()});let tp=0,ta=0;
   ms.forEach(m=>{const pl=PLK[m+"-01"]||{};let a=0,p=0;F.forEach(it=>{(pl[it[0]]||[]).forEach((v,i)=>{Pm[it[0]][i]+=v||0;p+=v||0})});Object.keys(AC).filter(d=>d.slice(0,7)===m).forEach(d=>F.forEach(it=>(AC[d][it[0]]||[]).forEach((v,i)=>{Am[it[0]][i]+=v||0;a+=v||0})));tp+=p;ta+=a;const R=rows.length+1;rows.push([thM(m),p,a,FX("IF(B"+R+">0,C"+R+"/B"+R+',"")',p?a/p:"",true)])});
