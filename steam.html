@@ -463,7 +463,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 194)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 195)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4376,7 +4376,21 @@ function cvmDraw(){const box=$("cvm-body");if(!box)return;const pf=CVPG[CVP][0],
   const foot=D.col.map(x=>"<td>"+fmt(x)+"</td>").join("")+"<td>"+fmt(D.tot)+"</td>";
   const t1='<div class="cgt3 cgmin">'+head("ผลิตจริงรายวัน","วันที่")+"<tbody>"+D.dl.map(r=>'<tr><td class="l">'+cvmDmy(r[0])+"</td>"+r[1].map(cell).join("")+'<td class="tt">'+fmt(cvSum1(r[1]))+"</td></tr>").join("")+"</tbody><tfoot><tr><td class=\"l\">รวม</td>"+foot+"</tr></tfoot></table></div>";
   const t2='<div class="cgt3 cgmin">'+head("ผลิตจริงรายเบอร์","เบอร์")+"<tbody>"+D.idx.map(i=>'<tr><td class="l">'+CVS[i]+"</td>"+D.sz[i].map(cell).join("")+'<td class="tt">'+fmt(cvSum1(D.sz[i]))+"</td></tr>").join("")+"</tbody><tfoot><tr><td class=\"l\">รวม</td>"+foot+"</tr></tfoot></table></div>";
-  box.innerHTML=h+'<div class="cgthree">'+t1+t2+"</div>"}
+  box.innerHTML=h+'<div style="margin:12px 0"><button class="btn" id="cvm-pj" type="button">'+(CVMS.pj?"ซ่อน":"ดู")+" คาดการณ์สต๊อกต้นเดือนหน้า</button></div>"+(CVMS.pj?cvmProject(m):"")+'<div class="cgthree">'+t1+t2+"</div>"}
+function cvmProject(m){const F=cvF(),nm=(()=>{const y=+m.slice(0,4),mo=+m.slice(5,7);return mo===12?(y+1)+"-01":y+"-"+p2(mo+1)})(),PL1=cvAll("cvplan")[m+"-01"]||{},hasPlan=F.some(it=>(PL1[it[0]]||[]).some(x=>x>0));
+  if(!hasPlan)return'<div class="note" style="margin:6px 0 12px">ยังไม่มีแผนผลิตของ '+thM(m)+' ในระบบ (บันทึกที่เมนู แผนผลิต) จึงคาดการณ์ไม่ได้</div>';
+  const KA=cvAll("cvstkK"),BA=cvAll("cvstkB"),has=(A,d)=>F.some(it=>((A[d]||{})[it[0]]||[]).some(x=>x>0)),ds=[...new Set(Object.keys(KA).filter(d=>has(KA,d)).concat(Object.keys(BA).filter(d=>has(BA,d))))].filter(d=>d<=todayS()).sort(),sd=ds.length?ds[ds.length-1]:"";
+  if(!sd)return'<div class="note" style="margin:6px 0 12px">ยังไม่มีสต๊อกรายวันของผ้าใบ '+cvPN()+' ในระบบ (กรอกที่เมนู สต๊อกรายวัน)</div>';
+  const R=cvAll(),days=Object.keys(R).filter(d=>d.slice(0,7)===m),act=it=>CVS.map((z,c)=>days.reduce((a,d)=>a+(((R[d]||{})[it[0]]||[])[c]||0),0)),stk=it=>CVS.map((z,c)=>(((KA[sd]||{})[it[0]]||[])[c]||0)+(((BA[sd]||{})[it[0]]||[])[c]||0));
+  const rows=F.map(it=>{const pl=PL1[it[0]]||[],a=act(it),st=stk(it),rm=CVS.map((z,c)=>Math.max(0,(pl[c]||0)-a[c])),pj=CVS.map((z,c)=>st[c]+rm[c]);return{it,st,rm,pj}}).filter(r=>cvSum1(r.st)+cvSum1(r.rm)>0);
+  const cols=CVS.map((z,c)=>c).filter(c=>rows.some(r=>r.st[c]>0||r.rm[c]>0)),T=k=>cvSum1(rows.map(r=>cvSum1(r[k])));
+  let h='<div class="cgsec" style="margin-top:6px">คาดการณ์สต๊อกต้นเดือน '+thM(nm)+' · ผ้าใบ '+cvPN()+'</div>'+
+    '<div class="note" style="margin:0 0 8px">สต๊อกรายวัน ณ <b>'+cvmDmy(sd)+'</b> (บางแค + บางหว้า) <b>'+cvN(T("st"))+'</b> + ผลิตที่เหลือตามแผน '+thM(m)+' (แผน − รับเข้าจริง ไม่นับเบอร์ที่ผลิตเกินแผน) <b>'+cvN(T("rm"))+'</b> = <b style="font-size:16px">'+cvN(T("pj"))+' คู่</b></div>'+
+    '<div class="note" style="margin:0 0 8px;color:var(--warn)">ยังไม่ได้หักยอดขายที่จะเกิดขึ้นจนสิ้นเดือน สต๊อกจริงต้นเดือนหน้าจะต่ำกว่านี้เท่ายอดขายที่เหลือ</div>';
+  rows.forEach(r=>{h+='<div class="scroll" style="margin-bottom:10px"><table class="cgrep"><thead><tr><th>'+escH(r.it[1])+'</th>'+cols.map(c=>"<th>"+CVS[c]+"</th>").join("")+'<th class="tt">รวม</th></tr></thead><tbody>'+
+    [["สต๊อก ณ "+cvmDmy(sd),"st"],["ผลิตที่เหลือตามแผน","rm"],["คาดต้นเดือนหน้า","pj"]].map((q,j)=>"<tr"+(j===2?' style="font-weight:700;background:var(--accent-soft)"':"")+"><th>"+q[0]+"</th>"+cols.map(c=>"<td>"+cvN(r[q[1]][c])+"</td>").join("")+'<td class="tt">'+cvN(cvSum1(r[q[1]]))+"</td></tr>").join("")+"</tbody></table></div>"});
+  return h}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#cvm-pj")){CVMS.pj=!CVMS.pj;cvmDraw()}});
 function cvmSheet(P,m,N,sel){const pf=CVPG[P][0],D=cvmData(m,pf,sel),L=colL,nL=D.dl.length,nR=D.idx.length,n=Math.max(nL,nR,1),W=11,T=5+n,sub=sel?(nL===1?"วันที่ "+cvmDmy(D.dl[0][0]):nL+" วันที่เลือก"):"ทั้งเดือน",rows=[["ผ้าใบ "+cgPN(P)+" ผลิตจริงเข้าโกดังพี่ชุมพร "+thM(m)+" ("+sub+") หน่วย: คู่"],[],new Array(W).fill(""),new Array(W).fill("")];
   rows[2][0]="ผลิตจริงรายวัน";rows[2][6]="ผลิตจริงรายเบอร์";["วันที่","ขาว","ดำ","น้ำตาล","รวม"].forEach((t,j)=>rows[3][j]=t);["เบอร์","ขาว","ดำ","น้ำตาล","รวม"].forEach((t,j)=>rows[3][6+j]=t);
   for(let i=0;i<n;i++){const R=5+i,r=new Array(W).fill("");if(i<nL){const q=D.dl[i];r[0]=cvmDmy(q[0]);for(let j=0;j<3;j++)r[1+j]=q[1][j];r[4]=FX("SUM(B"+R+":D"+R+")",cvSum1(q[1]))}
