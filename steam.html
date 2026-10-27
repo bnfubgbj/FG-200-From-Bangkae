@@ -464,7 +464,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 212)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 213)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2666,16 +2666,16 @@ function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),TG=tgDa
   /* 1 แนวโน้ม + เป้า */
   const W=760,H=330,L=52,R=14,Tp=34,B=62,pw=W-L-R,ph=H-Tp-B,ax=cAxis(Math.max(...T,...TT,avg)),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/n,bw=Math.min(54,gw*.6);
   let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
-  const pts=[];
+  const pts=[];g+='<defs><linearGradient id="sdgf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".7"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".1"/></linearGradient></defs>';
   ms.forEach((m,i)=>{const cx=L+gw*i+gw/2,y=Y(T[i]),p=i?sdPc(T[i],T[i-1]):null,ok=TT[i]>0&&T[i]>=TT[i],top=TT[i]>0?Math.min(y,Y(TT[i])):y;
+    if(TT[i]>0){const cy=Y(TT[i]);g+='<rect x="'+(cx-gw*.4).toFixed(1)+'" y="'+cy.toFixed(1)+'" width="'+(gw*.8).toFixed(1)+'" height="'+Math.max(0,Tp+ph-cy).toFixed(1)+'" rx="3" fill="url(#sdgf)"/>';if(T[i]<TT[i]*.88)g+='<text x="'+cx+'" y="'+(cy-4).toFixed(1)+'" class="ct" text-anchor="middle" style="font-weight:600;fill:#b45309">เป้า '+cK(TT[i])+'</text>'}
     g+='<g><title>'+thM(m)+": ขาย "+fmt(T[i])+" คู่"+(TT[i]?" · เป้า "+fmt(TT[i])+" ("+(T[i]/TT[i]*100).toFixed(1)+"%)":"")+(p==null?"":" · "+(p>0?"+":"")+p.toFixed(1)+"% จากเดือนก่อน")+'</title><rect x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+Math.max(0,Tp+ph-y)+'" rx="5" style="fill:'+(ok?"#19c38b":"var(--accent)")+'" fill-opacity="'+(m===ms[mxI]?1:.85)+'"/></g>'+
      '<text x="'+cx+'" y="'+(top-18)+'" class="tv" text-anchor="middle">'+cK(T[i])+"</text>"+(p==null?"":'<text x="'+cx+'" y="'+(top-6)+'" class="ct '+(p>=0?"sdup2":"sddn2")+'" text-anchor="middle" style="font-weight:600">'+(p>=0?"▲":"▼")+Math.abs(p).toFixed(0)+"%</text>")+
      '<text x="'+cx+'" y="'+(H-30)+'" class="ct" text-anchor="middle">'+mlab(m)+"</text>";
     if(TT[i]>0){pts.push([cx,Y(TT[i])]);const pc=T[i]/TT[i]*100;g+='<text x="'+cx+'" y="'+(H-10)+'" class="tv '+(pc>=100?"sdup2":pc>=80?"sdmid2":"sddn2")+'" text-anchor="middle">'+Math.round(pc)+"%</text>"}});
-  if(hasT){if(pts.length>1)g+='<polyline points="'+pts.map(q=>q.join(",")).join(" ")+'" fill="none" stroke="#ff4d7a" stroke-width="1.6" stroke-dasharray="5 4"/>';
-    pts.forEach(q=>g+='<line x1="'+(q[0]-bw/2-7)+'" x2="'+(q[0]+bw/2+7)+'" y1="'+q[1]+'" y2="'+q[1]+'" stroke="#ff4d7a" stroke-width="3.5" stroke-linecap="round"/>')}
+  if(hasT){}
   else g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(avg)+'" y2="'+Y(avg)+'" stroke="#ff8a00" stroke-width="1.6" stroke-dasharray="6 4"/><text x="'+(L+4)+'" y="'+(Y(avg)-5)+'" class="ct" style="fill:#d97706;font-weight:600">เฉลี่ย '+cK(avg)+"</text>";
-  const leg='<div class="cleg"><span><i style="background:var(--accent)"></i>ยอดขาย</span>'+(hasT?'<span><i style="background:#19c38b"></i>ถึงเป้าแล้ว</span><span><i style="background:#ff4d7a;height:4px;vertical-align:3px"></i>เป้าการขาย</span><span class="sdz">ตัวเลขใต้ชื่อเดือน = % ของเป้า</span>':"")+"</div>";
+  const leg='<div class="cleg"><span><i style="background:var(--accent)"></i>ยอดขาย</span>'+(hasT?'<span><i style="background:#19c38b"></i>ถึงเป้าแล้ว</span><span><i style="background:#f59e0b;opacity:.6"></i>เป้าการขาย (ครอบแท่ง)</span><span class="sdz">ตัวเลขใต้ชื่อเดือน = % ของเป้า</span>':"")+"</div>";
   const c1='<div class="ccard wide"><h3>ยอดขายรายเดือน'+(hasT?" เทียบเป้า":"")+" (คู่)"+(fk?" · "+escH(lab(fk)):"")+"</h3>"+leg+'<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดขายเทียบเป้า">'+g+"</svg></div>";
   /* 2 heatmap */
   const rows=fk?SIZES.map((z,i)=>({k:null,l:"เบอร์ "+z,f:m=>V(m,fk)[i]})):PTPL.map(r=>({k:r[0],l:r[1],f:m=>cT(V(m,r[0]))})).filter(r=>ms.some(m=>r.f(m)>0||tgC(m,r.k)>0));
@@ -4025,8 +4025,8 @@ const st=document.createElement("style");st.textContent=`
 `;document.head.appendChild(st)})();
 const SDMN=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],
  SDC={"205S-ขาว":"#e4e7ea","205S-ดำ":"#475569","205S-นด":"#a9733f","205R-ขาว":"#e4e7ea","205R-ดำ":"#475569","205R-นด":"#a9733f","121Z-ขาว":"#8fb8de","121Z-ดำ":"#2f4f7a"};
-let SDY=null,SDTG=(()=>{try{return localStorage.getItem("fgsdtg")||"cover"}catch(e){return"cover"}})();const SDMS=new Set();
-function sdEnsure(){const P=$("x-cgsale");if(!P)return null;if($("cg-sale-dash"))return $("cg-sale-dash");
+let SDY=null,SDTG="cover";const SDMS=new Set();
+function csdEnsure(){const P=$("x-cgsale");if(!P)return null;if($("cg-sale-dash"))return $("cg-sale-dash");
   const dash=document.createElement("div");dash.id="cg-sale-dash";dash.className="sdb";
   const tg=document.createElement("button");tg.type="button";tg.id="cg-sale-et";tg.className="sdb-tg";
   const ent=document.createElement("div");ent.id="cg-sale-ent";
@@ -4036,9 +4036,9 @@ function sdEnsure(){const P=$("x-cgsale");if(!P)return null;if($("cg-sale-dash")
   let open=true;try{open=localStorage.getItem("fgsent")!=="0"}catch(e){}
   const apply=()=>{ent.hidden=!open;tg.textContent=open?"▲ เก็บช่องกรอกยอดขาย":"✎ กรอก / แก้ไขยอดขาย (กดเพื่อคลี่ลงมา)";tg.setAttribute("aria-expanded",open?"true":"false")};
   tg.onclick=()=>{open=!open;try{localStorage.setItem("fgsent",open?"1":"0")}catch(e){}apply()};apply();
-  dash.addEventListener("change",e=>{if(e.target.id==="sd-y"){SDY=e.target.value;SDMS.clear();sdDraw()}});dash.addEventListener("click",e=>{const t=e.target.closest("[data-sdt]");if(t){SDTG=t.dataset.sdt;try{localStorage.setItem("fgsdtg",SDTG)}catch(x){}sdDraw();return}const b=e.target.closest("[data-sdm]");if(!b)return;const v=b.dataset.sdm;if(v==="all")SDMS.clear();else{const m=+v;if(SDMS.has(m))SDMS.delete(m);else SDMS.add(m)}sdDraw()});return dash}
-function sdNice(v){if(v<=0)return 10;const p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
-function sdDraw(){const dash=sdEnsure();if(!dash)return;
+  dash.addEventListener("change",e=>{if(e.target.id==="sd-y"){SDY=e.target.value;SDMS.clear();csdDraw()}});dash.addEventListener("click",e=>{const t=e.target.closest("[data-sdt]");if(t){SDTG=t.dataset.sdt;try{localStorage.setItem("fgsdtg",SDTG)}catch(x){}csdDraw();return}const b=e.target.closest("[data-sdm]");if(!b)return;const v=b.dataset.sdm;if(v==="all")SDMS.clear();else{const m=+v;if(SDMS.has(m))SDMS.delete(m);else SDMS.add(m)}csdDraw()});return dash}
+function csdNice(v){if(v<=0)return 10;const p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
+function csdDraw(){const dash=csdEnsure();if(!dash)return;
   const S=cvAll("cvsale"),RK=it=>/ขาว/.test(it[0])?0:/นด/.test(it[0])?1:2,F=cvF().slice().sort((a,b)=>(a[2]===b[2]?0:(a[2]==="121Z"?1:b[2]==="121Z"?-1:0))||RK(a)-RK(b)),pn=cvPN(),N=v=>v?Math.round(v).toLocaleString("en-US"):"-",sum=a=>a.reduce((x,y)=>x+y,0);
   const hasY=y=>Object.keys(S).some(d=>d.slice(0,4)===y&&F.some(it=>(S[d][it[0]]||[]).some(x=>x)));
   const ys=[...new Set(Object.keys(S).map(d=>d.slice(0,4)))].filter(hasY).sort();
@@ -4061,19 +4061,17 @@ function sdDraw(){const dash=sdEnsure();if(!dash)return;
    '<div class="k"><div class="l">ยอดคืนสินค้า</div><div class="v'+(ret<0?" neg":"")+'">'+(ret<0?N(ret):"0")+'</div><div class="s">รวมอยู่ในยอดสุทธิแล้ว</div></div></div>';
   const lg='<div class="lg">'+F.map(it=>'<span><i style="background:'+(SDC[it[0]]||"#999")+'"></i>'+escH(it[1])+"</span>").join("")+"</div>";
   // 1) รายเดือน
-  const W=900,H=322,L=52,T=26,B=56,pw=W-L-12,ph=H-T-B,mx=sdNice(Math.max(1,...mt,...(TG?TG.M:[0]),...pt.map(x=>x||0))),bw=pw/12;let g="";
+  const W=900,H=322,L=52,T=26,B=56,pw=W-L-12,ph=H-T-B,mx=csdNice(Math.max(1,...mt,...(TG?TG.M:[0]),...pt.map(x=>x||0))),bw=pw/12;let g="";
   for(let i=0;i<=4;i++){const y=T+ph-ph*i/4;g+='<line x1="'+L+'" x2="'+(W-12)+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" opacity=".12"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="currentColor" opacity=".7">'+Math.round(mx*i/4).toLocaleString("en-US")+"</text>"}
   const PR=SDTG==="pair"&&TG,CV=SDTG==="cover"&&TG;if(CV)g+='<defs><linearGradient id="sdg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".7"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".1"/></linearGradient></defs>';
   for(let m=0;m<12;m++){let y0=T+ph;const x=L+m*bw+bw*(PR?.1:CV?.27:.16),w=bw*(PR?.42:CV?.46:.68);
     if(CV&&TG.M[m]>0){const gh=ph*TG.M[m]/mx,cx0=L+m*bw+bw*.1;g+='<rect x="'+cx0.toFixed(1)+'" y="'+(T+ph-gh).toFixed(1)+'" width="'+(bw*.8).toFixed(1)+'" height="'+gh.toFixed(1)+'" rx="3" fill="url(#sdg)"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+" คู่"+(mt[m]?" · ทำได้ "+Math.round(mt[m]/TG.M[m]*100)+"%":"")+"</title></rect>";if(mt[m]<TG.M[m]*0.88||!mt[m])g+='<text x="'+(cx0+bw*.4).toFixed(1)+'" y="'+(T+ph-gh-5).toFixed(1)+'" text-anchor="middle" font-size="10.5" font-weight="600" fill="#b45309">เป้า '+(TG.M[m]>=1000?(TG.M[m]/1000).toFixed(1).replace(/\.0$/,"")+"k":N(TG.M[m]))+"</text>"}
-    if(PR&&TG.M[m]>0){const gh=ph*TG.M[m]/mx;g+='<rect x="'+(x+w+3).toFixed(1)+'" y="'+(T+ph-gh).toFixed(1)+'" width="'+(bw*.3).toFixed(1)+'" height="'+gh.toFixed(1)+'" rx="2" fill="#e5a64a" stroke="var(--line)" stroke-width=".6"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+" คู่"+(mt[m]?" · ทำได้ "+Math.round(mt[m]/TG.M[m]*100)+"%":"")+"</title></rect>"}
     F.forEach((it,i)=>{const v=Math.max(0,IM[i][m]);if(!v)return;const h=ph*v/mx;y0-=h;g+='<rect x="'+x.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="'+(SDC[it[0]]||"#999")+'" stroke="var(--line)" stroke-width=".6"><title>'+SDMN[m]+" · "+escH(it[1])+": "+N(IM[i][m])+" คู่</title></rect>"});
-    if(SDTG==="tick"&&TG&&TG.M[m]>0){const ty=(T+ph-ph*TG.M[m]/mx).toFixed(1),x1=(x-6).toFixed(1),x2=(x+w+6).toFixed(1);g+='<line x1="'+x1+'" x2="'+x2+'" y1="'+ty+'" y2="'+ty+'" stroke="var(--surface)" stroke-width="6" stroke-linecap="round"/><line x1="'+x1+'" x2="'+x2+'" y1="'+ty+'" y2="'+ty+'" stroke="#e08a00" stroke-width="3.2" stroke-linecap="round"><title>เป้า '+SDMN[m]+": "+N(TG.M[m])+" คู่"+(mt[m]?" · ทำได้ "+Math.round(mt[m]/TG.M[m]*100)+"%":"")+"</title></line>"}
     if(mt[m]||IM.some(r=>r[m]))g+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(Math.min(y0,T+ph-ph*Math.max(0,mt[m])/mx)-6).toFixed(1)+'" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor" stroke="var(--surface)" stroke-width="3" paint-order="stroke">'+N(mt[m])+"</text>";
     if(TG&&TG.M[m]>0&&(mt[m]||m<=lastM)){const pcm=mt[m]/TG.M[m]*100;g+='<text x="'+(x+(PR?w*.85:w/2)).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-size="12" font-weight="700" fill="'+(pcm>=100?"var(--ok)":"var(--bad)")+'">'+Math.round(pcm)+"%</text>"}
     if(pt[m]>0){g+='<circle cx="'+(x+w/2).toFixed(1)+'" cy="'+(T+ph-ph*pt[m]/mx).toFixed(1)+'" r="4" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" opacity=".75"><title>ปีก่อน '+SDMN[m]+": "+N(pt[m])+"</title></circle>"}
     g+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-28)+'" text-anchor="middle" font-size="12" fill="currentColor" opacity=".85">'+SDMN[m]+"</text>"}
-  const c1='<div class="cd"><h4>ยอดขายรายเดือน</h4><div class="hs">แท่ง = ยอดขายสุทธิแยกสี'+(TG?(SDTG==="cover"?" · แท่งสีส้มจางด้านหลัง = เป้ารายเดือน (แท่งยอดขายยื่นพ้น = เกินเป้า)":SDTG==="tick"?" · ขีดสีส้ม = เป้ารายเดือน":SDTG==="pair"?" · แท่งส้มข้างกัน = เป้ารายเดือน":"")+" · % ใต้เดือน = ยอดขาย÷เป้า":"")+(pt.some(x=>x>0)?" · วงกลม = ปีก่อน":"")+"</div>"+lg+(TG?'<div class="lg" style="gap:6px;margin:0 0 8px">แสดงเป้าแบบ: '+[["cover","ครอบแท่ง"],["tick","ขีดเป้า"],["pair","แท่งเป้าคู่"],["none","ไม่แสดงเป้าในกราฟ"]].map(q=>'<button type="button" class="mchip'+(SDTG===q[0]?" on":"")+'" data-sdt="'+q[0]+'">'+q[1]+"</button>").join("")+"</div>":"")+'<svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
+  const c1='<div class="cd"><h4>ยอดขายรายเดือน</h4><div class="hs">แท่ง = ยอดขายสุทธิแยกสี'+(TG?" · แท่งสีส้มจางด้านหลัง = เป้ารายเดือน (แท่งยอดขายยื่นพ้น = เกินเป้า)"+" · % ใต้เดือน = ยอดขาย÷เป้า":"")+(pt.some(x=>x>0)?" · วงกลม = ปีก่อน":"")+"</div>"+lg+'<svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="ยอดขายรายเดือน">'+g+"</svg></div>";
   // 2) สัดส่วนสี (donut)
   const pos=IT.map(v=>Math.max(0,v)),ps=sum(pos)||1,R=70,CC=2*Math.PI*R;let off=0,dg='<svg viewBox="0 0 190 190" role="img" aria-label="สัดส่วนตามสี"><g transform="rotate(-90 95 95)">';
   F.forEach((it,i)=>{const l=CC*pos[i]/ps;if(l>0){dg+='<circle cx="95" cy="95" r="'+R+'" fill="none" stroke="'+(SDC[it[0]]||"#999")+'" stroke-width="30" stroke-dasharray="'+l.toFixed(2)+" "+(CC-l).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'"><title>'+escH(it[1])+": "+N(IT[i])+"</title></circle>"}off+=l});
@@ -4081,7 +4079,7 @@ function sdDraw(){const dash=sdEnsure();if(!dash)return;
   const dl='<div class="dl">'+F.map((it,i)=>'<div><i style="background:'+(SDC[it[0]]||"#999")+'"></i><span>'+escH(it[1])+"</span><b>"+N(IT[i])+"</b><em>"+(ps?(pos[i]/ps*100).toFixed(1):"0")+"%</em></div>").join("")+"</div>";
   const c2='<div class="cd"><h4>สัดส่วนตามสี / รุ่น</h4><div class="hs">% ของยอดขายสุทธิทั้งปี</div><div class="dn">'+dg+dl+"</div></div>";
   // 3) แยกเบอร์
-  const cols=CVS.map((z,c)=>c).filter(c=>sz[c]||IS.some(r=>r[c])),sw=Math.max(1,cols.length),W2=560,H2=300,L2=44,bw2=(W2-L2-8)/sw,mx2=sdNice(Math.max(1,...cols.map(c=>sz[c])));let g2="";
+  const cols=CVS.map((z,c)=>c).filter(c=>sz[c]||IS.some(r=>r[c])),sw=Math.max(1,cols.length),W2=560,H2=300,L2=44,bw2=(W2-L2-8)/sw,mx2=csdNice(Math.max(1,...cols.map(c=>sz[c])));let g2="";
   for(let i=0;i<=4;i++){const y=T+ph-ph*i/4;g2+='<line x1="'+L2+'" x2="'+(W2-8)+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" opacity=".12"/><text x="'+(L2-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="currentColor" opacity=".7">'+Math.round(mx2*i/4).toLocaleString("en-US")+"</text>"}
   const j0=cols.findIndex(c=>CVS[c]>45);if(j0>0)g2+='<text x="'+(W2-8)+'" y="'+(T+8)+'" text-anchor="end" font-size="11" font-weight="600" fill="#b45309">เบอร์ '+CVS[cols[j0]]+'+ = พิเศษ (ตามออเดอร์)</text>';
   cols.forEach((c,j)=>{let y0=T+ph;const x=L2+j*bw2+bw2*.14,w=bw2*.72;
@@ -4103,7 +4101,7 @@ function sdDraw(){const dash=sdEnsure();if(!dash)return;
    [...Array(12).keys()].map(m=>'<tr><td class="rl">'+SDMN[m]+"</td>"+F.map((it,i)=>"<td>"+N(IM[i][m])+"</td>").join("")+"<td><b>"+N(mt[m])+"</b></td>"+(TG?"<td>"+N(TG.M[m])+"</td><td>"+(TG.M[m]>0&&(mt[m]||m<=lastM)?'<span class="'+(mt[m]>=TG.M[m]?"pos":"neg")+'">'+(mt[m]/TG.M[m]*100).toFixed(0)+"%</span>":"")+"</td>":"")+"</tr>").join("")+
    '</tbody><tfoot><tr class="tt"><th class="rl">รวมปี</th>'+IT.map(v=>"<td>"+N(v)+"</td>").join("")+"<td>"+N(tot)+"</td>"+(TG?"<td>"+N(tY||sum(TG.M))+"</td><td>"+(tY?pc.toFixed(0)+"%":"")+"</td>":"")+"</tr></tfoot></table></div>";
   dash.innerHTML=head+kp+c1+'<div class="g2">'+c2+c3+"</div>"+c4+'<details class="dtl"><summary>ตารางรายเดือน แยกสี'+(TG?" เทียบเป้า":"")+"</summary>"+mtb+"</details>"}
-(function(){const f0=cgFill;cgFill=function(k){f0(k);if(k==="sale")try{sdDraw()}catch(e){console.error(e)}try{const b=$("cg-"+k+"-sum");if(b&&!b.hidden){const M=cvAll(cgK(k))[cgD(k)]||{};if(Object.values(M).some(a=>a.some(x=>x)))cgSumShow(k);else b.hidden=true}}catch(e){}}})();
+(function(){const f0=cgFill;cgFill=function(k){f0(k);if(k==="sale")try{csdDraw()}catch(e){console.error(e)}try{const b=$("cg-"+k+"-sum");if(b&&!b.hidden){const M=cvAll(cgK(k))[cgD(k)]||{};if(Object.values(M).some(a=>a.some(x=>x)))cgSumShow(k);else b.hidden=true}}catch(e){}}})();
 
 function cgSel(k){const all=cvAll(cgK(k)),ds=Object.keys(all).filter(d=>cvF().some(it=>(all[d][it[0]]||[]).some(x=>x>0))).sort().reverse(),sel=$("cg-"+k+"-sel"),cur=sel.value;
   sel.innerHTML='<option value="">— รายการใหม่ —</option>'+ds.map(d=>'<option value="'+d+'">'+(CGC[k].day?thD(d):thM(d.slice(0,7)))+"</option>").join("");sel.value=ds.includes(cur)?cur:""}
