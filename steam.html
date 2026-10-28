@@ -466,7 +466,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 221)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 222)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2645,15 +2645,16 @@ const SZC=[22,38,54,70,86,100].map(p=>"color-mix(in srgb,var(--accent) "+p+"%,#f
 sdTag=(p)=>p==null?'<span class="sdz">–</span>':'<span class="'+(p>0.05?"sdup":p<-0.05?"sddn":"sdz")+'">'+(p>0.05?"▲ ":p<-0.05?"▼ ":"")+Math.abs(p).toFixed(1)+"%</span>";
 function tgData(){const o={};(STK||[]).forEach(r=>{if(r[1]!=="stgt")return;const m=normD(r[0]).slice(0,7);(o[m]=o[m]||{})[r[2]]=Number(r[9])||0});return o}
 const sdCl=p=>p>=100?"sdup":p>=80?"sdmid":"sddn",sdBg=p=>p>=100?"rgba(25,195,139,.38)":p>=80?"rgba(255,176,32,.38)":"rgba(255,77,106,.24)";
+function stotData(){const o={};(STK||[]).forEach(r=>{if(r[1]!=="stot")return;const y=normD(r[0]).slice(0,4),mm=String(r[2]).padStart(2,"0");o[y+"-"+mm]=Number(r[9])||0});return o}
 const FSY=new Set();
-function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),TG=tgData(),all=Object.keys(D).sort();
+function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),ST=stotData(),TG=tgData(),all=[...new Set(Object.keys(D).concat(Object.keys(ST)))].sort();
   if(!all.length){box.innerHTML='<div class="empty">ยังไม่มียอดขายที่บันทึกไว้ — ใส่ที่เมนู ยอดขายรายเดือน ก่อน</div>';return}
   const fill=(id,o,d)=>{const e=$(id),v=e.value;e.innerHTML=o.map(x=>'<option value="'+x[0]+'">'+x[1]+"</option>").join("");e.value=o.some(x=>x[0]===v)?v:d};
   const mo=all.map(m=>[m,thM(m)]);fill("sd-from",mo,all[Math.max(0,all.length-12)]);fill("sd-to",mo,all[all.length-1]);
   let f=$("sd-from").value,t=$("sd-to").value;if(f>t){const x=f;f=t;t=x}const ms=all.filter(m=>m>=f&&m<=t),n=ms.length;
   fill("sd-col",[["","ทุกสี"]].concat(PTPL.map(r=>[r[0],r[1]])),"");const fk=$("sd-col").value;
   const mm=mo.filter(x=>ms.includes(x[0]));fill("sd-a",mm,ms[n-1]);fill("sd-b",mm,ms[n-2]||ms[0]);const ma=$("sd-a").value,mb=$("sd-b").value;
-  const keys=fk?[fk]:PTPL.map(r=>r[0]),lab=cLab,V=(m,k)=>D[m][k]||cZ(),MT=m=>keys.reduce((a,k)=>a+cT(V(m,k)),0);
+  const keys=fk?[fk]:PTPL.map(r=>r[0]),lab=cLab,V=(m,k)=>(D[m]&&D[m][k])||cZ(),MT=m=>D[m]?keys.reduce((a,k)=>a+cT(V(m,k)),0):(fk?0:(ST[m]||0));
   const tgC=(m,k)=>(TG[m]&&TG[m][k])||0,tgM=m=>{if(!TG[m])return 0;const a=keys.reduce((x,k)=>x+tgC(m,k),0);return a||(fk?0:(TG[m]._all||0))};
   const T=ms.map(MT),TT=ms.map(tgM),hasT=TT.some(x=>x>0),sum=cT(T),avg=n?sum/n:0,mxI=T.indexOf(Math.max(...T)),last=T[n-1],prev=n>1?T[n-2]:null;
   const sT=cT(TT),sS=cT(T.filter((x,i)=>TT[i]>0)),pAll=sT?sS/sT*100:null,pLast=TT[n-1]?last/TT[n-1]*100:null,hit=T.filter((x,i)=>TT[i]>0&&x>=TT[i]).length,nT=TT.filter(x=>x>0).length;
@@ -2721,7 +2722,7 @@ function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),TG=tgDa
   /* เปรียบเทียบหลายปี (ฟองน้ำ 200) */
   let cyc="";{const yrs=[...new Set(all.map(m=>m.slice(0,4)))].sort(),YC=["#94a3b8","#f59e0b","#0ea5e9","#16a34a","#a855f7","#ef4444","#0f766e","#64748b"],yc=y=>YC[yrs.indexOf(y)%YC.length];
     let cys=yrs.filter(y=>FSY.has(y));if(!cys.length)cys=yrs.slice(-3);
-    const YM=y=>[...Array(12).keys()].map(i=>{const m=y+"-"+String(i+1).padStart(2,"0");return D[m]?keys.reduce((a,k)=>a+cT(V(m,k)),0):0}),YD=cys.map(y=>({y,m:YM(y)})),sm=a=>a.reduce((x,y)=>x+y,0);
+    const YM=y=>[...Array(12).keys()].map(i=>{const m=y+"-"+String(i+1).padStart(2,"0");return MT(m)}),YD=cys.map(y=>({y,m:YM(y)})),sm=a=>a.reduce((x,y)=>x+y,0);
     const chips='<div class="cleg" style="gap:6px">เลือกปีที่จะเทียบ: '+yrs.map(y=>'<button type="button" data-sdy="'+y+'" class="mchip'+(cys.includes(y)?" on":"")+'" style="border-left:4px solid '+yc(y)+'">'+(+y+543)+"</button>").join("")+'<button type="button" data-sdy="__all" class="mchip">ทุกปี</button></div>';
     const W6=900,H6=330,g6=cmpInner(YD,yc,MON,fmt);
     const lgd='<div class="cleg">'+YD.map(d=>'<span><i style="background:'+yc(d.y)+'"></i>'+(+d.y+543)+"</span>").join("")+"</div>",pc2=(v,p)=>{const r=p>0&&v?(v/p-1)*100:null;return '<td class="'+(r==null?"":r>=0?"sdup2":"sddn2")+'">'+(r==null?"–":(r>=0?"+":"")+r.toFixed(1)+"%")+"</td>"};
@@ -5771,6 +5772,40 @@ function cmpInner(YD,yc,MN,fm){
       g+='<rect x="'+x.toFixed(1)+'" y="'+y1.toFixed(1)+'" width="'+Math.max(bw-1.5,1).toFixed(1)+'" height="'+Math.max(y2-y1,1).toFixed(1)+'" rx="2" fill="'+(isPct&&v<0?"#ef4444":c)+'" opacity="'+op+'"><title>'+(mode==="total"?yb(YD[i].y)+(s.part?" (ช่วงเดียวกัน)":" (ทั้งปี)")+": "+fm(v)+" คู่":(s.y?yb(s.y)+" ":"")+cats[i]+": "+(isPct?sf(v):fm(v)+" คู่"))+"</title></rect>";
       if(lab)g+='<text x="'+(x+(bw-1.5)/2).toFixed(1)+'" y="'+(v>=0?y1-4:y2+12).toFixed(1)+'" text-anchor="middle" font-size="'+(mode==="total"?11:10)+'" font-weight="600" fill="currentColor" stroke="var(--surface)" stroke-width="3" paint-order="stroke">'+sf(v)+"</text>"}))}
   return g}
+
+/* ฟองน้ำ 200: นำเข้ายอดขายรวมรายเดือน (ไม่แยกสี) จากตาราง Excel หลายปี */
+function stParse(tx){const rows=[];let row=[],cell="",q=false;
+  for(let i=0;i<tx.length;i++){const c=tx[i];
+    if(q){if(c==='"'){if(tx[i+1]==='"'){cell+='"';i++}else q=false}else cell+=c}
+    else if(c==='"'&&!cell)q=true;else if(c==="\t"){row.push(cell);cell=""}else if(c==="\n"||c==="\r"){if(c==="\r"&&tx[i+1]==="\n")i++;row.push(cell);rows.push(row);row=[];cell=""}else cell+=c}
+  row.push(cell);rows.push(row);
+  const EN=[/^jan/i,/^feb/i,/^mar/i,/^apr/i,/^may/i,/^jun/i,/^jul/i,/^aug/i,/^sep/i,/^oct/i,/^nov/i,/^dec/i],TH=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],mi=v=>{v=String(v).trim();if(!v)return-1;let k=EN.findIndex(r=>r.test(v));if(k<0)k=TH.findIndex(t=>v.startsWith(t));return k};
+  let cols=[];
+  for(const r of rows){if(r.some(v=>mi(v)>=0))continue;const cs=[];r.forEach((v,c)=>{const m=String(v).replace(/\s+/g," ").match(/(?:^|[^\d,])(2[045]\d\d)(?!\d)/);if(m){const y=+m[1];cs.push({c,y:y>2400?y-543:y,t:/target|เป้า/i.test(v)?"t":"a"})}});if(cs.length){cols=cs;break}}
+  const items=[];
+  if(cols.length)for(const r of rows){const m=r.slice(0,2).map(mi).find(k=>k>=0);if(m==null||m<0)continue;
+    cols.forEach(cl=>{const s=String(r[cl.c]==null?"":r[cl.c]).replace(/[,\s]/g,"");if(/^-?\d+(\.\d+)?$/.test(s)&&Number(s)!==0)items.push({y:cl.y,m,t:cl.t,v:Math.round(Number(s))})})}
+  return{cols,items}}
+(function(){const ent=$("fg-sent");if(!ent||$("st-box"))return;
+  const box=document.createElement("details");box.id="st-box";box.style.cssText="margin:8px 0 14px;border:1px solid var(--line);border-radius:10px;padding:10px 14px";
+  box.innerHTML='<summary style="cursor:pointer;font-weight:600">นำเข้ายอดขายรวมรายเดือน (ไม่แยกสี) — วางตารางจาก Excel ได้หลายปี</summary><div class="note" style="margin:8px 0">ก๊อปตารางที่มีหัวคอลัมน์ปี (เช่น 2564 Act. · 2569 Target) และแถวเดือน Jan–Dec มาวางในช่องนี้ ระบบข้ามแถวรวม (Total H1/H2) ให้เอง · คอลัมน์ Act = ยอดขาย · คอลัมน์ Target = เป้า (ใส่เฉพาะเดือนที่ยังไม่มีเป้าแยกสี) · ปีปัจจุบันจะนำเข้าเฉพาะเดือนที่จบแล้ว · เดือนที่มียอดแยกสี×เบอร์ ระบบใช้ยอดแยกสีก่อน · นำเข้าซ้ำปีเดิม = เขียนทับยอดรวมของปีนั้น</div><textarea id="st-ta" rows="6" style="width:100%" placeholder="วางตารางที่นี่ (Ctrl+V)"></textarea><div class="row" style="align-items:center;margin-top:8px"><button class="btn" id="st-go" type="button" disabled>นำเข้ายอดรวม</button><span id="st-msg" class="note" style="margin:0"></span></div>';
+  ent.insertBefore(box,ent.firstChild);
+  const ta=$("st-ta"),go=$("st-go"),msg=$("st-msg");let plan=null;
+  const build=()=>{const r=stParse(ta.value);plan=null;go.disabled=true;if(!ta.value.trim()){msg.textContent="";return}
+    if(!r.cols.length){msg.textContent="ไม่พบหัวคอลัมน์ปี (เช่น 2564 Act.) ในตารางที่วาง";return}
+    const n=new Date(),cy=n.getFullYear(),cm=n.getMonth(),T=tgData(),acts=[],tg=[];let skipF=0,skipT=0;
+    r.items.forEach(x=>{if(x.t==="a"){if(x.y>cy||(x.y===cy&&x.m>=cm))skipF++;else acts.push(x)}else{if(T[x.y+"-"+p2(x.m+1)])skipT++;else tg.push(x)}});
+    if(!acts.length&&!tg.length){msg.textContent="ไม่พบตัวเลขที่นำเข้าได้";return}
+    const ys=[...new Set(acts.map(x=>x.y))].sort();plan={acts,tg};go.disabled=false;
+    msg.textContent="พร้อมนำเข้า: ยอดขาย "+acts.length+" เดือน ("+(ys.length?ys.map(y=>y+543).join(", "):"-")+")"+(tg.length?" · เป้า "+tg.length+" เดือน":"")+(skipF?" · ข้ามเดือนที่ยังไม่จบ "+skipF:"")+(skipT?" · ข้ามเป้า "+skipT+" เดือนที่มีเป้าแยกสีแล้ว":"")};
+  ta.addEventListener("input",build);ta.addEventListener("paste",()=>setTimeout(build,0));
+  go.onclick=async()=>{if(!plan)return;const key=($("pf-key").value||"").trim()||fgKeySet(true);if(!key){msg.textContent="ใส่รหัสบันทึกก่อน";return}
+    go.disabled=true;try{const by={};plan.acts.forEach(x=>(by[x.y]=by[x.y]||[]).push(x));let i=0;const tot=Object.keys(by).length+plan.tg.length;
+      for(const y of Object.keys(by).sort()){msg.textContent="กำลังบันทึก "+(+y+543)+" ("+(++i)+"/"+tot+")…";const rows=by[y].map(x=>["stot",p2(x.m+1),0,0,0,0,0,0,x.v]);
+        const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:y+"-01-01",by:"",rows})}).then(x=>x.json());if(!r.ok)throw new Error(r.error||"บันทึกไม่สำเร็จ")}
+      for(const x of plan.tg){msg.textContent="กำลังบันทึกเป้า ("+(++i)+"/"+tot+")…";const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:x.y+"-"+p2(x.m+1)+"-01",by:"",rows:[["stgt","_all",0,0,0,0,0,0,x.v]]})}).then(z=>z.json());if(!r.ok)throw new Error(r.error||"บันทึกเป้าไม่สำเร็จ")}
+      await load();try{sdDraw();tgFill()}catch(e){}ta.value="";plan=null;msg.textContent="นำเข้าแล้ว ✓ ดูผลที่ Dashboard ด้านบน"}
+    catch(err){msg.textContent="นำเข้าไม่สำเร็จ: "+(err&&err.message||err);go.disabled=false}}})();
 /* ปุ่มเปลี่ยนปี (−/+) ให้ทุกช่องเลือกเดือน */
 (function(){const st=document.createElement("style");st.textContent=".ymb{display:flex;gap:4px;margin-top:4px}.ymb button{flex:1;padding:3px 6px;font:12px var(--f-body,inherit);border:1px solid var(--line2,#cbd5e1);background:var(--surface,#fff);color:inherit;border-radius:6px;cursor:pointer}.ymb button:hover{border-color:var(--accent,#1677ff)}";document.head.appendChild(st);
 const enh=()=>document.querySelectorAll('input[type=month]:not([data-ym])').forEach(inp=>{inp.dataset.ym="1";const w=document.createElement("div");w.className="ymb";
