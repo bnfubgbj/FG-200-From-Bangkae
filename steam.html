@@ -466,7 +466,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 222)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 223)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4442,7 +4442,7 @@ function swInit(sel){const ds=Object.keys(swAll()).sort().reverse(),s=$("sw-sel"
 const SWF={f:"",t:""};
 function swDraw(){const box=$("sw-dash");if(!box)return;const D=swAll(),all=Object.keys(D).sort();
   if(!all.length){box.innerHTML='<div class="empty">ยังไม่มีข้อมูลยางลดเบอร์ — นำเข้าไฟล์ Excel หรือกรอกรายวันด้านบน</div>';return}
-  if(!SWF.f||SWF.f<all[0])SWF.f=all[0];if(!SWF.t||SWF.t>all[all.length-1])SWF.t=all[all.length-1];
+  if(!SWF.f||SWF.f<all[0]||!SWF.mf)SWF.f=all[0];if(!SWF.t||SWF.t>all[all.length-1]||!SWF.mt)SWF.t=all[all.length-1];
   const A=swAgg(SWF.f,SWF.t),thr=SWTHR,warn=A.days.filter(x=>x.y&&x.pct>thr),worst=A.days.filter(x=>x.y).sort((a,b)=>b.pct-a.pct)[0];
   const kp=(k,v,s)=>'<div class="kpi"><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(s?'<div class="k" style="margin-top:2px">'+s+"</div>":"")+"</div>";
   let h='<div class="row" style="align-items:flex-end;margin-top:6px"><div style="min-width:150px"><span class="lbl">ตั้งแต่วันที่แผนปั๊ม</span><input type="date" id="sw-f" value="'+SWF.f+'"></div><div style="min-width:150px"><span class="lbl">ถึง</span><input type="date" id="sw-t" value="'+SWF.t+'"></div><div style="width:130px"><span class="lbl">เตือนเมื่อ % เกิน</span><input type="number" id="sw-thr" value="'+thr+'" min="0" step="0.5"></div><button class="btn ghost" id="sw-xl" type="button">⬇ ดาวน์โหลด Excel</button></div>';
@@ -4453,7 +4453,7 @@ function swDraw(){const box=$("sw-dash");if(!box)return;const D=swAll(),all=Obje
   h+='<h3 style="margin:18px 0 4px;font-size:15px">สี × เบอร์เดิม (แผ่น)</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">ยิ่งเข้มยิ่งลดมาก · วงเล็บ = % ของยอดยางนึ่งสีนั้น</div><div class="scroll">'+swHeat(A)+"</div>";
   h+='<h3 style="margin:18px 0 4px;font-size:15px">รายวัน × สี (% ลดเบอร์)</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">ช่องเหลือง = เกิน '+thr+'%</div><div class="scroll">'+swDayTbl(A,thr)+"</div>";
   box.innerHTML=h;
-  $("sw-f").onchange=e=>{SWF.f=e.target.value||SWF.f;swDraw()};$("sw-t").onchange=e=>{SWF.t=e.target.value||SWF.t;swDraw()};$("sw-thr").onchange=e=>{SWTHR=Math.max(0,Number(e.target.value)||0);swDraw()};$("sw-xl").onclick=()=>swExcel(A).catch(err=>swMsg("ส่งออกไม่สำเร็จ: "+(err&&err.message||err),"warn"))}
+  $("sw-f").onchange=e=>{SWF.f=e.target.value||SWF.f;SWF.mf=true;swDraw()};$("sw-t").onchange=e=>{SWF.t=e.target.value||SWF.t;SWF.mt=true;swDraw()};$("sw-thr").onchange=e=>{SWTHR=Math.max(0,Number(e.target.value)||0);swDraw()};$("sw-xl").onclick=()=>swExcel(A).catch(err=>swMsg("ส่งออกไม่สำเร็จ: "+(err&&err.message||err),"warn"))}
 function swLeg(cs){return'<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:2px 0 8px">'+cs.map(k=>'<span><i style="display:inline-block;width:11px;height:11px;border-radius:2px;background:'+swHex(k)+';vertical-align:-1px"></i> '+escH(k)+"</span>").join("")+"</div>"}
 function swTrend(A,thr){const n=A.days.length,W=Math.max(640,n*44+70),H=230,l=44,r=10,t=18,b=34,mx=Math.max(thr*1.3,...A.days.map(x=>x.pct),1),Y=v=>t+(H-t-b)*(1-v/mx),bw=Math.min(30,(W-l-r)/n-8);let g="";
   for(let k=0;k<=4;k++){const v=mx*k/4;g+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(l-5)+'" y="'+(Y(v)+3)+'" text-anchor="end" font-size="10" fill="currentColor" opacity=".7">'+(Math.round(v*10)/10)+"%</text>"}
