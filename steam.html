@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 227)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 228)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -812,7 +812,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
       <div id="sl-msg" class="msg" hidden></div><div class="scroll" id="sl-g"></div>
       <h3 style="margin:8px 0 0">ยอดขายที่บันทึกไว้</h3><div class="note">กดที่ปีเพื่อดูเดือน กดที่เดือนเพื่อดูตาราง สี × เบอร์ · ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="sl-list"></div></div>
     <div class="panel" id="x-sldash" hidden><h2>Dashboard · ยอดขายเทียบเป้า</h2><div class="note">เปรียบเทียบยอดขายรายเดือนกับเป้าการขาย (ใส่เป้าที่ ข้อมูล › เป้าการขาย) · เอาเมาส์ชี้ที่แท่งหรือช่องในตารางเพื่อดูตัวเลข · เลือกสีเดียวเพื่อดูเบอร์ของสีนั้นแทน</div>
-      <div class="row" style="align-items:flex-end"><div style="min-width:130px"><span class="lbl">ตั้งแต่เดือน</span><select id="sd-from"></select></div><div style="min-width:130px"><span class="lbl">ถึงเดือน</span><select id="sd-to"></select></div><div style="min-width:200px"><span class="lbl">สีที่ดู</span><select id="sd-col"></select></div><div style="min-width:130px"><span class="lbl">เทียบเดือน</span><select id="sd-a"></select></div><div style="min-width:130px"><span class="lbl">กับเดือน</span><select id="sd-b"></select></div></div>
+      <div class="row" style="align-items:flex-end"><div style="min-width:170px"><span class="lbl">ดูยอดขายของ</span><select id="sd-y"></select></div><span hidden><select id="sd-from"></select><select id="sd-to"></select></span><div style="min-width:200px"><span class="lbl">สีที่ดู</span><select id="sd-col"></select></div><div style="min-width:130px"><span class="lbl">ดูขึ้น-ลงรายสี: เดือน</span><select id="sd-a"></select></div><div style="min-width:130px"><span class="lbl">กับเดือน</span><select id="sd-b"></select></div></div>
       <div id="sd-body"></div></div>
     <div class="panel" id="x-rcdash" hidden><h2>Dashboard · รับเข้าโกดังพี่ชุมพร เทียบแผ่นยางและแผนผลิต</h2><div class="note">เทียบ 3 ตัวเลขในช่วงวันที่เดียวกัน: แผนผลิตของ รง. (ตามสัดส่วนวัน) · แผ่นยางที่จ่ายประกอบ (× คู่ต่อแผ่น) · ยอดรับเข้าโกดังพี่ชุมพรจริง · เอาเมาส์ชี้ที่แท่งหรือจุดเพื่อดูตัวเลข · เลือกสีเดียวเพื่อดูแยกเบอร์</div>
       <div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ตั้งแต่วันที่</span><input type="date" id="rc-f"></div><div style="min-width:150px"><span class="lbl">ถึงวันที่</span><input type="date" id="rc-t"></div><div style="min-width:220px"><span class="lbl">สีที่ดู</span><select id="rc-c"></select></div><button class="btn ghost" type="button" id="rc-m0">เดือนล่าสุด</button><button class="btn ghost" type="button" id="rc-m1">เดือนก่อน</button></div>
@@ -2660,12 +2660,14 @@ sdTag=(p)=>p==null?'<span class="sdz">–</span>':'<span class="'+(p>0.05?"sdup"
 function tgData(){const o={};(STK||[]).forEach(r=>{if(r[1]!=="stgt")return;const m=normD(r[0]).slice(0,7);(o[m]=o[m]||{})[r[2]]=Number(r[9])||0});return o}
 const sdCl=p=>p>=100?"sdup":p>=80?"sdmid":"sddn",sdBg=p=>p>=100?"rgba(25,195,139,.38)":p>=80?"rgba(255,176,32,.38)":"rgba(255,77,106,.24)";
 function stotData(){const o={};(STK||[]).forEach(r=>{if(r[1]!=="stot")return;const y=normD(r[0]).slice(0,4),mm=String(r[2]).padStart(2,"0");o[y+"-"+mm]=Number(r[9])||0});return o}
-const FSY=new Set();
+const FSY=new Set();let FSYR="";
 function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),ST=stotData(),TG=tgData(),all=[...new Set(Object.keys(D).concat(Object.keys(ST)))].sort();
   if(!all.length){box.innerHTML='<div class="empty">ยังไม่มียอดขายที่บันทึกไว้ — ใส่ที่เมนู ยอดขายรายเดือน ก่อน</div>';return}
   const fill=(id,o,d)=>{const e=$(id),v=e.value;e.innerHTML=o.map(x=>'<option value="'+x[0]+'">'+x[1]+"</option>").join("");e.value=o.some(x=>x[0]===v)?v:d};
-  const mo=all.map(m=>[m,thM(m)]);fill("sd-from",mo,all[Math.max(0,all.length-12)]);fill("sd-to",mo,all[all.length-1]);
-  let f=$("sd-from").value,t=$("sd-to").value;if(f>t){const x=f;f=t;t=x}const ms=all.filter(m=>m>=f&&m<=t),n=ms.length;
+  const mo=all.map(m=>[m,thM(m)]),yrs=[...new Set(all.map(m=>m.slice(0,4)))].sort().reverse(),ysel=$("sd-y");
+  ysel.innerHTML=yrs.map(y=>'<option value="'+y+'">ปี '+(+y+543)+"</option>").join("")+'<option value="L12">12 เดือนล่าสุด</option>';
+  if(FSYR!=="L12"&&!yrs.includes(FSYR)){const cy=String(new Date().getFullYear());FSYR=yrs.includes(cy)?cy:yrs[0]}ysel.value=FSYR;
+  const ms=FSYR==="L12"?all.slice(-12):all.filter(m=>m.slice(0,4)===FSYR),n=ms.length;
   fill("sd-col",[["","ทุกสี"]].concat(PTPL.map(r=>[r[0],r[1]])),"");const fk=$("sd-col").value;
   const mm=mo.filter(x=>ms.includes(x[0]));fill("sd-a",mm,ms[n-1]);fill("sd-b",mm,ms[n-2]||ms[0]);const ma=$("sd-a").value,mb=$("sd-b").value;
   const keys=fk?[fk]:PTPL.map(r=>r[0]),lab=cLab,V=(m,k)=>(D[m]&&D[m][k])||cZ(),MT=m=>D[m]?keys.reduce((a,k)=>a+cT(V(m,k)),0):(fk?0:(ST[m]||0));
@@ -2682,7 +2684,7 @@ function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),ST=stot
   h+="</div>";
   const mlab=m=>MON[+m.slice(5)-1]+" "+String(+m.slice(0,4)+543).slice(2);
   /* 1 แนวโน้ม + เป้า */
-  const W=760,H=346,L=52,R=14,Tp=50,B=62,pw=W-L-R,ph=H-Tp-B,ax=cAxis(Math.max(...T,...TT,avg)),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/n,bw=Math.min(54,gw*.6);
+  const W=1100,H=330,L=52,R=14,Tp=50,B=62,pw=W-L-R,ph=H-Tp-B,ax=cAxis(Math.max(...T,...TT,avg)),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/n,bw=Math.min(54,gw*.6);
   let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
   const pts=[];g+='<defs><linearGradient id="sdgf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".7"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".1"/></linearGradient></defs>';
   ms.forEach((m,i)=>{const cx=L+gw*i+gw/2,y=Y(T[i]),p=i?sdPc(T[i],T[i-1]):null,ok=TT[i]>0&&T[i]>=TT[i],top=TT[i]>0?Math.min(y,Y(TT[i])):y;
@@ -2748,7 +2750,7 @@ function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),ST=stot
     cyc='<div class="ccard wide"><h3>เปรียบเทียบยอดขายหลายปี (คู่)'+(fk?" · "+escH(lab(fk)):"")+"</h3>"+chips+cmpChips()+lgd+'<svg viewBox="0 0 '+W6+" "+H6+'" class="csvg" role="img" aria-label="เปรียบเทียบหลายปี">'+g6+'</svg><div class="scroll"><table class="sdh"><thead>'+th+"</thead><tbody>"+tb+"</tbody></table></div></div>"}
   box.innerHTML=h+'<div class="cdg">'+c1+cyc+c2+c3b+c3+c4+"</div>"}
 $("sd-body").addEventListener("click",e=>{const cm=e.target.closest&&e.target.closest("[data-cmpm]");if(cm){CMPM=cm.dataset.cmpm;sdDraw();return}const yy=e.target.closest&&e.target.closest("[data-sdy]");if(yy){const v=yy.dataset.sdy;if(v==="__all")$("sd-body").querySelectorAll("[data-sdy]").forEach(b=>{if(b.dataset.sdy!=="__all")FSY.add(b.dataset.sdy)});else if(FSY.has(v))FSY.delete(v);else FSY.add(v);sdDraw();return}const b=e.target.closest&&e.target.closest("[data-sdm]");if(b){SDM=b.dataset.sdm;sdDraw()}});
-["sd-from","sd-to","sd-col","sd-a","sd-b"].forEach(id=>$(id).onchange=sdDraw);
+["sd-col","sd-a","sd-b"].forEach(id=>$(id).onchange=sdDraw);$("sd-y").onchange=()=>{FSYR=$("sd-y").value;sdDraw()};
 $("tab-d").onclick=()=>{show("d");sdDraw()};
 $("sl-dash").onclick=()=>$("tab-d").click();
 
@@ -4092,7 +4094,7 @@ function csdDraw(){const dash=csdEnsure();if(!dash)return;
    '<div class="k"><div class="l">ยอดคืนสินค้า</div><div class="v'+(ret<0?" neg":"")+'">'+(ret<0?N(ret):"0")+'</div><div class="s">รวมอยู่ในยอดสุทธิแล้ว</div></div></div>';
   const lg='<div class="lg">'+F.map(it=>'<span><i style="background:'+(SDC[it[0]]||"#999")+'"></i>'+escH(it[1])+"</span>").join("")+"</div>";
   // 1) รายเดือน
-  const GR=SDLY==="grp",W=900,H=384,L=52,T=88,B=56,pw=W-L-12,ph=H-T-B,mx=csdNice(Math.max(1,...(GR?IM.flat():mt),...(TG?TG.M:[0]))),bw=pw/12,kf=v=>{const a=Math.abs(v);return a>=1000?(v/1000).toFixed(a>=100000?0:1).replace(/\.0$/,"")+"k":N(v)};let g="";
+  const GR=SDLY==="grp",W=1100,H=390,L=52,T=88,B=56,pw=W-L-12,ph=H-T-B,mx=csdNice(Math.max(1,...(GR?IM.flat():mt),...(TG?TG.M:[0]))),bw=pw/12,kf=v=>{const a=Math.abs(v);return a>=1000?(v/1000).toFixed(a>=100000?0:1).replace(/\.0$/,"")+"k":N(v)};let g="";
   for(let i=0;i<=4;i++){const y=T+ph-ph*i/4;g+='<line x1="'+L+'" x2="'+(W-12)+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" opacity=".12"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="currentColor" opacity=".7">'+Math.round(mx*i/4).toLocaleString("en-US")+"</text>"}
   const CV=!!TG;if(CV)g+='<defs><linearGradient id="sdg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".7"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".1"/></linearGradient></defs>';
   for(let m=0;m<12;m++){const cx0=L+m*bw+bw*.1,gw=bw*.8,cxm=cx0+gw/2,tgm=CV?TG.M[m]:0,has=!!(mt[m]||IM.some(r=>r[m])),covTop=tgm>0?T+ph-ph*tgm/mx:1e9;let top=T+ph;
@@ -5747,10 +5749,10 @@ load();
 
 /* ฟองน้ำ 200: เอา Dashboard มาไว้บนหน้ายอดขาย + ช่องกรอกยอดขายคลี่/เก็บได้ */
 (function(){const P=$("x-sales"),D=$("x-sldash");if(!P||!D||$("fg-sdwrap"))return;
- const h2=P.querySelector("h2"),wrap=document.createElement("div");wrap.id="fg-sdwrap";wrap.style.margin="6px 0 14px";
+ const h2=P.querySelector("h2"),wrap=document.createElement("div");wrap.id="fg-sdwrap";wrap.style.cssText="margin:6px 0 14px;padding:0 18px";
  const row=D.querySelector(".row"),body=$("sd-body");if(!row||!body)return;wrap.appendChild(row);wrap.appendChild(body);
  const ent=document.createElement("div");ent.id="fg-sent";[...P.children].forEach(c=>{if(c!==h2)ent.appendChild(c)});
- const tg=document.createElement("button");tg.type="button";tg.className="btn ghost";tg.id="fg-sent-tg";tg.style.cssText="width:100%;text-align:left;margin:10px 0";
+ const tg=document.createElement("button");tg.type="button";tg.className="btn ghost";tg.id="fg-sent-tg";tg.style.cssText="width:calc(100% - 36px);text-align:left;margin:10px 18px";
  let open=true;try{open=localStorage.getItem("fgfsent")!=="0"}catch(e){}
  const apply=()=>{ent.hidden=!open;tg.textContent=open?"▲ เก็บช่องกรอกยอดขาย":"✎ กรอก / แก้ไขยอดขาย (กดเพื่อคลี่ลงมา)"};
  tg.onclick=()=>{open=!open;try{localStorage.setItem("fgfsent",open?"1":"0")}catch(e){}apply()};apply();
