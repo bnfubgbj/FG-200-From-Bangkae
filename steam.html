@@ -466,7 +466,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 218)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 219)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2671,7 +2671,7 @@ function sdDraw(){const box=$("sd-body");if(!box)return;const D=slData(),TG=tgDa
   let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
   const pts=[];g+='<defs><linearGradient id="sdgf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".7"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".1"/></linearGradient></defs>';
   ms.forEach((m,i)=>{const cx=L+gw*i+gw/2,y=Y(T[i]),p=i?sdPc(T[i],T[i-1]):null,ok=TT[i]>0&&T[i]>=TT[i],top=TT[i]>0?Math.min(y,Y(TT[i])):y;
-    if(TT[i]>0){const cy=Y(TT[i]);g+='<rect x="'+(cx-gw*.4).toFixed(1)+'" y="'+cy.toFixed(1)+'" width="'+(gw*.8).toFixed(1)+'" height="'+Math.max(0,Tp+ph-cy).toFixed(1)+'" rx="3" fill="url(#sdgf)"/>';if(T[i]<TT[i]*.88)g+='<text x="'+cx+'" y="'+(cy-4).toFixed(1)+'" class="ct" text-anchor="middle" style="font-weight:600;fill:#b45309">เป้า '+cK(TT[i])+'</text>'}
+    if(TT[i]>0){const cy=Y(TT[i]);g+='<rect x="'+(cx-gw*.4).toFixed(1)+'" y="'+cy.toFixed(1)+'" width="'+(gw*.8).toFixed(1)+'" height="'+Math.max(0,Tp+ph-cy).toFixed(1)+'" rx="3" fill="url(#sdgf)"/>';if(n<=12&&T[i]<TT[i]*.88)g+='<text x="'+cx+'" y="'+(cy-4).toFixed(1)+'" class="ct" text-anchor="middle" style="font-weight:600;fill:#b45309">เป้า '+cK(TT[i])+'</text>'}
     g+='<g><title>'+thM(m)+": ขาย "+fmt(T[i])+" คู่"+(TT[i]?" · เป้า "+fmt(TT[i])+" ("+(T[i]/TT[i]*100).toFixed(1)+"%)":"")+(p==null?"":" · "+(p>0?"+":"")+p.toFixed(1)+"% จากเดือนก่อน")+'</title><rect x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+Math.max(0,Tp+ph-y)+'" rx="5" style="fill:'+(ok?"#19c38b":"var(--accent)")+'" fill-opacity="'+(m===ms[mxI]?1:.85)+'"/></g>'+
      '<text x="'+cx+'" y="'+(top-18)+'" class="tv" text-anchor="middle">'+cK(T[i])+"</text>"+(p==null?"":'<text x="'+cx+'" y="'+(top-6)+'" class="ct '+(p>=0?"sdup2":"sddn2")+'" text-anchor="middle" style="font-weight:600">'+(p>=0?"▲":"▼")+Math.abs(p).toFixed(0)+"%</text>")+
      '<text x="'+cx+'" y="'+(H-30)+'" class="ct" text-anchor="middle">'+mlab(m)+"</text>";
@@ -5733,6 +5733,21 @@ load();
   scan();
 })();
 
+
+/* ฟองน้ำ 200: เอา Dashboard มาไว้บนหน้ายอดขาย + ช่องกรอกยอดขายคลี่/เก็บได้ */
+(function(){const P=$("x-sales"),D=$("x-sldash");if(!P||!D||$("fg-sdwrap"))return;
+ const h2=P.querySelector("h2"),wrap=document.createElement("div");wrap.id="fg-sdwrap";wrap.style.margin="6px 0 14px";
+ const row=D.querySelector(".row"),body=$("sd-body");if(!row||!body)return;wrap.appendChild(row);wrap.appendChild(body);
+ const ent=document.createElement("div");ent.id="fg-sent";[...P.children].forEach(c=>{if(c!==h2)ent.appendChild(c)});
+ const tg=document.createElement("button");tg.type="button";tg.className="btn ghost";tg.id="fg-sent-tg";tg.style.cssText="width:100%;text-align:left;margin:10px 0";
+ let open=true;try{open=localStorage.getItem("fgfsent")!=="0"}catch(e){}
+ const apply=()=>{ent.hidden=!open;tg.textContent=open?"▲ เก็บช่องกรอกยอดขาย":"✎ กรอก / แก้ไขยอดขาย (กดเพื่อคลี่ลงมา)"};
+ tg.onclick=()=>{open=!open;try{localStorage.setItem("fgfsent",open?"1":"0")}catch(e){}apply()};apply();
+ P.appendChild(wrap);P.appendChild(tg);P.appendChild(ent);
+ const dsh=$("sl-dash");if(dsh)dsh.onclick=()=>{open=false;apply();try{localStorage.setItem("fgfsent","0")}catch(e){}wrap.scrollIntoView({behavior:"smooth",block:"start"})};
+ const t4=$("tab-x4");if(t4)t4.addEventListener("click",()=>setTimeout(()=>{try{sdDraw()}catch(e){console.error(e)}},0));
+ $("tab-d").onclick=()=>{if(t4)t4.click()};
+ D.hidden=true;try{sdDraw()}catch(e){console.error(e)}})();
 /* ปุ่มเปลี่ยนปี (−/+) ให้ทุกช่องเลือกเดือน */
 (function(){const st=document.createElement("style");st.textContent=".ymb{display:flex;gap:4px;margin-top:4px}.ymb button{flex:1;padding:3px 6px;font:12px var(--f-body,inherit);border:1px solid var(--line2,#cbd5e1);background:var(--surface,#fff);color:inherit;border-radius:6px;cursor:pointer}.ymb button:hover{border-color:var(--accent,#1677ff)}";document.head.appendChild(st);
 const enh=()=>document.querySelectorAll('input[type=month]:not([data-ym])').forEach(inp=>{inp.dataset.ym="1";const w=document.createElement("div");w.className="ymb";
