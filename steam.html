@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 235)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 236)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4950,9 +4950,9 @@ window.sxMove=function(to){const sx=$("sx-d");if(!sx||!window.SXHOME)return;cons
 const BKM={y:"",m:""};
 function bkAll(){const o={};stkDates(["nbook"]).forEach(d=>{const B=stkGet("nbook",d);if(Object.keys(B).length)o[d.slice(0,7)]=B});return o}
 (function(){const host=$("view-x"),d=document.createElement("div");d.className="panel fgsec";d.id="x-bkmon";d.hidden=true;
-  d.innerHTML='<h2>ยอดจองฝ่ายขาย · ฟองน้ำ 200 รายเดือน (คู่)</h2><div class="note">ยอดจองที่ฝ่ายขายแจ้งไว้ในแต่ละเดือน แยกสี × เบอร์ เทียบกับยอดขายจริงของเดือนนั้น · นำเข้าด้วยแม่แบบมาตรฐาน (ชีตชื่อ "ยอดจอง") ที่กล่องนำเข้าด้านล่าง · เดือนเดิมจะถูกเขียนทับ</div><div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ปี</span><select id="bk-y"></select></div></div><div id="bk-body"></div>';host.appendChild(d);
+  d.innerHTML='<h2>ยอดจองฝ่ายขาย · ฟองน้ำ 200 รายเดือน (คู่)</h2><div class="note">ยอดจองที่ฝ่ายขายแจ้งไว้ในแต่ละเดือน แยกสี × เบอร์ เทียบกับยอดขายจริงของเดือนนั้น · นำเข้าด้วยแม่แบบมาตรฐาน (ชีตชื่อ "ยอดจอง") ที่กล่องนำเข้าด้านล่าง · เดือนเดิมจะถูกเขียนทับ</div><div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ปี</span><select id="bk-y"></select></div><button class="btn ghost" id="bk-dl" type="button">ดาวน์โหลดเดือนที่เลือกเป็นไฟล์แม่แบบ (.xlsx)</button></div><div id="bk-body"></div>';host.appendChild(d);
   const w=document.createElement("div");w.id="bk-imp-wrap";w.className="panel fgsec";w.hidden=true;
-  w.innerHTML='<button type="button" id="bk-imp-h" aria-expanded="true" style="all:unset;cursor:pointer;display:flex;justify-content:space-between;width:100%;font-weight:700"><span>นำเข้ายอดจองฝ่ายขาย (แม่แบบมาตรฐาน)</span><span>▲</span></button><div id="bk-imp"><div class="note">กด "ดาวน์โหลดแม่แบบมาตรฐาน" เพื่อได้ไฟล์แม่แบบ กรอกในชีต "ยอดจอง" (ใส่เดือนในช่อง B2) แล้วกด "เลือกไฟล์มาตรฐาน" ตรวจรายการ แล้วกดบันทึก</div></div>';host.appendChild(w);
+  w.innerHTML='<button type="button" id="bk-imp-h" aria-expanded="true" style="all:unset;cursor:pointer;display:flex;justify-content:space-between;width:100%;font-weight:700"><span>นำเข้ายอดจองฝ่ายขาย (แม่แบบมาตรฐาน)</span><span>▲</span></button><div id="bk-imp"><div class="cgsec">วิธีที่ 1 · วางตารางจาก Excel ได้เลย (ไม่ต้องทำไฟล์แม่แบบ)</div><div class="note">ในไฟล์ Excel ของคุณ คลุมตารางสี × เบอร์ (ให้เห็นชื่อสีทางซ้าย และเลข 6 เบอร์) → Ctrl+C → คลิกช่องด้านล่าง → Ctrl+V · ระบบอ่านชื่อสีเอง ข้ามแถวรวมและหัวตาราง · ต้อง copy เป็นเซลล์ ไม่ใช่ภาพหน้าจอ เพราะภาพอ่านตัวเลขผิดได้</div><div class="row" style="align-items:flex-end"><div style="min-width:160px"><span class="lbl">เดือนของยอดจอง</span><input type="month" id="bk-pm"></div></div><textarea id="bk-ta" rows="5" style="width:100%;margin-top:6px" placeholder="วางตารางที่นี่ (Ctrl+V)"></textarea><div class="row" style="align-items:center;margin-top:6px"><button class="btn" id="bk-pgo" type="button" disabled>บันทึกเป็นยอดจองเดือนนี้</button><button class="btn ghost" id="bk-pdl" type="button" disabled>ดาวน์โหลดเป็นไฟล์แม่แบบ (.xlsx)</button></div><div id="bk-pmsg" class="msg" hidden style="margin:8px 0"></div><div class="cgsec" style="margin-top:14px">วิธีที่ 2 · นำเข้าไฟล์แม่แบบมาตรฐาน</div><div class="note">กด "ดาวน์โหลดแม่แบบมาตรฐาน" เพื่อได้ไฟล์แม่แบบ กรอกในชีต "ยอดจอง" (ใส่เดือนในช่อง B2) แล้วกด "เลือกไฟล์มาตรฐาน" ตรวจรายการ แล้วกดบันทึก</div></div>';host.appendChild(w);
   const hb=w.querySelector("#bk-imp-h"),bd=w.querySelector("#bk-imp");hb.onclick=()=>{const o=bd.hidden;bd.hidden=!o;hb.setAttribute("aria-expanded",o?"true":"false");hb.lastChild.textContent=o?"▲":"▼"}})();
 function bkDraw(){const box=$("bk-body");if(!box)return;const A=bkAll(),ms=Object.keys(A).sort(),ys=[...new Set(ms.map(m=>m.slice(0,4)))].sort().reverse(),ysel=$("bk-y");
   if(!ys.length){ysel.innerHTML="";box.innerHTML='<div class="empty">ยังไม่มียอดจองที่บันทึกไว้ — นำเข้าที่กล่อง "นำเข้ายอดจองฝ่ายขาย" ด้านล่าง</div>';return}
@@ -4978,6 +4978,41 @@ function bkDraw(){const box=$("bk-body");if(!box)return;const A=bkAll(),ms=Objec
   box.innerHTML=h}
 $("bk-y").addEventListener("input",e=>{BKM.y=e.target.value;BKM.m="";bkDraw()});
 $("bk-body").addEventListener("click",e=>{const t=e.target.closest("[data-m]");if(t&&t.dataset.m){BKM.m=t.dataset.m;bkDraw()}});
+/* วางตารางยอดจองจาก Excel + ส่งออกเป็นแม่แบบ */
+const bkNz=t=>String(t||"").replace(/\s+/g,"").toLowerCase();
+function bkParse(text){const nk={};SX8.concat(SXS).forEach(d=>{nk[bkNz(d[1])]=d[0];nk[bkNz(d[0])]=d[0]});
+  const rows={},bad=[],mism=[];let n=0;
+  String(text||"").split(/\r?\n/).forEach(line=>{const c=line.split("\t").map(x=>x.trim());let i=c.findIndex(x=>x!=="");if(i<0)return;const lab=c[i];if(/^รวม/.test(lab)||lab==="สี")return;
+    const nums=[];for(let j=i+1;j<c.length&&nums.length<7;j++){const x=c[j];if(x===""||x==="-"||x==="–"){nums.push(0);continue}const v=Number(x.replace(/,/g,""));if(!isFinite(v)){if(nums.length)nums.push(NaN);continue}nums.push(v)}
+    if(nums.length<6||nums.slice(0,6).some(v=>isNaN(v)))return;const k=nk[bkNz(lab)];if(!k){if(nums.slice(0,6).some(v=>v>0))bad.push(lab);return}
+    if(rows[k])return;rows[k]=nums.slice(0,6);n++;if(nums.length>=7&&!isNaN(nums[6])&&nums[6]!==rows[k].reduce((a,b)=>a+b,0))mism.push(lab)});
+  return{rows,bad,mism,n,total:Object.values(rows).reduce((a,r)=>a+r.reduce((x,y)=>x+y,0),0)}}
+let BKP=null;
+function bkMsg(t,k){const m=$("bk-pmsg");m.hidden=!t;m.className="msg"+(k?" "+k:"");m.textContent=t||""}
+async function bkExport(m,map){if(typeof ExcelJS==="undefined"){bkMsg("โหลดตัวสร้าง Excel ไม่ได้","warn");return}
+  const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("ยอดจอง"),fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+c}}),blue={bold:true,color:{argb:"FF1A56DB"}};sxBody(ws,true);
+  ws.getCell("A1").value="FG200 ยอดจอง (คู่)";ws.getCell("A1").font={bold:true,size:14};
+  ws.getCell("A2").value="เดือนของยอดจอง (เช่น 11/2026)";ws.getCell("A2").font=blue;ws.getCell("B2").value=new Date(Date.UTC(+m.slice(0,4),+m.slice(5,7)-1,1));ws.getCell("B2").numFmt="mm/yyyy";ws.getCell("B2").fill=fill("FFF8D6");
+  const T=Object.values(map).reduce((a,r)=>a+r.slice(0,6).reduce((x,y)=>x+(y||0),0),0);
+  ws.getCell("A3").value="ยอดรวมตามใบ";ws.getCell("A3").font=blue;ws.getCell("B3").value=T;ws.getCell("B3").numFmt="#,##0";ws.getCell("B3").fill=fill("FFF8D6");
+  ws.getCell("C3").value="ตรวจ";ws.getCell("C3").font=blue;ws.getCell("D3").value={formula:'IF(B3="","(ไม่ได้ใส่ยอดรวมตามใบ)",IF(H31+H37=B3,"ตรงกับใบ","ไม่ตรง: ต่าง "&(H31+H37-B3)&" คู่"))'};ws.getCell("D3").font={bold:true};
+  SX8.forEach((d,i)=>{const a=map[d[0]];if(a)a.slice(0,6).forEach((v,j)=>{if(v)ws.getRow(6+i).getCell(j+2).value=v})});
+  SXS.forEach((d,i)=>{const a=map[d[0]];if(a)a.slice(0,6).forEach((v,j)=>{if(v)ws.getRow(17+i).getCell(j+2).value=v})});
+  await saveBook(wb,"FG200_ยอดจอง_"+m+".xlsx")}
+(function(){const ta=$("bk-ta"),pm=$("bk-pm");if(!ta)return;
+  {const t=new Date();pm.value=t.getMonth()===11?(t.getFullYear()+1)+"-01":t.getFullYear()+"-"+p2(t.getMonth()+2)}
+  const chk=()=>{BKP=bkParse(ta.value);const ok=BKP.n>0;$("bk-pgo").disabled=!ok||!pm.value;$("bk-pdl").disabled=!ok||!pm.value;
+    if(!ta.value.trim()){bkMsg("");return}
+    if(!ok){bkMsg("ยังอ่านชื่อสีไม่เจอ — คลุมตารางให้เห็นชื่อสีทางซ้าย (เช่น สีน้ำเงิน, Xmas หูแดง) แล้วเลข 6 เบอร์","warn");return}
+    bkMsg("อ่านได้ "+BKP.n+" สี รวม "+fmt(BKP.total)+" คู่"+(BKP.mism.length?" · ⚠ ผลรวมท้ายแถวไม่ตรง: "+BKP.mism.join(", "):" · ผลรวมท้ายแถวตรงทุกแถว")+(BKP.bad.length?" · ⚠ ไม่รู้จักชื่อ (ไม่ได้นับ): "+BKP.bad.join(", "):"")+" · ตรวจเลขแล้วกดบันทึก",BKP.bad.length||BKP.mism.length?"warn":"ok")};
+  ta.addEventListener("input",chk);pm.addEventListener("input",chk);
+  $("bk-pgo").onclick=async()=>{if(!BKP||!BKP.n||!pm.value)return;const key=fgKeySet(false)||fgKeySet(true);if(!key){bkMsg("ใส่รหัสบันทึกก่อน","warn");return}
+    const rows=Object.keys(BKP.rows).filter(k=>BKP.rows[k].some(v=>v>0)).map(k=>["nbook",k].concat(BKP.rows[k],[BKP.rows[k].reduce((a,b)=>a+b,0)]));
+    $("bk-pgo").disabled=true;try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"stock",key,date:pm.value+"-01",by:"",rows})}).then(x=>x.json());
+      if(r.ok){await load();BKM.y=pm.value.slice(0,4);BKM.m=pm.value;ta.value="";BKP=null;bkMsg("บันทึกยอดจอง "+thM(pm.value)+" แล้ว ("+rows.length+" สี) — ดูด้านบนหรือดาวน์โหลดเป็นแม่แบบได้","ok");bkDraw()}else{bkMsg(r.error||"บันทึกไม่สำเร็จ","warn");$("bk-pgo").disabled=false}}
+    catch(e){bkMsg("บันทึกไม่สำเร็จ: "+e,"warn");$("bk-pgo").disabled=false}};
+  $("bk-pdl").onclick=()=>{if(BKP&&BKP.n&&pm.value)bkExport(pm.value,BKP.rows)};
+  $("bk-dl").onclick=()=>{const A=bkAll();if(!BKM.m||!A[BKM.m]){bkMsg("เลือกเดือนที่มียอดจองก่อน","warn");return}const o={};Object.keys(A[BKM.m]).forEach(k=>o[k]=A[BKM.m][k].slice(0,6).map(v=>v||0));bkExport(BKM.m,o)}})();
 function rcRowTip(r,a){const P=rcPlan(RCM.m),k=r[0],pl=P&&P.c[k]?P.c[k].slice(0,6).map(x=>x||0):null,R=Math.round,f=x=>x?R(x).toLocaleString("en-US"):"\u2013",T=v=>v.reduce((x,y)=>x+y,0),ac=a.slice(0,6).map(x=>x||0);
   let h='<div class="hvt">'+escH(r[1])+" \u00b7 "+thM(RCM.m)+" (\u0e04\u0e39\u0e48)</div>";
   if(!pl||!T(pl))h+='<div class="note" style="margin:4px 0">\u0e44\u0e21\u0e48\u0e21\u0e35\u0e43\u0e19\u0e41\u0e1c\u0e19\u0e1c\u0e25\u0e34\u0e15 ('+(P?revName(P.rev):"\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e41\u0e1c\u0e19")+") \u00b7 \u0e1c\u0e25\u0e34\u0e15\u0e41\u0e25\u0e49\u0e27 "+fmt(T(ac))+"</div>";
