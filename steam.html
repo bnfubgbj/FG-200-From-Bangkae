@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 234)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 235)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2265,7 +2265,7 @@ $("c-all").onclick=()=>{document.querySelectorAll("#colors .chip").forEach(l=>se
 $("s-all").onclick=()=>{SIZES.forEach(s=>selS.add(s));render()};$("s-none").onclick=()=>{selS.clear();render()};
 document.querySelectorAll("#unit button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;document.querySelectorAll("#unit button").forEach(x=>x.setAttribute("aria-selected",x===b));render()});
 var CVP="S";const CVT={cgdash:"Dashboard",cgstk:"สต๊อกรายวัน",cgplan:"แผนผลิต",cv1:"ผลิตจริงเข้าโกดังพี่ชุมพร",cgsale:"ยอดขาย-เป้าขาย"};
-const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["asm","แผ่นยางประกอบ"],["prod","ผลิตจริงเข้าโกดัง"],["cmp","แผน vs จริง"],["sw","ยางลดเบอร์"],["sale","ยอดขาย-เป้าขาย"],["ord","ออกแผนผลิต"]],
+const FGL1=[["d","Dashboard"],["stk","สต๊อก"],["plan","แผนผลิต"],["asm","แผ่นยางประกอบ"],["prod","ผลิตจริงเข้าโกดัง"],["cmp","แผน vs จริง"],["sw","ยางลดเบอร์"],["sale","ยอดขาย-เป้าขาย"],["book","ยอดจองฝ่ายขาย"],["ord","ออกแผนผลิต"]],
   FGMAP={d:"d",e:"stk",w:"stk",x5:"stk",x6:"stk",q:"asm",p:"plan",x1:"plan",x2:"asm",c:"cmp",m:"cmp",r:"prod",x3:"prod",x8:"prod",x4:"sale",x7:"sale",o:"ord"};
 function tbOrd(key){try{return JSON.parse(localStorage.getItem("tbo_"+key)||"[]")}catch(e){return[]}}
 function tbSort(list,key,idf){const o=tbOrd(key);return list.slice().sort((a,b)=>{const x=o.indexOf(idf(a)),y=o.indexOf(idf(b));return(x<0?99:x)-(y<0?99:y)})}
@@ -2287,6 +2287,7 @@ const FGPG={
   prod:()=>{sxMove("rc");window._x3go=1;$("tab-r").click();window._x3go=0;frMode(true);$("tab-r").setAttribute("aria-selected","false");rcMonDraw();fgReveal(["r"],["x-rcmon","rc-imp-wrap"],"ผลิตจริงเข้าโกดัง","prod")},
   cmp:()=>{show("c");cmpInit();initM();renderM();fgReveal(["c","m"],[],"แผน vs จริง","cmp")},
   sale:()=>{show("x4");slBuild();if(!$("sl-month").value){$("sl-month").value=todayS().slice(0,7)}slMonthChanged();slDraw();tgFill();fgReveal([],["x-sales","x-tgt"],"ยอดขาย-เป้าขาย","sale")},
+  book:()=>{sxMove("bk");show("x4");bkDraw();fgReveal([],["x-bkmon","bk-imp-wrap"],"ยอดจองฝ่ายขาย","book");["x-sales","x-tgt","x-sldash","x-rcdash"].forEach(id=>{const e=$(id);if(e)e.hidden=true})},
   ord:()=>{$("tab-o").click();fgBar(null,"ord")}};
 (function(){const r=$("view-r"),c=$("view-c"),m=$("view-m");if(r&&c&&m){r.after(c);c.after(m)}})();
 function fgPage(code){const f=FGPG[code];if(f){f();window._fgcur=code}}
@@ -4944,7 +4945,39 @@ function rcMonData(){const M={},ck=PTPL.map(r=>r[0]);Object.keys(FGD).forEach(d=
     w.innerHTML='<button type="button" id="rc-imp-h" aria-expanded="false"><span>นำเข้ายอดรายวันจากไฟล์ Excel</span><span>\u25BC</span></button><div id="rc-imp" hidden><div class="note">ไฟล์ ผลิตจริงเข้าโกดังพี่ชุมพร: 1 แผ่น = 1 วัน · กด "เลือกไฟล์มาตรฐาน" เลือกไฟล์ที่ทำตามแม่แบบ ตรวจรายการด้านล่าง แล้วกด "บันทึกที่เลือก" · วันที่มีข้อมูลอยู่แล้วจะถูกเขียนทับ</div></div>';
     $("view-r").insertAdjacentElement("afterend",w);const hb=w.querySelector("#rc-imp-h"),bd=w.querySelector("#rc-imp");hb.onclick=()=>{const o=bd.hidden;bd.hidden=!o;hb.setAttribute("aria-expanded",o?"true":"false");hb.lastChild.textContent=o?"\u25B2":"\u25BC"}}
 })();
-window.sxMove=function(to){const sx=$("sx-d");if(!sx||!window.SXHOME)return;if(to==="rc"){const s=$("rc-imp");if(s&&sx.parentNode!==s){s.appendChild(sx);sx.open=true}}else if(sx.parentNode!==SXHOME.p){SXHOME.p.insertBefore(sx,SXHOME.n&&SXHOME.n.parentNode===SXHOME.p?SXHOME.n:null);sx.open=false}};
+window.sxMove=function(to){const sx=$("sx-d");if(!sx||!window.SXHOME)return;const id=to==="rc"?"rc-imp":to==="bk"?"bk-imp":null,s=id&&$(id);if(s){if(sx.parentNode!==s){s.appendChild(sx);sx.open=true}}else if(sx.parentNode!==SXHOME.p){SXHOME.p.insertBefore(sx,SXHOME.n&&SXHOME.n.parentNode===SXHOME.p?SXHOME.n:null);sx.open=false}};
+/* ===== ยอดจองฝ่ายขาย รายเดือน (kind "nbook") ===== */
+const BKM={y:"",m:""};
+function bkAll(){const o={};stkDates(["nbook"]).forEach(d=>{const B=stkGet("nbook",d);if(Object.keys(B).length)o[d.slice(0,7)]=B});return o}
+(function(){const host=$("view-x"),d=document.createElement("div");d.className="panel fgsec";d.id="x-bkmon";d.hidden=true;
+  d.innerHTML='<h2>ยอดจองฝ่ายขาย · ฟองน้ำ 200 รายเดือน (คู่)</h2><div class="note">ยอดจองที่ฝ่ายขายแจ้งไว้ในแต่ละเดือน แยกสี × เบอร์ เทียบกับยอดขายจริงของเดือนนั้น · นำเข้าด้วยแม่แบบมาตรฐาน (ชีตชื่อ "ยอดจอง") ที่กล่องนำเข้าด้านล่าง · เดือนเดิมจะถูกเขียนทับ</div><div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ปี</span><select id="bk-y"></select></div></div><div id="bk-body"></div>';host.appendChild(d);
+  const w=document.createElement("div");w.id="bk-imp-wrap";w.className="panel fgsec";w.hidden=true;
+  w.innerHTML='<button type="button" id="bk-imp-h" aria-expanded="true" style="all:unset;cursor:pointer;display:flex;justify-content:space-between;width:100%;font-weight:700"><span>นำเข้ายอดจองฝ่ายขาย (แม่แบบมาตรฐาน)</span><span>▲</span></button><div id="bk-imp"><div class="note">กด "ดาวน์โหลดแม่แบบมาตรฐาน" เพื่อได้ไฟล์แม่แบบ กรอกในชีต "ยอดจอง" (ใส่เดือนในช่อง B2) แล้วกด "เลือกไฟล์มาตรฐาน" ตรวจรายการ แล้วกดบันทึก</div></div>';host.appendChild(w);
+  const hb=w.querySelector("#bk-imp-h"),bd=w.querySelector("#bk-imp");hb.onclick=()=>{const o=bd.hidden;bd.hidden=!o;hb.setAttribute("aria-expanded",o?"true":"false");hb.lastChild.textContent=o?"▲":"▼"}})();
+function bkDraw(){const box=$("bk-body");if(!box)return;const A=bkAll(),ms=Object.keys(A).sort(),ys=[...new Set(ms.map(m=>m.slice(0,4)))].sort().reverse(),ysel=$("bk-y");
+  if(!ys.length){ysel.innerHTML="";box.innerHTML='<div class="empty">ยังไม่มียอดจองที่บันทึกไว้ — นำเข้าที่กล่อง "นำเข้ายอดจองฝ่ายขาย" ด้านล่าง</div>';return}
+  if(!ys.includes(BKM.y))BKM.y=ys[0];ysel.innerHTML=ys.map(y=>'<option value="'+y+'"'+(y===BKM.y?" selected":"")+">"+(+y+543)+" ("+y+")</option>").join("");
+  const D=slData(),ST=stotData(),my=Array.from({length:12},(_,i)=>BKM.y+"-"+p2(i+1)),has=m=>!!A[m],tot=a=>a.slice(0,6).reduce((x,y)=>x+(y||0),0),
+   bsum=(m,f)=>has(m)?Object.keys(A[m]).filter(f).reduce((x,k)=>x+tot(A[m][k]),0):null,isMain=k=>SC.includes(k),
+   sold=m=>D[m]?Object.values(D[m]).reduce((x,a)=>x+tot(a),0):(ST[m]!=null?ST[m]:null),
+   B=my.map(m=>bsum(m,()=>true)),S=my.map(sold),pc=(a,b)=>a!=null&&b?Math.round(a/b*100):null;
+  if(!my.includes(BKM.m)||!has(BKM.m))BKM.m=[...my].reverse().find(has)||"";
+  const mx=Math.max(1,...B.map(x=>x||0),...S.map(x=>x||0)),W=1100,H=330,L=52,R=14,Tp=60,Bt=44,pw=W-L-R,ph=H-Tp-Bt,ax=cAxis(mx),Y=v=>Tp+ph-v/ax.top*ph,gw=pw/12,bw=Math.min(30,gw*.34);
+  let g=ax.ticks.map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="cg"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="ct" text-anchor="end">'+cK(v)+"</text>").join("");
+  my.forEach((m,i)=>{const cx=L+gw*i+gw/2,bar=(v,x,c)=>v==null?"":'<rect x="'+x+'" y="'+Y(v)+'" width="'+bw+'" height="'+Math.max(0,Tp+ph-Y(v))+'" rx="4" fill="'+c+'"/><text transform="translate('+(x+bw/2+4)+" "+(Y(v)-4)+') rotate(-90)" class="ct" style="font-size:10.5px;font-weight:700">'+cK(v)+"</text>";
+    g+='<g data-m="'+m+'" style="cursor:'+(has(m)?"pointer":"default")+'"><title>'+thM(m)+": จอง "+(B[i]==null?"–":fmt(B[i]))+" · ขายจริง "+(S[i]==null?"–":fmt(S[i]))+'</title><rect x="'+(cx-gw/2)+'" y="'+Tp+'" width="'+gw+'" height="'+(ph+Bt)+'" fill="transparent"/>'+bar(B[i],cx-bw-1,"#f59e0b")+bar(S[i],cx+1,"#19c38b")+'<text x="'+cx+'" y="'+(H-24)+'" class="ct" text-anchor="middle" style="'+(m===BKM.m?"font-weight:700;fill:var(--accent)":"")+'">'+MON[i]+'</text>'+(pc(S[i],B[i])!=null?'<text x="'+cx+'" y="'+(H-8)+'" class="ct" text-anchor="middle" style="font-weight:600">'+pc(S[i],B[i])+"%</text>":"")+"</g>"});
+  const leg='<div class="cleg"><span><i style="background:#f59e0b"></i>ยอดจอง</span><span><i style="background:#19c38b"></i>ขายจริง</span><span class="sdz">ตัวเลขใต้เดือน = ขายจริง ÷ ยอดจอง · กดที่เดือนเพื่อดูรายละเอียด</span></div>';
+  const ym=my.filter(has);let h='<div class="cgsec">ยอดจอง เทียบยอดขายจริง · ปี '+(+BKM.y+543)+'</div>'+leg+'<svg viewBox="0 0 '+W+" "+H+'" class="csvg" role="img" aria-label="ยอดจองเทียบยอดขาย">'+g+"</svg>";
+  h+='<div class="scroll"><table class="cgrep"><thead><tr><th>เดือน</th><th>8 สีหลัก</th><th>สีพิเศษ</th><th class="tt">ยอดจองรวม</th><th>ขายจริง</th><th>ขายจริง ÷ จอง</th></tr></thead><tbody>'+
+   ym.map(m=>{const i=my.indexOf(m);return'<tr data-m="'+m+'" style="cursor:pointer'+(m===BKM.m?";background:var(--accent-soft)":"")+'"><th>'+thM(m)+"</th><td>"+fmt(bsum(m,isMain))+"</td><td>"+fmt(bsum(m,k=>!isMain(k)))+'</td><td class="tt">'+fmt(B[i])+"</td><td>"+(S[i]==null?"–":fmt(S[i]))+"</td><td>"+(pc(S[i],B[i])==null?"–":pc(S[i],B[i])+"%")+"</td></tr>"}).join("")+
+   '</tbody><tfoot><tr><th>รวมทั้งปี</th><td>'+fmt(ym.reduce((a,m)=>a+bsum(m,isMain),0))+"</td><td>"+fmt(ym.reduce((a,m)=>a+bsum(m,k=>!isMain(k)),0))+'</td><td class="tt">'+fmt(ym.reduce((a,m)=>a+bsum(m,()=>true),0))+"</td><td>"+fmt(ym.reduce((a,m)=>a+(sold(m)||0),0))+"</td><td>"+(pc(ym.reduce((a,m)=>a+(sold(m)||0),0),ym.filter(m=>sold(m)!=null).reduce((a,m)=>a+bsum(m,()=>true),0))||"–")+"%</td></tr></tfoot></table></div>";
+  if(BKM.m){const M=A[BKM.m],SL=D[BKM.m]||null,ks=Object.keys(M).filter(k=>tot(M[k])>0).sort((a,b)=>{const ia=PTPL.findIndex(r=>r[0]===a),ib=PTPL.findIndex(r=>r[0]===b);return(ia<0?99:ia)-(ib<0?99:ib)}),
+    row=k=>"<tr><th>"+escH(cLab(k)==k?((SXS.find(d=>d[0]===k)||[0,k])[1]):cLab(k))+"</th>"+M[k].slice(0,6).map((v,i)=>"<td>"+fmt(v||0)+"</td>").join("")+'<td class="tt">'+fmt(tot(M[k]))+"</td>"+(SL?"<td>"+fmt(SL[k]?tot(SL[k]):0)+"</td>":"")+"</tr>";
+    h+='<div class="cgsec">รายละเอียดยอดจอง '+thM(BKM.m)+' · สี × เบอร์</div><div class="scroll"><table class="cgrep"><thead><tr><th>สี</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+'<th class="tt">รวมจอง (คู่)</th>'+(SL?"<th>ขายจริง</th>":"")+"</tr></thead><tbody>"+ks.map(row).join("")+
+     '</tbody><tfoot><tr><th>รวม</th>'+SIZES.map((z,i)=>"<td>"+fmt(ks.reduce((a,k)=>a+(M[k][i]||0),0))+"</td>").join("")+'<td class="tt">'+fmt(ks.reduce((a,k)=>a+tot(M[k]),0))+"</td>"+(SL?"<td>"+fmt(ks.reduce((a,k)=>a+(SL[k]?tot(SL[k]):0),0))+"</td>":"")+"</tr></tfoot></table></div>"}
+  box.innerHTML=h}
+$("bk-y").addEventListener("input",e=>{BKM.y=e.target.value;BKM.m="";bkDraw()});
+$("bk-body").addEventListener("click",e=>{const t=e.target.closest("[data-m]");if(t&&t.dataset.m){BKM.m=t.dataset.m;bkDraw()}});
 function rcRowTip(r,a){const P=rcPlan(RCM.m),k=r[0],pl=P&&P.c[k]?P.c[k].slice(0,6).map(x=>x||0):null,R=Math.round,f=x=>x?R(x).toLocaleString("en-US"):"\u2013",T=v=>v.reduce((x,y)=>x+y,0),ac=a.slice(0,6).map(x=>x||0);
   let h='<div class="hvt">'+escH(r[1])+" \u00b7 "+thM(RCM.m)+" (\u0e04\u0e39\u0e48)</div>";
   if(!pl||!T(pl))h+='<div class="note" style="margin:4px 0">\u0e44\u0e21\u0e48\u0e21\u0e35\u0e43\u0e19\u0e41\u0e1c\u0e19\u0e1c\u0e25\u0e34\u0e15 ('+(P?revName(P.rev):"\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e41\u0e1c\u0e19")+") \u00b7 \u0e1c\u0e25\u0e34\u0e15\u0e41\u0e25\u0e49\u0e27 "+fmt(T(ac))+"</div>";
@@ -5666,6 +5699,7 @@ $("sx-save").onclick=async()=>{
   sxMsg("บันทึกแล้ว "+ok+" จาก "+posts.length+" รายการ"+(fail.length?" · ไม่สำเร็จ: "+fail.join("; ")+" — กด \"บันทึกที่เลือก\" อีกครั้งเพื่อลองเฉพาะรายการที่ไม่สำเร็จ":""),fail.length?"warn":"ok");
   SXIMP=SXIMP.filter(x=>{if(!(x.on&&x.st!=="err"))return false;const t=x.t,kind=t.id==="book"?"nbook":t.id==="qbase"?"qbase":t.id==="quota"?"quota":t.kind,date=(kind==="nbook"||kind==="qbase")?x.key+"-01":x.key,L=t.id==="day"?"รายวัน "+thD(x.key):t.id==="plan"?"แผน "+thM(x.key)+" "+revName(x.rev):"สต็อก/โควต้า/ยอดจอง "+thD(date);return failX.includes(L)});$("sx-prev").innerHTML="";if(SXIMP.length)sxDraw(0);
   try{await load();renderE()}catch(e){}
+  try{if(typeof bkDraw==="function")bkDraw()}catch(e){}
   try{if(typeof rcMonDraw==="function"){const dm=sel.filter(x=>x.t.id==="day").map(x=>x.key).sort().pop();if(dm){RCM.y=dm.slice(0,4);RCM.m=dm.slice(0,7)}else RCM.m="";rcMonDraw()}}catch(e){}
   $("sx-save").disabled=!SXIMP.some(x=>x.on);
 };
