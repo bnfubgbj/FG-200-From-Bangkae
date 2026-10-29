@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 237)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 238)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -1855,9 +1855,9 @@ function loadPdfJs(){
 const TM=/[่-์]/g,thn=t=>String(t).replace(/\s+/g,"").replace(/ํา/g,"า").replace(/ำ/g,"า").replace(TM,"");
 const PMONTHS=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"].map(thn);
 const PDFMAP=[[/^นาเงินลวน/,"น้ำเงิน/น้ำเงิน"],[/^แดงลวน/,"แดง/แดง"],[/^โกโกลวน/,"โกโก้ล้วน"],[/^ดาลวน/,"ดำ"],[/^ดา\(|หนาขาว/,"ดำ/ขาว"],
-  [/^Xmasหูเขียว/i,"เขียว/แดง"],[/^Xmasหูแดง/i,"แดง/เขียว"],[/โควิด/,"เหลือง/แดง"],
-  [/^พิเศษหูนาเงิน/,"น้ำเงิน/ดำ"],[/^พิเศษหูเขียว/,"เขียว/ดำ"],[/^พิเศษหูแดง/,"แดง/ดำ"],[/^พิเศษหูขาว/,"ขาว/ดำ"],[/^พิเศษหูเทา/,"เทา/ดำ"],
-  [/^พิเศษหูเหลือง/,"?เหลือง"],[/^พิเศษหูส/,"?น้ำตาล"],
+  [/^Xmasหูเขียว/i,"เขียว/แดง"],[/^Xmasหูแดง/i,"แดง/เขียว"],[/^พิเศษ(พืนดา)?หูเหลือง.*พระ/,"เหลือง/ดำ(พระ)"],[/^พิเศษ(พืนดา)?หูเหลือง.*โควิด/,"เหลือง/ดำ"],[/โควิด/,"เหลือง/แดง"],
+  [/^พิเศษ(พืนดา)?หูนาเงิน/,"น้ำเงิน/ดำ"],[/^พิเศษ(พืนดา)?หูเขียว/,"เขียว/ดำ"],[/^พิเศษ(พืนดา)?หูแดง/,"แดง/ดำ"],[/^พิเศษ(พืนดา)?หูขาว/,"ขาว/ดำ"],[/^พิเศษ(พืนดา)?หูเทา/,"เทา/ดำ"],
+  [/^พิเศษ(พืนดา)?หูเหลือง/,"?เหลือง"],[/^พิเศษหูส/,"?น้ำตาล"],
   [/^นาเงิน$/,"น้ำเงิน"],[/^เขียว$/,"เขียว"],[/^แดง$/,"แดง"],[/^เหลือง$/,"เหลือง"],[/^ขาว$/,"ขาว"],[/^เทา$/,"เทา"]];
 const nm=v=>{v=String(v).trim().replace(/,/g,"");if(v==="-"||v==="–")return 0;return /^\d+(\.\d+)?$/.test(v)?Math.round(Number(v)):null};
 async function readPlanPdf(file){
@@ -1871,7 +1871,7 @@ async function readPlanPdf(file){
   const mo=PMONTHS.findIndex(m=>fn.includes("เดือน"+m));const yr=(fn.match(new RegExp("เดือน"+PMONTHS[mo>=0?mo:0]+"(25\\d\\d|20\\d\\d)"))||[])[1];
   if(mo>=0&&yr){let y=+yr;if(y>2400)y-=543;out.month=y+"-"+p2(mo+1)}else out.warn.push("อ่านเดือนจากหัวใบไม่ได้ — เลือกเดือนเอง");
   const dm=full.match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{2,4})/);if(dm){let y=+dm[3];if(y<100)y+=2500;if(y>2400)y-=543;out.date=y+"-"+p2(+dm[2])+"-"+p2(+dm[1])}
-  out.revise=/แก.?ไข/.test(fn.slice(0,fn.indexOf("รองเท")>0?fn.indexOf("รองเท"):600));
+  out.revise=/แก.?ไข/.test(fn.slice(0,fn.indexOf("รองเทาฟองนารุน")>0?fn.indexOf("รองเทาฟองนารุน"):600));{const hd=fn.slice(0,fn.indexOf("รองเทาฟองนารุน")>0?fn.indexOf("รองเทาฟองนารุน"):600),rv=hd.match(/แก.?ไข(\d+)/);if(rv)out.revNo=+rv[1]}
   const note=[];for(const l of lines){const t=thn(txt(l));if(/ปร.?บ(ลด|เพิ)/.test(t)||(/แก.?ไข/.test(t)&&/ขอเรียน/.test(t)&&0))note.push(txt(l).replace(/\s+/g," ").replace(/\s([ัิ-ฺ็-๎])/g,"$1").replace(/สีดา\b/g,"สีดำ").trim())}
   out.note=(out.revise?"แก้ไข · ":"")+note.join(" ; ").replace(/(\d)\s*([,.])\s*(\d)/g,"$1$2$3").replace(/\s+,/g,",").replace(/สีดา(?=\s|$)/g,"สีดำ");
   const data=[];let totRow=null,hdr=false;
@@ -3435,9 +3435,9 @@ function loadPdfJs(){
 const TM=/[่-์]/g,thn=t=>String(t).replace(/\s+/g,"").replace(/ํา/g,"า").replace(/ำ/g,"า").replace(TM,"");
 const PMONTHS=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"].map(thn);
 const PDFMAP=[[/^นาเงินลวน/,"น้ำเงิน/น้ำเงิน"],[/^แดงลวน/,"แดง/แดง"],[/^โกโกลวน/,"โกโก้ล้วน"],[/^ดาลวน/,"ดำ"],[/^ดา\(|หนาขาว/,"ดำ/ขาว"],
-  [/^Xmasหูเขียว/i,"เขียว/แดง"],[/^Xmasหูแดง/i,"แดง/เขียว"],[/โควิด/,"เหลือง/แดง"],
-  [/^พิเศษหูนาเงิน/,"น้ำเงิน/ดำ"],[/^พิเศษหูเขียว/,"เขียว/ดำ"],[/^พิเศษหูแดง/,"แดง/ดำ"],[/^พิเศษหูขาว/,"ขาว/ดำ"],[/^พิเศษหูเทา/,"เทา/ดำ"],
-  [/^พิเศษหูเหลือง/,"?เหลือง"],[/^พิเศษหูส/,"?น้ำตาล"],
+  [/^Xmasหูเขียว/i,"เขียว/แดง"],[/^Xmasหูแดง/i,"แดง/เขียว"],[/^พิเศษ(พืนดา)?หูเหลือง.*พระ/,"เหลือง/ดำ(พระ)"],[/^พิเศษ(พืนดา)?หูเหลือง.*โควิด/,"เหลือง/ดำ"],[/โควิด/,"เหลือง/แดง"],
+  [/^พิเศษ(พืนดา)?หูนาเงิน/,"น้ำเงิน/ดำ"],[/^พิเศษ(พืนดา)?หูเขียว/,"เขียว/ดำ"],[/^พิเศษ(พืนดา)?หูแดง/,"แดง/ดำ"],[/^พิเศษ(พืนดา)?หูขาว/,"ขาว/ดำ"],[/^พิเศษ(พืนดา)?หูเทา/,"เทา/ดำ"],
+  [/^พิเศษ(พืนดา)?หูเหลือง/,"?เหลือง"],[/^พิเศษหูส/,"?น้ำตาล"],
   [/^นาเงิน$/,"น้ำเงิน"],[/^เขียว$/,"เขียว"],[/^แดง$/,"แดง"],[/^เหลือง$/,"เหลือง"],[/^ขาว$/,"ขาว"],[/^เทา$/,"เทา"]];
 const nm=v=>{v=String(v).trim().replace(/,/g,"");if(v==="-"||v==="–")return 0;return /^\d+(\.\d+)?$/.test(v)?Math.round(Number(v)):null};
 async function readPlanPdf(file){
@@ -3451,7 +3451,7 @@ async function readPlanPdf(file){
   const mo=PMONTHS.findIndex(m=>fn.includes("เดือน"+m));const yr=(fn.match(new RegExp("เดือน"+PMONTHS[mo>=0?mo:0]+"(25\\d\\d|20\\d\\d)"))||[])[1];
   if(mo>=0&&yr){let y=+yr;if(y>2400)y-=543;out.month=y+"-"+p2(mo+1)}else out.warn.push("อ่านเดือนจากหัวใบไม่ได้ — เลือกเดือนเอง");
   const dm=full.match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{2,4})/);if(dm){let y=+dm[3];if(y<100)y+=2500;if(y>2400)y-=543;out.date=y+"-"+p2(+dm[2])+"-"+p2(+dm[1])}
-  out.revise=/แก.?ไข/.test(fn.slice(0,fn.indexOf("รองเท")>0?fn.indexOf("รองเท"):600));
+  out.revise=/แก.?ไข/.test(fn.slice(0,fn.indexOf("รองเทาฟองนารุน")>0?fn.indexOf("รองเทาฟองนารุน"):600));{const hd=fn.slice(0,fn.indexOf("รองเทาฟองนารุน")>0?fn.indexOf("รองเทาฟองนารุน"):600),rv=hd.match(/แก.?ไข(\d+)/);if(rv)out.revNo=+rv[1]}
   const note=[];for(const l of lines){const t=thn(txt(l));if(/ปร.?บ(ลด|เพิ)/.test(t)||(/แก.?ไข/.test(t)&&/ขอเรียน/.test(t)&&0))note.push(txt(l).replace(/\s+/g," ").replace(/\s([ัิ-ฺ็-๎])/g,"$1").replace(/สีดา\b/g,"สีดำ").trim())}
   out.note=(out.revise?"แก้ไข · ":"")+note.join(" ; ").replace(/(\d)\s*([,.])\s*(\d)/g,"$1$2$3").replace(/\s+,/g,",").replace(/สีดา(?=\s|$)/g,"สีดำ");
   const data=[];let totRow=null,hdr=false;
@@ -3509,9 +3509,12 @@ function pfInit(){
 }
 function pfRevs(){
   const m=$("pf-month").value,rs=m&&PL[m]?Object.keys(PL[m]).map(Number).sort((a,b)=>a-b):[],nx=rs.length?rs[rs.length-1]+1:0,cv0=$("pf-rev").value;
-  $("pf-rev").innerHTML='<option value="'+nx+'">'+(nx===0?"แผนเริ่มต้น (ใหม่)":"revise ครั้งที่ "+nx+" (ใหม่)")+"</option>"+rs.slice().reverse().map(r=>'<option value="'+r+'">เขียนทับ '+(r===0?"แผนเริ่มต้น":"revise ครั้งที่ "+r)+"</option>").join("");
+  const det=PFIMP&&PFIMP.revNo!=null?PFIMP.revNo:null,dn=r=>r===0?"แผนเริ่มต้น":"revise ครั้งที่ "+r;
+  $("pf-rev").innerHTML=(det!==null&&!rs.includes(det)&&det!==nx?'<option value="'+det+'">บันทึกเป็น '+dn(det)+" (ตามที่ระบุใน PDF)</option>":"")+'<option value="'+nx+'">'+(nx===0?"แผนเริ่มต้น (ใหม่)":"revise ครั้งที่ "+nx+" (ใหม่)")+"</option>"+rs.slice().reverse().map(r=>'<option value="'+r+'">เขียนทับ '+(r===0?"แผนเริ่มต้น":"revise ครั้งที่ "+r)+"</option>").join("");
   if([...$("pf-rev").options].some(o=>o.value===cv0))$("pf-rev").value=cv0;
+  if(det!==null&&!PFIMP._u&&[...$("pf-rev").options].some(o=>o.value===String(det)))$("pf-rev").value=String(det);
 }
+$("pf-rev").addEventListener("change",()=>{if(PFIMP)PFIMP._u=1});
 function pfDraw(){
   $("pf-cancel").hidden=!PFIMP;
   if(!PFIMP){$("pf-prev").innerHTML="";$("pf-save").disabled=true;return}
@@ -3526,15 +3529,15 @@ $("pf-type").onchange=()=>{const pdf=$("pf-type").value==="pdf";$("pf-file").acc
 const escH=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 async function readPlanFromPdf(f){const r=await readPlanPdf(f);if(!Object.keys(r.rows).length){return r.warn.length?{err:r.warn.join(" · ")}:null}
   if(r.month){$("pf-month").value=r.month;pfRevs()}
-  const ex=(r.okSum?'<div class="note" style="color:var(--ok)">ตรงกับยอดรวมท้ายตารางใน PDF ('+fmt(r.okSum)+' คู่)'+(r.revise?" · เอกสารระบุ (แก้ไข) → บันทึกเป็นฉบับใหม่":"")+'</div>':"")+
+  const ex=(r.okSum?'<div class="note" style="color:var(--ok)">ตรงกับยอดรวมท้ายตารางใน PDF ('+fmt(r.okSum)+' คู่)'+(r.revise?" · เอกสารระบุ (แก้ไข"+(r.revNo!=null?" "+r.revNo:"")+") → ระบบเลือกฉบับให้ตามเอกสาร":"")+'</div>':"")+
     (r.unmapped.length?'<div class="note" style="color:var(--warn)">⚠ แถวที่จับคู่กับสีในระบบไม่ได้ (ไม่ได้นำเข้า): '+escH(r.unmapped.join(" ; "))+'</div>':"")+
     r.warn.map(w=>'<div class="note" style="color:var(--warn)">⚠ '+escH(w)+'</div>').join("");
-  return {sheet:"PDF",rows:r.rows,un:[],n:Object.keys(r.rows).length,hdr:true,date:r.date,note:r.note,extra:ex,badMsg:(r.sumBad?"ยอดที่อ่านได้ไม่ตรงกับยอดรวมท้ายตารางใน PDF":"")+(r.unmapped.length?(r.sumBad?" และ ":"")+"มี "+r.unmapped.length+" แถวที่ไม่ได้นำเข้า ("+r.unmapped.join(" ; ")+")":""),pdfTotal:r.okSum||0}}
+  return {sheet:"PDF",rows:r.rows,un:[],n:Object.keys(r.rows).length,hdr:true,date:r.date,note:r.note,extra:ex,badMsg:(r.sumBad?"ยอดที่อ่านได้ไม่ตรงกับยอดรวมท้ายตารางใน PDF":"")+(r.unmapped.length?(r.sumBad?" และ ":"")+"มี "+r.unmapped.length+" แถวที่ไม่ได้นำเข้า ("+r.unmapped.join(" ; ")+")":""),pdfTotal:r.okSum||0,revNo:r.revNo}}
 $("pf-file").onchange=async e=>{const f=e.target.files[0];if(!f)return;const m=$("pf-msg");m.hidden=false;m.className="msg";m.textContent="กำลังอ่านไฟล์…";
   try{const isPdf=/\.pdf$/i.test(f.name)||f.type==="application/pdf";
     if(isPdf){const x=await readPlanFromPdf(f);if(x&&x.err){PFIMP=null;pfDraw();m.className="msg warn";m.textContent=x.err;e.target.value="";return}PFIMP=x}
     else{if(typeof ExcelJS==="undefined")throw new Error("โหลดตัวอ่าน Excel ไม่ได้");PFIMP=await readPlanFile(f)}
-    if(!PFIMP){m.className="msg warn";m.textContent="ไม่พบแถวสีที่รู้จักในไฟล์นี้ (ชื่อสีต้องอยู่คอลัมน์ A–C)";}else{m.hidden=true;PFIMP.name=f.name}
+    if(!PFIMP){m.className="msg warn";m.textContent="ไม่พบแถวสีที่รู้จักในไฟล์นี้ (ชื่อสีต้องอยู่คอลัมน์ A–C)";}else{m.hidden=true;PFIMP.name=f.name;pfRevs()}
     pfDraw()}catch(err){PFIMP=null;pfDraw();m.className="msg warn";m.textContent="อ่านไฟล์ไม่ได้: "+(err&&err.message||"error")}
   e.target.value=""};
 $("pf-month").onchange=pfRevs;
