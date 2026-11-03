@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 241)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 242)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2417,22 +2417,27 @@ function xlDraw(){const L=$("xsl-list");if(!L)return;const ds=dates(),ys=[...new
     ms.slice().reverse().map(m=>{const A=xsAgg(xlDays(m));
       return '<details class="xm" data-k="m'+m+'"'+(open.has("m"+m)?" open":"")+'><summary><b>'+thM(m)+'</b><span class="note">'+A.n+' วัน · รวม '+fmt(A.tot)+' แผ่น · ≈ '+fmt(A.tot*f)+' คู่</span><span class="xs"><button class="btn ghost" type="button" data-xl="m'+m+'">ดาวน์โหลด Excel เดือนนี้</button><button class="btn ghost" type="button" data-xc="'+m+'" style="color:var(--bad,#c62828)">ล้างข้อมูลเดือนนี้</button></span></summary><div class="xb">'+xlTable(m)+"</div></details>"}).join("")+"</details>"}).join("")}
 function dayGrid(wb,name,days,mul,filt,unitTxt){
-  const ws=wb.addWorksheet(name.slice(0,31)),ds=days.filter(d=>DATA[d]).sort(),thin={style:"thin",color:{argb:"FF999999"}},B={top:thin,left:thin,bottom:thin,right:thin},F0="#,##0;-#,##0;-";
+  const ws=wb.addWorksheet(name.slice(0,31)),ds=days.filter(d=>DATA[d]).sort(),thin={style:"thin",color:{argb:"FFBBBBBB"}},B={top:thin,left:thin,bottom:thin,right:thin},F0="#,##0;-#,##0;-";
   const L=n=>{let r="";while(n>0){const m=(n-1)%26;r=String.fromCharCode(65+m)+r;n=Math.floor((n-1)/26)}return r},fl=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
   const per=ds.map(d=>{const o={};Object.keys(DATA[d]).forEach(k=>{if(k==="_s"||(filt&&!selC.has(k)))return;const pk=SUPMAP[k]||k,a=o[pk]=o[pk]||[0,0,0,0,0,0],h=HK(k);DATA[d][k].forEach((x,i)=>{if(!filt||selS.has(SIZES[i]))a[i]+=x*h*mul})});Object.keys(o).forEach(k=>{o[k]=o[k].map(Math.round)});return o});
   const U={};per.forEach(o=>Object.keys(o).forEach(k=>{const a=U[k]=U[k]||[0,0,0,0,0,0];o[k].forEach((x,i)=>a[i]+=x)}));
-  const nd=ds.length,last=nd+3;ws.columns=[{width:26},{width:8}].concat(ds.map(()=>({width:8.5})),[{width:12}]);
-  const hr=ws.addRow(["สี","เบอร์"].concat(ds.map(d=>+d.slice(8)+"/"+(+d.slice(5,7))),["รวม"]));hr.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fl("1A56DB");x.alignment={horizontal:"center"};x.border=B});
-  const subs=[];
-  xlKeys(U).forEach(k=>{if(!U[k]||!U[k].some(x=>x>0))return;const cl=colOf(k),r0=ws.rowCount+1;
-    SIZES.forEach((z,i)=>{if(!(U[k][i]>0))return;const r=ws.rowCount+1,row=ws.addRow([xlLab(k),+z].concat(per.map(o=>(o[k]&&o[k][i])||0),[{formula:"SUM(C"+r+":"+L(nd+2)+r+")",result:per.reduce((q,o)=>q+((o[k]&&o[k][i])||0),0)}]));
-      row.eachCell((x,j)=>{x.border=B;x.fill=fl(cl[0]);if(j===1)x.font={bold:true,color:{argb:"FF"+cl[1]}};if(j===2)x.alignment={horizontal:"center"};if(j>2){x.numFmt=F0;x.alignment={horizontal:"right"}}})});
-    const r1=ws.rowCount;if(r1<r0)return;const rs=ws.rowCount+1,tr=ws.addRow(["รวม "+xlLab(k),""].concat(ds.map((d,j)=>({formula:"SUM("+L(j+3)+r0+":"+L(j+3)+r1+")",result:per[j][k]?per[j][k].reduce((a,b)=>a+b,0):0})),[{formula:"SUM(C"+rs+":"+L(nd+2)+rs+")",result:per.reduce((q,o)=>q+(o[k]?o[k].reduce((a,b)=>a+b,0):0),0)}]));
-    tr.eachCell((x,j)=>{x.font={bold:true};x.border=B;x.fill=fl("EEF2FF");if(j>2){x.numFmt=F0;x.alignment={horizontal:"right"}}});subs.push(rs)});
-  const gr=ws.rowCount+1,gt=ws.addRow(["รวมทั้งหมด",""].concat(ds.map((d,j)=>({formula:subs.length?subs.map(r=>L(j+3)+r).join("+"):"0",result:Object.values(per[j]).reduce((q,a)=>q+a.reduce((x,y)=>x+y,0),0)})),[{formula:"SUM(C"+gr+":"+L(nd+2)+gr+")",result:per.reduce((q,o)=>q+Object.values(o).reduce((u,a)=>u+a.reduce((x,y)=>x+y,0),0),0)}]));
-  gt.eachCell((x,j)=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fl("0D3B9E");x.border=B;if(j>2)x.numFmt=F0});
-  ws.addRow([]);const nt=ws.addRow(["หน่วย: "+unitTxt+" · แถวเป็นสี × เบอร์ คอลัมน์เป็นวันที่จ่ายไปประกอบ (เฉพาะแถวที่มียอด)"+(HP()?" · หักเผื่อ รง. "+HP()+"% เฉพาะสีธรรมดา (สีพิเศษไม่หัก)":"")]);nt.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}};
-  ws.views=[{state:"frozen",xSplit:2,ySplit:1}]}
+  const keys=xlKeys(U).filter(k=>U[k]&&U[k].some(x=>x>0)),nc=keys.length*6,lastC=1+nc,totC=lastC+1;
+  ws.columns=[{width:15}].concat(keys.flatMap(()=>SIZES.map(()=>({width:9}))),[{width:13}]);
+  const t=ws.addRow(["แผ่นยางรายวัน ("+unitTxt+")"+(HP()?" · หักเผื่อ รง. "+HP()+"% เฉพาะสีธรรมดา (สีพิเศษไม่หัก)":"")]);t.getCell(1).font={bold:true,size:13};
+  const bn=ws.addRow([""]),hd=ws.addRow(["วันที่"]);hd.getCell(1).font={bold:true};
+  keys.forEach((k,g)=>{const c0=2+g*6,hx=(typeof HEX!=="undefined"&&HEX[k])||"1A56DB",lum=(parseInt(hx.slice(1,3)||"00",16)*.3+parseInt(hx.slice(3,5)||"00",16)*.59+parseInt(hx.slice(5,7)||"00",16)*.11);
+    const hh=hx.replace("#","");ws.mergeCells(bn.number,c0,bn.number,c0+5);const x=bn.getCell(c0);x.value=xlLab(k);x.fill=fl(hh.length===6?hh:"1A56DB");x.font={bold:true,color:{argb:lum>170?"FF000000":"FFFFFFFF"}};x.alignment={horizontal:"center"};
+    for(let q=0;q<6;q++){const y=bn.getCell(c0+q);y.border=B;if(q)y.fill=fl(hh.length===6?hh:"1A56DB");const h=hd.getCell(c0+q);h.value=+SIZES[q];h.font={bold:true};h.alignment={horizontal:"right"};h.border=B}});
+  const th=hd.getCell(totC);th.value="รวมทุกสี";th.font={bold:true};th.alignment={horizontal:"right"};th.border=B;
+  const first=ws.rowCount+1;
+  ds.forEach((d,r)=>{const rn=ws.rowCount+1,vals=[];let tot=0;keys.forEach(k=>SIZES.forEach((z,i)=>{const v=(per[r][k]&&per[r][k][i])||0;vals.push(v);tot+=v}));
+    const row=ws.addRow([thD2(d)].concat(vals,[{formula:"SUM(B"+rn+":"+L(lastC)+rn+")",result:tot}]));
+    row.eachCell((x,j)=>{x.border=B;if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}});row.getCell(totC).font={bold:true}});
+  const lr=ws.rowCount,gr=ws.rowCount+1,sums=[];keys.forEach(k=>SIZES.forEach((z,i)=>sums.push(per.reduce((q,o)=>q+((o[k]&&o[k][i])||0),0))));
+  const gt=ws.addRow(["รวม"].concat(sums.map((v,j)=>({formula:"SUM("+L(j+2)+first+":"+L(j+2)+lr+")",result:v})),[{formula:"SUM("+L(totC)+first+":"+L(totC)+lr+")",result:sums.reduce((a,b)=>a+b,0)}]));
+  gt.eachCell((x,j)=>{x.font={bold:true};x.fill=fl("DCE6FA");x.border=B;if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}});
+  ws.views=[{state:"frozen",xSplit:1,ySplit:3}]}
+const thD2=d=>d.slice(8)+"/"+d.slice(5,7)+"/"+(+d.slice(0,4)+543);
 async function xlExcel(ms,name){const wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},T=a=>a.reduce((x,y)=>x+y,0),F0="#,##0;-#,##0;-",f=F(),hn=HP()?" · หักเผื่อ รง. "+HP()+"% เฉพาะสีธรรมดา (สีพิเศษไม่หัก)":"";
   const head=(ws,a)=>{const h=ws.addRow(a);h.eachCell(x=>{x.font={bold:true,color:{argb:"FFFFFFFF"}};x.fill=fill("1A56DB");x.alignment={horizontal:"center"};x.border=B})};
   const cols=ws=>{ws.columns=[{width:40}].concat(SIZES.map(()=>({width:11})),[{width:15}])};
@@ -2444,7 +2449,7 @@ async function xlExcel(ms,name){const wb=new ExcelJS.Workbook(),fill=x=>({type:"
     ws.addRow([]);const t1=ws.addRow(["รายวัน (แผ่น)"]);t1.getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};head(ws,["วันที่ / สี"].concat(SIZES,["รวม"]));
     days.forEach(d=>{const dr=ws.addRow([thD(d)]);dr.eachCell(x=>{x.font={bold:true};x.fill=fill("EEF2FF");x.border=B});ws.mergeCells(dr.number,1,dr.number,8);
       {const dm=xlRemap(Object.fromEntries(Object.keys(DATA[d]).filter(k=>k!=="_s").map(k=>[k,DATA[d][k].map(x=>x*HK(k))])));xlKeys(dm).forEach(k=>{const v=dm[k];if(!v||!v.some(x=>x))return;const n=ws.rowCount+1,cl=colOf(k),row=ws.addRow(["   "+xlLab(k)].concat(v,[{formula:"SUM(B"+n+":G"+n+")",result:T(v)}]));row.eachCell((q,j)=>{q.border=B;q.fill=fill(cl[0]);if(j>1)q.numFmt=F0;if(j===1)q.font={color:{argb:"FF"+cl[1]}}})})}})});
-  ms.forEach(m=>dayGrid(wb,"รายวัน "+thM(m),xlDays(m),1,false,"แผ่นยาง"));
+  ms.forEach(m=>dayGrid(wb,"รายวัน "+thM(m),xlDays(m),1,false,"แผ่น"));
   await saveBook(wb,name)}
 $("xsl-list").addEventListener("click",async e=>{
   const c=e.target.closest&&e.target.closest("[data-xc]");
@@ -2919,7 +2924,7 @@ $("xl").onclick=async()=>{
     c.daily.forEach(x=>{const r=w2.rowCount+1;w2.addRow([thD(x[0]),x[2],x[1],{formula:"C"+r+"*"+f,result:Math.round(x[1]*f)}])});
     const n=w2.rowCount;const tr=w2.addRow(["รวม","",{formula:"SUM(C2:C"+n+")"},{formula:"SUM(D2:D"+n+")"}]);tr.font={bold:true};
     w2.eachRow(r=>r.eachCell((x,j)=>{if(j>2)x.numFmt="#,##0"}));
-    dayGrid(wb,"รายวัน สี×เบอร์ (แผ่น)",c.inR,1,true,"แผ่นยาง");dayGrid(wb,"รายวัน สี×เบอร์ (คู่)",c.inR,f,true,"คู่ (แผ่น × "+f+")");
+    dayGrid(wb,"รายวัน สี×เบอร์ (แผ่น)",c.inR,1,true,"แผ่น");dayGrid(wb,"รายวัน สี×เบอร์ (คู่)",c.inR,f,true,"คู่ (แผ่น × "+f+")");
     await saveBook(wb,"คาดการณ์จากยอดนึ่ง_"+c.f+"_ถึง_"+c.t+".xlsx");
     b.textContent="ดาวน์โหลดแล้ว";
   }catch(e){b.textContent="สร้างไฟล์ไม่สำเร็จ";console.error(e)}
