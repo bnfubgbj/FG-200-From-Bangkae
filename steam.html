@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 243)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 244)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2416,17 +2416,17 @@ function xlDraw(){const L=$("xsl-list");if(!L)return;const ds=dates(),ys=[...new
     return '<details class="xy" data-k="y'+y+'"'+(open.has("y"+y)||ys.length===1?" open":"")+'><summary>ปี '+(+y+543)+' <span class="note" style="font-weight:400">('+ms.length+' เดือนที่มีข้อมูล)</span><span class="xs"><button class="btn ghost" type="button" data-xl="y'+y+'">ดาวน์โหลด Excel ทั้งปี</button></span></summary>'+
     ms.slice().reverse().map(m=>{const A=xsAgg(xlDays(m));
       return '<details class="xm" data-k="m'+m+'"'+(open.has("m"+m)?" open":"")+'><summary><b>'+thM(m)+'</b><span class="note">'+A.n+' วัน · รวม '+fmt(A.tot)+' แผ่น · ≈ '+fmt(A.tot*f)+' คู่</span><span class="xs"><button class="btn ghost" type="button" data-xl="m'+m+'">ดาวน์โหลด Excel เดือนนี้</button><button class="btn ghost" type="button" data-xc="'+m+'" style="color:var(--bad,#c62828)">ล้างข้อมูลเดือนนี้</button></span></summary><div class="xb">'+xlTable(m)+"</div></details>"}).join("")+"</details>"}).join("")}
-function dayGrid(wb,name,days,mul,filt,unitTxt){
-  const ws=wb.addWorksheet(name.slice(0,31)),ds=days.filter(d=>DATA[d]).sort(),thin={style:"thin",color:{argb:"FFBBBBBB"}},B={top:thin,left:thin,bottom:thin,right:thin},F0="#,##0;-#,##0;-";
+function dayGrid(wb,name,days,mul,filt,unitTxt,opt){opt=opt||{};
+  const ws=wb.addWorksheet(name.slice(0,31)),ds=days.filter(d=>opt.get?opt.get(d):DATA[d]).sort(),thin={style:"thin",color:{argb:"FFBBBBBB"}},B={top:thin,left:thin,bottom:thin,right:thin},F0="#,##0;-#,##0;-";
   const L=n=>{let r="";while(n>0){const m=(n-1)%26;r=String.fromCharCode(65+m)+r;n=Math.floor((n-1)/26)}return r},fl=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
-  const per=ds.map(d=>{const o={};Object.keys(DATA[d]).forEach(k=>{if(k==="_s"||(filt&&!selC.has(k)))return;const pk=SUPMAP[k]||k,a=o[pk]=o[pk]||[0,0,0,0,0,0],h=HK(k);DATA[d][k].forEach((x,i)=>{if(!filt||selS.has(SIZES[i]))a[i]+=x*h*mul})});Object.keys(o).forEach(k=>{o[k]=o[k].map(Math.round)});return o});
+  const per=ds.map(d=>{const o={};if(opt.get){const g=opt.get(d);Object.keys(g).forEach(k=>{const a=o[k]=o[k]||[0,0,0,0,0,0];g[k].forEach((x,i)=>{a[i]+=(+x||0)*mul})})}else Object.keys(DATA[d]).forEach(k=>{if(k==="_s"||(filt&&!selC.has(k)))return;const pk=SUPMAP[k]||k,a=o[pk]=o[pk]||[0,0,0,0,0,0],h=HK(k);DATA[d][k].forEach((x,i)=>{if(!filt||selS.has(SIZES[i]))a[i]+=x*h*mul})});Object.keys(o).forEach(k=>{o[k]=o[k].map(Math.round)});return o});
   const U={};per.forEach(o=>Object.keys(o).forEach(k=>{const a=U[k]=U[k]||[0,0,0,0,0,0];o[k].forEach((x,i)=>a[i]+=x)}));
-  const BK=(()=>{try{return bkAll()}catch(e){return{}}})(),ms=[...new Set(ds.map(d=>d.slice(0,7)))].filter(m=>BK[m]&&Object.keys(BK[m]).some(k=>(BK[m][k]||[]).some(x=>x>0))),bf=mul/F();
+  const BK=(()=>{try{return bkAll()}catch(e){return{}}})(),ms=[...new Set(ds.map(d=>d.slice(0,7)))].filter(m=>!opt.noBook&&BK[m]&&Object.keys(BK[m]).some(k=>(BK[m][k]||[]).some(x=>x>0))),bf=mul/F();
   const bv=(m,k)=>(BK[m]&&BK[m][k]?BK[m][k]:[0,0,0,0,0,0]).map((x,i)=>(!filt||(selS.has(SIZES[i])&&selC.has(FK[k]||k)))?Math.round((+x||0)*bf):0);
   const bkKeys=new Set();ms.forEach(m=>Object.keys(BK[m]).forEach(k=>{if(bv(m,k).some(x=>x>0))bkKeys.add(k)}));
   const keys=xlKeys(U).filter(k=>(U[k]&&U[k].some(x=>x>0))||bkKeys.has(k)).concat([...bkKeys].filter(k=>!(U[k]&&U[k].some(x=>x>0))&&!xlKeys(U).includes(k))),nc=keys.length*6,lastC=1+nc,totC=lastC+1;
   ws.columns=[{width:15}].concat(keys.flatMap(()=>SIZES.map(()=>({width:9}))),[{width:13}]);
-  const t=ws.addRow(["แผ่นยางรายวัน ("+unitTxt+")"+(HP()?" · หักเผื่อ รง. "+HP()+"% เฉพาะสีธรรมดา (สีพิเศษไม่หัก)":"")]);t.getCell(1).font={bold:true,size:13};
+  const t=ws.addRow([(opt.title||"แผ่นยางรายวัน")+" ("+unitTxt+")"+(!opt.get&&HP()?" · หักเผื่อ รง. "+HP()+"% เฉพาะสีธรรมดา (สีพิเศษไม่หัก)":"")]);t.getCell(1).font={bold:true,size:13};
   const bn=ws.addRow([""]),hd=ws.addRow(["วันที่"]);hd.getCell(1).font={bold:true};
   keys.forEach((k,g)=>{const c0=2+g*6,hx=(typeof HEX!=="undefined"&&HEX[k])||"1A56DB",lum=(parseInt(hx.slice(1,3)||"00",16)*.3+parseInt(hx.slice(3,5)||"00",16)*.59+parseInt(hx.slice(5,7)||"00",16)*.11);
     const hh=hx.replace("#","");ws.mergeCells(bn.number,c0,bn.number,c0+5);const x=bn.getCell(c0);x.value=xlLab(k);x.fill=fl(hh.length===6?hh:"1A56DB");x.font={bold:true,color:{argb:lum>170?"FF000000":"FFFFFFFF"}};x.alignment={horizontal:"center"};
@@ -2605,6 +2605,9 @@ async function cmpExcel(){const f=$("c-from").value,t=$("c-to").value,src=CSRC.f
       fgTable(ws,items,{head:()=>head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]),c),B,fill,fmt:ref?FD:F0,subFmt:ref?FD:"#,##0"})};
     src.forEach(s=>mk(s[1],o[s[0]],null,HC[s[0]],s[1]+" — สี × เบอร์ (คู่)"));
     if($("c-s-plan").checked)src.filter(s=>s[0]!=="plan").forEach(s=>mk("ส่วนต่าง "+s[1],o[s[0]],o.plan,HC[s[0]],"ส่วนต่าง: "+s[1]+" − แผนผลิต (คู่)  เขียว = เกินแผน · ส้มแดง = ต่ำกว่าแผน (สูตรลิงก์จากแท็บ "+s[1]+" และ แผนผลิต)",s[1].slice(0,31),"แผนผลิต"))}
+  {const rng=[];for(let d=f;d<=t;d=addD(d,1))rng.push(d);
+    if($("c-s-asm").checked)dayGrid(wb,"รายวัน แผนประกอบ (คู่)",rng,F(),false,"คู่",{title:"แผนประกอบรายวัน"});
+    if($("c-s-act").checked){const ad=rng.filter(d=>FGD[d]&&Object.values(FGD[d]).some(v=>v.some(x=>x)));if(ad.length)dayGrid(wb,"รายวัน รับจริงเข้าโกดัง (คู่)",ad,1,false,"คู่",{title:"รับจริงเข้าโกดังรายวัน",noBook:true,get:d=>FGD[d]||null})}}
   await saveBook(wb,"ติดตามการผลิต_"+f+"_ถึง_"+t+".xlsx");return""}
 $("c-xl").onclick=async()=>{const b=$("c-xl"),old="ดาวน์โหลด Excel";if(typeof ExcelJS==="undefined"){b.textContent="โหลดตัวสร้าง Excel ไม่ได้";setTimeout(()=>b.textContent=old,2500);return}
   b.disabled=true;b.textContent="กำลังสร้างไฟล์…";try{const m=await cmpExcel();b.textContent=m||"ดาวน์โหลดแล้ว"}catch(err){b.textContent="สร้างไฟล์ไม่ได้"}setTimeout(()=>{b.textContent=old;b.disabled=false},2500)};
