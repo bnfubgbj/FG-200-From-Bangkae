@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 246)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 247)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4784,6 +4784,30 @@ cgXlBtn($("x-cgstk"),"xl-stk",async()=>{const d=$("cgr-d").value;if(!d)cgNone();
     T.idx.forEach((zi,q)=>{const R=r1+q,row=rows[4+q];for(let k=0;k<3;k++){const c0=k*6;row[c0]=CVS[zi];for(let j=0;j<3;j++){const v=T.v[k][j][zi];row[c0+1+j]=k<2?v:FX(L(2+j)+R+"+"+L(8+j)+R,v)}
       const tv=cvSum1(T.v[k].map(c=>c[zi]));row[c0+4]=FX("SUM("+L(c0+2)+R+":"+L(c0+4)+R+")",tv)}});
     for(let k=0;k<3;k++){const c0=k*6,tr=rows[rl],pr=rows[rl+1];tr[c0]="รวม";pr[c0]="% สี";const gt=T.tot[k];for(let j=0;j<4;j++){const col=L(c0+2+j),val=j<3?cvSum1(T.v[k][j]):gt;tr[c0+1+j]=n?FX("SUM("+col+r1+":"+col+rl+")",val):val;pr[c0+1+j]=FX(col+TR+"/$"+L(c0+5)+"$"+TR,gt?val/gt:"",true)}}
+    let SEC=null;{const mo=d.slice(0,7),PLm=cvAll("cvplan")[mo+"-01"]||{},RC=cvAll(),dys=Object.keys(RC).filter(x=>x.slice(0,7)===mo&&x<=d),CK=["ขาว","ดำ","นด"],blank=()=>new Array(W).fill("");
+      const plan=CK.map(c=>CVS.map((z,i)=>(PLm[pf+"-"+c]||[])[i]||0)),act=CK.map(c=>CVS.map((z,i)=>dys.reduce((a,x)=>a+((((RC[x]||{})[pf+"-"+c])||[])[i]||0),0))),rem=plan.map((a,j)=>a.map((v,i)=>Math.max(0,v-act[j][i]))),stk=T.v[2];
+      rows.push(blank());
+      if(!plan.some(a=>a.some(v=>v>0))){rows.push(["ยังไม่มีแผนผลิตของ "+thM(mo)+" ในระบบ (บันทึกที่เมนู แผนผลิต) จึงสรุปค้างผลิต/สต๊อกสิ้นเดือนไม่ได้"]);SEC=ws=>{const c=ws.getCell(rows.length,1);c.font={name:"Tahoma",size:11,bold:true,color:{argb:"FFC2410C"}}}}
+      else{
+      const nz=CVS.map((z,i)=>i).filter(i=>[0,1,2].some(j=>plan[j][i]||act[j][i]||stk[j][i])),ix=nz.length?CVS.map((z,i)=>i).filter(i=>i>=nz[0]&&i<=nz[nz.length-1]):[],G=[],sum3=f=>cvSum1([0,1,2].map(j=>cvSum1(ix.map(zi=>f(j,zi)))));
+      rows.push(["เดือน "+thM(mo)+" · สั่งผลิต ผลิตแล้ว ค้างผลิต และสต๊อกคาดการณ์ ณ สิ้นเดือน (หน่วย: คู่)"]);const tIdx=rows.length;
+      const sec=specs=>{const hr=rows.length,h1=blank(),h2=blank();specs.forEach((sp,k)=>{const c0=k*6;h1[c0]=cgPN(P);h1[c0+1]=sp.t;h2[c0]="เบอร์";["ขาว","ดำ","น้ำตาล","รวม"].forEach((t,j)=>h2[c0+1+j]=t)});rows.push(h1,h2);
+        const first=rows.length+1;ix.forEach((zi,q)=>{const R=first+q,row=blank();specs.forEach((sp,k)=>{const c0=k*6;row[c0]=CVS[zi];for(let j=0;j<3;j++)row[c0+1+j]=sp.cell(j,zi,R,q);row[c0+4]=FX("SUM("+L(c0+2)+R+":"+L(c0+4)+R+")",cvSum1([0,1,2].map(j=>sp.v(j,zi))))});rows.push(row)});
+        const last=rows.length,tr=blank();specs.forEach((sp,k)=>{const c0=k*6;tr[c0]="รวม";for(let j=0;j<4;j++){const col=L(c0+2+j);tr[c0+1+j]=FX("SUM("+col+first+":"+col+last+")",j<3?cvSum1(ix.map(zi=>sp.v(j,zi))):sum3(sp.v))}});rows.push(tr);
+        const g={hr,first,last,tr:rows.length,specs};G.push(g);return g};
+      const gA=sec([{t:"สั่งผลิต "+thM(mo)+" (แผนผลิต)",v:(j,zi)=>plan[j][zi],cell:(j,zi)=>plan[j][zi]},{t:"ผลิตแล้ว (รับเข้าโกดัง ถึง "+dd+")",v:(j,zi)=>act[j][zi],cell:(j,zi)=>act[j][zi]},{t:"ค้างผลิต (สั่ง − ผลิตแล้ว)",v:(j,zi)=>rem[j][zi],cell:(j,zi,R)=>FX("MAX(0,"+L(2+j)+R+"-"+L(8+j)+R+")",rem[j][zi])}]);
+      rows.push(blank());
+      const gB=sec([{t:"สต๊อก ณ "+dd+" (รวม 2 ที่)",v:(j,zi)=>stk[j][zi],cell:(j,zi)=>stk[j][zi]},{t:"+ ค้างผลิต",v:(j,zi)=>rem[j][zi],cell:(j,zi,R,q)=>FX(L(14+j)+(gA.first+q),rem[j][zi])},{t:"= สต๊อก ณ สิ้นเดือน (คาดการณ์)",v:(j,zi)=>stk[j][zi]+rem[j][zi],cell:(j,zi,R)=>FX(L(2+j)+R+"+"+L(8+j)+R,stk[j][zi]+rem[j][zi])}]);
+      rows.push(blank());rows.push(["* สต๊อกสิ้นเดือนคาดการณ์ = สต๊อก ณ วันที่เลือก + ค้างผลิต (ไม่นับเบอร์ที่ผลิตเกินแผน) · ยังไม่ได้หักยอดขายที่จะเกิดขึ้นจนสิ้นเดือน"]);const nIdx=rows.length;
+      SEC=ws=>{const thin={style:"thin",color:{argb:"FF8A94A0"}},med={style:"medium",color:{argb:"FF1F2933"}},fl=h=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+h}}),HCl=[["FFFFFF","1F2933"],["262626","FFFFFF"],["8B5E3C","FFFFFF"],["D6DDE6","1F2933"]],TF=["FFFF00","FFFF00","F8CBAD"];
+        ws.getCell(tIdx,1).font={name:"Tahoma",size:13,bold:true,color:{argb:"FF1F2933"}};ws.getCell(nIdx,1).font={name:"Tahoma",size:10,italic:true,color:{argb:"FF666666"}};
+        G.forEach((g,gi)=>{for(let k=0;k<3;k++){const c1=k*6+1,hl=g.hr+1,hl2=g.hr+2;const isEnd=gi===1&&k===2,isRem=(gi===0&&k===2)||(gi===1&&k===1),hf=isEnd?"A9D08E":isRem?"F8CBAD":"FFFF00";
+          for(let r=hl;r<=g.tr;r++)for(let j=0;j<5;j++){const cell=ws.getCell(r,c1+j);cell.border={top:thin,bottom:thin,left:thin,right:thin};cell.font={name:"Tahoma",size:11,color:{argb:"FF1F2933"}};
+            if(r===hl){cell.fill=fl(j===0?"C6E0B4":hf);cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1F2933"}};cell.alignment={horizontal:"left"}}
+            else if(r===hl2){const hc=HCl[Math.max(0,j-1)];cell.fill=fl(j===0?"E3E8EE":hc[0]);cell.font={name:"Tahoma",size:11,bold:true,color:{argb:"FF"+(j===0?"1F2933":hc[1])}};cell.alignment={horizontal:"center"}}
+            else if(r<g.tr){cell.numFmt='#,##0;[Red]-#,##0;"-"';cell.alignment={horizontal:j===0?"center":"right"};if(j===0||j===4)cell.font={name:"Tahoma",size:11,bold:true};if(j===4)cell.fill=fl(isEnd?"E2EFDA":"EAF2FF")}
+            else{cell.fill=fl(isEnd?"A9D08E":isRem?"F8CBAD":"FFFF00");cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1F2933"}};cell.numFmt='#,##0;[Red]-#,##0;"-"';cell.border={top:med,bottom:med,left:thin,right:thin};cell.alignment={horizontal:j===0?"center":"right"}}}
+          ws.mergeCells(hl,c1+1,hl,c1+4)}})}}}
     const post=ws=>{const thin={style:"thin",color:{argb:"FF8A94A0"}},med={style:"medium",color:{argb:"FF1F2933"}},fl=h=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+h}}),HC=[["FFFFFF","1F2933"],["262626","FFFFFF"],["8B5E3C","FFFFFF"],["D6DDE6","1F2933"]];
       for(let k=0;k<3;k++)for(let j=1;j<=5;j++){const c=k*6+j;ws.getColumn(c).width=j===1?8:13.5;ws.getColumn(c+(j===5?1:0)).width=ws.getColumn(c+(j===5?1:0)).width}
       for(let k=0;k<3;k++){const c0=k*6+1;ws.getColumn(c0+5).width=4;for(let r=3;r<=PR;r++)for(let j=0;j<5;j++){const cell=ws.getCell(r,c0+j);cell.border={top:thin,bottom:thin,left:thin,right:thin};cell.font={name:"Tahoma",size:11,color:{argb:"FF1F2933"}};
@@ -4793,7 +4817,7 @@ cgXlBtn($("x-cgstk"),"xl-stk",async()=>{const d=$("cgr-d").value;if(!d)cgNone();
         else if(r===TR){cell.fill=fl("FFFF00");cell.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1F2933"}};cell.numFmt='#,##0;[Red]-#,##0;"-"';cell.border={top:med,bottom:med,left:thin,right:thin};cell.alignment={horizontal:j===0?"center":"right"}}
         else{cell.fill=fl("F5F7F9");cell.font={name:"Tahoma",size:11,italic:true,bold:true,color:{argb:"FF1F2933"}};cell.numFmt="0.0%";cell.alignment={horizontal:j===0?"center":"right"}}}
         ws.mergeCells(3,c0+1,3,c0+3)}
-      ws.getRow(4).height=22;ws.views=[{state:"frozen",ySplit:4}]};
+      ws.getRow(4).height=22;ws.views=[{state:"frozen",ySplit:4}];if(SEC)SEC(ws)};
     return{name:cgPN(P),rows,hdr:[],tot:[],post}});
   await cgXlBook(sh,"สต๊อกผ้าใบ_"+d+".xlsx")});
 cgXlBtn($("x-cgplan"),"xl-plan",async()=>{const ms=cgRange("xl-plan",($("cg-plan-d").value||"").slice(0,7)),sh=["S","R"].map(P=>cgPlanSheet(P,ms)).filter(Boolean);if(!sh.length)cgNone();
