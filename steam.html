@@ -469,7 +469,7 @@ table th:not(:first-child),table td:not(:first-child){text-align:center}table td
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 244)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 246)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2421,9 +2421,12 @@ function dayGrid(wb,name,days,mul,filt,unitTxt,opt){opt=opt||{};
   const L=n=>{let r="";while(n>0){const m=(n-1)%26;r=String.fromCharCode(65+m)+r;n=Math.floor((n-1)/26)}return r},fl=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}});
   const per=ds.map(d=>{const o={};if(opt.get){const g=opt.get(d);Object.keys(g).forEach(k=>{const a=o[k]=o[k]||[0,0,0,0,0,0];g[k].forEach((x,i)=>{a[i]+=(+x||0)*mul})})}else Object.keys(DATA[d]).forEach(k=>{if(k==="_s"||(filt&&!selC.has(k)))return;const pk=SUPMAP[k]||k,a=o[pk]=o[pk]||[0,0,0,0,0,0],h=HK(k);DATA[d][k].forEach((x,i)=>{if(!filt||selS.has(SIZES[i]))a[i]+=x*h*mul})});Object.keys(o).forEach(k=>{o[k]=o[k].map(Math.round)});return o});
   const U={};per.forEach(o=>Object.keys(o).forEach(k=>{const a=U[k]=U[k]||[0,0,0,0,0,0];o[k].forEach((x,i)=>a[i]+=x)}));
-  const BK=(()=>{try{return bkAll()}catch(e){return{}}})(),ms=[...new Set(ds.map(d=>d.slice(0,7)))].filter(m=>!opt.noBook&&BK[m]&&Object.keys(BK[m]).some(k=>(BK[m][k]||[]).some(x=>x>0))),bf=mul/F();
-  const bv=(m,k)=>(BK[m]&&BK[m][k]?BK[m][k]:[0,0,0,0,0,0]).map((x,i)=>(!filt||(selS.has(SIZES[i])&&selC.has(FK[k]||k)))?Math.round((+x||0)*bf):0);
-  const bkKeys=new Set();ms.forEach(m=>Object.keys(BK[m]).forEach(k=>{if(bv(m,k).some(x=>x>0))bkKeys.add(k)}));
+  const BK=(()=>{try{return bkAll()}catch(e){return{}}})(),mo=[...new Set(ds.map(d=>d.slice(0,7)))],bf=mul/F();
+  const planOf=m=>{try{const rs=xpRevs(m);return rs.length&&PL[m]&&PL[m][rs[rs.length-1]]?PL[m][rs[rs.length-1]].colors:null}catch(e){return null}},planRev=m=>{try{const rs=xpRevs(m);return" "+revName(rs[rs.length-1])}catch(e){return""}};
+  const mkRef=(name,dname,fc,tc,get,sfx)=>{const vec=(m,k)=>((get(m)||{})[k]||[0,0,0,0,0,0]).map((x,i)=>(!filt||(selS.has(SIZES[i])&&selC.has(FK[k]||k)))?Math.round((+x||0)*bf):0);
+    const months=opt.noBook?[]:mo.filter(m=>{const o=get(m);return o&&Object.keys(o).some(k=>vec(m,k).some(x=>x>0))});return{name,dname,fc,tc,vec,months,get,sfx}};
+  const REFS=[mkRef("ยอดจอง","ผลิต − จอง","FFF2CC","7A4B00",m=>BK[m],()=>""),mkRef("แผนผลิต","ผลิต − แผน","DDEBF7","1F3864",planOf,planRev)].filter(r=>r.months.length&&(!opt.only||opt.only===(r.name==="ยอดจอง"?"book":"plan")));
+  const bkKeys=new Set();REFS.forEach(r=>r.months.forEach(m=>Object.keys(r.get(m)).forEach(k=>{if(r.vec(m,k).some(x=>x>0))bkKeys.add(k)})));
   const keys=xlKeys(U).filter(k=>(U[k]&&U[k].some(x=>x>0))||bkKeys.has(k)).concat([...bkKeys].filter(k=>!(U[k]&&U[k].some(x=>x>0))&&!xlKeys(U).includes(k))),nc=keys.length*6,lastC=1+nc,totC=lastC+1;
   ws.columns=[{width:15}].concat(keys.flatMap(()=>SIZES.map(()=>({width:9}))),[{width:13}]);
   const t=ws.addRow([(opt.title||"แผ่นยางรายวัน")+" ("+unitTxt+")"+(!opt.get&&HP()?" · หักเผื่อ รง. "+HP()+"% เฉพาะสีธรรมดา (สีพิเศษไม่หัก)":"")]);t.getCell(1).font={bold:true,size:13};
@@ -2439,19 +2442,19 @@ function dayGrid(wb,name,days,mul,filt,unitTxt,opt){opt=opt||{};
   const lr=ws.rowCount,gr=ws.rowCount+1,sums=[];keys.forEach(k=>SIZES.forEach((z,i)=>sums.push(per.reduce((q,o)=>q+((o[k]&&o[k][i])||0),0))));
   const gt=ws.addRow(["รวม"].concat(sums.map((v,j)=>({formula:"SUM("+L(j+2)+first+":"+L(j+2)+lr+")",result:v})),[{formula:"SUM("+L(totC)+first+":"+L(totC)+lr+")",result:sums.reduce((a,b)=>a+b,0)}]));
   gt.eachCell((x,j)=>{x.font={bold:true};x.fill=fl("DCE6FA");x.border=B;if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}});
-  if(ms.length){const bR=[],sumC=(r)=>"SUM(B"+r+":"+L(lastC)+r+")";
+  REFS.forEach(R=>{const bR=[],sumC=(r)=>"SUM(B"+r+":"+L(lastC)+r+")";
     ws.addRow([]);
-    ms.forEach(m=>{const rn=ws.rowCount+1,vals=[];keys.forEach(k=>bv(m,k).forEach(v=>vals.push(v)));const tot=vals.reduce((a,b)=>a+b,0);
-      const row=ws.addRow(["ยอดจอง "+thM(m)].concat(vals,[{formula:sumC(rn),result:tot}]));bR.push([rn,vals,tot]);
-      row.eachCell((x,j)=>{x.border=B;x.fill=fl("FFF2CC");x.font={bold:true,color:{argb:"FF7A4B00"}};if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}})});
+    R.months.forEach(m=>{const rn=ws.rowCount+1,vals=[];keys.forEach(k=>R.vec(m,k).forEach(v=>vals.push(v)));const tot=vals.reduce((a,b)=>a+b,0);
+      const row=ws.addRow([R.name+" "+thM(m)+R.sfx(m)].concat(vals,[{formula:sumC(rn),result:tot}]));bR.push([rn,vals,tot]);
+      row.eachCell((x,j)=>{x.border=B;x.fill=fl(R.fc);x.font={bold:true,color:{argb:"FF"+R.tc}};if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}})});
     let tr=bR[0];
     if(bR.length>1){const rn=ws.rowCount+1,vals=sums.map((_,j)=>bR.reduce((q,b)=>q+b[1][j],0)),tot=vals.reduce((a,b)=>a+b,0);
-      const row=ws.addRow(["รวมยอดจอง"].concat(vals.map((v,j)=>({formula:bR.map(b=>L(j+2)+b[0]).join("+"),result:v})),[{formula:sumC(rn),result:tot}]));tr=[rn,vals,tot];
-      row.eachCell((x,j)=>{x.border=B;x.fill=fl("FFE699");x.font={bold:true};if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}})}
+      const row=ws.addRow(["รวม"+R.name].concat(vals.map((v,j)=>({formula:bR.map(b=>L(j+2)+b[0]).join("+"),result:v})),[{formula:sumC(rn),result:tot}]));tr=[rn,vals,tot];
+      row.eachCell((x,j)=>{x.border=B;x.fill=fl("E7E6E6");x.font={bold:true};if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}})}
     const rn=ws.rowCount+1,dv=sums.map((v,j)=>v-tr[1][j]);
-    const row=ws.addRow(["ผลิต − จอง"].concat(dv.map((v,j)=>({formula:L(j+2)+gr+"-"+L(j+2)+tr[0],result:v})),[{formula:L(totC)+gr+"-"+L(totC)+tr[0],result:sums.reduce((a,b)=>a+b,0)-tr[2]}]));
-    row.eachCell((x,j)=>{x.border=B;x.font={bold:true};x.fill=fl("EEF2FF");if(j>1){x.numFmt="+#,##0;[Red]-#,##0;-";x.alignment={horizontal:"right"}}});
-    const nt=ws.addRow(["ยอดจอง = ยอดที่ฝ่ายขายจองทั้งเดือน (แปลงเป็น"+unitTxt.split(" ")[0]+") เทียบกับยอดผลิตเฉพาะวันที่แสดงในตาราง · บวก = ผลิตเกินจอง ลบ = ยังขาดจอง"]);nt.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}}}
+    const row=ws.addRow([R.dname].concat(dv.map((v,j)=>({formula:L(j+2)+gr+"-"+L(j+2)+tr[0],result:v})),[{formula:L(totC)+gr+"-"+L(totC)+tr[0],result:sums.reduce((a,b)=>a+b,0)-tr[2]}]));
+    row.eachCell((x,j)=>{x.border=B;x.font={bold:true};x.fill=fl("EEF2FF");if(j>1){x.numFmt="+#,##0;[Red]-#,##0;-";x.alignment={horizontal:"right"}}})});
+  if(REFS.length){ws.addRow([]);const nt=ws.addRow([REFS.map(r=>r.name).join("/")+" = ยอดทั้งเดือน (แปลงเป็น"+unitTxt.split(" ")[0]+") เทียบกับยอดผลิตเฉพาะวันที่แสดงในตาราง · บวก = ผลิตเกิน ลบ = ยังขาด"+(REFS.some(r=>r.name==="แผนผลิต")?" · แผนผลิตใช้ revise ล่าสุดของเดือน":"")]);nt.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}}}
   ws.views=[{state:"frozen",xSplit:1,ySplit:3}]}
 const thD2=d=>d.slice(8)+"/"+d.slice(5,7)+"/"+(+d.slice(0,4)+543);
 async function xlExcel(ms,name){const wb=new ExcelJS.Workbook(),fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},T=a=>a.reduce((x,y)=>x+y,0),F0="#,##0;-#,##0;-",f=F(),hn=HP()?" · หักเผื่อ รง. "+HP()+"% เฉพาะสีธรรมดา (สีพิเศษไม่หัก)":"";
@@ -2943,7 +2946,8 @@ $("xl").onclick=async()=>{
     c.daily.forEach(x=>{const r=w2.rowCount+1;w2.addRow([thD(x[0]),x[2],x[1],{formula:"C"+r+"*"+f,result:Math.round(x[1]*f)}])});
     const n=w2.rowCount;const tr=w2.addRow(["รวม","",{formula:"SUM(C2:C"+n+")"},{formula:"SUM(D2:D"+n+")"}]);tr.font={bold:true};
     w2.eachRow(r=>r.eachCell((x,j)=>{if(j>2)x.numFmt="#,##0"}));
-    dayGrid(wb,"รายวัน สี×เบอร์ (แผ่น)",c.inR,1,true,"แผ่น");dayGrid(wb,"รายวัน สี×เบอร์ (คู่)",c.inR,f,true,"คู่ (แผ่น × "+f+")");
+    dayGrid(wb,"รายวัน สี×เบอร์ (แผ่น)",c.inR,1,true,"แผ่น",{only:"book"});dayGrid(wb,"รายวัน สี×เบอร์ (คู่)",c.inR,f,true,"คู่",{only:"book"});
+    dayGrid(wb,"รายวัน หักแผนผลิต (แผ่น)",c.inR,1,true,"แผ่น",{only:"plan",title:"แผ่นยางรายวัน หักด้วยแผนผลิต"});dayGrid(wb,"รายวัน หักแผนผลิต (คู่)",c.inR,f,true,"คู่",{only:"plan",title:"แผ่นยางรายวัน หักด้วยแผนผลิต"});
     await saveBook(wb,"คาดการณ์จากยอดนึ่ง_"+c.f+"_ถึง_"+c.t+".xlsx");
     b.textContent="ดาวน์โหลดแล้ว";
   }catch(e){b.textContent="สร้างไฟล์ไม่สำเร็จ";console.error(e)}
