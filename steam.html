@@ -470,7 +470,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 252)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 253)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -5184,7 +5184,16 @@ cgXlBtn($("x-rcmon"),"xl-rcm",async()=>{const M=rcMonData(),my=Object.keys(M).so
     rr.push(["รวม"].concat(SIZES.map((z,i)=>SUMC(i+2,4,3+dc.length,dc.reduce((a,r)=>a+M[m].c[r[0]][i],0))),[SUMC(SIZES.length+2,4,3+dc.length,dc.reduce((a,r)=>a+cT(M[m].c[r[0]]),0))]));
     const hd=[2],tt=[rr.length-1],cp=rcCmp(m,M[m].c);
     if(cp&&cp.rows.length){rr.push([]);tt.push(rr.length);rr.push(["เทียบแผนผลิต ทุกสี (แผน "+revName(cp.rev)+")"]);hd.push(rr.length);rr.push(["ชนิด","แผนผลิต","ผลิตจริง","ขาด/เกิน","สถานะ","ขาดรายเบอร์"]);
-      cp.rows.forEach(x=>{const R=rr.length+1;rr.push([x.n,x.tp,x.ta,FX("B"+R+"-C"+R,x.d),FX('IF(D'+R+'>0,"ขาด",IF(D'+R+'<0,"เกินแผน","ครบแล้ว"))',x.d>0?"ขาด":x.d<0?"เกินแผน":"ครบแล้ว"),x.d>0?x.bs.join(" · "):""])})}
+      cp.rows.forEach(x=>{const R=rr.length+1;rr.push([x.n,x.tp,x.ta,FX("B"+R+"-C"+R,x.d),FX('IF(D'+R+'>0,"ขาด",IF(D'+R+'<0,"เกินแผน","ครบแล้ว"))',x.d>0?"ขาด":x.d<0?"เกินแผน":"ครบแล้ว"),x.d>0?x.bs.join(" · "):""])});
+      const n1=3+dc.length,CL=i=>String.fromCharCode(66+i),nS=SIZES.length,rw=cp.rows,
+        add=(title,note)=>{rr.push([]);tt.push(rr.length);rr.push([title]);hd.push(rr.length);rr.push(["สี"].concat(SIZES,["รวม"]))};
+      add("แผนผลิต สี × เบอร์ (แผน "+revName(cp.rev)+") (หน่วย: คู่)");const p0=rr.length+1;
+      rw.forEach(x=>{const R=rr.length+1;rr.push([x.n].concat(x.pl,[SUMR(R,2,nS+1,x.tp)]))});
+      tt.push(rr.length);rr.push(["รวม"].concat(SIZES.map((z,i)=>SUMC(i+2,p0,p0+rw.length-1,rw.reduce((a,x)=>a+x.pl[i],0))),[SUMC(nS+2,p0,p0+rw.length-1,rw.reduce((a,x)=>a+x.tp,0))]));
+      add("ยอดค้างผลิตของเดือน สี × เบอร์ = แผนผลิต − ผลิตจริง (หน่วย: คู่)");const q0=rr.length+1;
+      rw.forEach((x,k)=>{const R=rr.length+1,PR=p0+k;rr.push([x.n].concat(SIZES.map((z,i)=>FX("MAX(0,"+CL(i)+PR+"-SUMIF($A$4:$A$"+n1+",$A"+R+","+CL(i)+"$4:"+CL(i)+"$"+n1+"))",x.sf[i])),[SUMR(R,2,nS+1,cT(x.sf))]))});
+      tt.push(rr.length);rr.push(["รวมค้างผลิต"].concat(SIZES.map((z,i)=>SUMC(i+2,q0,q0+rw.length-1,rw.reduce((a,x)=>a+x.sf[i],0))),[SUMC(nS+2,q0,q0+rw.length-1,rw.reduce((a,x)=>a+cT(x.sf),0))]));
+      rr.push(["* ค้างผลิต = แผน − ผลิตจริง รายเบอร์ · เบอร์ที่ผลิตเกินแผนแสดง 0 (ไม่นำไปหักกับเบอร์อื่น)"])}
     sh.push({name:thM(m).replace(".","").slice(0,31),rows:rr,hdr:hd,tot:tt,w1:16,w:11})});
   await cgXlBook(sh,"ผลิตจริงเข้าโกดังพี่ชุมพร_"+RCM.y+".xlsx")});
 /* ---------- Dashboard: รับเข้าโกดังจริง เทียบแผ่นยาง และแผนผลิต ---------- */
