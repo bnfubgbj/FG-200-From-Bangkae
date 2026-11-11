@@ -5039,9 +5039,10 @@ function rcRepData(m){
   const sup={};POOLS.forEach(p=>{sup[p]=Z()});let nd=0,f1="",l1="";
   dates().forEach(d=>{const a=addD(d,lag);if(a<d0||a>ed||(fgLast&&a<=fgLast))return;nd++;if(!f1||a<f1)f1=a;if(!l1||a>l1)l1=a;
     Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!p||!sup[p])return;DATA[d][k].forEach((x,i)=>{sup[p][i]+=(x||0)*f})})});
-  const pm={},dnum={all:0,done:0,left:0};POOLS.forEach(p=>{pm[p]={all:Z(),done:Z(),left:Z()}});
+  const pm={},pd={},dnum={all:0,done:0,left:0};POOLS.forEach(p=>{pm[p]={all:Z(),done:Z(),left:Z()};pd[p]=[]});
   dates().forEach(d=>{const a=addD(d,lag);if(a<d0||a>ed)return;const dn=!!(fgLast&&a<=fgLast),w=dn?"done":"left";dnum.all++;dnum[w]++;
-    Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!p||!pm[p])return;DATA[d][k].forEach((x,i)=>{const v=x||0;pm[p].all[i]+=v;pm[p][w][i]+=v})})});
+    const dv={};Object.keys(DATA[d]).forEach(k=>{if(k==="_s")return;const p=STEAMPOOL[k];if(!p||!pm[p])return;dv[p]=dv[p]||Z();DATA[d][k].forEach((x,i)=>{const v=x||0;pm[p].all[i]+=v;pm[p][w][i]+=v;dv[p][i]+=v})});
+    Object.keys(dv).forEach(p=>pd[p].push({d,a,dn,v:dv[p]}))});
   const mul=RCRD?1-RCRX/100:1;RCR_REG.forEach(p=>{sup[p]=sup[p].map(x=>x*mul)});
   const pk=k=>(P.c[k]||Z()).slice(0,6).map(x=>x||0),need=k=>pk(k).map((v,i)=>Math.max(0,v-A[k][i])),R={};
   PTPL.forEach(r=>{R[r[0]]=Z()});
@@ -5055,7 +5056,7 @@ function rcRepData(m){
   PTPL.forEach(r=>{R[r[0]]=R[r[0]].map(x=>Math.max(0,Math.round(x/12)*12))});
   const miss=[];for(let d=fgLast?addD(fgLast,1):d0;d<=ed;d=addD(d,1)){if(new Date(d+"T12:00:00").getDay()===0)continue;if(!DATA[addD(d,-lag)])miss.push(+d.slice(8))}
   const rows=PTPL.map(r=>{const k=r[0],pl=pk(k),a=A[k].slice(),rm=R[k].slice();return{k,n:r[1],sp:PTPL.indexOf(r)>=8,pl,a,r:rm,e:a.map((x,i)=>x+rm[i]-pl[i])}}).filter(x=>T(x.pl)||T(x.a)||T(x.r));
-  return{m,P,rows,R,fgLast,nd,f1,l1,miss,lag,f,ded:RCRD,px:RCRX,pm,dnum}}
+  return{m,P,rows,R,fgLast,nd,f1,l1,miss,lag,f,ded:RCRD,px:RCRX,pm,pd,dnum}}
 function rcRepGrp(rs){const S=k=>SIZES.map((z,i)=>rs.reduce((s,x)=>s+x[k][i],0));return{a:S("a"),r:S("r"),pl:S("pl"),e:S("e")}}
 function rcRepLabels(D){const mo=+D.m.slice(5,7),yy=String((+D.m.slice(0,4)+543)%100),ld=D.fgLast?+D.fgLast.slice(8):0,sd=D.fgLast?ld+1:1;
   return[D.fgLast?"ผลิตเข้าโกดังจริง 1-"+ld+"/"+mo+"/"+yy+" (ถึงวันที่มีตัวเลขเข้าโกดัง)":"ผลิตเข้าโกดังจริง (เดือนนี้ยังไม่มีตัวเลขเข้าโกดัง)",
@@ -5082,18 +5083,23 @@ function rcRepHtml(D){RCRTIPS=[];RCRLAST=D;const L=rcRepLabels(D),rs=D.rows,main
   if(spc.length)h+=rcrBlk("รวมสีพิเศษ",rcRepGrp(spc),L,{bg:"#6b4aa0",fg:"#ffffff"},spc.map(x=>x.k));
   h+=rcrBlk("รวมทุกสี",rcRepGrp(rs),L,{bg:"#0f2a5c",fg:"#ffffff"},rs.map(x=>x.k))+"</table></div></div>";return h}
 (function(){const st=document.createElement("style");st.textContent='.rcr-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 8px}.rcr-ctl label{display:flex;gap:6px;align-items:center}.rcr-t{border-collapse:separate;border-spacing:0;width:100%;min-width:780px;font-size:13px;margin:8px 0}.rcr-t th,.rcr-t td{border:1px solid var(--line);padding:5px 8px;text-align:right;white-space:nowrap}.rcr-t th:first-child{text-align:left;white-space:normal;min-width:320px;font-weight:600}.rcr-t td.tt{font-weight:700}.rcr-t tr.e th,.rcr-t tr.e td{font-weight:700;background:var(--surface2)}.rcr-t .neg{color:var(--warn)}.rcr-t .pos{color:var(--accent)}.rcr-t .hd th{background:#fff2a8;color:#222;text-align:center}.rcr-t .sec th{text-align:left;background:var(--accent-soft);color:var(--accent);border:0;padding-top:12px}.rcr-t .bd th{text-align:center;font-size:14px;border-color:#888}';document.head.appendChild(st)})();
-function rcrTipHtml(it){const D=RCRLAST;if(!D)return"";const Z=()=>[0,0,0,0,0,0],f=D.f,pools=[...new Set(it.ks.map(k=>planPool(k)))].filter(p=>D.pm[p]),regs=new Set(RCR_REG),
-    S=w=>pools.reduce((s,p)=>s.map((x,i)=>x+D.pm[p][w][i]),Z()),
-    N=w=>pools.reduce((s,p)=>{const m=D.ded&&regs.has(p)?1-D.px/100:1;return s.map((x,i)=>x+D.pm[p][w][i]*f*m)},Z()),
-    all=S("all"),mo=+D.m.slice(5,7),ld=D.fgLast?+D.fgLast.slice(8):0,hasReg=pools.some(p=>regs.has(p)),
-    rows=[["แผ่นยางทั้งเดือน (แผ่น)",all],["คิดเป็นคู่ (× "+f+")",all.map(x=>x*f)]];
-  if(D.ded&&hasReg)rows.push(["หักเผื่อ "+D.px+"% → คู่ที่คาดทำได้",N("all")]);
-  rows.push(["จ่ายประกอบไปแล้ว"+(ld?" (ถึง "+ld+"/"+mo+")":"")+" (คู่)",N("done")]);
-  rows.push(["เหลือ "+(ld?ld+1:1)+"-สิ้นเดือน (คู่) · ตัวที่บวกในรายงาน",N("left")]);
-  const sum=a=>a.reduce((x,y)=>x+y,0),fx=n=>n?Math.round(n).toLocaleString("en-US"):"–";
-  return'<div style="font-weight:700;margin-bottom:4px">'+escH(it.t)+" · แผ่นยางทั้งเดือน "+thM(D.m)+'</div><div class="note" style="margin:0 0 6px;max-width:520px">แผ่นที่ใช้: '+escH(pools.map(p=>POOLN[p]||p).join(" · "))+" · มีข้อมูล "+D.dnum.all+" วัน"+(pools.length===1&&it.ks.length===1&&(POOLN[pools[0]]||"").indexOf("+")>=0?" · ตัวเลขเป็นของทั้งแผ่น ก่อนแบ่งให้แต่ละสี":"")+
-    '</div><table class="rcr-t2"><thead><tr><th></th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>"+
-    rows.map((r,i)=>"<tr"+(i===rows.length-1?' style="font-weight:700"':"")+"><th>"+escH(r[0])+"</th>"+r[1].map(x=>"<td>"+fx(x)+"</td>").join("")+"<td><b>"+fx(sum(r[1]))+"</b></td></tr>").join("")+"</tbody></table>"}
+function rcrTipHtml(it){const D=RCRLAST;if(!D)return"";const Z=()=>[0,0,0,0,0,0],f=D.f,regs=new Set(RCR_REG),
+    pools=[...new Set(it.ks.map(k=>planPool(k)))].filter(p=>D.pm[p]),
+    sum=a=>a.reduce((x,y)=>x+y,0),fx=n=>n?Math.round(n).toLocaleString("en-US"):"–",dm=d=>+d.slice(8)+"/"+ +d.slice(5,7),
+    days={};pools.forEach(p=>D.pd[p].forEach(o=>{const e=days[o.d]=days[o.d]||{d:o.d,a:o.a,dn:o.dn,v:Z()};o.v.forEach((x,i)=>e.v[i]+=x)}));
+  const L=Object.values(days).sort((x,y)=>x.a<y.a?-1:1),dn=L.filter(x=>x.dn),lf=L.filter(x=>!x.dn),
+    add=l=>l.reduce((s,x)=>s.map((y,i)=>y+x.v[i]),Z()),
+    net=pools.reduce((s,p)=>{const m=D.ded&&regs.has(p)?1-D.px/100:1;return s.map((x,i)=>x+D.pm[p].left[i]*f*m)},Z()),
+    tr=(lab,v,st)=>"<tr"+(st?' style="'+st+'"':"")+"><th>"+lab+"</th>"+v.map(x=>"<td>"+fx(x)+"</td>").join("")+"<td><b>"+fx(sum(v))+"</b></td></tr>",
+    ld=D.fgLast?dm(D.fgLast):"";
+  let h='<div style="font-weight:700;margin-bottom:4px">'+escH(it.t)+" · แผ่นยางประกอบรายวัน "+thM(D.m)+'</div><div class="note" style="margin:0 0 6px;max-width:560px">หน่วย: แผ่น (ก่อน ×'+f+' คู่/แผ่น) · วันที่ = วันประกอบ (นึ่ง + '+D.lag+' วัน) · แผ่นที่ใช้: '+escH(pools.map(p=>POOLN[p]||p).join(" · "))+'</div>'+
+   '<table class="rcr-t2"><thead><tr><th>วันที่ประกอบ</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>";
+  if(dn.length)h+=tr("✔ ผลิตไปแล้ว "+dm(dn[0].a)+"–"+ld+" ("+dn.length+" วัน)",add(dn),"background:var(--accent-soft);font-weight:700");
+  lf.forEach(x=>{h+=tr(dm(x.a),x.v)});
+  h+=tr("⏳ รอผลิต "+(lf.length?dm(lf[0].a)+"–"+dm(lf[lf.length-1].a)+" ("+lf.length+" วัน)":"(ไม่มี)"),add(lf),"font-weight:700;border-top:2px solid var(--line)");
+  h+=tr("รวมทั้งเดือน",add(L),"font-weight:700");
+  h+=tr("คู่ที่บวกในรายงาน (รอผลิต × "+f+(D.ded&&pools.some(p=>regs.has(p))?" หัก "+D.px+"%":"")+")",net,"font-weight:700;color:var(--accent)");
+  return h+"</tbody></table>"}
 (function(){const st=document.createElement("style");st.textContent='.rcr-t tr[data-rcrt] th{cursor:help}.rcr-t tr[data-rcrt]:hover th,.rcr-t tr[data-rcrt]:hover td{background:var(--accent-soft)}.rcr-i{color:var(--accent);font-size:12px}#rcr-tip table{border-collapse:collapse;font-size:12.5px}#rcr-tip th,#rcr-tip td{border:1px solid var(--line);padding:3px 7px;text-align:right;white-space:nowrap}#rcr-tip th:first-child{text-align:left;white-space:normal;max-width:230px}';document.head.appendChild(st)})();
 function rcPjBuild(cpA,dm){const m=RCM.m,pill='<div style="margin:10px 0 4px"><button type="button" class="rcv-pj" data-rcpj="1" aria-pressed="'+RCPJ+'">'+(RCPJ?"✓ ":"")+'แผ่นยางที่เหลือถึงสิ้นเดือน · ถ้าผลิตตามแผน จะขาด/เกินเท่าไร</button></div>';
   if(!RCPJ)return{cp:cpA,html:pill};
@@ -5284,7 +5290,7 @@ function rcMonDraw(){const box=$("rm-body");if(!box)return;const M=rcMonData(),m
 $("rm-y").addEventListener("input",e=>{RCM.y=e.target.value;RCM.m="";rcMonDraw()});
 $("rm-m").addEventListener("change",e=>{RCM.m=e.target.value;rcMonDraw()});
 $("rm-body").addEventListener("click",e=>{const tr=e.target.closest("tr[data-m]");if(tr){RCM.m=tr.dataset.m;rcMonDraw()}});
-(function(){const tip=document.createElement("div");tip.id="rcr-tip";tip.hidden=true;tip.setAttribute("role","tooltip");tip.style.cssText="position:fixed;z-index:1000;background:var(--surface);color:var(--text,inherit);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(15,40,90,.22);padding:10px 12px;font-size:13px;max-width:calc(100vw - 16px);pointer-events:none";document.body.appendChild(tip);
+(function(){const tip=document.createElement("div");tip.id="rcr-tip";tip.hidden=true;tip.setAttribute("role","tooltip");tip.style.cssText="position:fixed;z-index:1000;background:var(--surface);color:var(--text,inherit);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(15,40,90,.22);padding:10px 12px;font-size:13px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow:auto;pointer-events:none";document.body.appendChild(tip);
   let cur=null;const hide=()=>{tip.hidden=true;cur=null};
   function open(el){const it=RCRTIPS[+el.dataset.rcrt];if(!it)return;tip.innerHTML=rcrTipHtml(it);tip.hidden=false;cur=el;const r=el.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;
     let L=Math.min(Math.max(8,r.left+24),innerWidth-w-8),T=r.bottom+4;if(T+h>innerHeight-8)T=r.top-h-4;tip.style.left=L+"px";tip.style.top=Math.max(8,T)+"px"}
