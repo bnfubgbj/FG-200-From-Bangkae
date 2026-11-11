@@ -470,7 +470,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 261)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 262)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -5084,10 +5084,8 @@ function rcRepHtml(D){RCRTIPS=[];RCRLAST=D;setTimeout(()=>{window.rcrefreshWins&
   if(spc.length)h+=rcrBlk("รวมสีพิเศษ",rcRepGrp(spc),L,{bg:"#6b4aa0",fg:"#ffffff"},spc.map(x=>x.k));
   h+=rcrBlk("รวมทุกสี",rcRepGrp(rs),L,{bg:"#0f2a5c",fg:"#ffffff"},rs.map(x=>x.k))+"</table></div></div>";return h}
 (function(){const st=document.createElement("style");st.textContent='.rcr-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 8px}.rcr-ctl label{display:flex;gap:6px;align-items:center}.rcr-t{border-collapse:separate;border-spacing:0;width:100%;min-width:780px;font-size:13px;margin:8px 0}.rcr-t th,.rcr-t td{border:1px solid var(--line);padding:5px 8px;text-align:right;white-space:nowrap}.rcr-t th:first-child{text-align:left;white-space:normal;min-width:320px;font-weight:600}.rcr-t td.tt{font-weight:700}.rcr-t tr.e th,.rcr-t tr.e td{font-weight:700;background:var(--surface2)}.rcr-t .neg{color:var(--warn)}.rcr-t .pos{color:var(--accent)}.rcr-t .hd th{background:#fff2a8;color:#222;text-align:center}.rcr-t .sec th{text-align:left;background:var(--accent-soft);color:var(--accent);border:0;padding-top:12px}.rcr-t .bd th{text-align:center;font-size:14px;border-color:#888}';document.head.appendChild(st)})();
-function rcrTipHtml(it){const D=RCRLAST;if(!D)return"";const Z=()=>[0,0,0,0,0,0],f=D.f,regs=new Set(RCR_REG),
-    mulP=p=>D.ded&&regs.has(p)?(1-D.px/100)*f:f,
-    sum=a=>a.reduce((x,y)=>x+y,0),fx=n=>n?Math.round(n).toLocaleString("en-US"):"–",sg=n=>Math.abs(n)<0.5?"–":(n>0?"+":"−")+Math.round(Math.abs(n)).toLocaleString("en-US"),
-    dm=d=>+d.slice(8)+"/"+ +d.slice(5,7),cnt={};
+function rcrTipData(it,D){D=D||RCRLAST;if(!D)return null;const Z=()=>[0,0,0,0,0,0],f=D.f,regs=new Set(RCR_REG),
+    mulP=p=>D.ded&&regs.has(p)?(1-D.px/100)*f:f,cnt={};
   PTPL.forEach(r=>{const p=planPool(r[0]);cnt[p]=(cnt[p]||0)+1});
   const days={},poolsUsed=new Set();let shared=false;
   it.ks.forEach(k=>{const p=planPool(k);if(!D.pd[p])return;poolsUsed.add(p);if(cnt[p]>1)shared=true;
@@ -5095,19 +5093,22 @@ function rcrTipHtml(it){const D=RCRLAST;if(!D)return"";const Z=()=>[0,0,0,0,0,0]
     D.pd[p].forEach(o=>{const e=days[o.d]=days[o.d]||{d:o.d,a:o.a,dn:o.dn,v:Z()};o.v.forEach((x,i)=>e.v[i]+=x*mulP(p)*(o.dn?1:ratio[i]))})});
   const L=Object.values(days).sort((x,y)=>x.a<y.a?-1:1),dn=shared?[]:L.filter(x=>x.dn),lf=L.filter(x=>!x.dn),
     add=l=>l.reduce((s,x)=>s.map((y,i)=>y+x.v[i]),Z()),
-    rep=it.ks.reduce((s,k)=>s.map((y,i)=>y+((D.R[k]||Z())[i])),Z()),
-    lfT=add(lf),adj=rep.map((x,i)=>x-lfT[i]),hasAdj=adj.some(x=>Math.abs(x)>=0.5),
+    rep=it.ks.reduce((s,k)=>s.map((y,i)=>y+((D.R[k]||Z())[i])),Z()),lfT=add(lf),adj=rep.map((x,i)=>x-lfT[i]);
+  return{D,shared,dn,lf,dnT:add(dn),lfT,rep,adj,hasAdj:adj.some(x=>Math.abs(x)>=0.5),all:add(L),pn:[...poolsUsed].map(p=>POOLN[p]||p).join(" · "),
+    dm:d=>+d.slice(8)+"/"+ +d.slice(5,7),ld:D.fgLast?+D.fgLast.slice(8)+"/"+ +D.fgLast.slice(5,7):""}}
+function rcrTipHtml(it){const T=rcrTipData(it);if(!T)return"";const D=T.D,f=D.f,dm=T.dm,Z=()=>[0,0,0,0,0,0],
+    sum=a=>a.reduce((x,y)=>x+y,0),fx=n=>n?Math.round(n).toLocaleString("en-US"):"–",sg=n=>Math.abs(n)<0.5?"–":(n>0?"+":"−")+Math.round(Math.abs(n)).toLocaleString("en-US"),
     tr=(lab,v,st,sgn)=>"<tr"+(st?' style="'+st+'"':"")+"><th>"+lab+"</th>"+v.map(x=>"<td>"+(sgn?sg(x):fx(x))+"</td>").join("")+"<td><b>"+(sgn?sg(sum(v)):fx(sum(v)))+"</b></td></tr>",
-    ld=D.fgLast?dm(D.fgLast):"",pn=[...poolsUsed].map(p=>POOLN[p]||p).join(" · ");
-  let h='<div style="font-weight:700;margin-bottom:4px">'+escH(it.t)+" · แผ่นยางประกอบรายวัน "+thM(D.m)+'</div><div class="note" style="margin:0 0 6px;max-width:640px">หน่วย: คู่ (แผ่น × '+f+(D.ded?" หัก "+D.px+"% สำหรับสีธรรมดา":"")+") · วันที่ = วันประกอบ · แผ่นที่ใช้: "+escH(pn)+
-    (shared?'<br><b>แผ่นนี้ใช้ร่วมกับสีอื่น</b> — แสดงเฉพาะส่วนที่จัดให้สีนี้ ตามลำดับที่ตั้ง ('+((D.sb||D.sw)?"หูพิเศษก่อน เรียงตามตาราง":"ตามสัดส่วนแผน")+")":"")+'</div>'+
+    lf=T.lf,dn=T.dn;
+  let h='<div style="font-weight:700;margin-bottom:4px">'+escH(it.t)+" · แผ่นยางประกอบรายวัน "+thM(D.m)+'</div><div class="note" style="margin:0 0 6px;max-width:640px">หน่วย: คู่ (แผ่น × '+f+(D.ded?" หัก "+D.px+"% สำหรับสีธรรมดา":"")+") · วันที่ = วันประกอบ · แผ่นที่ใช้: "+escH(T.pn)+
+    (T.shared?'<br><b>แผ่นนี้ใช้ร่วมกับสีอื่น</b> — แสดงเฉพาะส่วนที่จัดให้สีนี้ ตามลำดับที่ตั้ง ('+((D.sb||D.sw)?"หูพิเศษก่อน เรียงตามตาราง":"ตามสัดส่วนแผน")+")":"")+'</div>'+
    '<table class="rcr-t2"><thead><tr><th>วันที่ประกอบ (คู่)</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม(คู่)</th></tr></thead><tbody>";
-  if(dn.length)h+=tr("✔ ผลิตไปแล้ว "+dm(dn[0].a)+"–"+ld+" ("+dn.length+" วัน)",add(dn),"background:var(--accent-soft);font-weight:700");
+  if(dn.length)h+=tr("✔ ผลิตไปแล้ว "+dm(dn[0].a)+"–"+T.ld+" ("+dn.length+" วัน)",T.dnT,"background:var(--accent-soft);font-weight:700");
   lf.forEach(x=>{h+=tr(dm(x.a),x.v)});
-  h+=tr("⏳ รอผลิต "+(lf.length?dm(lf[0].a)+"–"+dm(lf[lf.length-1].a)+" ("+lf.length+" วัน)":"")+" รวม",lfT,"font-weight:700;border-top:2px solid var(--line)");
-  if(hasAdj)h+=tr("ปรับ: ปัดเป็นโหล",adj,"color:var(--muted,#667)",1);
-  h+=tr("= บวก แผ่นยาง คงเหลือ (ตรงกับตารางรายงาน)",rep,"font-weight:700;color:var(--accent);border-top:2px solid var(--line)");
-  if(!shared)h+=tr("รวมทั้งเดือน (ผลิตไปแล้ว + รอผลิต)",add(L).map((x,i)=>x+adj[i]),"font-weight:700");
+  h+=tr("⏳ รอผลิต "+(lf.length?dm(lf[0].a)+"–"+dm(lf[lf.length-1].a)+" ("+lf.length+" วัน)":"")+" รวม",T.lfT,"font-weight:700;border-top:2px solid var(--line)");
+  if(T.hasAdj)h+=tr("ปรับ: ปัดเป็นโหล",T.adj,"color:var(--muted,#667)",1);
+  h+=tr("= บวก แผ่นยาง คงเหลือ (ตรงกับตารางรายงาน)",T.rep,"font-weight:700;color:var(--accent);border-top:2px solid var(--line)");
+  if(!T.shared)h+=tr("รวมทั้งเดือน (ผลิตไปแล้ว + รอผลิต)",T.all.map((x,i)=>x+T.adj[i]),"font-weight:700");
   return h+"</tbody></table>"}
 (function(){const st=document.createElement("style");st.textContent='.rcr-t tr[data-rcrt] th{cursor:help}.rcr-t tr[data-rcrt]:hover th,.rcr-t tr[data-rcrt]:hover td{background:var(--accent-soft)}.rcr-i{color:var(--accent);font-size:12px}.rcr-win{position:fixed;display:flex;flex-direction:column;min-width:300px;min-height:120px;max-width:calc(100vw - 8px);overflow:hidden;background:var(--surface);color:var(--text,inherit);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 32px rgba(15,40,90,.3);font-size:13px}.rcr-wh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 8px 6px 12px;background:var(--accent-soft);font-weight:700;cursor:move;touch-action:none;user-select:none}.rcr-wx{border:0;background:transparent;font-size:16px;cursor:pointer;color:inherit;padding:2px 6px}.rcr-wb{flex:1;min-height:0;overflow:auto;padding:8px}.rcr-wb>div:first-child{display:none}.rcr-wg{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;touch-action:none;background:linear-gradient(135deg,transparent 55%,var(--accent) 55%,var(--accent) 62%,transparent 62%,transparent 72%,var(--accent) 72%,var(--accent) 79%,transparent 79%)}#rcr-tip table,.rcr-win table{border-collapse:collapse;font-size:12.5px}#rcr-tip th,#rcr-tip td,.rcr-win th,.rcr-win td{border:1px solid var(--line);padding:3px 7px;text-align:right;white-space:nowrap}#rcr-tip th:first-child,.rcr-win th:first-child{text-align:left;white-space:normal;max-width:230px}';document.head.appendChild(st)})();
 function rcPjBuild(cpA,dm){const m=RCM.m,pill='<div style="margin:10px 0 4px"><button type="button" class="rcv-pj" data-rcpj="1" aria-pressed="'+RCPJ+'">'+(RCPJ?"✓ ":"")+'แผ่นยางที่เหลือถึงสิ้นเดือน · ถ้าผลิตตามแผน จะขาด/เกินเท่าไร</button></div>';
@@ -5116,6 +5117,31 @@ function rcPjBuild(cpA,dm){const m=RCM.m,pill='<div style="margin:10px 0 4px"><b
   const dmP={};PTPL.forEach(r=>{const a=(dm[r[0]]||cZ()).slice(0,6),e=D.R[r[0]]||cZ();dmP[r[0]]=a.map((v,i)=>v+(e[i]||0))});
   const cp=rcCmp(m,dmP);if(!cp)return{cp:cpA,html:pill+rcRepHtml(D)};cp.proj=1;cp.rows.forEach(x=>{x.a0=cT(dm[x.k]||cZ());x.rm=cT(dmP[x.k])-x.a0});
   return{cp,html:pill+rcRepHtml(D)}}
+function rcRepExcelDaily(wb,D,U,main,spc){const {fill,B,FT,NF,cl}=U,ws=wb.addWorksheet("แผ่นยางรายวัน"),S6=a=>a.reduce((x,y)=>x+y,0);
+  ws.columns=[{width:58}].concat(SIZES.map(()=>({width:11})),[{width:15}]);ws.pageSetup={orientation:"landscape",paperSize:9,fitToPage:true,fitToWidth:1,fitToHeight:0};
+  const t1=ws.addRow(["แผ่นยางประกอบรายวัน · "+thM(D.m)+" · หน่วย: คู่ (แผ่น × "+D.f+(D.ded?" หัก "+D.px+"% สำหรับสีธรรมดา":"")+")"]);ws.mergeCells(t1.number,1,t1.number,8);t1.getCell(1).font={name:"Tahoma",size:14,bold:true,color:{argb:"FF1A56DB"}};
+  const t2=ws.addRow(["วันที่ = วันประกอบ · แต่ละสีเรียงจาก ผลิตไปแล้ว (รวม) → รอผลิตรายวัน → รอผลิตรวม → ยอด \"บวก แผ่นยาง คงเหลือ\" ที่ใช้ในชีตแรก · แผ่นที่ใช้ร่วมกับสีอื่นแสดงเฉพาะส่วนที่จัดให้สีนั้น"]);ws.mergeCells(t2.number,1,t2.number,8);t2.getCell(1).font={name:"Tahoma",size:10,italic:true,color:{argb:"FF666666"}};t2.getCell(1).alignment={wrapText:true,vertical:"top"};t2.height=30;ws.addRow([]);
+  function blk(name,bd2,ks){const T=rcrTipData({t:name,ks},D);if(!T)return;
+    const r0=ws.addRow([name]);ws.mergeCells(r0.number,1,r0.number,8);const c0=r0.getCell(1);c0.fill=fill(bd2.bg.slice(1));c0.font={name:"Tahoma",size:12,bold:true,color:{argb:"FF"+bd2.fg.slice(1)}};c0.alignment={horizontal:"center"};
+    const nr=ws.addRow(["แผ่นที่ใช้: "+T.pn+(T.shared?" — ใช้ร่วมกับสีอื่น แสดงเฉพาะส่วนที่จัดให้สีนี้ ("+((D.sb||D.sw)?"หูพิเศษก่อน เรียงตามตาราง":"ตามสัดส่วนแผน")+")":"")]);ws.mergeCells(nr.number,1,nr.number,8);nr.getCell(1).font={name:"Tahoma",size:10,italic:true,color:{argb:"FF666666"}};
+    const hd=ws.addRow(["วันที่ประกอบ (คู่)"].concat(SIZES.map(Number),["รวม(คู่)"]));hd.eachCell(c=>{c.fill=fill("FFF2A8");c.font={name:"Tahoma",size:11,bold:true};c.alignment={horizontal:"center"};c.border=B});
+    const put=(lab,v,o)=>{o=o||{};const row=ws.addRow([lab]);
+      SIZES.forEach((z,i)=>{const c=row.getCell(2+i);c.value=o.f?{formula:o.f(cl(1+i)),result:v[i]}:Math.round(v[i])});
+      row.getCell(8).value={formula:"SUM(B"+row.number+":G"+row.number+")",result:Math.round(S6(v))};
+      row.eachCell((c,n)=>{c.border=B;c.font={name:"Tahoma",size:11,bold:!!o.b,color:o.col?{argb:o.col}:undefined};if(n>1)c.numFmt=NF;if(o.bg)c.fill=fill(o.bg)});row.getCell(8).font={name:"Tahoma",size:11,bold:true};return row.number};
+    let rDone=null;
+    if(T.dn.length)rDone=put("✔ ผลิตไปแล้ว "+T.dm(T.dn[0].a)+"–"+T.ld+" ("+T.dn.length+" วัน)",T.dnT,{b:1,bg:"DCE9FF"});
+    const first=ws.rowCount+1;T.lf.forEach(x=>put(T.dm(x.a),x.v));const last=ws.rowCount;
+    const rLeft=put("⏳ รอผลิต "+(T.lf.length?T.dm(T.lf[0].a)+"–"+T.dm(T.lf[T.lf.length-1].a)+" ("+T.lf.length+" วัน)":"")+" รวม",T.lfT,{b:1,f:T.lf.length?(k=>"SUM("+k+first+":"+k+last+")"):null});
+    const rAdjN=ws.rowCount+1,rRepN=rAdjN+1;
+    put("ปรับ: ปัดเป็นโหล / เศษจากการปัดตัวเลขรายวัน"+(T.shared?" / ส่วนต่างจากการแบ่งแผ่นร่วม":""),T.adj,{col:"FF666666",f:k=>k+rRepN+"-"+k+rLeft});
+    const rRep=put("= บวก แผ่นยาง คงเหลือ (ตรงกับชีตแรก)",T.rep,{b:1,col:"FF1A56DB"});
+    if(!T.shared)put("รวมทั้งเดือน (ผลิตไปแล้ว + รอผลิต)",T.all.map((x,i)=>x+T.adj[i]),{b:1,f:k=>(rDone?k+rDone+"+":"")+k+rRep});
+    ws.addRow([])}
+  const sec=t=>{const r=ws.addRow([t]);r.getCell(1).font={name:"Tahoma",size:12,bold:true,color:{argb:"FF1A56DB"}}};
+  if(main.length){sec("8 สีหลัก");main.forEach(x=>blk(x.n,rcrBand(x.k),[x.k]))}
+  if(spc.length){sec("สีพิเศษ (Export เท่านั้น)");spc.forEach(x=>blk(x.n,rcrBand(x.k),[x.k]))}
+  sec("รวม");if(main.length)blk("รวม 8 สีหลัก",{bg:"#1a56db",fg:"#ffffff"},main.map(x=>x.k));if(spc.length)blk("รวมสีพิเศษ",{bg:"#6b4aa0",fg:"#ffffff"},spc.map(x=>x.k))}
 async function rcRepExcel(btn){const m=RCM.m,old=btn.textContent;
   try{if(typeof ExcelJS==="undefined"){btn.textContent="สร้างไฟล์ไม่ได้";setTimeout(()=>btn.textContent=old,2500);return}
     const D=rcRepData(m);if(D.err){btn.textContent="คิดไม่ได้";setTimeout(()=>btn.textContent=old,2500);return}
@@ -5147,6 +5173,7 @@ async function rcRepExcel(btn){const m=RCM.m,old=btn.textContent;
     if(main.length)addBlock("รวม 8 สีหลัก",{bg:"#1a56db",fg:"#ffffff"},rcRepGrp(main),bm);
     if(spc.length)addBlock("รวมสีพิเศษ",{bg:"#6b4aa0",fg:"#ffffff"},rcRepGrp(spc),bs);
     addBlock("รวมทุกสี",{bg:"#0f2a5c",fg:"#ffffff"},rcRepGrp(D.rows),bm.concat(bs));
+    rcRepExcelDaily(wb,D,{fill,B,FT,NF,SF,cl,S6},main,spc);
     await saveBook(wb,"FG200_ขาดเกินจากแผน_"+m+".xlsx");btn.textContent="ดาวน์โหลดแล้ว"}
   catch(e){console.error(e);btn.textContent="สร้างไฟล์ไม่ได้"}
   setTimeout(()=>{btn.textContent=old;btn.disabled=false},2500)}
