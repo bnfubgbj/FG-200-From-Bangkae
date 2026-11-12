@@ -470,7 +470,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 265)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 266)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -3719,9 +3719,31 @@ function poOut(C){
   document.addEventListener("mouseout",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");if(el&&!pinned&&!(e.relatedTarget&&el.contains(e.relatedTarget)))hid()});
   document.addEventListener("focusin",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");if(el&&!pinned)show(el)});
   document.addEventListener("click",e=>{const el=e.target.closest&&e.target.closest("[data-hv],[data-hk]");
-    if(el){if(pinned===el){pinned=null;hid()}else{pinned=el;show(el)}}else if(!e.target.closest("#hvpop")){pinned=null;hid()}});
+    if(el){hid();window.hvWin&&window.hvWin(el,pop)}else if(!e.target.closest("#hvpop")){pinned=null;hid()}});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){pinned=null;hid()}});
 })();
+/* ===== ป๊อปอัพตัวเลข: คลิกเพื่อปักหมุดเป็นหน้าต่าง ลากย้าย/ย่อขยายได้ ===== */
+(function(){const st=document.createElement("style");st.textContent='.hv-win{position:fixed;display:flex;flex-direction:column;min-width:260px;min-height:110px;max-width:calc(100vw - 8px);overflow:hidden;background:var(--surface);color:var(--ink,inherit);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 32px rgba(15,40,90,.3);font-size:13px}.hv-wh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 8px 6px 12px;background:var(--accent-soft);font-weight:700;cursor:move;touch-action:none;user-select:none}.hv-wx{border:0;background:transparent;font-size:16px;cursor:pointer;color:inherit;padding:2px 6px}.hv-wb{flex:1;min-height:0;overflow:auto;padding:8px 10px}.hv-wb>.hvt:first-child{display:none}.hv-wb .hvt{font-size:12px;color:var(--muted);margin:0 0 4px}.hv-wb table{border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}.hv-wb th,.hv-wb td{padding:2px 8px;text-align:right;white-space:nowrap;border:0}.hv-wb th:first-child,.hv-wb td:first-child{text-align:left}.hv-wb tfoot td{font-weight:600;border-top:1px solid var(--line)}.hv-wg{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;touch-action:none;background:linear-gradient(135deg,transparent 55%,var(--accent) 55%,var(--accent) 62%,transparent 62%,transparent 72%,var(--accent) 72%,var(--accent) 79%,transparent 79%)}';document.head.appendChild(st);
+  let zTop=1101;const WINS=[];
+  window.hvWin=function(c,pop){const h=c.dataset.hk?FGHVK[c.dataset.hk]:HV[+c.dataset.hv];if(!h)return;
+    const tm=h.match(/<div class="hvt">([\s\S]*?)<\/div>/),title=tm?tm[1].replace(/<[^>]*>/g,""):"ตัวเลข",key=c.dataset.hk?"k"+c.dataset.hk:"v"+title;
+    const ex=WINS.find(w=>w.key===key&&w.el.isConnected);if(ex){ex.el.remove();WINS.splice(WINS.indexOf(ex),1);return}
+    const r=c.getBoundingClientRect(),n=WINS.filter(w=>w.el.isConnected).length,el=document.createElement("div");el.className="hv-win";
+    el.innerHTML='<div class="hv-wh"><span>'+escH(title)+'</span><button type="button" class="hv-wx" aria-label="ปิด">✕</button></div><div class="hv-wb">'+h+'</div><div class="hv-wg" title="ลากเพื่อย่อ/ขยาย"></div>';
+    document.body.appendChild(el);
+    const w0=Math.min(el.offsetWidth+4,innerWidth-16),h0=Math.min(el.offsetHeight+4,innerHeight-16);el.style.width=w0+"px";el.style.height=h0+"px";
+    el.style.left=Math.min(Math.max(8,r.left+n*28),innerWidth-w0-8)+"px";el.style.top=Math.min(Math.max(8,r.bottom+6+n*28),Math.max(8,innerHeight-h0-8))+"px";el.style.zIndex=++zTop;
+    const rec={key,el};WINS.push(rec);
+    el.addEventListener("pointerdown",()=>{el.style.zIndex=++zTop});
+    el.querySelector(".hv-wx").addEventListener("click",()=>{el.remove();const i=WINS.indexOf(rec);if(i>=0)WINS.splice(i,1)});
+    const hd=el.querySelector(".hv-wh");let dx=0,dy=0,dr=false;
+    hd.addEventListener("pointerdown",e=>{if(e.target.closest(".hv-wx"))return;dr=true;dx=e.clientX-el.offsetLeft;dy=e.clientY-el.offsetTop;hd.setPointerCapture(e.pointerId);e.preventDefault()});
+    hd.addEventListener("pointermove",e=>{if(!dr)return;el.style.left=Math.min(Math.max(0,e.clientX-dx),innerWidth-60)+"px";el.style.top=Math.min(Math.max(0,e.clientY-dy),innerHeight-30)+"px"});
+    const up=()=>{dr=false};hd.addEventListener("pointerup",up);hd.addEventListener("pointercancel",up);
+    const gp=el.querySelector(".hv-wg");let rz=null;
+    gp.addEventListener("pointerdown",e=>{rz={x:e.clientX,y:e.clientY,w:el.offsetWidth,h:el.offsetHeight};gp.setPointerCapture(e.pointerId);e.preventDefault()});
+    gp.addEventListener("pointermove",e=>{if(!rz)return;el.style.width=Math.max(260,rz.w+e.clientX-rz.x)+"px";el.style.height=Math.max(110,rz.h+e.clientY-rz.y)+"px"});
+    const rzu=()=>{rz=null};gp.addEventListener("pointerup",rzu);gp.addEventListener("pointercancel",rzu)}})();
 function poSheet(wb,C){
   const ws=wb.addWorksheet(C.opt===1?"แบบ1 แผนผลิต":"แบบ2 แผนประกอบนึ่งยาง");ws.columns=[{width:34}].concat(Array(7).fill({width:13}));
   const fill=x=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+x}}),bd={style:"thin",color:{argb:"FF888888"}},B={top:bd,left:bd,bottom:bd,right:bd},NF="#,##0;[Red]-#,##0;-",L="BCDEFG";
