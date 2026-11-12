@@ -470,7 +470,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 264)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 265)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a></div>
 </nav>
 <div class="wrap">
   <header>
@@ -489,7 +489,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
           <label class="cck"><input type="checkbox" id="c-s-asm" checked> แผนประกอบ</label>
           <label class="cck"><input type="checkbox" id="c-s-act" checked> รับจริงเข้าโกดัง</label></div>
         <div><span class="lbl">2) ช่วงเวลาที่เปรียบเทียบ</span>
-          <div class="row" style="align-items:center;gap:8px"><input type="date" id="c-from" style="max-width:165px" aria-label="จากวันที่"><span>ถึง</span><input type="date" id="c-to" style="max-width:165px" aria-label="ถึงวันที่"><button class="btn ghost" type="button" id="c-m0">เดือนนี้</button><button class="btn ghost" type="button" id="c-m1">เดือนที่แล้ว</button></div></div>
+          <div class="row" style="align-items:center;gap:8px"><input type="date" id="c-from" style="max-width:165px" aria-label="จากวันที่"><span>ถึง</span><input type="date" id="c-to" style="max-width:165px" aria-label="ถึงวันที่"><button class="btn ghost" type="button" id="c-m0">เดือนนี้</button><button class="btn ghost" type="button" id="c-m1">‹ เดือนที่แล้ว</button><button class="btn ghost" type="button" id="c-m2">เดือนถัดไป ›</button></div></div>
         <div><span class="lbl">3) หัวข้อการเปรียบเทียบ</span>
           <label class="cck"><input type="checkbox" id="c-t-qty" checked> ปริมาณการผลิต</label>
           <label class="cck"><input type="checkbox" id="c-t-det" checked> รายละเอียดสี × เบอร์ ที่ผลิตได้</label><label class="cck"><input type="checkbox" id="c-t-col" checked> แยกตามสี (เทียบง่าย)</label></div>
@@ -2551,7 +2551,8 @@ function cmpInit(){if(!$("c-from").value){const d=todayS();cmpMonth(d.slice(0,7)
 function cmpMonth(m){const[y,mo]=m.split("-").map(Number);$("c-from").value=m+"-01";$("c-to").value=m+"-"+cp2(new Date(y,mo,0).getDate());cmpDraw()}
 ["c-s-plan","c-s-asm","c-s-act","c-t-qty","c-t-det","c-t-col","c-from","c-to"].forEach(i=>$(i).addEventListener("change",cmpDraw));
 $("c-m0").onclick=()=>cmpMonth(todayS().slice(0,7));
-$("c-m1").onclick=()=>{const t=new Date();t.setDate(1);t.setMonth(t.getMonth()-1);cmpMonth(t.getFullYear()+"-"+cp2(t.getMonth()+1))};
+const cmpShift=n=>{const b=($("c-from").value||todayS()).slice(0,7).split("-").map(Number),t=new Date(b[0],b[1]-1+n,1);cmpMonth(t.getFullYear()+"-"+cp2(t.getMonth()+1))};
+$("c-m1").onclick=()=>cmpShift(-1);$("c-m2").onclick=()=>cmpShift(1);
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-cgo]");if(!a)return;e.preventDefault();$("tab-"+a.dataset.cgo).click()});
 $("tt-back").onclick=()=>$("tab-t").click();
 
