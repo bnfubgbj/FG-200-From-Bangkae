@@ -83,7 +83,7 @@ td.hit{background:var(--accent-soft);font-weight:600}
 #view-p[hidden]{display:none!important}
 .sw{display:inline-block;width:14px;height:14px;border:1px solid var(--line);vertical-align:-2px}
 .sw.dn,td.dn{background:#f8d7c4;color:#1a1a1a}
-.sw.up,td.up{background:#fff200;color:#1a1a1a}
+.sw.up,td.up{background:var(--hl,#FFF200);color:#1a1a1a}
 table.tpl td,table.tpl th{border:1px solid var(--line)}
 table.tpl td:first-child{text-align:left}
 tr.soft td{font-weight:400;color:var(--muted);font-size:12.5px}
@@ -453,7 +453,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
 
 /* ===== ธีมเย็น (กรมท่า + ส้มอำพัน) — สลับกลับธีมสดใสได้ที่เมนูซ้ายล่าง ===== */
 @media (prefers-color-scheme:light){
-:root:not([data-skin="bright"]){--bg:#f7f5f1;--surface:#fff;--surface2:#f4f2ee;--line:#e3dfd7;--line2:#cfc9be;--ink:#1f2630;--muted:#667080;--accent:#c97b1e;--accent-ink:#fff;--accent-soft:#fbeedb;--sel:#f3e1c4;--hdr-bg:#eceff3;--hdr-ink:#1f2630;--gold:#c97b1e;--bar:#3a4452;--side:#1f2630;--side-fg:#fff;--side-fg2:#b8c0cc;--side-hover:rgba(255,255,255,.1)}
+:root:not([data-skin="bright"]){--yl:#dde4ec;--hl:#f2cf91;--hd:#e6ebf1;--bg:#f7f5f1;--surface:#fff;--surface2:#f4f2ee;--line:#e3dfd7;--line2:#cfc9be;--ink:#1f2630;--muted:#667080;--accent:#c97b1e;--accent-ink:#fff;--accent-soft:#fbeedb;--sel:#f3e1c4;--hdr-bg:#eceff3;--hdr-ink:#1f2630;--gold:#c97b1e;--bar:#3a4452;--side:#1f2630;--side-fg:#fff;--side-fg2:#b8c0cc;--side-hover:rgba(255,255,255,.1)}
 :root:not([data-skin="bright"]) .side{box-shadow:none;border-right:4px solid #c97b1e}
 :root:not([data-skin="bright"]) .smenu button[aria-selected="true"]{background:#3a4452;color:#fff;box-shadow:inset 3px 0 0 #c97b1e}
 :root:not([data-skin="bright"]) .smenu button[aria-selected="true"] svg{color:#f3b35b}
@@ -497,7 +497,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 268)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 269)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4659,7 +4659,7 @@ function swHeat(A){const mx=Math.max(1,...A.colors.flatMap(k=>A.heat[k]));let h=
   A.colors.forEach(k=>{const c=A.col[k];h+="<tr><th>"+escH(k)+"</th>"+A.heat[k].map(v=>'<td style="'+(v?"background:rgba(37,99,235,"+(.08+.5*v/mx).toFixed(2)+")":"")+'">'+(v?sf(v)+' <small style="opacity:.7">('+(c.y?(Math.round(v/c.y*1000)/10)+"%":"–")+")</small>":"")+"</td>").join("")+'<td class="tt">'+sf(c.red)+"</td><td>"+(c.y?fmt(c.y):"–")+"</td><td><b>"+(c.y?spf(sp(c.red,c.y)):"–")+"</b></td></tr>"});
   return h+"</tbody><tfoot><tr><th>รวม</th>"+A.size.map(v=>"<td>"+sf(v)+"</td>").join("")+'<td class="tt">'+sf(A.red)+"</td><td>"+fmt(A.y)+"</td><td><b>"+spf(A.pct)+"</b></td></tr></tfoot></table>"}
 function swDayTbl(A,thr){const cs=A.colors;let h='<table class="cgrep"><thead><tr><th>วันที่แผนปั๊ม</th><th>วันที่นึ่งยาง</th>'+cs.map(k=>"<th>"+escH(k)+"</th>").join("")+'<th class="tt">รวม (แผ่น)</th><th>ยอดยางนึ่ง</th><th>% รวม</th></tr></thead><tbody>';
-  const cell=(red,y)=>{const p=sp(red,y);return'<td style="'+(y&&p>thr?"background:#FFF200;color:#000;font-weight:700":"")+'">'+(y&&red?(Math.round(p*100)/100).toFixed(2):(y?"–":""))+"</td>"};
+  const cell=(red,y)=>{const p=sp(red,y);return'<td style="'+(y&&p>thr?"background:var(--hl,#FFF200);color:#000;font-weight:700":"")+'">'+(y&&red?(Math.round(p*100)/100).toFixed(2):(y?"–":""))+"</td>"};
   A.days.forEach(x=>{h+="<tr><th>"+thD(x.d)+"</th><td>"+(x.st?thD(x.st):"–")+"</td>"+cs.map(k=>{const c=x.c[k];return c?cell(swS(c.v),c.y):"<td></td>"}).join("")+'<td class="tt">'+sf(x.red)+"</td><td>"+fmt(x.y)+"</td>"+cell(x.red,x.y)+"</tr>"});
   return h+"</tbody></table>"}
 async function swExcel(A){if(typeof ExcelJS==="undefined")throw new Error("ยังโหลด ExcelJS ไม่เสร็จ");
@@ -4776,9 +4776,9 @@ function cgRepDraw(){const box=$("cgr-body"),d=$("cgr-d").value;cgTitle("stk");c
     dd=d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
   let h='<div class="sdk">'+cgCard("#8a5a3c","สต๊อกบางแค (เก็บที่ รง.)",cvN(sK),'<span class="sdz">คู่</span>')+cgCard("#1677ff","สต๊อกบางหว้า (โกดังเรา)",cvN(sB),'<span class="sdz">คู่</span>')+cgCard("#19c38b","รวมทั้ง 2 ที่",cvN(sK+sB),'<span class="sdz">ณ '+thD(d)+(has(sK)&&has(sB)?"":" · <b>ยังไม่มีข้อมูลของบางแค/บางหว้าในวันนี้ครบ</b>")+"</span>")+"</div>";
   const HC=[["#e9eef3","#1f2d3a"],["#262626","#fff"],["#8a5a3c","#fff"],["#d6dde6","#1f2d3a"]],TT=[["สต๊อค บางแค",0],["สต๊อค 02 บางหว้า",1],["รวมสต๊อค 2 ที่",2]],fmt=v=>v<0?'<span style="color:#d93025">'+cvN(v)+"</span>":cvN(v);
-  h+='<div class="cgthree">'+TT.map(t=>{const k=t[1];let x='<div class="cgt3"><table class="cgrep"><thead><tr><th style="background:#c6e0b4;color:#1f2933">'+cvPN()+'</th><th colspan="3" style="background:#ffff00;color:#1f2933;text-align:left">'+t[0]+'</th><th style="background:#fff;color:#1f2933;font-weight:500">'+dd+'</th></tr><tr><th>เบอร์</th>'+["ขาว","ดำ","น้ำตาล"].map((c,j)=>'<th style="background:'+HC[j][0]+";color:"+HC[j][1]+'">'+c+"</th>").join("")+'<th style="background:'+HC[3][0]+";color:"+HC[3][1]+'">รวม</th></tr></thead><tbody>';
+  h+='<div class="cgthree">'+TT.map(t=>{const k=t[1];let x='<div class="cgt3"><table class="cgrep"><thead><tr><th style="background:#c6e0b4;color:#1f2933">'+cvPN()+'</th><th colspan="3" style="background:var(--yl,#ffff00);color:#1f2933;text-align:left">'+t[0]+'</th><th style="background:#fff;color:#1f2933;font-weight:500">'+dd+'</th></tr><tr><th>เบอร์</th>'+["ขาว","ดำ","น้ำตาล"].map((c,j)=>'<th style="background:'+HC[j][0]+";color:"+HC[j][1]+'">'+c+"</th>").join("")+'<th style="background:'+HC[3][0]+";color:"+HC[3][1]+'">รวม</th></tr></thead><tbody>';
     T.idx.forEach(i=>{const v=T.v[k].map(c=>c[i]);x+="<tr><th>"+CVS[i]+"</th>"+v.map(n=>"<td>"+fmt(n)+"</td>").join("")+'<td class="tt">'+fmt(cvSum1(v))+"</td></tr>"});
-    return x+'</tbody><tfoot><tr style="background:#ffff00;color:#1f2933"><th style="background:#ffff00;color:#1f2933">รวม</th>'+T.v[k].map(c=>'<td style="background:#ffff00">'+fmt(cvSum1(c))+"</td>").join("")+'<td style="background:#ffff00">'+fmt(T.tot[k===2?2:k])+"</td></tr></tfoot></table></div>"}).join("")+"</div>";
+    return x+'</tbody><tfoot><tr style="background:var(--yl,#ffff00);color:#1f2933"><th style="background:var(--yl,#ffff00);color:#1f2933">รวม</th>'+T.v[k].map(c=>'<td style="background:var(--yl,#ffff00)">'+fmt(cvSum1(c))+"</td>").join("")+'<td style="background:var(--yl,#ffff00)">'+fmt(T.tot[k===2?2:k])+"</td></tr></tfoot></table></div>"}).join("")+"</div>";
   box.innerHTML=h}
 $("cgr-d").addEventListener("input",()=>cgRepDraw());
 
@@ -5145,7 +5145,7 @@ function rcRepHtml(D){RCRTIPS=[];RCRCOPY=[];RCRLAST=D;setTimeout(()=>{window.rcr
   if(main.length)h+=rcrBlk("รวม 8 สีหลัก",rcRepGrp(main),L,{bg:"#1a56db",fg:"#ffffff"},main.map(x=>x.k));
   if(spc.length)h+=rcrBlk("รวมสีพิเศษ",rcRepGrp(spc),L,{bg:"#6b4aa0",fg:"#ffffff"},spc.map(x=>x.k));
   h+=rcrBlk("รวมทุกสี",rcRepGrp(rs),L,{bg:"#0f2a5c",fg:"#ffffff"},rs.map(x=>x.k))+"</table></div></div>";return h}
-(function(){const st=document.createElement("style");st.textContent='.rcr-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 8px}.rcr-ctl label{display:flex;gap:6px;align-items:center}.rcr-t{border-collapse:separate;border-spacing:0;width:100%;min-width:780px;font-size:13px;margin:8px 0}.rcr-t th,.rcr-t td{border:1px solid var(--line);padding:5px 8px;text-align:right;white-space:nowrap}.rcr-t th:first-child{text-align:left;white-space:normal;min-width:320px;font-weight:600}.rcr-t td.tt{font-weight:700}.rcr-t tr.e th,.rcr-t tr.e td{font-weight:700;background:var(--surface2)}.rcr-t .neg{color:var(--warn)}.rcr-t .pos{color:var(--accent)}.rcr-t .hd th{background:#fff2a8;color:#222;text-align:center}.rcr-t .sec th{text-align:left;background:var(--accent-soft);color:var(--accent);border:0;padding-top:12px}.rcr-t .bd th{text-align:center;font-size:14px;border-color:#888}.rcr-t tr.tot th,.rcr-t tr.tot td{font-weight:700;background:var(--accent-soft)}.rcr-cp{margin-left:8px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);border-radius:8px;padding:2px 8px;font-size:12px;cursor:pointer}.rcr-cp:hover{background:var(--accent);color:#fff}';document.head.appendChild(st)})();
+(function(){const st=document.createElement("style");st.textContent='.rcr-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 8px}.rcr-ctl label{display:flex;gap:6px;align-items:center}.rcr-t{border-collapse:separate;border-spacing:0;width:100%;min-width:780px;font-size:13px;margin:8px 0}.rcr-t th,.rcr-t td{border:1px solid var(--line);padding:5px 8px;text-align:right;white-space:nowrap}.rcr-t th:first-child{text-align:left;white-space:normal;min-width:320px;font-weight:600}.rcr-t td.tt{font-weight:700}.rcr-t tr.e th,.rcr-t tr.e td{font-weight:700;background:var(--surface2)}.rcr-t .neg{color:var(--warn)}.rcr-t .pos{color:var(--accent)}.rcr-t .hd th{background:var(--hd,#fff2a8);color:#222;text-align:center}.rcr-t .sec th{text-align:left;background:var(--accent-soft);color:var(--accent);border:0;padding-top:12px}.rcr-t .bd th{text-align:center;font-size:14px;border-color:#888}.rcr-t tr.tot th,.rcr-t tr.tot td{font-weight:700;background:var(--accent-soft)}.rcr-cp{margin-left:8px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);border-radius:8px;padding:2px 8px;font-size:12px;cursor:pointer}.rcr-cp:hover{background:var(--accent);color:#fff}';document.head.appendChild(st)})();
 function rcrTipData(it,D){D=D||RCRLAST;if(!D)return null;const Z=()=>[0,0,0,0,0,0],f=D.f,regs=new Set(RCR_REG),
     mulP=p=>D.ded&&regs.has(p)?(1-D.px/100)*f:f,cnt={};
   PTPL.forEach(r=>{const p=planPool(r[0]);cnt[p]=(cnt[p]||0)+1});
