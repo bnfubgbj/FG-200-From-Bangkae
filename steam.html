@@ -497,7 +497,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 269)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 271)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -883,7 +883,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <div class="panel" id="x-tgt" hidden><h2>เป้าการขาย</h2><div class="note">ใส่เป้าการขายรายเดือน (คู่) แยกตามสี ทั้งปีในตารางเดียว ช่องว่าง = ไม่มีเป้า · ถ้าไม่แยกสี ใส่แถว "รวมทั้งเดือน" แถวเดียวได้ · วางจาก Excel ได้: คลิกช่องแรกแล้ว Ctrl+V (หลายแถว หลายเดือนพร้อมกันได้) · บันทึกซ้ำปีเดิมจะเขียนทับ · ดูผลที่เมนู Dashboard</div>
       <div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ปี</span><select id="xt-y"></select></div><button class="btn" id="xt-save" type="button">บันทึกเป้าทั้งปี</button><button class="btn ghost" id="xt-clear" type="button">ล้างช่อง</button></div>
       <div id="xt-msg" class="msg" hidden></div><div class="scroll" id="xt-g"></div></div>
-    <div class="panel" id="x-slist" hidden><h2>แผ่นยางประกอบที่บันทึกไว้</h2><div class="note">แยกตามปี (แสดงเฉพาะปีที่มีข้อมูล) กดที่ปีเพื่อดูแต่ละเดือน กดที่เดือนเพื่อดูรายละเอียดสี × เบอร์ ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div id="xsl-list"></div></div>
+    <div class="panel" id="x-slist" hidden><h2>แผ่นยางประกอบที่บันทึกไว้</h2><div class="note">แยกตามปี (แสดงเฉพาะปีที่มีข้อมูล) กดที่ปีเพื่อดูแต่ละเดือน กดที่เดือนเพื่อดูรายละเอียดสี × เบอร์ ดาวน์โหลด Excel ได้ทั้งปีหรือรายเดือน</div><div class="note" style="margin:8px 0"><label>แผ่นดำที่ รง. ผลิตรวมกัน ให้ตัดไปที่: <select id="blk-mode"><option value="sp">พื้นดำหูพิเศษก่อน (แล้วที่เหลือเป็นดำธรรมดา)</option><option value="pl">ดำธรรมดาก่อน (แล้วที่เหลือไปหูพิเศษ)</option></select></label> — ไฟล์ Excel จะแสดงผลทั้งสองแบบเทียบกัน</div><div id="xsl-list"></div></div>
     <div class="panel" id="x-sdash" hidden><h2>แดชบอร์ดแผ่นยางประกอบที่บันทึกไว้</h2><div class="note">เอาเมาส์ชี้ (หรือกดค้างบนมือถือ) ที่การ์ด แท่งกราฟ หรือแถวในตาราง เพื่อดูตัวเลขแยกสี × เบอร์ · หน่วยคู่ = แผ่น × จำนวนคู่ต่อยาง 1 แผ่น (ตั้งที่หน้าแผ่นยางประกอบ)</div>
       <div class="row" id="xs-ctl" style="align-items:flex-end"><div style="min-width:140px"><span class="lbl">ปี</span><select id="xs-y"></select></div><div style="min-width:170px"><span class="lbl">เดือน</span><select id="xs-m"></select></div></div>
       <div id="xs-body"></div></div>
@@ -2481,15 +2481,22 @@ function dayGrid(wb,name,days,mul,filt,unitTxt,opt){opt=opt||{};
     if(bR.length>1){const rn=ws.rowCount+1,vals=sums.map((_,j)=>bR.reduce((q,b)=>q+b[1][j],0)),tot=vals.reduce((a,b)=>a+b,0);
       const row=ws.addRow(["รวม"+R.name].concat(vals.map((v,j)=>({formula:bR.map(b=>L(j+2)+b[0]).join("+"),result:v})),[{formula:sumC(rn),result:tot}]));tr=[rn,vals,tot];
       row.eachCell((x,j)=>{x.border=B;x.fill=fl("E7E6E6");x.font={bold:true};if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}})}
-    const rn=ws.rowCount+1,dv=sums.map((v,j)=>v-tr[1][j]),isBS=k=>/\/ดำ(\(|$)/.test(k),isP=R.name==="แผนผลิต";
-    const row=ws.addRow([R.dname].concat(dv.map((v,j)=>isP&&isBS(keys[Math.floor(j/6)])?"":({formula:L(j+2)+gr+"-"+L(j+2)+tr[0],result:v})),[{formula:L(totC)+gr+"-"+L(totC)+tr[0],result:sums.reduce((a,b)=>a+b,0)-tr[2]}]));
-    row.eachCell((x,j)=>{x.border=B;x.font={bold:true};x.fill=fl("EEF2FF");if(j>1){x.numFmt="+#,##0;[Red]-#,##0;-";x.alignment={horizontal:"right"}}});
-    if(isP){const bk=SUPMAP["ดำล้วน"]||"ดำ",ki=keys.indexOf(bk),grp=keys.filter(k=>k===bk||isBS(k));
-      if(ki>=0&&grp.length>1){const pv=SIZES.map((z,i)=>grp.reduce((q,k)=>q+tr[1][keys.indexOf(k)*6+i],0)),r1=ws.rowCount+1,a1=new Array(nc+2).fill(""),a2=new Array(nc+2).fill("");a1[0]="แผนกลุ่มพื้นดำ (ดำ + พื้นดำหูพิเศษ)";a2[0]="ผลิตดำ − แผนกลุ่มพื้นดำ";
-        SIZES.forEach((z,i)=>{a1[ki*6+i+1]={formula:grp.map(k=>L(keys.indexOf(k)*6+2+i)+tr[0]).join("+"),result:pv[i]};a2[ki*6+i+1]={formula:L(ki*6+2+i)+gr+"-"+L(ki*6+2+i)+r1,result:sums[ki*6+i]-pv[i]}});
-        const t1=pv.reduce((a,b)=>a+b,0),t0=sums.slice(ki*6,ki*6+6).reduce((a,b)=>a+b,0);a1[nc+1]={formula:"SUM("+L(ki*6+2)+r1+":"+L(ki*6+7)+r1+")",result:t1};a2[nc+1]={formula:"SUM("+L(ki*6+2)+gr+":"+L(ki*6+7)+gr+")-"+L(totC)+r1,result:t0-t1};
-        const w1=ws.addRow(a1),w2=ws.addRow(a2);[w1,w2].forEach((w,q)=>w.eachCell((x,j)=>{x.border=B;x.font={bold:true,color:{argb:"FF1F2933"}};x.fill=fl(q?"EEF2FF":"D9D9D9");if(j>1){x.numFmt=q?"+#,##0;[Red]-#,##0;-":F0;x.alignment={horizontal:"right"}}}));
-        const n2=ws.addRow(["* พื้นดำหูพิเศษใช้แผ่นดำเดียวกับสีดำปกติ รง. ไม่แจ้งแยกรายวันว่าเปลี่ยนเป็นหูสีพิเศษเมื่อไร จึงไม่มียอดผลิตรายวันของสีเหล่านี้ · ให้ดูเทียบรวมกันที่แถว \"กลุ่มพื้นดำ\" ใต้บล็อกสีดำ"]);n2.getCell(1).font={italic:true,size:10,color:{argb:"FFC2410C"}}}}});
+    const isBS=k=>/\/ดำ(\(|$)/.test(k),isP=R.name==="แผนผลิต",bk=SUPMAP["ดำล้วน"]||"ดำ",ki=keys.indexOf(bk),spk=keys.filter(isBS),useAl=isP&&ki>=0&&spk.length>0;
+    const mkAl=(mode,lab)=>{const alv={},a1=new Array(nc+2).fill(""),alRow=ws.rowCount+1;a1[0]=lab;
+      SIZES.forEach((z,i)=>{const G=L(ki*6+2+i)+gr,pb=L(ki*6+2+i)+tr[0];let lf=sums[ki*6+i];const prev=[];let off="";
+        if(mode==="pl"){const g0=Math.min(Math.max(0,lf),tr[1][ki*6+i]);lf-=g0;off="MIN("+G+","+pb+")"}
+        spk.forEach(k=>{const c=keys.indexOf(k)*6+i,pl=tr[1][c],g=Math.min(Math.max(0,lf),pl),cl=L(c+2);
+          a1[c+1]={formula:"MIN(MAX(0,"+G+(off?"-"+off:"")+(prev.length?"-"+prev.join("-"):"")+"),"+cl+tr[0]+")",result:g};alv[c]=g;lf-=g;prev.push(cl+alRow)});
+        const ck=ki*6+i;let sp=0;spk.forEach(k=>sp+=alv[keys.indexOf(k)*6+i]);alv[ck]=sums[ki*6+i]-sp;a1[ck+1]={formula:G+(prev.length?"-"+prev.join("-"):""),result:alv[ck]}});
+      const w=ws.addRow(a1);w.eachCell((x,j)=>{x.border=B;x.font={bold:true,color:{argb:"FF1F2933"}};x.fill=fl("D9D9D9");if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}});return{alv,alRow}};
+    const mkDiff=(lab,al)=>{const rn=ws.rowCount+1,dv=sums.map((v,j)=>v-tr[1][j]);
+      const row=ws.addRow([lab].concat(dv.map((v,j)=>al&&al.alv[j]!==undefined?({formula:L(j+2)+al.alRow+"-"+L(j+2)+tr[0],result:al.alv[j]-tr[1][j]}):({formula:L(j+2)+gr+"-"+L(j+2)+tr[0],result:v})),[{formula:L(totC)+gr+"-"+L(totC)+tr[0],result:sums.reduce((a,b)=>a+b,0)-tr[2]}]));
+      row.eachCell((x,j)=>{x.border=B;x.font={bold:true};x.fill=fl("EEF2FF");if(j>1){x.numFmt="+#,##0;[Red]-#,##0;-";x.alignment={horizontal:"right"}}})};
+    const mS="หูพิเศษก่อน",mP="ดำธรรมดาก่อน",m1=RCRSB?"sp":"pl",m2=RCRSB?"pl":"sp",nm=m=>m==="sp"?mS:mP;
+    if(useAl){const A1=mkAl(m1,"ยอดผลิตดำ จัดสรร ("+nm(m1)+" · ที่เลือก)");mkDiff(R.dname+" ("+nm(m1)+" · ที่เลือก)",A1);
+      ws.addRow([]);const A2=mkAl(m2,"ลองอีกแบบ: จัดสรร ("+nm(m2)+")");mkDiff("ลองอีกแบบ: "+R.dname+" ("+nm(m2)+")",A2);
+      const n2=ws.addRow(["* แผ่นดำที่ รง. ผลิตใช้ร่วมกัน (สีดำ + พื้นดำหูพิเศษ) ไม่ระบุว่าตัดไปสีไหนก่อน · เลือกลำดับได้ที่ปุ่ม \"แผ่นดำตัดไปที่\" · หูพิเศษก่อน = ไล่ตามลำดับสี ไม่เกินแผนของแต่ละสี ที่เหลือเป็นดำ · ดำธรรมดาก่อน = เติมแผนสีดำให้เต็มก่อน ที่เหลือไปหูพิเศษ · ส่วนเกินทุกแผนนับเป็นสีดำ"]);n2.getCell(1).font={italic:true,size:10,color:{argb:"FFC2410C"}}}
+    else mkDiff(R.dname,null)});
   if(REFS.length){ws.addRow([]);const nt=ws.addRow([REFS.map(r=>r.name).join("/")+" = ยอดทั้งเดือน (แปลงเป็น"+unitTxt.split(" ")[0]+") เทียบกับยอดผลิตเฉพาะวันที่แสดงในตาราง · บวก = ผลิตเกิน ลบ = ยังขาด"+(REFS.some(r=>r.name==="แผนผลิต")?" · แผนผลิตใช้ revise ล่าสุดของเดือน":"")]);nt.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}}}
   ws.views=[{state:"frozen",xSplit:1,ySplit:3}]}
 const thD2=d=>d.slice(8)+"/"+d.slice(5,7)+"/"+(+d.slice(0,4)+543);
@@ -5115,7 +5122,7 @@ function rcRepData(m){
   const wo=RCRSW?null:nn($("e-wpct").value),bo=RCRSB?null:nn($("e-bpct").value);
   {const nw=need("ดำ/ขาว");R["ดำ/ขาว"]=sup["ขาว"].map((x,i)=>wo!=null?x*wo/100:Math.min(x,nw[i]));R["ขาว"]=sup["ขาว"].map((x,i)=>x-R["ดำ/ขาว"][i])}
   {const sk=PTPL.map(r=>r[0]).filter(k=>k!=="ดำ"&&planPool(k)==="ดำ"),nds={};sk.forEach(k=>{nds[k]=need(k);R[k]=Z()});R["ดำ"]=Z();
-    SIZES.forEach((z,i)=>{if(RCRSB){let lf=sup["ดำ"][i];sk.forEach(k=>{const g=Math.min(lf,nds[k][i]);R[k][i]=g;lf-=g});R["ดำ"][i]=lf;return}const pool=sup["ดำ"][i],tot=sk.reduce((a,k)=>a+nds[k][i],0),sp=bo!=null?pool*(1-bo/100):pool,give=Math.min(sp,tot);sk.forEach(k=>{R[k][i]=tot>0?nds[k][i]*give/tot:0});R["ดำ"][i]=pool-give})}
+    SIZES.forEach((z,i)=>{if(!RCRSB&&bo==null){const nb=need("ดำ")[i];let lf=sup["ดำ"][i]-Math.min(sup["ดำ"][i],nb);sk.forEach(k=>{const g=Math.min(lf,nds[k][i]);R[k][i]=g;lf-=g});R["ดำ"][i]=sup["ดำ"][i]-sk.reduce((a,k)=>a+R[k][i],0);return}if(RCRSB){let lf=sup["ดำ"][i];sk.forEach(k=>{const g=Math.min(lf,nds[k][i]);R[k][i]=g;lf-=g});R["ดำ"][i]=lf;return}const pool=sup["ดำ"][i],tot=sk.reduce((a,k)=>a+nds[k][i],0),sp=bo!=null?pool*(1-bo/100):pool,give=Math.min(sp,tot);sk.forEach(k=>{R[k][i]=tot>0?nds[k][i]*give/tot:0});R["ดำ"][i]=pool-give})}
   PTPL.forEach(r=>{R[r[0]]=R[r[0]].map(x=>Math.max(0,Math.round(x/12)*12))});
   const miss=[];for(let d=fgLast?addD(fgLast,1):d0;d<=ed;d=addD(d,1)){if(new Date(d+"T12:00:00").getDay()===0)continue;if(!DATA[addD(d,-lag)])miss.push(+d.slice(8))}
   const rows=PTPL.map(r=>{const k=r[0],pl=pk(k),a=A[k].slice(),rm=R[k].slice();return{k,n:r[1],sp:PTPL.indexOf(r)>=8,pl,a,r:rm,e:a.map((x,i)=>x+rm[i]-pl[i])}}).filter(x=>T(x.pl)||T(x.a)||T(x.r));
@@ -5134,7 +5141,7 @@ function rcrRow(lab,a,isE,tp,cp){const t=a.reduce((x,y)=>x+y,0),c=v=>isE?'<span 
 let RCRTIPS=[],RCRLAST=null,RCRCOPY=[];
 function rcrBlk(name,g,L,bd,ks){const tp=ks?RCRTIPS.push({t:name,ks})-1:null,tot=g.a.map((x,i)=>x+g.r[i]),cp=RCRCOPY.push(tot)-1;return'<tbody><tr class="bd"><th colspan="8" style="background:'+bd.bg+";color:"+bd.fg+'">'+escH(name)+'</th></tr><tr class="hd"><th>หน่วย: คู่</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม(คู่)</th></tr>"+rcrRow(L[0],g.a)+rcrRow(L[1],g.r,0,tp)+rcrRow(L[4],tot,0,null,cp)+rcrRow(L[2],g.pl)+rcrRow(L[3],g.e,1)+"</tbody>"}
 function rcRepHtml(D){RCRTIPS=[];RCRCOPY=[];RCRLAST=D;setTimeout(()=>{window.rcrefreshWins&&window.rcrefreshWins()},0);const L=rcRepLabels(D),rs=D.rows,main=rs.filter(x=>!x.sp),spc=rs.filter(x=>x.sp),sec=t=>'<tbody><tr class="sec"><th colspan="8">'+t+"</th></tr></tbody>";
-  const ctl='<div class="rcr-ctl"><label><input type="checkbox" id="rcr-d"'+(D.ded?" checked":"")+'> หักเผื่อ รง. ทำไม่ได้</label><input type="number" id="rcr-x" value="'+D.px+'" min="0" max="100" step="1" aria-label="หักออก %" style="width:72px"><span>%</span><label title="แผ่นดำให้หูพิเศษทีละตัวตามลำดับในตาราง (หูขาว→หูเทา→…) ตัวละไม่เกินแผน ที่เหลือค่อยเป็นดำธรรมดา"><input type="checkbox" id="rcr-sb"'+(D.sb?" checked":"")+'> แผ่นดำ: หูพิเศษก่อน</label><label title="แผ่นขาวไปดำหน้าขาวก่อน (ไม่เกินแผน) ที่เหลือค่อยเป็นขาวธรรมดา"><input type="checkbox" id="rcr-sw"'+(D.sw?" checked":"")+'> แผ่นขาว: ดำหน้าขาวก่อน</label><button type="button" class="btn ghost" data-rcxl="1">⬇ ดาวน์โหลด Excel</button></div>';
+  const ctl='<div class="rcr-ctl"><label><input type="checkbox" id="rcr-d"'+(D.ded?" checked":"")+'> หักเผื่อ รง. ทำไม่ได้</label><input type="number" id="rcr-x" value="'+D.px+'" min="0" max="100" step="1" aria-label="หักออก %" style="width:72px"><span>%</span><label title="แผ่นดำให้หูพิเศษทีละตัวตามลำดับในตาราง (หูขาว→หูเทา→…) ตัวละไม่เกินแผน ที่เหลือค่อยเป็นดำธรรมดา"><select id="rcr-sb"><option value="sp"'+(D.sb?" selected":"")+'>หูพิเศษก่อน</option><option value="pl"'+(D.sb?"":" selected")+'>ดำธรรมดาก่อน</option></select> แผ่นดำตัดไปที่</label><label title="แผ่นขาวไปดำหน้าขาวก่อน (ไม่เกินแผน) ที่เหลือค่อยเป็นขาวธรรมดา"><input type="checkbox" id="rcr-sw"'+(D.sw?" checked":"")+'> แผ่นขาว: ดำหน้าขาวก่อน</label><button type="button" class="btn ghost" data-rcxl="1">⬇ ดาวน์โหลด Excel</button></div>';
   let h='<div class="rcr">'+ctl+'<div class="note" style="margin:0 0 4px">'+escH(rcRepInfo(D))+"</div>"+
     '<div class="note" style="margin:0 0 4px">หักเผื่อใช้กับแผ่นสีธรรมดา (น้ำเงิน เขียว แดง เหลือง ขาว ดำ เทา รวมดำหน้าขาว/พื้นดำหูพิเศษที่ใช้แผ่นร่วม) · สีพิเศษที่มีแผ่นแยก (Xmas, โควิด, ล้วน) ไม่หัก</div>';
   if(D.miss.length)h+='<div class="note" style="margin:0 0 4px;color:var(--warn)"><b>ยังไม่มีข้อมูลแผ่นยางวันที่ '+D.miss.join(", ")+" "+thM(D.m)+" (ไม่นับวันอาทิตย์)</b> — ยอดคาดสิ้นเดือนจึงต่ำกว่าความเป็นจริง</div>";
@@ -5422,7 +5429,7 @@ $("rm-body").addEventListener("click",e=>{const tr=e.target.closest("tr[data-m]"
     const up=()=>{dr=false};hd.addEventListener("pointerup",up);hd.addEventListener("pointercancel",up)}
   b.addEventListener("click",e=>{const c=e.target.closest("[data-rcrt]");if(c)pin(c)});
   addEventListener("scroll",hide,true);addEventListener("resize",hide)})();
-$("rm-body").addEventListener("change",e=>{const t=e.target;if(!t||(t.id!=="rcr-d"&&t.id!=="rcr-x"&&t.id!=="rcr-sw"&&t.id!=="rcr-sb"))return;if(t.id==="rcr-sw")RCRSW=t.checked;else if(t.id==="rcr-sb")RCRSB=t.checked;else if(t.id==="rcr-d")RCRD=t.checked;else{const v=Number(t.value);RCRX=isFinite(v)?Math.min(100,Math.max(0,v)):10}try{localStorage.setItem("rcrd",RCRD?"1":"0");localStorage.setItem("rcrx",String(RCRX));localStorage.setItem("rcrsw",RCRSW?"1":"0");localStorage.setItem("rcrsb",RCRSB?"1":"0")}catch(x){}const y=window.scrollY;rcMonDraw();window.scrollTo(0,y)});
+$("rm-body").addEventListener("change",e=>{const t=e.target;if(!t||(t.id!=="rcr-d"&&t.id!=="rcr-x"&&t.id!=="rcr-sw"&&t.id!=="rcr-sb"))return;if(t.id==="rcr-sw")RCRSW=t.checked;else if(t.id==="rcr-sb"){RCRSB=t.value==="sp";const q=$("blk-mode");if(q)q.value=t.value}else if(t.id==="rcr-d")RCRD=t.checked;else{const v=Number(t.value);RCRX=isFinite(v)?Math.min(100,Math.max(0,v)):10}try{localStorage.setItem("rcrd",RCRD?"1":"0");localStorage.setItem("rcrx",String(RCRX));localStorage.setItem("rcrsw",RCRSW?"1":"0");localStorage.setItem("rcrsb",RCRSB?"1":"0")}catch(x){}const y=window.scrollY;rcMonDraw();window.scrollTo(0,y)});
 $("rm-body").addEventListener("click",e=>{const xb=e.target.closest("[data-rcxl]");if(xb){rcRepExcel(xb);e.stopImmediatePropagation()}},true);
 $("rm-body").addEventListener("click",e=>{const pl=e.target.closest("[data-rcpl]");if(pl){RCPL=!RCPL;try{localStorage.setItem("rcpl",RCPL?"1":"")}catch(x){}rcMonDraw();return}const pj=e.target.closest("[data-rcpj]");if(pj){RCPJ=!RCPJ;rcMonDraw();return}const b=e.target.closest("[data-rcv]");if(!b)return;RCV=b.dataset.rcv;try{localStorage.setItem("rcv",RCV)}catch(x){}rcMonDraw()});
 (function(){const tip=document.createElement("div");tip.id="rc-tip";tip.hidden=true;tip.setAttribute("role","tooltip");tip.style.cssText="position:fixed;z-index:1000;background:var(--surface);color:var(--text,inherit);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(15,40,90,.22);padding:10px 12px;font-size:13px;max-width:calc(100vw - 16px);pointer-events:none";document.body.appendChild(tip);
@@ -6303,3 +6310,6 @@ const enh=()=>document.querySelectorAll('input[type=month]:not([data-ym])').forE
 enh();new MutationObserver(enh).observe(document.body,{childList:true,subtree:true})})();
 </script>
 <script>(function(){var b=document.getElementById("skin-sw");if(!b)return;b.addEventListener("click",function(){var r=document.documentElement,on=r.getAttribute("data-skin")==="bright";if(on)r.removeAttribute("data-skin");else r.setAttribute("data-skin","bright");try{localStorage.setItem("skin",on?"cool":"bright")}catch(e){}})})();</script>
+
+<script>(function(){var q=document.getElementById("blk-mode");if(!q)return;try{q.value=RCRSB?"sp":"pl"}catch(e){}
+q.addEventListener("change",function(){RCRSB=q.value==="sp";try{localStorage.setItem("rcrsb",RCRSB?"1":"0")}catch(e){}var r=document.getElementById("rcr-sb");if(r)r.value=q.value;try{if(document.getElementById("rm-body")&&document.getElementById("rm-body").children.length)rcMonDraw()}catch(e){}})})();</script>
