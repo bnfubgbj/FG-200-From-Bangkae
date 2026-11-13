@@ -497,7 +497,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 273)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 274)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2483,22 +2483,26 @@ function dayGrid(wb,name,days,mul,filt,unitTxt,opt){opt=opt||{};
     if(bR.length>1){const rn=ws.rowCount+1,vals=sums.map((_,j)=>bR.reduce((q,b)=>q+b[1][j],0)),tot=vals.reduce((a,b)=>a+b,0);
       const row=ws.addRow(["รวม"+R.name].concat(vals.map((v,j)=>({formula:bR.map(b=>L(j+2)+b[0]).join("+"),result:v})),[{formula:sumC(rn),result:tot}]));tr=[rn,vals,tot];
       row.eachCell((x,j)=>{x.border=B;x.fill=fl("E7E6E6");x.font={bold:true};if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}})}
-    const isBS=k=>/\/ดำ(\(|$)/.test(k),isP=R.name==="แผนผลิต",bk=SUPMAP["ดำล้วน"]||"ดำ",ki=keys.indexOf(bk),spk=keys.filter(isBS),useAl=isP&&ki>=0&&spk.length>0;
-    const mkAl=(mode,lab)=>{const alv={},a1=new Array(nc+2).fill(""),alRow=ws.rowCount+1;a1[0]=lab;
+    const isBS=k=>/\/ดำ(\(|$)/.test(k),isP=R.name==="แผนผลิต",bk=SUPMAP["ดำล้วน"]||"ดำ";
+    const GR=isP?[{pk:bk,sp:keys.filter(isBS),mode:RCRSB?"sp":"pl",nm:"ดำ"},{pk:"ขาว",sp:keys.filter(k=>k==="ดำ/ขาว"),mode:RCRSW?"sp":null,nm:"ขาว"}].filter(g=>g.mode&&keys.indexOf(g.pk)>=0&&g.sp.length>0):[];
+    const useAl=GR.length>0;
+    const mkAl=(g,mode,lab)=>{const ki=keys.indexOf(g.pk),alv={},a1=new Array(nc+2).fill(""),alRow=ws.rowCount+1;a1[0]=lab;
       SIZES.forEach((z,i)=>{const G=L(ki*6+2+i)+gr,pb=L(ki*6+2+i)+tr[0];let lf=sums[ki*6+i];const prev=[];let off="";
         if(mode==="pl"){const g0=Math.min(Math.max(0,lf),tr[1][ki*6+i]);lf-=g0;off="MIN("+G+","+pb+")"}
-        spk.forEach(k=>{const c=keys.indexOf(k)*6+i,pl=tr[1][c],g=Math.min(Math.max(0,lf),pl),cl=L(c+2);
-          a1[c+1]={formula:"MIN(MAX(0,"+G+(off?"-"+off:"")+(prev.length?"-"+prev.join("-"):"")+"),"+cl+tr[0]+")",result:g};alv[c]=g;lf-=g;prev.push(cl+alRow)});
-        const ck=ki*6+i;let sp=0;spk.forEach(k=>sp+=alv[keys.indexOf(k)*6+i]);alv[ck]=sums[ki*6+i]-sp;a1[ck+1]={formula:G+(prev.length?"-"+prev.join("-"):""),result:alv[ck]}});
+        g.sp.forEach(k=>{const c=keys.indexOf(k)*6+i,pl=tr[1][c],v=Math.min(Math.max(0,lf),pl),cl=L(c+2);
+          a1[c+1]={formula:"MIN(MAX(0,"+G+(off?"-"+off:"")+(prev.length?"-"+prev.join("-"):"")+"),"+cl+tr[0]+")",result:v};alv[c]=v;lf-=v;prev.push(cl+alRow)});
+        const ck=ki*6+i;let sp=0;g.sp.forEach(k=>sp+=alv[keys.indexOf(k)*6+i]);alv[ck]=sums[ki*6+i]-sp;a1[ck+1]={formula:G+(prev.length?"-"+prev.join("-"):""),result:alv[ck]}});
       const w=ws.addRow(a1);w.eachCell((x,j)=>{x.border=B;x.font={bold:true,color:{argb:"FF1F2933"}};x.fill=fl("D9D9D9");if(j>1){x.numFmt=F0;x.alignment={horizontal:"right"}}});return{alv,alRow}};
-    const mkDiff=(lab,al)=>{const rn=ws.rowCount+1,dv=sums.map((v,j)=>v-tr[1][j]);
-      const row=ws.addRow([lab].concat(dv.map((v,j)=>al&&al.alv[j]!==undefined?({formula:L(j+2)+al.alRow+"-"+L(j+2)+tr[0],result:al.alv[j]-tr[1][j]}):({formula:L(j+2)+gr+"-"+L(j+2)+tr[0],result:v})),[{formula:L(totC)+gr+"-"+L(totC)+tr[0],result:sums.reduce((a,b)=>a+b,0)-tr[2]}]));
+    const mkDiff=(lab,als)=>{const rn=ws.rowCount+1,dv=sums.map((v,j)=>v-tr[1][j]);
+      const hit=j=>{for(const q of als)if(q.alv[j]!==undefined)return q;return null};
+      const row=ws.addRow([lab].concat(dv.map((v,j)=>{const q=hit(j);return q?({formula:L(j+2)+q.alRow+"-"+L(j+2)+tr[0],result:q.alv[j]-tr[1][j]}):({formula:L(j+2)+gr+"-"+L(j+2)+tr[0],result:v})}),[{formula:L(totC)+gr+"-"+L(totC)+tr[0],result:sums.reduce((a,b)=>a+b,0)-tr[2]}]));
       row.eachCell((x,j)=>{x.border=B;x.font={bold:true};x.fill=fl("EEF2FF");if(j>1){x.numFmt="+#,##0;[Red]-#,##0;-";x.alignment={horizontal:"right"}}})};
-    const mS="หูพิเศษก่อน",mP="ดำธรรมดาก่อน",m1=RCRSB?"sp":"pl",m2=RCRSB?"pl":"sp",nm=m=>m==="sp"?mS:mP;
-    if(useAl){const A1=mkAl(m1,"ยอดผลิตดำ จัดสรร ("+nm(m1)+" · ที่เลือก)");mkDiff(R.dname+" ("+nm(m1)+" · ที่เลือก)",A1);
-      ws.addRow([]);const A2=mkAl(m2,"ลองอีกแบบ: จัดสรร ("+nm(m2)+")");mkDiff("ลองอีกแบบ: "+R.dname+" ("+nm(m2)+")",A2);
-      const n2=ws.addRow(["* แผ่นดำที่ รง. ผลิตใช้ร่วมกัน (สีดำ + พื้นดำหูพิเศษ) ไม่ระบุว่าตัดไปสีไหนก่อน · เลือกลำดับได้ที่ปุ่ม \"แผ่นดำตัดไปที่\" · หูพิเศษก่อน = ไล่ตามลำดับสี ไม่เกินแผนของแต่ละสี ที่เหลือเป็นดำ · ดำธรรมดาก่อน = เติมแผนสีดำให้เต็มก่อน ที่เหลือไปหูพิเศษ · ส่วนเกินทุกแผนนับเป็นสีดำ"]);n2.getCell(1).font={italic:true,size:10,color:{argb:"FFC2410C"}}}
-    else mkDiff(R.dname,null)});
+    const nmM=m=>m==="sp"?"หูพิเศษก่อน":"ดำธรรมดาก่อน";
+    if(useAl){const als=GR.map(g=>mkAl(g,g.mode,"ยอดผลิต"+g.nm+" จัดสรร ("+(g.nm==="ดำ"?nmM(g.mode):"ดำหน้าขาวก่อน")+")"));mkDiff(R.dname+" (หลังจัดสรรแผ่น)",als);
+      const g0=GR.find(g=>g.nm==="ดำ");
+      if(g0&&!opt.single){ws.addRow([]);const A2=mkAl(g0,g0.mode==="sp"?"pl":"sp","ลองอีกแบบ: จัดสรรดำ ("+nmM(g0.mode==="sp"?"pl":"sp")+")");mkDiff("ลองอีกแบบ: "+R.dname+" ("+nmM(g0.mode==="sp"?"pl":"sp")+")",[A2].concat(GR.filter(g=>g!==g0).map(g=>mkAl(g,g.mode,"ยอดผลิต"+g.nm+" จัดสรร"))))}
+      const n2=ws.addRow(["* แผ่นดำ/แผ่นขาวที่ รง. ผลิตใช้ร่วมกับสีพิเศษ ไม่ระบุรายวันว่าตัดไปสีไหน จึงจัดสรรที่ยอดรวม · แผ่นดำ: "+nmM(g0?g0.mode:"sp")+" · แผ่นขาว: ดำหน้าขาวก่อน · ไม่เกินแผนของแต่ละสี ส่วนเกินนับเป็นสีธรรมดา"]);n2.getCell(1).font={italic:true,size:10,color:{argb:"FFC2410C"}}}
+    else mkDiff(R.dname,[])});
   if(REFS.length){ws.addRow([]);const nt=ws.addRow([REFS.map(r=>r.name).join("/")+" = ยอดทั้งเดือน (แปลงเป็น"+unitTxt.split(" ")[0]+") เทียบกับยอดผลิตเฉพาะวันที่แสดงในตาราง · บวก = ผลิตเกิน ลบ = ยังขาด"+(REFS.some(r=>r.name==="แผนผลิต")?" · แผนผลิตใช้ revise ล่าสุดของเดือน":"")]);nt.getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}}}
   ws.views=[{state:"frozen",xSplit:1,ySplit:3}]}
 const thD2=d=>d.slice(8)+"/"+d.slice(5,7)+"/"+(+d.slice(0,4)+543);
@@ -6321,35 +6325,9 @@ function sync(v){["blk-mode","blk-mode2","rcr-sb"].forEach(function(i){var e=doc
 var s2=document.getElementById("blk-mode2");if(s2){s2.value=RCRSB?"sp":"pl";s2.addEventListener("change",function(){RCRSB=s2.value==="sp";try{localStorage.setItem("rcrsb",RCRSB?"1":"0")}catch(e){}sync(s2.value);try{render()}catch(e){}try{if(document.getElementById("rm-body")&&document.getElementById("rm-body").children.length)rcMonDraw()}catch(e){}})}
 var q=document.getElementById("blk-mode");if(q)q.addEventListener("change",function(){sync(q.value);try{render()}catch(e){}});
 var b=document.getElementById("xl2");if(!b)return;
-b.onclick=async function(){var x=window.__x2,old=b.textContent,back=function(t){b.textContent=t;setTimeout(function(){b.textContent=old},2500)};
+b.onclick=async function(){var old=b.textContent,back=function(t){b.textContent=t;setTimeout(function(){b.textContent=old},2500)};
  if(typeof ExcelJS==="undefined"){back("โหลดตัวสร้าง Excel ไม่ได้");return}
- if(!x||!x.rows.length){back("ไม่มีข้อมูลให้ดาวน์โหลด");return}
- b.disabled=true;try{
-  var wb=new ExcelJS.Workbook();wb.calcProperties={fullCalcOnLoad:true};var ws=wb.addWorksheet("หลังตัดแผ่น"),thin={style:"thin",color:{argb:"FFBBBBBB"}},B={top:thin,left:thin,bottom:thin,right:thin},F0="#,##0;-#,##0;-",F1="+#,##0;[Red]-#,##0;-";
-  var fl=function(c){return{type:"pattern",pattern:"solid",fgColor:{argb:"FF"+c}}},Lc=function(n){return String.fromCharCode(64+n)},nS=SIZES.length,cT=nS+2,cP=nS+3,cQ=nS+4,round=Math.round;
-  ws.columns=[{width:46}].concat(SIZES.map(function(){return{width:11}}),[{width:13},{width:13},{width:10}]);
-  var t=ws.addRow(["แผ่นหลังตัดตามแผนผลิต "+thM(x.m2)+" "+revName(x.rv)+" ("+x.U+")"]);t.getCell(1).font={bold:true,size:13};
-  ws.addRow(["จ่ายประกอบ "+x.rg+" · แผ่นขาวตัดให้ดำหน้าขาวก่อน · แผ่นดำตัดให้ "+(x.mode?"พื้นดำหูพิเศษก่อน ที่เหลือเป็นสีดำ":"สีดำธรรมดาก่อน ที่เหลือไปหูพิเศษ")]).getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}};
-  var hd=function(first,extra){var h=ws.addRow([first].concat(SIZES.map(Number),["รวม"],extra||[]));h.eachCell(function(c,j){c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fl("1A56DB");c.border=B;c.alignment={horizontal:j>1?"right":"left"}})};
-  var sumR=function(r){return "SUM(B"+r+":"+Lc(nS+1)+r+")"};
-  ws.addRow([]);ws.addRow(["1) แผ่นที่ได้หลังตัด ("+x.U+")"]).getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};hd("สี",["แผนเดือน","% แผน"]);
-  var r1=ws.rowCount+1,n=x.rows.length,r2=r1+n+1+2+1,rp=r2; // plan block start computed below
-  var aRows=[];x.rows.forEach(function(r){var rn=ws.rowCount+1;aRows.push(rn);var tot=r.v.reduce(function(a,c){return a+c},0),pt=r.p.reduce(function(a,c){return a+c},0);
-    ws.addRow([r.name].concat(r.v.map(round),[{formula:sumR(rn),result:round(tot)},null,null]));});
-  var lastA=ws.rowCount,totA=ws.rowCount+1;
-  ws.addRow(["รวม"].concat(SIZES.map(function(z,i){var c=Lc(i+2);return{formula:"SUM("+c+r1+":"+c+lastA+")",result:round(x.rows.reduce(function(a,r){return a+r.v[i]},0))}}),[{formula:"SUM("+Lc(cT)+r1+":"+Lc(cT)+lastA+")",result:round(x.rows.reduce(function(a,r){return a+r.v.reduce(function(u,c){return u+c},0)},0))}]));
-  ws.addRow([]);ws.addRow(["2) แผนเดือน แยกเบอร์ ("+x.U+")"]).getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};hd("สี");
-  var p1=ws.rowCount+1,pRows=[];x.rows.forEach(function(r){var rn=ws.rowCount+1;pRows.push(rn);ws.addRow([r.name].concat(r.p.map(round),[{formula:sumR(rn),result:round(r.p.reduce(function(a,c){return a+c},0))}]))});
-  var lastP=ws.rowCount,totP=ws.rowCount+1;
-  ws.addRow(["รวมแผน"].concat(SIZES.map(function(z,i){var c=Lc(i+2);return{formula:"SUM("+c+p1+":"+c+lastP+")",result:round(x.rows.reduce(function(a,r){return a+r.p[i]},0))}}),[{formula:"SUM("+Lc(cT)+p1+":"+Lc(cT)+lastP+")",result:round(x.rows.reduce(function(a,r){return a+r.p.reduce(function(u,c){return u+c},0)},0))}]));
-  ws.addRow([]);ws.addRow(["3) เหลือ (+) / ขาด (−) เทียบแผน ("+x.U+")"]).getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};hd("สี");
-  var d1=ws.rowCount+1;x.rows.forEach(function(r,k){var rn=ws.rowCount+1,cells=[r.name];for(var i=0;i<=nS;i++){var c=Lc(i+2),a=i<nS?r.v[i]:r.v.reduce(function(u,z){return u+z},0),b2=i<nS?r.p[i]:r.p.reduce(function(u,z){return u+z},0);cells.push({formula:c+aRows[k]+"-"+c+pRows[k],result:round(a)-round(b2)})}ws.addRow(cells)});
-  var lastD=ws.rowCount;ws.addRow(["รวม"].concat(SIZES.concat(["รวม"]).map(function(z,i){var c=Lc(i+2);return{formula:"SUM("+c+d1+":"+c+lastD+")",result:0}})));
-  // fill plan/% columns in block 1
-  x.rows.forEach(function(r,k){var rn=aRows[k],pt=round(r.p.reduce(function(a,c){return a+c},0)),at=round(r.v.reduce(function(a,c){return a+c},0));
-    ws.getCell(rn,cP).value={formula:Lc(cT)+pRows[k],result:pt};ws.getCell(rn,cQ).value={formula:"IF("+Lc(cP)+rn+">0,"+Lc(cT)+rn+"/"+Lc(cP)+rn+",0)",result:pt>0?at/pt:0};ws.getCell(rn,cQ).numFmt="0.0%"});
-  ws.getCell(totA,cP).value={formula:Lc(cT)+totP,result:0};ws.getCell(totA,cQ).value={formula:"IF("+Lc(cP)+totA+">0,"+Lc(cT)+totA+"/"+Lc(cP)+totA+",0)",result:0};ws.getCell(totA,cQ).numFmt="0.0%";
-  ws.eachRow(function(row,rn){row.eachCell(function(c,j){if(j>1&&rn>3&&c.value!==null&&c.value!==undefined&&typeof c.value!=="string"){c.border=B;if(j!==cQ)c.numFmt=(rn>d1-1?F1:F0)}});});
-  [totA,totP,lastD+1].forEach(function(rn){ws.getRow(rn).eachCell(function(c){c.font={bold:true};c.fill=fl("DCE6FA");c.border=B})});
-  ws.views=[{state:"frozen",xSplit:1,ySplit:0}];
-  await saveBook(wb,"หลังตัดแผ่น_"+x.m2+".xlsx");back("ดาวน์โหลดแล้ว")}catch(e){back("สร้างไฟล์ไม่ได้: "+(e&&e.message||e))}finally{b.disabled=false}}})();</script>
+ var c=(typeof cur!=="undefined"?cur:null);if(!c||!c.inR||!c.inR.length){back("ไม่มีข้อมูลให้ดาวน์โหลด");return}
+ b.disabled=true;try{var wb=new ExcelJS.Workbook(),pair=(typeof unit!=="undefined"&&unit==="pair"),f=F();
+  dayGrid(wb,"รายวัน หักแผนผลิต",c.inR,pair?f:1,true,pair?"คู่":"แผ่น",{only:"plan",single:true,title:"แผ่นยางรายวัน หักด้วยแผนผลิต"});
+  await saveBook(wb,"หลังตัดแผ่น_"+c.f+"_ถึง_"+c.t+".xlsx");back("ดาวน์โหลดแล้ว")}catch(e){back("สร้างไฟล์ไม่ได้: "+(e&&e.message||e))}finally{b.disabled=false}}})();</script>
