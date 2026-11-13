@@ -497,7 +497,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 271)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 272)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -574,12 +574,12 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
       <div class="panel">
         <div class="head2"><h2>รวมตามสีและเบอร์</h2>
           <div class="row"><div class="tabs" id="unit"><button data-u="pair" aria-selected="true">คู่ (คาดการณ์)</button><button data-u="sheet" aria-selected="false">แผ่นยาง</button></div>
-          <button class="btn ghost" id="xl">ดาวน์โหลด Excel</button></div></div>
+          <button class="btn ghost" id="xl">ดาวน์โหลด Excel (ตารางนี้)</button></div></div>
         <div id="gaps" class="note"></div>
         <div class="scroll" id="matrix"></div>
       </div>
       <div class="panel">
-        <div class="head2"><h2>หลังตัดแผ่นให้สีพิเศษตามแผนผลิต</h2></div>
+        <div class="head2"><h2>หลังตัดแผ่นให้สีพิเศษตามแผนผลิต</h2><div class="row"><select id="blk-mode2" aria-label="แผ่นดำตัดไปที่"><option value="sp">แผ่นดำ: หูพิเศษก่อน</option><option value="pl">แผ่นดำ: ดำธรรมดาก่อน</option></select><button class="btn ghost" id="xl2">ดาวน์โหลด Excel (ตารางนี้)</button></div></div>
         <div id="qnote2" class="note"></div>
         <div class="scroll" id="matrix2"></div>
       </div>
@@ -2264,10 +2264,11 @@ function render2(c,hasAny,k,U){
   const sup={};Object.keys(c.raw).forEach(fk=>{const p=STEAMPOOL[fk];if(!p)return;sup[p]=sup[p]||Z();c.raw[fk].forEach((x,i)=>sup[p][i]+=x*k)});
   const al={},pools={};PTPL.forEach(r=>{const p=planPool(r[0]);(pools[p]=pools[p]||[]).push(r)});
   Object.keys(pools).forEach(p=>{const av=(sup[p]||Z()).slice(),pri=pools[p].find(r=>FK[r[0]]);
+    let pre=null;if(p==="ดำ"&&pri&&!RCRSB){const nd=pl(pri[0]);pre=av.map((x,i)=>{const a=Math.min(nd[i],Math.max(0,x));av[i]-=a;return a})}
     pools[p].filter(r=>!FK[r[0]]).forEach(r=>{const need=pl(r[0]);al[r[0]]=av.map((x,i)=>{const a=Math.min(need[i],Math.max(0,x));av[i]-=a;return a})});
-    if(pri)al[pri[0]]=av.map(x=>Math.max(0,x)*HK(FK[pri[0]]))});
+    if(pri)al[pri[0]]=av.map((x,i)=>(Math.max(0,x)+(pre?pre[i]:0))*HK(FK[pri[0]]))});
   const T=a=>a.reduce((x,y)=>x+y,0),lab=r=>{const p=planPool(r[0]),pri=(pools[p]||[]).find(x=>FK[x[0]]),sec=(pools[p]||[]).some(x=>!FK[x[0]]&&T(pl(x[0]))>0);
-    return r[1]+(!FK[r[0]]&&pri?' <span class="zero" style="font-size:11px">(ตัดจากแผ่น'+pri[1]+')</span>':(FK[r[0]]&&sec?' <span class="zero" style="font-size:11px">(ส่วนที่เหลือ)</span>':""))};
+    return r[1]+(!FK[r[0]]&&pri?' <span class="zero" style="font-size:11px">(ตัดจากแผ่น'+pri[1]+')</span>':(FK[r[0]]&&sec&&p==="ดำ"&&!RCRSB?' <span class="zero" style="font-size:11px">(ตัดก่อน)</span>':(FK[r[0]]&&sec?' <span class="zero" style="font-size:11px">(ส่วนที่เหลือ)</span>':"")))};
   const rows=PTPL.filter(r=>T(al[r[0]]||Z())>0||T(pl(r[0]))>0);
   const dot=r=>'<span class="dot" style="background:'+dot21(r[0])+';display:inline-block;margin-right:8px"></span>';
   const rgTxt=(c.inR.length?thD(c.inR[0])+' – '+thD(c.inR[c.inR.length-1])+' ('+c.inR.length+' วันที่มีข้อมูล)':'ไม่มีข้อมูลในช่วง');let h1='<div style="margin:4px 0 8px;font-weight:600">ยอดผลิตตามแผ่นประกอบยาง · จ่ายประกอบ '+rgTxt+'</div><table class="fitp"><thead><tr><th>สี ('+U+') · แผ่นที่ได้หลังตัด</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th><th>แผนเดือน</th><th>% แผน</th></tr></thead><tbody>",col=Z(),pT=0;
@@ -2278,8 +2279,9 @@ function render2(c,hasAny,k,U){
   let h2='<div style="margin:18px 0 8px;font-weight:600">ยอดผลิต (จ่ายประกอบ '+rgTxt+') เทียบแผนทั้งเดือน '+thM(m2)+'</div><table><thead><tr><th>เหลือ (+) / ขาด (−) เทียบแผน '+thM(m2)+'</th>'+SIZES.map(z=>"<th>"+z+"</th>").join("")+"<th>รวม</th></tr></thead><tbody>",dc=Z();
   rows.forEach(r=>{const d=(al[r[0]]||Z()).map((x,i)=>x-pl(r[0])[i]);h2+="<tr"+tint(r[0])+"><td>"+dot(r)+r[1]+"</td>"+d.map((x,i)=>{dc[i]+=x;return sg(x)}).join("")+sg(T(d)).replace("<td","<td style='font-weight:700'")+"</tr>"});
   h2+="</tbody><tfoot><tr><td>รวม</td>"+dc.map(x=>sg(x)).join("")+sg(T(dc))+"</tr></tfoot></table>";
-  N.innerHTML="ตามแผนผลิต "+thM(m2)+" "+revName(rv)+" · ตัดแผ่นให้ ดำหน้าขาว (จากแผ่นขาว) และพื้นดำหูพิเศษ (จากแผ่นสีดำ) ให้ครบก่อน ที่เหลือจึงเป็นขาว / สีดำ · ยอดแผ่นนับถึงวันที่ข้อมูลล่าสุด เทียบกับแผนทั้งเดือน";
+  N.innerHTML="ตามแผนผลิต "+thM(m2)+" "+revName(rv)+" · แผ่นขาวตัดให้ ดำหน้าขาวก่อน · แผ่นดำตัดให้ "+(RCRSB?"พื้นดำหูพิเศษก่อน ที่เหลือเป็นสีดำ":"สีดำธรรมดาก่อน ที่เหลือไปหูพิเศษ")+" · ยอดแผ่นนับถึงวันที่ข้อมูลล่าสุด เทียบกับแผนทั้งเดือน";
   M.innerHTML=h1+h2;
+  window.__x2={U,m2,rv,rg:rgTxt.replace(/<[^>]*>/g,""),mode:RCRSB,rows:rows.map(r=>({k:r[0],name:lab(r).replace(/<[^>]*>/g,"").replace(/\s+/g," ").trim(),v:(al[r[0]]||Z()).slice(),p:pl(r[0]).slice()}))};
 }
 function render(){
   if(!dates().length)return; sync(); const c=cur=calc(), k=(unit==="pair"?F():1), U=unit==="pair"?"คู่":"แผ่น";
@@ -6313,3 +6315,41 @@ enh();new MutationObserver(enh).observe(document.body,{childList:true,subtree:tr
 
 <script>(function(){var q=document.getElementById("blk-mode");if(!q)return;try{q.value=RCRSB?"sp":"pl"}catch(e){}
 q.addEventListener("change",function(){RCRSB=q.value==="sp";try{localStorage.setItem("rcrsb",RCRSB?"1":"0")}catch(e){}var r=document.getElementById("rcr-sb");if(r)r.value=q.value;try{if(document.getElementById("rm-body")&&document.getElementById("rm-body").children.length)rcMonDraw()}catch(e){}})})();</script>
+
+<script>(function(){
+function sync(v){["blk-mode","blk-mode2","rcr-sb"].forEach(function(i){var e=document.getElementById(i);if(e)e.value=v})}
+var s2=document.getElementById("blk-mode2");if(s2){s2.value=RCRSB?"sp":"pl";s2.addEventListener("change",function(){RCRSB=s2.value==="sp";try{localStorage.setItem("rcrsb",RCRSB?"1":"0")}catch(e){}sync(s2.value);try{render()}catch(e){}try{if(document.getElementById("rm-body")&&document.getElementById("rm-body").children.length)rcMonDraw()}catch(e){}})}
+var q=document.getElementById("blk-mode");if(q)q.addEventListener("change",function(){sync(q.value);try{render()}catch(e){}});
+var b=document.getElementById("xl2");if(!b)return;
+b.onclick=async function(){var x=window.__x2,old=b.textContent,back=function(t){b.textContent=t;setTimeout(function(){b.textContent=old},2500)};
+ if(typeof ExcelJS==="undefined"){back("โหลดตัวสร้าง Excel ไม่ได้");return}
+ if(!x||!x.rows.length){back("ไม่มีข้อมูลให้ดาวน์โหลด");return}
+ b.disabled=true;try{
+  var wb=new ExcelJS.Workbook();wb.calcProperties={fullCalcOnLoad:true};var ws=wb.addWorksheet("หลังตัดแผ่น"),thin={style:"thin",color:{argb:"FFBBBBBB"}},B={top:thin,left:thin,bottom:thin,right:thin},F0="#,##0;-#,##0;-",F1="+#,##0;[Red]-#,##0;-";
+  var fl=function(c){return{type:"pattern",pattern:"solid",fgColor:{argb:"FF"+c}}},Lc=function(n){return String.fromCharCode(64+n)},nS=SIZES.length,cT=nS+2,cP=nS+3,cQ=nS+4,round=Math.round;
+  ws.columns=[{width:46}].concat(SIZES.map(function(){return{width:11}}),[{width:13},{width:13},{width:10}]);
+  var t=ws.addRow(["แผ่นหลังตัดตามแผนผลิต "+thM(x.m2)+" "+revName(x.rv)+" ("+x.U+")"]);t.getCell(1).font={bold:true,size:13};
+  ws.addRow(["จ่ายประกอบ "+x.rg+" · แผ่นขาวตัดให้ดำหน้าขาวก่อน · แผ่นดำตัดให้ "+(x.mode?"พื้นดำหูพิเศษก่อน ที่เหลือเป็นสีดำ":"สีดำธรรมดาก่อน ที่เหลือไปหูพิเศษ")]).getCell(1).font={italic:true,size:10,color:{argb:"FF666666"}};
+  var hd=function(first,extra){var h=ws.addRow([first].concat(SIZES.map(Number),["รวม"],extra||[]));h.eachCell(function(c,j){c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fl("1A56DB");c.border=B;c.alignment={horizontal:j>1?"right":"left"}})};
+  var sumR=function(r){return "SUM(B"+r+":"+Lc(nS+1)+r+")"};
+  ws.addRow([]);ws.addRow(["1) แผ่นที่ได้หลังตัด ("+x.U+")"]).getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};hd("สี",["แผนเดือน","% แผน"]);
+  var r1=ws.rowCount+1,n=x.rows.length,r2=r1+n+1+2+1,rp=r2; // plan block start computed below
+  var aRows=[];x.rows.forEach(function(r){var rn=ws.rowCount+1;aRows.push(rn);var tot=r.v.reduce(function(a,c){return a+c},0),pt=r.p.reduce(function(a,c){return a+c},0);
+    ws.addRow([r.name].concat(r.v.map(round),[{formula:sumR(rn),result:round(tot)},null,null]));});
+  var lastA=ws.rowCount,totA=ws.rowCount+1;
+  ws.addRow(["รวม"].concat(SIZES.map(function(z,i){var c=Lc(i+2);return{formula:"SUM("+c+r1+":"+c+lastA+")",result:round(x.rows.reduce(function(a,r){return a+r.v[i]},0))}}),[{formula:"SUM("+Lc(cT)+r1+":"+Lc(cT)+lastA+")",result:round(x.rows.reduce(function(a,r){return a+r.v.reduce(function(u,c){return u+c},0)},0))}]));
+  ws.addRow([]);ws.addRow(["2) แผนเดือน แยกเบอร์ ("+x.U+")"]).getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};hd("สี");
+  var p1=ws.rowCount+1,pRows=[];x.rows.forEach(function(r){var rn=ws.rowCount+1;pRows.push(rn);ws.addRow([r.name].concat(r.p.map(round),[{formula:sumR(rn),result:round(r.p.reduce(function(a,c){return a+c},0))}]))});
+  var lastP=ws.rowCount,totP=ws.rowCount+1;
+  ws.addRow(["รวมแผน"].concat(SIZES.map(function(z,i){var c=Lc(i+2);return{formula:"SUM("+c+p1+":"+c+lastP+")",result:round(x.rows.reduce(function(a,r){return a+r.p[i]},0))}}),[{formula:"SUM("+Lc(cT)+p1+":"+Lc(cT)+lastP+")",result:round(x.rows.reduce(function(a,r){return a+r.p.reduce(function(u,c){return u+c},0)},0))}]));
+  ws.addRow([]);ws.addRow(["3) เหลือ (+) / ขาด (−) เทียบแผน ("+x.U+")"]).getCell(1).font={bold:true,size:12,color:{argb:"FF1A56DB"}};hd("สี");
+  var d1=ws.rowCount+1;x.rows.forEach(function(r,k){var rn=ws.rowCount+1,cells=[r.name];for(var i=0;i<=nS;i++){var c=Lc(i+2),a=i<nS?r.v[i]:r.v.reduce(function(u,z){return u+z},0),b2=i<nS?r.p[i]:r.p.reduce(function(u,z){return u+z},0);cells.push({formula:c+aRows[k]+"-"+c+pRows[k],result:round(a)-round(b2)})}ws.addRow(cells)});
+  var lastD=ws.rowCount;ws.addRow(["รวม"].concat(SIZES.concat(["รวม"]).map(function(z,i){var c=Lc(i+2);return{formula:"SUM("+c+d1+":"+c+lastD+")",result:0}})));
+  // fill plan/% columns in block 1
+  x.rows.forEach(function(r,k){var rn=aRows[k],pt=round(r.p.reduce(function(a,c){return a+c},0)),at=round(r.v.reduce(function(a,c){return a+c},0));
+    ws.getCell(rn,cP).value={formula:Lc(cT)+pRows[k],result:pt};ws.getCell(rn,cQ).value={formula:"IF("+Lc(cP)+rn+">0,"+Lc(cT)+rn+"/"+Lc(cP)+rn+",0)",result:pt>0?at/pt:0};ws.getCell(rn,cQ).numFmt="0.0%"});
+  ws.getCell(totA,cP).value={formula:Lc(cT)+totP,result:0};ws.getCell(totA,cQ).value={formula:"IF("+Lc(cP)+totA+">0,"+Lc(cT)+totA+"/"+Lc(cP)+totA+",0)",result:0};ws.getCell(totA,cQ).numFmt="0.0%";
+  ws.eachRow(function(row,rn){row.eachCell(function(c,j){if(j>1&&rn>3&&c.value!==null&&c.value!==undefined&&typeof c.value!=="string"){c.border=B;if(j!==cQ)c.numFmt=(rn>d1-1?F1:F0)}});});
+  [totA,totP,lastD+1].forEach(function(rn){ws.getRow(rn).eachCell(function(c){c.font={bold:true};c.fill=fl("DCE6FA");c.border=B})});
+  ws.views=[{state:"frozen",xSplit:1,ySplit:0}];
+  await saveBook(wb,"หลังตัดแผ่น_"+x.m2+".xlsx");back("ดาวน์โหลดแล้ว")}catch(e){back("สร้างไฟล์ไม่ได้: "+(e&&e.message||e))}finally{b.disabled=false}}})();</script>
