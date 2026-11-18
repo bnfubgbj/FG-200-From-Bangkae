@@ -497,7 +497,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 274)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 276)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -2281,6 +2281,7 @@ function render2(c,hasAny,k,U){
   h2+="</tbody><tfoot><tr><td>รวม</td>"+dc.map(x=>sg(x)).join("")+sg(T(dc))+"</tr></tfoot></table>";
   N.innerHTML="ตามแผนผลิต "+thM(m2)+" "+revName(rv)+" · แผ่นขาวตัดให้ ดำหน้าขาวก่อน · แผ่นดำตัดให้ "+(RCRSB?"พื้นดำหูพิเศษก่อน ที่เหลือเป็นสีดำ":"สีดำธรรมดาก่อน ที่เหลือไปหูพิเศษ")+" · ยอดแผ่นนับถึงวันที่ข้อมูลล่าสุด เทียบกับแผนทั้งเดือน";
   M.innerHTML=h1+h2;
+  {const ms=[...new Set(c.inR.map(d=>d.slice(0,7)))];if(ms.length>1)N.innerHTML+='<br><b style="color:var(--bad,#c62828)">⚠ ช่วงวันที่ที่เลือกข้ามเดือน ('+ms.length+' เดือน) — ยอดแผ่นรวมทุกเดือนในช่วง แต่เทียบกับแผนเดือน '+thM(m2)+' เดือนเดียว % จึงสูงเกินจริง · เลือกช่วงภายในเดือนเดียว (ปุ่ม "ทั้งเดือน")</b>'}
   window.__x2={U,m2,rv,rg:rgTxt.replace(/<[^>]*>/g,""),mode:RCRSB,rows:rows.map(r=>({k:r[0],name:lab(r).replace(/<[^>]*>/g,"").replace(/\s+/g," ").trim(),v:(al[r[0]]||Z()).slice(),p:pl(r[0]).slice()}))};
 }
 function render(){
@@ -2669,6 +2670,8 @@ async function cmpExcel(){const f=$("c-from").value,t=$("c-to").value,src=CSRC.f
       fgTable(ws,items,{head:()=>head(ws,["สี"].concat(SIZES,["รวม 8.5-11"]),c),B,fill,fmt:ref?FD:F0,subFmt:ref?FD:"#,##0"})};
     src.forEach(s=>mk(s[1],o[s[0]],null,HC[s[0]],s[1]+" — สี × เบอร์ (คู่)"));
     if($("c-s-plan").checked)src.filter(s=>s[0]!=="plan").forEach(s=>mk("ส่วนต่าง "+s[1],o[s[0]],o.plan,HC[s[0]],"ส่วนต่าง: "+s[1]+" − แผนผลิต (คู่)  เขียว = เกินแผน · ส้มแดง = ต่ำกว่าแผน (สูตรลิงก์จากแท็บ "+s[1]+" และ แผนผลิต)",s[1].slice(0,31),"แผนผลิต"))}
+  if($("c-t-qty").checked&&$("c-t-det").checked){const sw=wb.getWorksheet("สรุปปริมาณ");src.forEach((s,i)=>{const dn=wb.getWorksheet(s[1].slice(0,31));if(!dn)return;let gr=0;dn.eachRow((row,rn)=>{if(row.getCell(1).value==="รวมทั้งหมด")gr=rn});if(!gr)return;
+    const q=sw.getRow(sw.rowCount-src.length+1+i).getCell(2);q.value={formula:"'"+s[1].slice(0,31)+"'!H"+gr,result:tot[s[0]]}})}
   {const rng=[];for(let d=f;d<=t;d=addD(d,1))rng.push(d);
     if($("c-s-asm").checked)dayGrid(wb,"รายวัน แผนประกอบ (คู่)",rng,F(),false,"คู่",{title:"แผนประกอบรายวัน"});
     if($("c-s-act").checked){const ad=rng.filter(d=>FGD[d]&&Object.values(FGD[d]).some(v=>v.some(x=>x)));if(ad.length)dayGrid(wb,"รายวัน รับจริงเข้าโกดัง (คู่)",ad,1,false,"คู่",{title:"รับจริงเข้าโกดังรายวัน",noBook:true,get:d=>FGD[d]||null})}}
@@ -6327,7 +6330,7 @@ var q=document.getElementById("blk-mode");if(q)q.addEventListener("change",funct
 var b=document.getElementById("xl2");if(!b)return;
 b.onclick=async function(){var old=b.textContent,back=function(t){b.textContent=t;setTimeout(function(){b.textContent=old},2500)};
  if(typeof ExcelJS==="undefined"){back("โหลดตัวสร้าง Excel ไม่ได้");return}
- var c=(typeof cur!=="undefined"?cur:null);if(!c||!c.inR||!c.inR.length){back("ไม่มีข้อมูลให้ดาวน์โหลด");return}
+ var c=(typeof cur!=="undefined"?cur:null),pm=(document.getElementById("to").value||"").slice(0,7),dd=c&&c.inR?c.inR.filter(function(d){return d.slice(0,7)===pm}):[];if(!dd.length){back("ไม่มีข้อมูลในเดือน "+pm);return}
  b.disabled=true;try{var wb=new ExcelJS.Workbook(),pair=(typeof unit!=="undefined"&&unit==="pair"),f=F();
-  dayGrid(wb,"รายวัน หักแผนผลิต",c.inR,pair?f:1,true,pair?"คู่":"แผ่น",{only:"plan",single:true,title:"แผ่นยางรายวัน หักด้วยแผนผลิต"});
-  await saveBook(wb,"หลังตัดแผ่น_"+c.f+"_ถึง_"+c.t+".xlsx");back("ดาวน์โหลดแล้ว")}catch(e){back("สร้างไฟล์ไม่ได้: "+(e&&e.message||e))}finally{b.disabled=false}}})();</script>
+  dayGrid(wb,"รายวัน หักแผนผลิต",dd,pair?f:1,true,pair?"คู่":"แผ่น",{only:"plan",single:true,title:"แผ่นยางรายวัน หักด้วยแผนผลิต"});
+  await saveBook(wb,"หลังตัดแผ่น_"+pm+".xlsx");back("ดาวน์โหลดแล้ว")}catch(e){back("สร้างไฟล์ไม่ได้: "+(e&&e.message||e))}finally{b.disabled=false}}})();</script>
