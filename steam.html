@@ -497,7 +497,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 278)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 279)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4892,7 +4892,8 @@ cgXlBtn($("x-cgstk"),"xl-stk",async()=>{const d=$("cgr-d").value;if(!d)cgNone();
           rows.push(blank());rows.push(["เดือน "+thM(m2)+" · สต๊อกคาดการณ์ ณ สิ้นเดือน = สต๊อกสิ้นเดือน "+thM(pmo)+" + สั่งผลิต "+thM(m2)+" (หน่วย: คู่)"]);EXT.push(rows.length);
           const gx=sec([{t:"สต๊อก ณ สิ้นเดือน "+thM(pmo)+" (คาดการณ์)",v:e0,cell:(j,zi)=>{const q=pIx.indexOf(zi);return q>=0?FX(L(14+j)+(pF+q),e0(j,zi)):0}},{t:"+ สั่งผลิต "+thM(m2)+" (แผนผลิต)",v:(j,zi)=>pl2[j][zi],cell:(j,zi)=>pl2[j][zi]},{t:"= สต๊อก ณ สิ้นเดือน "+thM(m2)+" (คาดการณ์)",v:(j,zi)=>e0(j,zi)+pl2[j][zi],cell:(j,zi,R)=>FX(L(2+j)+R+"+"+L(8+j)+R,e0(j,zi)+pl2[j][zi])}],ix2);gx.sty="B";
           pE=(j,zi)=>e0(j,zi)+pl2[j][zi];pG=gx;pm=m2}
-        if(EXT.length){rows.push(blank());rows.push(["* สต๊อกคาดการณ์ข้ามเดือน = สต๊อกสิ้นเดือนก่อนหน้า + แผนผลิตเดือนถัดไป (นับว่าผลิตครบตามแผน) · ยังไม่ได้หักยอดขาย · แสดงต่อเฉพาะเดือนที่มีแผนผลิตในระบบแล้ว"]);EXT.push(rows.length)}}
+        if(!EXT.length){const y=+mo.slice(0,4),mm=+mo.slice(5,7),nm=mm===12?(y+1)+"-01":y+"-"+String(mm+1).padStart(2,"0");rows.push(blank());rows.push(["* ยังไม่มีแผนผลิตของ "+thM(nm)+" ในระบบ (บันทึกที่เมนู แผนผลิต) จึงยังไม่แสดงสต๊อกคาดการณ์ต่อไปเดือนถัดไป"]);EXT.push(rows.length)}
+        else{rows.push(blank());rows.push(["* สต๊อกคาดการณ์ข้ามเดือน = สต๊อกสิ้นเดือนก่อนหน้า + แผนผลิตเดือนถัดไป (นับว่าผลิตครบตามแผน) · ยังไม่ได้หักยอดขาย · แสดงต่อเฉพาะเดือนที่มีแผนผลิตในระบบแล้ว"]);EXT.push(rows.length)}}
       SEC=ws=>{const thin={style:"thin",color:{argb:"FF8A94A0"}},med={style:"medium",color:{argb:"FF1F2933"}},fl=h=>({type:"pattern",pattern:"solid",fgColor:{argb:"FF"+h}}),HCl=[["FFFFFF","1F2933"],["262626","FFFFFF"],["8B5E3C","FFFFFF"],["D6DDE6","1F2933"]],TF=["FFFF00","FFFF00","F8CBAD"];
         ws.getCell(tIdx,1).font={name:"Tahoma",size:13,bold:true,color:{argb:"FF1F2933"}};ws.getCell(nIdx,1).font={name:"Tahoma",size:10,italic:true,color:{argb:"FF666666"}};EXT.forEach((r,i)=>{ws.getCell(r,1).font=i<EXT.length-1?{name:"Tahoma",size:13,bold:true,color:{argb:"FF1F2933"}}:{name:"Tahoma",size:10,italic:true,color:{argb:"FF666666"}}});
         G.forEach((g,gi)=>{for(let k=0;k<3;k++){const c1=k*6+1,hl=g.hr+1,hl2=g.hr+2;const stB=gi===1||g.sty==="B",isEnd=stB&&k===2,isRem=(gi===0&&k===2)||(stB&&k===1),hf=isEnd?"A9D08E":isRem?"F8CBAD":"FFFF00";
