@@ -498,7 +498,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 288)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 289)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -5513,7 +5513,6 @@ function rcDashHtml(){const D=rcDashData(),ms=Object.keys(D).sort();if(!ms.lengt
       "";
     if(!cur.whole&&cur.a.length>1){const mx=cur.max||1;cards+="";h+='\u0001'}
     {const P=rcPlan(cur.m),A=(rcMonData()[cur.m]||{c:{}}).c,ix=I.indexOf(cur),pv=ix>0?I[ix-1]:null;
-      if(pv&&pv.avg)cards+=card("เทียบเดือนก่อน (เฉลี่ย/วัน)",(cur.avg>=pv.avg?"+":"")+((cur.avg/pv.avg-1)*100).toFixed(1)+"%",f(cur.avg)+" เทียบ "+f(pv.avg)+" ("+thM(pv.m)+")"+(isLatest&&!ended?" · เดือนนี้ยังไม่จบ":""));
       if(P){const cs=PTPL.map(r=>{const pa=(P.c[r[0]]||[]).slice(0,6).map(x=>x||0),ac=(A[r[0]]||cZ()).slice(0,6),pt=cT(pa),at=cT(ac),lack=cT(pa.map((x,i)=>Math.max(0,x-ac[i])));return{n:r[1],pt,at,lack}}).filter(r=>r.pt>0||r.at>0),backlog=cT(cs.map(r=>r.lack)),late=cs.filter(r=>r.lack>0).sort((x,y)=>y.lack-x.lack);
         const days=cur.avg?backlog/cur.avg:0;
         let v;if(!backlog)v='<span style="color:#0f7a55;font-weight:700">✓ ผลิตครบแผนทุกสี × เบอร์แล้ว</span>';
