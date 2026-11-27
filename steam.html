@@ -498,7 +498,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 289)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 290)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -5508,7 +5508,7 @@ function rcDashHtml(){const D=rcDashData(),ms=Object.keys(D).sort();if(!ms.lengt
       rem=ended?0:wd(cur.m,cur.lastD+1,cur.last),proj=cur.tot+a7*rem,need=cur.pl&&rem?Math.max(0,cur.pl-cur.tot)/rem:0;
     h+='<div class="cgsec">Dashboard · ผลิตเข้าโกดังได้วันละเท่าไหร่ · '+thM(cur.m)+(isLatest&&!cur.whole?" (ณ ปัจจุบัน · ข้อมูลถึงวันที่ "+cur.lastD+")":ended&&!cur.whole?" (ปิดเดือนแล้ว)":"")+'</div>';
     cards=card("เฉลี่ยต่อวัน (คู่)",f(cur.avg),cur.whole?"รวมทั้งเดือน ÷ "+cur.nd+" วันทำงาน (ไม่นับอาทิตย์)":"รวม "+f(cur.tot)+" คู่ ÷ "+cur.nd+" วันที่มียอดเข้า")+
-      (cur.whole?"":card("สูงสุดต่อวัน (คู่)",f(cur.max),"วันที่ "+(+cur.a.find(x=>x[1]===cur.max)[0].slice(8))))+
+      
       (!ended?card("คาดสิ้นเดือน (คู่)",f(proj),"สะสม + เฉลี่ย "+f(a7)+"/วัน × เหลือ "+rem+" วันทำงาน (ไม่นับอาทิตย์)"+(cur.pl?" · แผน "+f(cur.pl)+" = "+Math.round(proj/cur.pl*100)+"%":"")):(cur.pl?card("เทียบแผนเดือนนี้",Math.round(cur.tot/cur.pl*100)+"%",f(cur.tot)+" จากแผน "+f(cur.pl)+" คู่"):card("แผนผลิตเดือนนี้","–","ยังไม่มีแผนของเดือนนี้ในระบบ")))+
       "";
     if(!cur.whole&&cur.a.length>1){const mx=cur.max||1;cards+="";h+='\u0001'}
