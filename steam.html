@@ -498,7 +498,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 282)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 283)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4852,13 +4852,20 @@ let TESS_P=null,TESS_W=null;
 function loadTess(){if(window.Tesseract)return Promise.resolve(window.Tesseract);return TESS_P||(TESS_P=new Promise((ok,no)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";s.onload=()=>ok(window.Tesseract);s.onerror=()=>{TESS_P=null;no(new Error("โหลดตัวอ่านรูปไม่ได้ (ต้องต่ออินเทอร์เน็ต)"))};document.head.appendChild(s)}))}
 async function cgOrdPre(file){const bmp=await createImageBitmap(file),sc=bmp.width<1600?2:1,c=document.createElement("canvas");c.width=bmp.width*sc;c.height=bmp.height*sc;const x=c.getContext("2d",{willReadFrequently:true});x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.imageSmoothingEnabled=true;x.imageSmoothingQuality="high";x.drawImage(bmp,0,0,c.width,c.height);
   const im=x.getImageData(0,0,c.width,c.height),d=im.data,w=c.width,h=c.height,b=new Uint8Array(w*h);for(let i=0;i<w*h;i++)b[i]=(d[i*4]*.3+d[i*4+1]*.59+d[i*4+2]*.11)<150?1:0;
-  for(let y=0;y<h;y++){let s=0;for(let k=0;k<w;k++)s+=b[y*w+k];if(s>w*.5)for(let k=0;k<w;k++)b[y*w+k]=0}
-  for(let k=0;k<w;k++){let s=0;for(let y=0;y<h;y++)s+=b[y*w+k];if(s>h*.5)for(let y=0;y<h;y++)b[y*w+k]=0}
-  for(let i=0;i<w*h;i++){const v=b[i]?0:255;d[i*4]=d[i*4+1]=d[i*4+2]=v;d[i*4+3]=255}x.putImageData(im,0,0);return c}
+  const RL=new Uint8Array(h),CL=new Uint8Array(w);
+  for(let y=0;y<h;y++){let s=0;for(let k=0;k<w;k++)s+=b[y*w+k];if(s>w*.5){RL[y]=1;for(let k=0;k<w;k++)b[y*w+k]=0}}
+  for(let k=0;k<w;k++){let s=0;for(let y=0;y<h;y++)s+=b[y*w+k];if(s>h*.5){CL[k]=1;for(let y=0;y<h;y++)b[y*w+k]=0}}
+  for(let i=0;i<w*h;i++){const v=b[i]?0:255;d[i*4]=d[i*4+1]=d[i*4+2]=v;d[i*4+3]=255}x.putImageData(im,0,0);c.RL=RL;c.CL=CL;return c}
+function cgOrdRuns(F,min){const o=[];let s=-1;for(let i=0;i<=F.length;i++){const on=i<F.length&&!F[i];if(on&&s<0)s=i;if(!on&&s>=0){if(i-s>=min)o.push([s,i]);s=-1}}return o}
+async function cgOrdCells(c,W){const rows=cgOrdRuns(c.RL,c.height*.025),cols=cgOrdRuns(c.CL,c.width*.08);if(rows.length<3||cols.length<2)return null;const out=[];
+  for(const r of rows){const cells=[];for(const cl of cols){const ph=Math.min(6,Math.floor((r[1]-r[0])/6)),pw=6,cw=cl[1]-cl[0]-2*pw,ch=r[1]-r[0]-2*ph;if(cw<8||ch<8){cells.push("");continue}
+      const t=document.createElement("canvas");t.width=cw+60;t.height=ch+60;const g=t.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,t.width,t.height);g.drawImage(c,cl[0]+pw,r[0]+ph,cw,ch,30,30,cw,ch);
+      const q=await W.recognize(t);cells.push(q.data.text.replace(/\s+/g," ").trim())}
+    out.push(cells.join("\t"))}return out.join("\n")}
 async function cgOrdOcr(files){const fs=[...files].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp)$/i.test(f.name));if(!fs.length)return;
   cgOrdMsg("กำลังอ่านรูป… (ครั้งแรกอาจใช้เวลาสักครู่)","");
   try{const T=await loadTess();if(!TESS_W){TESS_W=await T.createWorker("eng");await TESS_W.setParameters({tessedit_pageseg_mode:"6"})}
-    let txt="";for(const f of fs){const c=await cgOrdPre(f),r=await TESS_W.recognize(c);txt+=r.data.text.replace(/\r/g,"")+"\n"}
+    let txt="";for(const f of fs){const c=await cgOrdPre(f);await TESS_W.setParameters({tessedit_pageseg_mode:"7"});let t=null;try{t=await cgOrdCells(c,TESS_W)}catch(e){}await TESS_W.setParameters({tessedit_pageseg_mode:"6"});if(!t||!/\d/.test(t)){const r=await TESS_W.recognize(c);t=r.data.text}txt+=t.replace(/\r/g,"")+"\n"}
     const lines=txt.split("\n").map(l=>l.trim()).filter(Boolean),keep=[];let claim=null;
     lines.forEach(l=>{const m=l.match(/^\D*?(\d{2})\D+?([\d,]+)$/);if(m&&CVS.indexOf(+m[1])>=0)keep.push(+m[1]+"\t"+m[2].replace(/,/g,""));else{const t=l.replace(/[^\d,]/g,"").replace(/,/g,"");if(t.length>=3&&/^\d+$/.test(t))claim=+t}});
     if(!keep.length)throw new Error("อ่านตัวเลขในรูปไม่ได้ — ลองครอปให้เห็นเฉพาะตาราง เบอร์/จำนวน หรือวางเป็นข้อความแทน");
