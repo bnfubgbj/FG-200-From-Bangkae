@@ -498,7 +498,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 281)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 282)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4825,7 +4825,7 @@ function cgOrdDraw(){const box=$("cgo-res");if(!box)return;const M=cgOrdModel(),
   box.innerHTML=h;box.querySelectorAll(".cgo-del").forEach(b=>b.onclick=()=>{cgOrdSet(cgOrdGet().filter(o=>String(o.id)!==b.dataset.oid));cgOrdDraw()})}
 (function(){const host=$("cgr-body");if(!host)return;const w=document.createElement("div");w.id="cgo-wrap";
   w.innerHTML='<div class="cgsec">เช็กออเดอร์ลูกค้า · สต๊อกพอไหม / ขายแล้วเหลือเท่าไหร่</div><div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ลูกค้า / อ้างอิง</span><input type="text" id="cgo-c" placeholder="เช่น ฝ่ายขาย" autocomplete="off"></div><div style="min-width:110px"><span class="lbl">สี</span><select id="cgo-col">'+CGOC.map(c=>'<option value="'+c[0]+'">'+c[1]+"</option>").join("")+'</select></div><div style="min-width:150px"><span class="lbl">วันที่ส่ง</span><input type="date" id="cgo-dt"></div><div style="min-width:150px"><span class="lbl">ใช้สต๊อกจาก</span><select id="cgo-src"><option value="2">รวม 2 ที่</option><option value="1">บางหว้า</option><option value="0">บางแค</option></select></div></div>'+
-    '<div class="row" style="align-items:flex-end"><div style="flex:1 1 280px"><span class="lbl">วางตารางเบอร์ / จำนวน (copy จาก Excel หรือพิมพ์ เบอร์ เว้นวรรค จำนวน ทีละบรรทัด)</span><textarea id="cgo-p" rows="5" style="width:100%" placeholder="36&#9;41&#10;37&#9;85&#10;38&#9;159"></textarea></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn" id="cgo-add" type="button">เพิ่มออเดอร์</button><button class="btn ghost" id="cgo-xl" type="button">⬇ ดาวน์โหลด Excel</button><button class="btn ghost" id="cgo-clr" type="button" style="color:var(--bad);border-color:var(--bad)">ล้างออเดอร์ทั้งหมด</button></div></div><div id="cgo-msg" class="msg" hidden></div><div id="cgo-res"></div>';
+    '<div class="row" style="align-items:flex-end"><div style="flex:1 1 280px"><span class="lbl">วางตารางเบอร์ / จำนวน (copy จาก Excel, พิมพ์ เบอร์ เว้นวรรค จำนวน ทีละบรรทัด หรือแนบ/วาง/ลากรูป jpeg ได้)</span><textarea id="cgo-p" rows="5" style="width:100%" placeholder="36&#9;41&#10;37&#9;85&#10;38&#9;159"></textarea></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn" id="cgo-add" type="button">เพิ่มออเดอร์</button><button class="btn ghost" id="cgo-xl" type="button">⬇ ดาวน์โหลด Excel</button><button class="btn ghost" id="cgo-clr" type="button" style="color:var(--bad);border-color:var(--bad)">ล้างออเดอร์ทั้งหมด</button></div></div><div id="cgo-msg" class="msg" hidden></div><div id="cgo-res"></div>';
   host.after(w);try{$("cgo-src").value=localStorage.getItem("cgosrc")||"2"}catch(e){}
   $("cgo-src").addEventListener("change",()=>{try{localStorage.setItem("cgosrc",$("cgo-src").value)}catch(e){}cgOrdDraw()});
   $("cgo-add").onclick=()=>{const r=cgOrdParse($("cgo-p").value);if(!r.n){cgOrdMsg("อ่านตารางไม่ได้ — วางเป็นบรรทัดละ เบอร์ (28–49) แล้วตามด้วยจำนวน","warn");return}
@@ -4847,6 +4847,29 @@ function cgOrdDraw(){const box=$("cgo-res");if(!box)return;const M=cgOrdModel(),
         ws.getCell(r,1).value="คงเหลือสี"+g.name+"หลังขาย (ทุกเบอร์) "+g.remAll.toLocaleString("en-US")+" คู่ จากสต๊อกเดิม "+g.stAll.toLocaleString("en-US")+" คู่";ws.getCell(r,1).font={italic:true,size:10};r+=2});
       ws.getCell(r,1).value="* เช็กจากสต๊อกจริงวันที่ระบุ ยังไม่รวมของที่ รง. จะผลิตเข้าก่อนวันส่ง · หลายออเดอร์สีเดียวกันตัดตามลำดับวันส่ง";ws.getCell(r,1).font={italic:true,size:10,color:{argb:"FFC2410C"}};
       await saveBook(wb,"เช็กออเดอร์_"+cvPN()+"_"+M.d+".xlsx");cgOrdMsg("ดาวน์โหลดแล้ว","ok")}catch(e){cgOrdMsg((e&&e.message)||String(e),"warn")}}})();
+/* อ่านรูปตารางออเดอร์ (jpeg/png) ด้วย OCR ในเบราว์เซอร์ */
+let TESS_P=null,TESS_W=null;
+function loadTess(){if(window.Tesseract)return Promise.resolve(window.Tesseract);return TESS_P||(TESS_P=new Promise((ok,no)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";s.onload=()=>ok(window.Tesseract);s.onerror=()=>{TESS_P=null;no(new Error("โหลดตัวอ่านรูปไม่ได้ (ต้องต่ออินเทอร์เน็ต)"))};document.head.appendChild(s)}))}
+async function cgOrdPre(file){const bmp=await createImageBitmap(file),sc=bmp.width<1600?2:1,c=document.createElement("canvas");c.width=bmp.width*sc;c.height=bmp.height*sc;const x=c.getContext("2d",{willReadFrequently:true});x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.imageSmoothingEnabled=true;x.imageSmoothingQuality="high";x.drawImage(bmp,0,0,c.width,c.height);
+  const im=x.getImageData(0,0,c.width,c.height),d=im.data,w=c.width,h=c.height,b=new Uint8Array(w*h);for(let i=0;i<w*h;i++)b[i]=(d[i*4]*.3+d[i*4+1]*.59+d[i*4+2]*.11)<150?1:0;
+  for(let y=0;y<h;y++){let s=0;for(let k=0;k<w;k++)s+=b[y*w+k];if(s>w*.5)for(let k=0;k<w;k++)b[y*w+k]=0}
+  for(let k=0;k<w;k++){let s=0;for(let y=0;y<h;y++)s+=b[y*w+k];if(s>h*.5)for(let y=0;y<h;y++)b[y*w+k]=0}
+  for(let i=0;i<w*h;i++){const v=b[i]?0:255;d[i*4]=d[i*4+1]=d[i*4+2]=v;d[i*4+3]=255}x.putImageData(im,0,0);return c}
+async function cgOrdOcr(files){const fs=[...files].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp)$/i.test(f.name));if(!fs.length)return;
+  cgOrdMsg("กำลังอ่านรูป… (ครั้งแรกอาจใช้เวลาสักครู่)","");
+  try{const T=await loadTess();if(!TESS_W){TESS_W=await T.createWorker("eng");await TESS_W.setParameters({tessedit_pageseg_mode:"6"})}
+    let txt="";for(const f of fs){const c=await cgOrdPre(f),r=await TESS_W.recognize(c);txt+=r.data.text.replace(/\r/g,"")+"\n"}
+    const lines=txt.split("\n").map(l=>l.trim()).filter(Boolean),keep=[];let claim=null;
+    lines.forEach(l=>{const m=l.match(/^\D*?(\d{2})\D+?([\d,]+)$/);if(m&&CVS.indexOf(+m[1])>=0)keep.push(+m[1]+"\t"+m[2].replace(/,/g,""));else{const t=l.replace(/[^\d,]/g,"").replace(/,/g,"");if(t.length>=3&&/^\d+$/.test(t))claim=+t}});
+    if(!keep.length)throw new Error("อ่านตัวเลขในรูปไม่ได้ — ลองครอปให้เห็นเฉพาะตาราง เบอร์/จำนวน หรือวางเป็นข้อความแทน");
+    $("cgo-p").value=($("cgo-p").value?$("cgo-p").value.replace(/\s+$/,"")+"\n":"")+keep.join("\n");const r=cgOrdParse($("cgo-p").value);
+    cgOrdMsg("อ่านรูปได้ "+r.n+" เบอร์ รวม "+r.sum.toLocaleString("en-US")+" คู่"+(claim?(claim===r.sum?" · ตรงกับยอดรวมในรูป ("+claim.toLocaleString("en-US")+") ✓":" · ⚠ ไม่ตรงกับยอดรวมในรูป ("+claim.toLocaleString("en-US")+") ตรวจตัวเลขในช่องก่อน"):" · (ไม่พบยอดรวมในรูปให้เทียบ)")+" — ตรวจในช่องแล้วกด เพิ่มออเดอร์",claim&&claim!==r.sum?"warn":"ok")}
+  catch(e){cgOrdMsg((e&&e.message)||String(e),"warn")}}
+(function(){const row=$("cgo-add").parentNode,lab=document.createElement("label");lab.className="btn ghost";lab.style.cssText="cursor:pointer;text-align:center";lab.innerHTML='🖼 แนบรูป (jpeg/png)<input type="file" id="cgo-f" accept="image/*" multiple hidden>';row.insertBefore(lab,$("cgo-add"));
+  $("cgo-f").onchange=async e=>{await cgOrdOcr(e.target.files);e.target.value=""};
+  $("cgo-p").addEventListener("paste",e=>{const fl=[...(e.clipboardData&&e.clipboardData.files||[])].filter(f=>/^image\//.test(f.type));if(fl.length){e.preventDefault();cgOrdOcr(fl)}});
+  const w=$("cgo-wrap");["dragover","drop"].forEach(n=>w.addEventListener(n,e=>{if(n==="dragover"){e.preventDefault();return}if(e.dataTransfer&&e.dataTransfer.files.length){e.preventDefault();cgOrdOcr(e.dataTransfer.files)}}))})();
+
 
 
 /* ---------- อ่านใบแผนผลิต PDF แบบแนวตั้ง (เบอร์เรียงลง สีขาว/ดำ/น้ำตาลเรียงขวา) ---------- */
