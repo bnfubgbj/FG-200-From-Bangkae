@@ -438,6 +438,7 @@ thead th{background:#dcecff;color:#0a47a8}
 .cv-i{width:54px;text-align:right;padding:4px 5px;font-size:13px}
 #cv-grid table td,#cv-grid table th{white-space:nowrap;padding:3px 3px}#cv-grid table td:first-child,#cv-grid table th:first-child{position:sticky;left:0;z-index:2;background:var(--surface);font-weight:600;padding-left:8px;padding-right:8px}#cv-grid thead th:first-child{background:var(--accent)}
 #cv-grid .cv-t{font-weight:700;text-align:right;min-width:62px}
+.cgo-card{margin:10px 0;padding:10px 12px;background:var(--surface2);border-radius:8px}.cgo-h{font-size:14.5px;margin-bottom:2px}.cgo-s{font-size:13px;color:var(--muted);margin-bottom:6px}.cgo-t th,.cgo-t td{padding:5px 8px!important;font-size:12.5px!important;white-space:nowrap}.cgo-t tr.cgo-bad td,.cgo-t tr.cgo-bad th{background:#fdecea}.cgo-del{font-size:11px;padding:0 6px;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--bad);cursor:pointer}
 .cgthree{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-top:6px}.cgt3{flex:1 1 275px;min-width:262px;overflow-x:auto}.cgt3 table{width:100%}.cgt3 th,.cgt3 td{padding:5px 3px!important;font-size:12.5px!important;white-space:nowrap}
 .cgmin{flex:1 1 320px}.cgmin .cgmt{font-weight:600;margin:6px 0 8px}.cgmint{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}.cgmint th,.cgmint td{background:none!important;color:inherit;padding:6px 8px!important;text-align:right;white-space:nowrap;font-size:13.5px!important}.cgmint th{font-weight:600;color:var(--muted)!important;border:0;border-bottom:2px solid var(--c,var(--line))}.cgmint td{border:0;border-bottom:1px solid var(--line)}.cgmint .l{text-align:left!important}.cgmint td.l{font-weight:600}.cgmint td.z{color:var(--muted);opacity:.6}.cgmint .tt{font-weight:700}.cgmint tfoot td{font-weight:700;border-bottom:0;border-top:2px solid currentColor}
 #rc-imp #sx-d .dbody>.note{display:none}#rc-imp-wrap{margin:14px 0}#rc-imp-h{display:flex;justify-content:space-between;align-items:center;width:100%;border:1px solid var(--line);background:var(--accent-soft);color:var(--accent);font:700 15px var(--f-body);padding:13px 18px;border-radius:12px;cursor:pointer;box-shadow:none;text-align:left}#rc-imp-h[aria-expanded=true]{border-radius:12px 12px 0 0}#rc-imp{padding:14px 18px 16px;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px}#rc-imp #sx-d{border:0;background:none;padding:0}#rc-imp #sx-d .dbody{padding:0}#rc-imp .row{gap:10px 12px;margin:8px 0}#rc-imp #sx-save{margin:6px 0 4px}#rc-imp #sx-prev:empty,#rc-imp #sx-msg[hidden]{display:none}#rc-imp #sx-prev{margin:8px 0}
@@ -497,7 +498,7 @@ table.fitp{font-size:12px;width:100%}table.fitp th,table.fitp td{padding:6px 4px
     <button role="tab" class="prod" id="tab-cr" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15c0-2 1-3 3-3h3l2-4 3 2c2 1 4 2 6 2 2 0 3 1 3 3v2H3z"/><path d="M3 19h18"/></svg><span><b>ผ้าใบ 205-R</b></span></button>
     <button role="tab" id="tab-r" aria-selected="false" hidden style="display:none"><span>รับเข้าโกดังพี่ชุมพร</span></button>
   </div>
-    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 280)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
+    <div class="ver">เวอร์ชัน 24 ต.ค. 69 (แก้ไขรอบ 281)<br><a href="#" id="chg-key" style="color:inherit;font-size:11px">เปลี่ยนรหัสบันทึก</a><br><button type="button" id="skin-sw">ธีม: เย็น ⇄ สดใส</button></div>
 </nav>
 <div class="wrap">
   <header>
@@ -4786,7 +4787,7 @@ function cgRepFill(pick){const sel=$("cgr-d"),ds=cgRepDates(),cur=pick||sel.valu
 /* ข้อมูล 3 ตาราง: บางหว้า / บางแค / รวม — เบอร์ x [ขาว,ดำ,น้ำตาล] */
 function cgThree(pf,K,B){const C=["ขาว","ดำ","นด"],g=(M,c,i)=>((M[pf+"-"+c]||[])[i]||0),vB=C.map(c=>CVS.map((z,i)=>g(B,c,i))),vK=C.map(c=>CVS.map((z,i)=>g(K,c,i))),vS=vB.map((a,j)=>a.map((x,i)=>x+vK[j][i])),nz=CVS.map((z,i)=>i).filter(i=>vS.some(c=>c[i])||vB.some(c=>c[i])||vK.some(c=>c[i])),idx=nz.length?CVS.map((z,i)=>i).filter(i=>i>=nz[0]&&i<=nz[nz.length-1]):[],tt=v=>cvSum1(v.map(c=>cvSum1(c)));
   return{v:[vK,vB,vS],idx,tot:[tt(vK),tt(vB),tt(vS)]}}
-function cgRepDraw(){const box=$("cgr-body"),d=$("cgr-d").value;cgTitle("stk");cgGoalDraw();
+function cgRepDraw(){const box=$("cgr-body"),d=$("cgr-d").value;cgTitle("stk");cgGoalDraw();try{cgOrdDraw()}catch(e){}
   if(!d){box.innerHTML='<div class="empty">ยังไม่มีข้อมูลสต๊อกของ '+cvPN()+' — นำเข้าจากไฟล์ Excel หรือกรอกมือด้านล่าง</div>';return}
   const pf=CVPG[CVP][0],K=cvAll("cvstkK")[d]||{},B=cvAll("cvstkB")[d]||{},T=cgThree(pf,K,B),sK=T.tot[0],sB=T.tot[1],has=a=>a!==0,
     dd=d.split("-").reverse().join("/").replace(/\d{4}$/,y=>+y+543);
@@ -4797,6 +4798,56 @@ function cgRepDraw(){const box=$("cgr-body"),d=$("cgr-d").value;cgTitle("stk");c
     return x+'</tbody><tfoot><tr style="background:var(--yl,#ffff00);color:#1f2933"><th style="background:var(--yl,#ffff00);color:#1f2933">รวม</th>'+T.v[k].map(c=>'<td style="background:var(--yl,#ffff00)">'+fmt(cvSum1(c))+"</td>").join("")+'<td style="background:var(--yl,#ffff00)">'+fmt(T.tot[k===2?2:k])+"</td></tr></tfoot></table></div>"}).join("")+"</div>";
   box.innerHTML=h}
 $("cgr-d").addEventListener("input",()=>cgRepDraw());
+/* ---------- เช็กออเดอร์ลูกค้า เทียบสต๊อก (ผ้าใบ 205-S / 205-R) ---------- */
+const CGOC=[["ขาว","ขาว"],["ดำ","ดำ"],["นด","น้ำตาล"]];let CGOM={};
+function cgOrdGet(){try{const a=JSON.parse(localStorage.getItem("cgord"+CVP)||"[]");if(Array.isArray(a))return a}catch(e){}return CGOM[CVP]||[]}
+function cgOrdSet(a){CGOM[CVP]=a;try{localStorage.setItem("cgord"+CVP,JSON.stringify(a))}catch(e){}}
+function cgOrdParse(t){const q=new Array(CVS.length).fill(0);let n=0,bad=0;String(t||"").split(/\r?\n/).forEach(l=>{const m=l.match(/^\s*\D*?(\d{2})\D+?([\d,]+)\s*$/);if(!m)return;const i=CVS.indexOf(+m[1]),v=Number(m[2].replace(/,/g,""));if(i<0||!v){if(m[1])bad++;return}q[i]+=v;n++});return{q,n,bad,sum:cvSum1(q)}}
+function cgOrdMsg(t,c){const m=$("cgo-msg");m.hidden=!t;m.className="msg "+(c||"");m.textContent=t||""}
+function cgOrdModel(){const d=$("cgr-d").value;if(!d)return null;const pf=CVPG[CVP][0],T=cgThree(pf,cvAll("cvstkK")[d]||{},cvAll("cvstkB")[d]||{}),k=+($("cgo-src").value||2),
+  ords=cgOrdGet().map((o,x)=>Object.assign({x},o)).sort((a,b)=>(a.date||"9999")<(b.date||"9999")?-1:(a.date||"9999")>(b.date||"9999")?1:a.x-b.x),out=[];
+  CGOC.forEach((c,j)=>{const os=ords.filter(o=>o.color===c[0]);if(!os.length)return;const S=T.v[k][j],rows=[];
+    CVS.forEach((z,i)=>{const st=S[i]||0,qs=os.map(o=>o.q[i]||0),tot=cvSum1(qs);if(!st&&!tot)return;let cum=0;const sh=qs.map(q=>{const b=Math.max(0,cum-st);cum+=q;return Math.max(0,cum-st)-b});rows.push({i,z,st,qs,sh,tot,rem:Math.max(0,st-tot),lack:Math.max(0,tot-st)})});
+    const need=cvSum1(rows.map(r=>r.tot)),lack=cvSum1(rows.map(r=>r.lack)),stAll=cvSum1(S),remAll=stAll-cvSum1(rows.map(r=>Math.min(r.st,r.tot)));
+    out.push({j,name:c[1],os,rows,need,lack,stAll,remAll,badSizes:rows.filter(r=>r.lack>0).length})});
+  return{d,k,out,T}}
+function cgOrdDraw(){const box=$("cgo-res");if(!box)return;const M=cgOrdModel(),fm=v=>v?Math.round(v).toLocaleString("en-US"):"-",sn=["บางแค","บางหว้า","รวม 2 ที่"];
+  if(!M){box.innerHTML="";return}
+  if(!cgOrdGet().length){box.innerHTML='<div class="empty">ยังไม่มีออเดอร์ — วางตารางเบอร์/จำนวนที่ช่องด้านบนแล้วกด เพิ่มออเดอร์</div>';return}
+  if(!M.out.length){box.innerHTML="";return}
+  let h="";M.out.forEach(g=>{const ok=!g.lack,ac=ok?"#19c38b":"#d93025",ds=g.os.filter(o=>o.date).map(o=>o.date).sort()[0];
+    h+='<div class="cgo-card" style="border-left:5px solid '+ac+'"><div class="cgo-h"><b>'+cvPN()+" สี"+g.name+"</b> · ออเดอร์ "+fm(g.need)+" คู่ · สต๊อก ณ "+thD(M.d)+" ("+sn[M.k]+") "+(ok?'<span style="color:#0f7a55;font-weight:700">✓ พอทุกเบอร์</span>':'<span style="color:#d93025;font-weight:700">✗ ไม่พอ ขาด '+fm(g.lack)+" คู่ ("+g.badSizes+" เบอร์)</span>")+
+      '</div><div class="cgo-s">คงเหลือสี'+g.name+"หลังขายตามออเดอร์ (ทุกเบอร์รวมกัน): <b>"+fm(g.remAll)+"</b> คู่ จากสต๊อกเดิม "+fm(g.stAll)+" คู่"+(ds?" · ส่งเร็วสุด "+thD2(ds):"")+"</div>"+
+      '<div class="scroll"><table class="cgrep cgo-t"><thead><tr><th>เบอร์</th><th>สต๊อก</th>'+g.os.map(o=>'<th>'+escH(o.cust||"ออเดอร์")+"<br><small>"+(o.date?"ส่ง "+thD2(o.date):"")+'</small><br><button type="button" class="cgo-del" data-oid="'+o.id+'" title="ลบออเดอร์นี้">ลบ</button></th>').join("")+(g.os.length>1?"<th>รวมสั่ง</th>":"")+"<th>คงเหลือหลังขาย</th><th>ขาด</th></tr></thead><tbody>"+
+      g.rows.map(r=>'<tr'+(r.lack?' class="cgo-bad"':"")+"><th>"+r.z+"</th><td>"+fm(r.st)+"</td>"+r.qs.map((q,x)=>"<td>"+(q?(r.sh[x]?'<b style="color:#d93025">'+fm(q)+"</b>":fm(q)):"")+"</td>").join("")+(g.os.length>1?'<td class="tt">'+fm(r.tot)+"</td>":"")+"<td>"+(r.tot?'<b>'+fm(r.rem)+"</b>":fm(r.rem))+'</td><td>'+(r.lack?'<b style="color:#d93025">'+fm(r.lack)+"</b>":"")+"</td></tr>").join("")+
+      '</tbody><tfoot><tr style="background:var(--yl,#ffff00);color:#1f2933"><th style="background:var(--yl,#ffff00);color:#1f2933">รวม</th><td>'+fm(cvSum1(g.rows.map(r=>r.st)))+"</td>"+g.os.map((o,x)=>"<td>"+fm(cvSum1(g.rows.map(r=>r.qs[x])))+"</td>").join("")+(g.os.length>1?"<td>"+fm(g.need)+"</td>":"")+"<td>"+fm(cvSum1(g.rows.map(r=>r.rem)))+"</td><td>"+(g.lack?fm(g.lack):"")+"</td></tr></tfoot></table></div></div>"});
+  h+='<div class="note" style="display:block">* เช็กจากสต๊อกจริง ณ วันที่เลือกด้านบน ยังไม่รวมของที่ รง. จะผลิตเข้าโกดังก่อนวันส่ง · เบอร์ที่ขาดตัวเลขเป็นสีแดง · ถ้ามีหลายออเดอร์สีเดียวกัน ระบบตัดสต๊อกตามลำดับวันส่ง (ใครส่งก่อนได้ก่อน) · รายการออเดอร์เก็บไว้ในเครื่องนี้ (ไม่ขึ้นเซิร์ฟเวอร์)</div>';
+  box.innerHTML=h;box.querySelectorAll(".cgo-del").forEach(b=>b.onclick=()=>{cgOrdSet(cgOrdGet().filter(o=>String(o.id)!==b.dataset.oid));cgOrdDraw()})}
+(function(){const host=$("cgr-body");if(!host)return;const w=document.createElement("div");w.id="cgo-wrap";
+  w.innerHTML='<div class="cgsec">เช็กออเดอร์ลูกค้า · สต๊อกพอไหม / ขายแล้วเหลือเท่าไหร่</div><div class="row" style="align-items:flex-end"><div style="min-width:150px"><span class="lbl">ลูกค้า / อ้างอิง</span><input type="text" id="cgo-c" placeholder="เช่น ฝ่ายขาย" autocomplete="off"></div><div style="min-width:110px"><span class="lbl">สี</span><select id="cgo-col">'+CGOC.map(c=>'<option value="'+c[0]+'">'+c[1]+"</option>").join("")+'</select></div><div style="min-width:150px"><span class="lbl">วันที่ส่ง</span><input type="date" id="cgo-dt"></div><div style="min-width:150px"><span class="lbl">ใช้สต๊อกจาก</span><select id="cgo-src"><option value="2">รวม 2 ที่</option><option value="1">บางหว้า</option><option value="0">บางแค</option></select></div></div>'+
+    '<div class="row" style="align-items:flex-end"><div style="flex:1 1 280px"><span class="lbl">วางตารางเบอร์ / จำนวน (copy จาก Excel หรือพิมพ์ เบอร์ เว้นวรรค จำนวน ทีละบรรทัด)</span><textarea id="cgo-p" rows="5" style="width:100%" placeholder="36&#9;41&#10;37&#9;85&#10;38&#9;159"></textarea></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn" id="cgo-add" type="button">เพิ่มออเดอร์</button><button class="btn ghost" id="cgo-xl" type="button">⬇ ดาวน์โหลด Excel</button><button class="btn ghost" id="cgo-clr" type="button" style="color:var(--bad);border-color:var(--bad)">ล้างออเดอร์ทั้งหมด</button></div></div><div id="cgo-msg" class="msg" hidden></div><div id="cgo-res"></div>';
+  host.after(w);try{$("cgo-src").value=localStorage.getItem("cgosrc")||"2"}catch(e){}
+  $("cgo-src").addEventListener("change",()=>{try{localStorage.setItem("cgosrc",$("cgo-src").value)}catch(e){}cgOrdDraw()});
+  $("cgo-add").onclick=()=>{const r=cgOrdParse($("cgo-p").value);if(!r.n){cgOrdMsg("อ่านตารางไม่ได้ — วางเป็นบรรทัดละ เบอร์ (28–49) แล้วตามด้วยจำนวน","warn");return}
+    const a=cgOrdGet(),id=Date.now();a.push({id,cust:($("cgo-c").value||"").trim(),color:$("cgo-col").value,date:$("cgo-dt").value,q:r.q});cgOrdSet(a);$("cgo-p").value="";
+    cgOrdMsg("เพิ่มออเดอร์แล้ว "+r.n+" เบอร์ รวม "+r.sum.toLocaleString("en-US")+" คู่ (เทียบกับยอดรวมในใบของคุณได้เลย)"+(r.bad?" · ข้าม "+r.bad+" บรรทัดที่เบอร์ไม่อยู่ในช่วง 28–49":""),"ok");cgOrdDraw()};
+  $("cgo-clr").onclick=()=>{if(!cgOrdGet().length)return;if($("cgo-clr").dataset.s!=="1"){$("cgo-clr").dataset.s="1";$("cgo-clr").textContent="กดอีกครั้งเพื่อยืนยันล้าง";setTimeout(()=>{$("cgo-clr").dataset.s="";$("cgo-clr").textContent="ล้างออเดอร์ทั้งหมด"},3500);return}
+    $("cgo-clr").dataset.s="";$("cgo-clr").textContent="ล้างออเดอร์ทั้งหมด";cgOrdSet([]);cgOrdMsg("ล้างออเดอร์แล้ว","ok");cgOrdDraw()};
+  $("cgo-xl").onclick=async()=>{try{const M=cgOrdModel();if(!M||!M.out.length)throw new Error("ยังไม่มีออเดอร์ให้ดาวน์โหลด");const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("เช็กออเดอร์"),L=colL,sn=["บางแค","บางหว้า","รวม 2 ที่"];let r=1;ws.getColumn(1).width=12;
+      const t=ws.getCell(r,1);t.value="เช็กออเดอร์ลูกค้า "+cvPN()+" · สต๊อก ณ "+thD(M.d)+" ("+sn[M.k]+") หน่วย: คู่";t.font={bold:true,size:14};r+=2;
+      M.out.forEach(g=>{const n=g.os.length,cT=3+n,cR=cT+1,cL=cT+2,c0=2;ws.getCell(r,1).value=cvPN()+" สี"+g.name+" · "+(g.lack?"ไม่พอ ขาด "+g.lack.toLocaleString("en-US")+" คู่":"พอทุกเบอร์");ws.getCell(r,1).font={bold:true,size:12,color:{argb:g.lack?"FFD93025":"FF0F7A55"}};r++;
+        const hr=r;["เบอร์","สต๊อก"].concat(g.os.map(o=>(o.cust||"ออเดอร์")+(o.date?" ส่ง "+thD2(o.date):"")),["รวมสั่ง","คงเหลือหลังขาย","ขาด"]).forEach((v,k)=>{const c=ws.getCell(hr,k+1);c.value=v;c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF1F4E79"}};c.alignment={horizontal:"center",vertical:"middle",wrapText:true};ws.getColumn(k+1).width=k===0?12:k<n+2?16:14});r++;const r1=r;
+        g.rows.forEach(x=>{ws.getCell(r,1).value=x.z;ws.getCell(r,2).value=x.st;x.qs.forEach((q,k)=>{ws.getCell(r,3+k).value=q||null});
+          ws.getCell(r,cT).value={formula:"SUM("+L(3)+r+":"+L(2+n)+r+")",result:x.tot};ws.getCell(r,cR).value={formula:"MAX(0,B"+r+"-"+L(cT)+r+")",result:x.rem};ws.getCell(r,cL).value={formula:"MAX(0,"+L(cT)+r+"-B"+r+")",result:x.lack};
+          for(let k=1;k<=cL;k++){const c=ws.getCell(r,k);c.border={top:{style:"thin"},bottom:{style:"thin"},left:{style:"thin"},right:{style:"thin"}};c.alignment={horizontal:"center"};if(k>1)c.numFmt="#,##0;-#,##0;-"}
+          if(x.lack){ws.getCell(r,cL).font={bold:true,color:{argb:"FFD93025"}};ws.getCell(r,cT).fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFFDE2E0"}}}r++});
+        const r2=r-1;ws.getCell(r,1).value="รวม";const sums=[g.rows.reduce((s,x)=>s+x.st,0)].concat(g.os.map((o,k)=>g.rows.reduce((s,x)=>s+x.qs[k],0)),[g.need,g.rows.reduce((s,x)=>s+x.rem,0),g.lack]);
+        sums.forEach((v,k)=>{const c=ws.getCell(r,k+2);c.value={formula:"SUM("+L(k+2)+r1+":"+L(k+2)+r2+")",result:v}});
+        for(let k=1;k<=cL;k++){const c=ws.getCell(r,k);c.font={bold:true};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFFFFF00"}};c.alignment={horizontal:"center"};if(k>1)c.numFmt="#,##0;-#,##0;-";c.border={top:{style:"medium"},bottom:{style:"medium"},left:{style:"thin"},right:{style:"thin"}}}r++;
+        ws.getCell(r,1).value="คงเหลือสี"+g.name+"หลังขาย (ทุกเบอร์) "+g.remAll.toLocaleString("en-US")+" คู่ จากสต๊อกเดิม "+g.stAll.toLocaleString("en-US")+" คู่";ws.getCell(r,1).font={italic:true,size:10};r+=2});
+      ws.getCell(r,1).value="* เช็กจากสต๊อกจริงวันที่ระบุ ยังไม่รวมของที่ รง. จะผลิตเข้าก่อนวันส่ง · หลายออเดอร์สีเดียวกันตัดตามลำดับวันส่ง";ws.getCell(r,1).font={italic:true,size:10,color:{argb:"FFC2410C"}};
+      await saveBook(wb,"เช็กออเดอร์_"+cvPN()+"_"+M.d+".xlsx");cgOrdMsg("ดาวน์โหลดแล้ว","ok")}catch(e){cgOrdMsg((e&&e.message)||String(e),"warn")}}})();
+
 
 /* ---------- อ่านใบแผนผลิต PDF แบบแนวตั้ง (เบอร์เรียงลง สีขาว/ดำ/น้ำตาลเรียงขวา) ---------- */
 const cgStrip=t=>String(t).replace(/[\sัิ-ฺ็-๎]/g,"");
